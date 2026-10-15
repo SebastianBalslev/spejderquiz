@@ -21,3 +21,10 @@ Q("knob", 1, "Spørgsmålet?",
 ```
 
 Det rigtige svar står altid først. Niveau 1 = bronze, 2 = sølv, 3 = guld.
+
+## Installér som app
+Appen kan installeres på telefonen fra https://sebastianbalslev.github.io/spejderquiz/ og virker derefter uden internet.
+- **Android (Chrome):** tryk på *Installér* i appen, eller vælg *Installér app* i menuen ⋮.
+- **iPhone (Safari):** tryk på *Del* og vælg *Føj til hjemmeskærm*.
+
+Når du ændrer `index.html`, skal du også tælle versionsnummeret op i `sw.js` (fx `spejderquiz-v2`), så telefonerne henter den nye udgave.

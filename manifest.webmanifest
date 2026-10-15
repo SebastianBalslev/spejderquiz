@@ -1,0 +1,17 @@
+{
+  "name": "Spejderquiz",
+  "short_name": "Spejderquiz",
+  "description": "Saml spejdermærker i bronze, sølv og guld ved at svare på spørgsmål i 12 emner.",
+  "lang": "da",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ece3cc",
+  "theme_color": "#2f4a2b",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

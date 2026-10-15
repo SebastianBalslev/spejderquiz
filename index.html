@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f4a2b">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Spejderquiz">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Spejderquiz</title>
 <style>
 :root{
@@ -100,6 +106,12 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .switch input:checked+span{background:var(--green)}
 .switch input:checked+span::after{left:28px}
 
+.install{display:flex;align-items:center;gap:12px}
+.install img{width:52px;height:52px;border-radius:12px;flex:none}
+.install div{flex:1;min-width:0}
+.install div>b{display:block;color:var(--forest)}
+.install small{color:var(--muted);line-height:1.35;display:block}
+.install .btn{width:auto;min-height:46px;margin:0;padding:10px 16px;font-size:16px}
 /* Mærker */
 .badge{position:relative;width:84px;height:84px;margin:0 auto}
 .badge svg{width:100%;height:100%;display:block;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
@@ -2151,6 +2163,7 @@ function scrVaelg(){
       <button class="iconbtn" data-a="slet" data-id="${c.id}" aria-label="Slet ${esc(c.navn)}">🗑️</button></div>`).join("");
   }
   h += `<button class="btn" data-a="ny">＋ Opret ny spejder</button>`;
+  h += installKort();
   if(state.chars.length) h += `<p class="muted center" style="font-size:14px">Flere spejdere kan dele telefonen – fx søskende eller hele patruljen.</p>`;
   return h;
 }
@@ -2180,6 +2193,21 @@ function timerToggle(){
     <span class="switch"><input type="checkbox" id="timer" ${c.timer?"checked":""} aria-label="Nedtælling"><span></span></span></label></div>`;
 }
 
+/* ---------- Installér som app ---------- */
+let installPrompt = null;
+const erInstalleret = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+const erIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installPrompt = e; if(["profil","vaelg"].includes(nav.screen)) render(); });
+window.addEventListener("appinstalled", () => { installPrompt = null; render(); });
+function installKort(){
+  if(erInstalleret() || location.protocol==="file:") return "";
+  let tekst, knap = "";
+  if(installPrompt){ tekst = "Læg Spejderquiz på hjemmeskærmen, så den åbner som en app – også uden internet."; knap = `<button class="btn" data-a="installer">Installér</button>`; }
+  else if(erIOS()){ tekst = "Tryk på <b>Del</b> (firkanten med pilen) i Safari og vælg <b>Føj til hjemmeskærm</b>."; }
+  else { tekst = "Åbn browserens menu (⋮) og vælg <b>Installér app</b> eller <b>Føj til startskærm</b>."; }
+  return `<div class="card install"><img src="icons/icon-192.png" alt=""><div><b>📲 Installér appen</b><small>${tekst}</small></div>${knap}</div>`;
+}
+
 function scrProfil(){
   const c=cur(), r=rankIdx(c), n=antal(c), next=RANG[r+1];
   const pct = next ? Math.round((n-RANG[r].min)/(next.min-RANG[r].min)*100) : 100;
@@ -2198,6 +2226,7 @@ function scrProfil(){
     <button class="btn" data-a="til" data-to="maerker">🏅 Mine mærker</button>
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
     ${timerToggle()}
+    ${installKort()}
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
 }
 
@@ -2455,6 +2484,7 @@ const actions = {
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
+  async installer(){ if(!installPrompt) return; installPrompt.prompt(); try{ await installPrompt.userChoice; }catch(e){} installPrompt=null; render(); },
 };
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
@@ -2468,6 +2498,11 @@ app.addEventListener("keydown", ev => {
 });
 app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.navn = ev.target.value; ev.target.classList.remove("err"); } });
 app.addEventListener("change", ev => { if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); } });
+
+/* ---------- Offline (service worker) ---------- */
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
 
 /* ---------- Start ---------- */
 (function start(){
