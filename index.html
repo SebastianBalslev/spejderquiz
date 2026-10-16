@@ -20,6 +20,7 @@
   --ok:#2f8f46; --ok-bg:#e1f3dd; --bad:#c4392d; --bad-bg:#fbe3df; --gold:#e0a923;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   color:var(--ink);background:var(--bg);
@@ -248,6 +249,38 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 .bigik svg{width:100%;height:100%}.bigik .emo{font-size:84px;line-height:1}
 @keyframes blink{50%{box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}}
 @keyframes byg{0%{transform:scale(0) translateY(10px)}100%{transform:none}}
+
+.item .meta{font-size:11px;color:var(--muted);font-weight:700}
+.celle .tid{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:rgba(42,42,31,.82);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:2px 0;font-variant-numeric:tabular-nums}
+.celle.bygger>svg,.celle.bygger>.emo{opacity:.45;filter:saturate(.4)}
+.celle.bygger::before{content:"🚧";position:absolute;top:1px;right:3px;font-size:14px;z-index:2}
+.bigik.bygger{opacity:.5}
+.byggetid{font-size:18px;margin:4px 0;font-variant-numeric:tabular-nums}
+.bygkort{padding:12px;background:linear-gradient(180deg,#cfe6f2 0,#e6f0d8 60%,#b9d48f 100%)}
+.bygstatus{margin-bottom:8px}.bygstatus b{display:block;margin-bottom:6px;color:var(--forest)}
+.bygsvg{width:100%;display:block;touch-action:none;overflow:visible}
+.led circle{animation:ledpuls 1.3s ease-in-out infinite}
+.led{cursor:pointer}
+.led.forkert circle{animation:ledfejl .5s;stroke:var(--bad)}
+.bundet-ny{animation:fadein .5s}
+.qmark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px dashed var(--forest);font-size:13px}
+.surbakke{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.surchip{flex:1 1 30%;min-width:96px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px solid #d9c08a;background:#f6e9c8;border-radius:16px;
+  font-weight:700;font-size:13px;color:#5c3a20;box-shadow:0 3px 0 #d9c08a;touch-action:none;user-select:none;-webkit-user-select:none}
+.surchip svg{width:28px;height:28px}
+.surchip.on{background:var(--forest);color:#fff;border-color:var(--forest)}
+.surchip.on svg{stroke:#fff}
+.spoghost{position:fixed;z-index:2000;pointer-events:none;transform:translate(-50%,-120%);display:flex;flex-direction:column;align-items:center;gap:2px;background:#f6e9c8;border:2px solid #8b5a2b;border-radius:14px;padding:6px 10px;font-size:12px;font-weight:700;color:#5c3a20;box-shadow:0 8px 18px rgba(0,0,0,.3)}
+.spoghost svg{width:26px;height:26px}
+.teltscene{position:relative;width:100%;aspect-ratio:300/260;border-radius:20px;overflow:hidden;margin-bottom:14px;box-shadow:0 8px 20px rgba(40,30,10,.25)}
+.teltbg{position:absolute;inset:0;width:100%;height:100%}
+.tplads{position:absolute;aspect-ratio:1;border:none;border-radius:12px;padding:0;background:rgba(255,255,255,.08);display:grid;place-items:center;transform:translateY(0)}
+.tplads.gulv{background:rgba(0,0,0,.12)}
+.tplads svg{width:96%;height:96%}.tplads .emo{font-size:clamp(24px,9vw,42px);line-height:1}
+.tplads.kan{box-shadow:inset 0 0 0 3px rgba(255,255,255,.9);animation:blink 1.2s ease-in-out infinite}
+.tplads.flyttes{box-shadow:inset 0 0 0 3px #f2c94c}
+@keyframes ledpuls{50%{opacity:.45}}
+@keyframes ledfejl{30%{stroke-width:6}}
 
 /* Modal / fejring */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(30,35,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
@@ -2172,6 +2205,8 @@ let quiz = null;    // igangværende quiz
 function go(screen, params, push){
   stopTimer();
   if(screen!=="lejr") lejrValg=null;
+  if(screen!=="telt") teltValg=null;
+  if(screen!=="byg") bygOpg=null;
   nav = { screen, params: params || {} };
   if(push !== false){ try{ history.pushState(nav, ""); }catch(e){} }
   render();
@@ -2194,11 +2229,14 @@ function render(){
   if(s==="editor" && !draft) s = cur() ? "profil" : "vaelg";
   if((s==="quiz" || s==="resultat") && !quiz) s = "profil";
   if(s==="emne" && !EMNE[nav.params.id]) s = "maerker";
+  if(s==="byg" && !bygOpg) s = "lejr";
+  if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt }[s];
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz") startTimer();
+  startLejrUr();
   renderFaner();
 }
 
@@ -2640,8 +2678,53 @@ const PIONER = {
     <g><ellipse cx="33" cy="9" rx="3" ry="2.2" fill="#f2c94c"/><path d="M32 7.5 v3 M34 7.5 v3" stroke="#222"/><ellipse cx="33" cy="7" rx="2" ry="1.2" fill="#fff" opacity=".8"/></g>`,
 };
 
+// Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
+const BYGTID = { telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
+  bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
+  fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
+  vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:60, flag:60, liljeskilt:180,
+  jamboree:600, insekthotel:180, bistade:300 };
+const TELT_IDS = ["telt","patruljetelt","jamboree"];
+
+/* ---------- Surringsopgaver til pionerarbejde ----------
+   poles: stænger [x1,y1,x2,y2], led: knudepunkter [x,y,type], pynt: tegnes når alt er bundet.
+   type: "kvadrat" (ret vinkel), "diagonal" (skråt kryds), "trefod" (tre stænger mødes) */
+const SURRINGER = {
+  kvadrat:  { navn:"Kvadratsurring",  ikon:`<path d="M12 3 V21 M3 12 H21" stroke-width="3"/>`,
+              hint:"Stængerne krydser hinanden i ret vinkel (90°). Det kræver en kvadratsurring." },
+  diagonal: { navn:"Diagonalsurring", ikon:`<path d="M5 4 L19 20 M19 4 L5 20" stroke-width="3"/>`,
+              hint:"Stængerne krydser hinanden skråt. Så bruger man en diagonalsurring, der trækker dem sammen." },
+  trefod:   { navn:"Trefodssurring",  ikon:`<path d="M12 4 L4 21 M12 4 L20 21 M12 4 V21" stroke-width="3"/>`,
+              hint:"Her mødes tre stænger i toppen. Det er en trefodssurring." },
+};
+const OPGAVER = {
+  bord: { poles:[[40,80,40,188],[160,80,160,188],[18,80,182,80],[28,145,172,145],[40,100,160,135],[40,135,160,100]],
+    led:[[40,80,"kvadrat"],[160,80,"kvadrat"],[40,145,"kvadrat"],[160,145,"kvadrat"],[100,117.5,"diagonal"]],
+    pynt:`<rect x="14" y="56" width="172" height="14" rx="3" fill="#c49a63" stroke="#8b5a2b"/><path d="M14 63 H186" stroke="#8b5a2b"/><text x="100" y="40" text-anchor="middle" font-size="22">🍽️</text>` },
+  baare: { poles:[[12,70,188,70],[12,130,188,130],[40,52,40,148],[160,52,160,148]],
+    led:[[40,70,"kvadrat"],[160,70,"kvadrat"],[40,130,"kvadrat"],[160,130,"kvadrat"]],
+    pynt:`<rect x="45" y="74" width="110" height="52" fill="#c62828" opacity=".85"/><path d="M100 84 V116 M84 100 H116" stroke="#fff" stroke-width="8"/>` },
+  port: { poles:[[30,196,30,12],[170,196,170,12],[8,35,192,35],[8,75,192,75],[55,35,145,75],[55,75,145,35],[5,196,50,130],[195,196,150,130]],
+    led:[[30,35,"kvadrat"],[170,35,"kvadrat"],[30,75,"kvadrat"],[170,75,"kvadrat"],[100,55,"diagonal"],[30,158.9,"diagonal"],[170,158.9,"diagonal"]],
+    pynt:`<rect x="62" y="84" width="76" height="22" rx="3" fill="#f3e3c3" stroke="#8b5a2b" stroke-width="2"/><text x="100" y="100" text-anchor="middle" font-size="13" font-weight="800" fill="#2f4a2b">VELKOMMEN</text>
+      <path d="M30 12 V-2 L46 4 L30 10Z M170 12 V-2 L186 4 L170 10Z" fill="#c62828"/>` },
+  taarn: { poles:[[55,196,55,30],[145,196,145,30],[40,45,160,45],[40,115,160,115],[40,185,160,185],[70,45,130,115],[70,115,130,45],[70,115,130,185],[70,185,130,115]],
+    led:[[55,45,"kvadrat"],[145,45,"kvadrat"],[55,115,"kvadrat"],[145,115,"kvadrat"],[55,185,"kvadrat"],[145,185,"kvadrat"],[100,80,"diagonal"],[100,150,"diagonal"]],
+    pynt:`<path d="M36 34 L100 2 L164 34Z" fill="#2f6b3a"/><rect x="40" y="34" width="120" height="6" fill="#c49a63"/>` },
+  svaevebane: { poles:[[20,196,70,25],[110,196,70,25],[70,196,70,25],[12,140,128,140],[30,90,105,90],[165,196,182,150],[199,196,182,150],[182,196,182,150]],
+    led:[[70,25,"trefod"],[36.2,140,"diagonal"],[97.1,140,"diagonal"],[50.9,90,"diagonal"],[85.3,90,"diagonal"],[182,150,"trefod"]],
+    pynt:`<path d="M70 28 L182 152" stroke="#444" stroke-width="2"/><path d="M128 80 V96 M118 96 H138" stroke="#c62828" stroke-width="4" stroke-linecap="round"/><circle cx="128" cy="79" r="4" fill="#666"/>
+      <rect x="14" y="128" width="112" height="8" fill="#c49a63"/>` },
+  badebro: { poles:[[40,30,40,196],[100,30,100,196],[160,30,160,196],[18,60,182,60],[18,120,182,120],[55,60,85,120],[55,120,85,60]],
+    led:[[40,60,"kvadrat"],[100,60,"kvadrat"],[160,60,"kvadrat"],[40,120,"kvadrat"],[100,120,"kvadrat"],[160,120,"kvadrat"],[70,90,"diagonal"]],
+    bund:`<rect x="0" y="140" width="200" height="60" fill="#4a9fd0"/><path d="M0 150 q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0" stroke="#bfe4f7" stroke-width="3" fill="none"/>`,
+    pynt:`<rect x="14" y="44" width="172" height="12" rx="2" fill="#c49a63" stroke="#8b5a2b"/><path d="M57 44 V56 M100 44 V56 M143 44 V56" stroke="#8b5a2b"/>` },
+};
+
 let lejrValg = null;   // { type:"ny", id } eller { type:"flyt", idx }
 let lejrNy = null;     // felt der lige er bygget (til animation)
+let bygOpg = null;     // igangværende surringsopgave
+let lejrUr = null;     // opdaterer byggetider på skærmen
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
 function bygIkon(b){ return b.svg ? `<svg viewBox="0 0 40 40" aria-hidden="true">${PIONER[b.svg]}</svg>` : `<span class="emo">${b.ikon}</span>`; }
@@ -2649,7 +2732,14 @@ function harKrav(c,b){ return !b.krav || (c.badges[b.krav[0]]||0) >= b.krav[1]; 
 function kravTekst(b){ return `${EMNE[b.krav[0]].navn} – ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`; }
 function erVand(i){ return VAND.has(Math.floor(i/LEJR_KOL)+","+(i%LEJR_KOL)); }
 function kanStaa(b,i){ return !!b.vand === erVand(i); }
-function lejrFelter(c){ c.lejr = c.lejr || {}; return c.lejr; }
+function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; return c.lejr; }
+function restTid(c,i){ const t=(c.lejrTid||{})[i]; return t ? Math.max(0, t-Date.now()) : 0; }
+function underByg(c,i){ return restTid(c,i) > 0; }
+function fmtTid(ms){
+  const s=Math.ceil(ms/1000), m=Math.floor(s/60), sek=s%60;
+  return m>=60 ? `${Math.floor(m/60)} t ${m%60} min` : `${m}:${String(sek).padStart(2,"0")}`;
+}
+function tidTekst(sek){ return sek>=60 ? `${Math.round(sek/60)} min` : `${sek} sek`; }
 
 function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
@@ -2657,8 +2747,10 @@ function scrLejr(){
   let h = `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}s lejrplads</h1><span class="spacer"></span></div>
     <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b> point at bygge for</span><span class="chip">🏗️ ${antalByg} bygget</span></div>`;
   if(valgt){
+    const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":"Flyt"}: ${valgt.navn}</b>
-      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vand?" på søen":""}.</small></div><button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
+      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vand?" på søen":""}.${opg?" Bagefter skal du binde surringerne.":""}</small></div>
+      <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   h += `<div class="lejrmap" id="lejrmap">`;
   for(let i=0;i<LEJR_KOL*LEJR_RAEKKER;i++){
@@ -2667,26 +2759,44 @@ function scrLejr(){
     if(valgt && !b && kanStaa(valgt,i)) cls += " kan";
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
     if(lejrNy===i) cls += " ny";
-    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn:erVand(i)?"Sø":"Græs"}">${b?bygIkon(b):""}</button>`;
+    const bygger = b && underByg(c,i);
+    if(bygger) cls += " bygger";
+    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(bygger?" (bygges)":""):erVand(i)?"Sø":"Græs"}">${b?bygIkon(b):""}${bygger?`<span class="tid" data-tid="${i}">⏳ ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += `</div>`;
   lejrNy = null;
   h += `<div class="sect" style="margin-top:18px">Byggeliste</div>
-    <p class="muted" style="margin:-4px 0 12px;font-size:14px">Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere.</p>
+    <p class="muted" style="margin:-4px 0 12px;font-size:14px">Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde surringerne. Store ting tager tid at bygge.</p>
     <div class="shop">`;
   for(const b of BYG){
-    const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id;
+    const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
     const kravHTML = b.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[b.krav[0]], ok?b.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[b.krav[1]].navn}</span>` : `<span class="krav ok">Alle kan bygge</span>`;
     h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgbyg" data-id="${b.id}">
-      <span class="ik">${bygIkon(b)}</span><b>${b.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${b.pris}</span></button>`;
+      <span class="ik">${bygIkon(b)}</span><b>${b.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${b.pris}</span>
+      ${tid||OPGAVER[b.id]?`<span class="meta">${OPGAVER[b.id]?"🪢 ":""}${tid?"⏳ "+tidTekst(tid):""}</span>`:""}</button>`;
   }
   return h + `</div>`;
+}
+
+function startLejrUr(){
+  clearInterval(lejrUr); lejrUr=null;
+  const c=cur(); if(!c || nav.screen!=="lejr") return;
+  if(!Object.keys(c.lejrTid||{}).some(i=>underByg(c,+i))) return;
+  lejrUr = setInterval(()=>{
+    if(nav.screen!=="lejr"){ clearInterval(lejrUr); lejrUr=null; return; }
+    let faerdig=null;
+    document.querySelectorAll("[data-tid]").forEach(el=>{
+      const i=+el.dataset.tid, ms=restTid(c,i);
+      if(ms<=0) faerdig=i; else el.textContent="⏳ "+fmtTid(ms);
+    });
+    if(faerdig!==null){ delete c.lejrTid[faerdig]; save(); lejrNy=faerdig; render(); lejrToast(`🎉 ${BYGID[c.lejr[faerdig]].navn} er færdigbygget!`); vibrer([60,40,60]); }
+  }, 1000);
 }
 
 function lejrToast(t){
   const el=document.getElementById("toast"); if(!el) return;
   el.innerHTML=t; el.hidden=false; el.style.animation="none"; void el.offsetWidth; el.style.animation="";
-  clearTimeout(lejrToast.t); lejrToast.t=setTimeout(()=>{ el.hidden=true; }, 3200);
+  clearTimeout(lejrToast.t); lejrToast.t=setTimeout(()=>{ el.hidden=true; }, 3400);
 }
 function lejrScrollKort(){ const m=document.getElementById("lejrmap"); if(m) m.scrollIntoView({behavior:"smooth",block:"center"}); }
 
@@ -2698,6 +2808,20 @@ function vaelgByg(id){
   render();
   if(lejrValg){ const t=document.getElementById("toast"); if(t) t.hidden=true; lejrScrollKort(); }
 }
+function placer(c,i,b){
+  const felter=lejrFelter(c);
+  felter[i]=b.id; c.brugt=(c.brugt||0)+b.pris;
+  if(BYGTID[b.id]) c.lejrTid[i]=Date.now()+BYGTID[b.id]*1000;
+  save();
+}
+function flytFelt(c,fra,til){
+  const f=lejrFelter(c);
+  f[til]=f[fra]; delete f[fra];
+  if(c.lejrTid[fra]){ c.lejrTid[til]=c.lejrTid[fra]; delete c.lejrTid[fra]; }
+  if(c.telte[fra]){ c.telte[til]=c.telte[fra]; delete c.telte[fra]; }
+}
+function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.ting||{}).reduce((s,id)=>s+(INDBOID[id]?INDBOID[id].pris:0),0) : 0; }
+
 function lejrCelle(i){
   const c=cur(), felter=lejrFelter(c), her=BYGID[felter[i]];
   if(lejrValg && lejrValg.type==="flyt"){
@@ -2705,28 +2829,247 @@ function lejrCelle(i){
     if(i===lejrValg.idx){ lejrValg=null; render(); return; }
     if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
     if(!kanStaa(b,i)){ lejrToast(b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
-    felter[i]=felter[lejrValg.idx]; delete felter[lejrValg.idx]; lejrValg=null; lejrNy=i; save(); render(); return;
+    flytFelt(c,lejrValg.idx,i); lejrValg=null; lejrNy=i; save(); render(); return;
   }
   if(lejrValg && lejrValg.type==="ny"){
     const b=BYGID[lejrValg.id];
     if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
     if(!kanStaa(b,i)){ lejrToast(b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
     if(lejrPoint(c) < b.pris){ lejrValg=null; render(); return; }
-    felter[i]=b.id; c.brugt=(c.brugt||0)+b.pris; lejrValg=null; lejrNy=i; save(); render(); vibrer(40);
-    lejrToast(`✅ ${b.navn} er bygget! (−${b.pris} point)`); return;
-  }
-  if(her){
-    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik">${bygIkon(her)}</div><h2 style="margin-top:6px">${her.navn}</h2>
-      <p class="muted" style="font-size:16px">${her.besk}</p>
-      <button class="btn" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned (+${her.pris} point)</button><button class="btn secondary" id="m-luk">Luk</button></div></div>`;
-    modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
-    modalRoot.querySelector("#m-flyt").onclick=()=>{ modalRoot.innerHTML=""; lejrValg={type:"flyt",idx:i}; render(); };
-    modalRoot.querySelector("#m-riv").onclick=()=>{ modalRoot.innerHTML=""; delete felter[i]; c.brugt=Math.max(0,(c.brugt||0)-her.pris); save(); render(); lejrToast(`${her.navn} er revet ned – du fik ${her.pris} point tilbage.`); };
+    lejrValg=null;
+    if(OPGAVER[b.id]){ bygOpg={ id:b.id, idx:i, bundet:{}, valgt:null, fejl:0 }; go("byg"); return; }
+    placer(c,i,b); lejrNy=i; render(); vibrer(40);
+    lejrToast(BYGTID[b.id] ? `🏗️ Patruljen går i gang med ${b.navn}. Færdig om ${tidTekst(BYGTID[b.id])}.` : `✅ ${b.navn} er bygget! (−${b.pris} point)`);
     return;
   }
+  if(her) return visFeltMenu(i);
   lejrToast(erVand(i) ? "Det er søen. Her kan du sætte kano, badebro og sejlbåd." : "Vælg noget fra byggelisten nedenfor, og tryk så her.");
 }
+
+function visFeltMenu(i){
+  const c=cur(), her=BYGID[c.lejr[i]], bygger=underByg(c,i), indbo=indboVaerdi(c,i);
+  const luk=()=>{ modalRoot.innerHTML=""; };
+  let knapper="";
+  if(bygger){
+    knapper = `<p class="byggetid">⏳ Færdig om <b id="m-tid">${fmtTid(restTid(c,i))}</b></p>
+      <button class="btn gold" id="m-hjaelp">💪 Hjælp patruljen: svar på et spørgsmål (−1 min)</button>`;
+  } else if(TELT_IDS.includes(her.id)){
+    knapper = `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
+  }
+  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
+    <small class="muted">River du ned, får du ${her.pris+indbo} point tilbage.</small>
+    <button class="btn secondary" id="m-luk">Luk</button>`;
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik ${bygger?"bygger":""}">${bygIkon(her)}</div>
+    <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?"Patruljen er i gang med at bygge.":her.besk}</p>${knapper}</div></div>`;
+  const $=s=>modalRoot.querySelector(s);
+  $("#m-luk").onclick=luk;
+  $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
+  $("#m-riv").onclick=()=>{ luk(); const t=her.pris+indboVaerdi(c,i); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i];
+    c.brugt=Math.max(0,(c.brugt||0)-t); save(); render(); lejrToast(`${her.navn} er revet ned – du fik ${t} point tilbage.`); };
+  if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
+  if($("#m-hjaelp")) $("#m-hjaelp").onclick=()=>hjaelpSpm(i);
+  if(bygger){ const ur=setInterval(()=>{ const el=$("#m-tid"); if(!el){ clearInterval(ur); return; } const ms=restTid(c,i); if(ms<=0){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(ms); },1000); }
+}
+
+function hjaelpSpm(i){
+  const c=cur(), b=BYGID[c.lejr[i]];
+  const pool=SPORGSMAL.filter(q=>q.niveau<=2 && (!b.krav || q.emne===b.krav[0]));
+  const q=pick(pool), opts=shuffle(q.svar.map((t,k)=>({t,ok:k===0})));
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="qtopic">${badgeHTML(EMNE[q.emne],c.badges[q.emne]||0,"xs")} ${EMNE[q.emne].navn}</div>
+    <p class="qtext" style="text-align:left;font-size:19px">${esc(q.spm)}</p><div id="m-svar">${opts.map((o,k)=>`<button class="ans" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`).join("")}</div></div></div>`;
+  modalRoot.querySelectorAll("#m-svar .ans").forEach(btn=>btn.onclick=()=>{
+    const ok=opts[+btn.dataset.k].ok;
+    modalRoot.innerHTML="";
+    if(ok){
+      c.lejrTid[i]=(c.lejrTid[i]||Date.now())-60000;
+      if(restTid(c,i)<=0){ delete c.lejrTid[i]; lejrNy=i; }
+      save(); render(); vibrer(30);
+      lejrToast(restTid(c,i)>0 ? `✅ Rigtigt! Byggeriet går et minut hurtigere.` : `✅ Rigtigt! ${b.navn} er færdigbygget! 🎉`);
+    } else {
+      vibrer([60,40,60]); render();
+      lejrToast(`Desværre. Det rigtige svar var: <b>${esc(q.svar[0])}</b>`);
+    }
+  });
+}
 function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emneId && b.krav[1]===lvl); }
+
+/* ---------- Surringsopgaven ---------- */
+function scrByg(){
+  const b=BYGID[bygOpg.id], o=OPGAVER[bygOpg.id], n=o.led.length, done=Object.keys(bygOpg.bundet).length, faerdig=done===n;
+  let svg = `<svg viewBox="-10 -10 220 215" class="bygsvg" id="bygsvg">${o.bund||""}`;
+  if(faerdig) svg += o.pynt||"";
+  o.poles.forEach(([x1,y1,x2,y2])=>{ svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8b5a2b" stroke-width="7" stroke-linecap="round"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b07a45" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`; });
+  o.led.forEach(([x,y,type],k)=>{
+    if(bygOpg.bundet[k]) svg += `<g transform="translate(${x} ${y})" class="${bygOpg.nyt===k?"bundet-ny":""}"><circle r="12" fill="${REB}" stroke="#8b5a2b" stroke-width="2"/><path d="M-8 -6 L6 8 M-6 -8 L8 6 M-8 6 L6 -8 M-6 8 L8 -6" stroke="#b08a50" stroke-width="2.2"/></g>`;
+    else svg += `<g transform="translate(${x} ${y})" class="led ${bygOpg.forkert===k?"forkert":""}" data-led="${k}"><circle r="16" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="2.5" stroke-dasharray="4 3"/><text y="6" text-anchor="middle" font-size="17" font-weight="800" fill="#2f4a2b">?</text></g>`;
+  });
+  svg += `</svg>`;
+  bygOpg.nyt=null; bygOpg.forkert=null;
+  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>Byg: ${b.navn}</h1><span class="spacer"></span></div>
+    <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
+  if(!faerdig){
+    h += `<p class="center" style="margin:4px 0 10px"><b>Træk den rigtige surring hen på hvert <span class="qmark">?</span></b><br><small class="muted">Du kan også trykke på en surring og så på knudepunktet.</small></p>
+      <div class="surbakke">${Object.entries(SURRINGER).map(([id,s])=>`<button class="surchip ${bygOpg.valgt===id?"on":""}" data-sur="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5a2b" stroke-linecap="round">${s.ikon}</svg>${s.navn}</button>`).join("")}</div>`;
+  } else {
+    const tid=BYGTID[b.id];
+    h += `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+      <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`}${tid?` Patruljen skal bruge <b>${tidTekst(tid)}</b> på at bygge resten.`:""}</p></div>
+      <button class="btn gold" data-a="bygstart">🏗️ Start byggeriet (🪙 ${b.pris})</button>`;
+  }
+  return h;
+}
+function bindLed(k,type){
+  const o=OPGAVER[bygOpg.id];
+  if(bygOpg.bundet[k]) return;
+  if(o.led[k][2]===type){ bygOpg.bundet[k]=true; bygOpg.nyt=k; bygOpg.valgt=null; vibrer(30); render(); }
+  else { bygOpg.fejl++; bygOpg.forkert=k; vibrer([60,40,60]); render(); lejrToast(`Ikke en ${SURRINGER[type].navn.toLowerCase()}. ${SURRINGER[o.led[k][2]].hint}`); }
+}
+// Træk-og-slip af surringer
+let traek=null;
+app.addEventListener("pointerdown", ev=>{
+  const chip=ev.target.closest(".surchip"); if(!chip || nav.screen!=="byg") return;
+  const g=document.createElement("div"); g.className="spoghost"; g.innerHTML=chip.innerHTML; document.body.appendChild(g);
+  traek={ type:chip.dataset.sur, g, x0:ev.clientX, y0:ev.clientY, flyttet:false };
+  g.style.left=ev.clientX+"px"; g.style.top=ev.clientY+"px"; g.hidden=true;
+});
+window.addEventListener("pointermove", ev=>{
+  if(!traek) return;
+  if(Math.hypot(ev.clientX-traek.x0, ev.clientY-traek.y0)>8){ traek.flyttet=true; traek.g.hidden=false; }
+  traek.g.style.left=ev.clientX+"px"; traek.g.style.top=ev.clientY+"px";
+  if(traek.flyttet) ev.preventDefault();
+}, {passive:false});
+window.addEventListener("pointerup", ev=>{
+  if(!traek) return;
+  const t=traek; traek=null; t.g.remove();
+  if(t.flyttet){
+    const el=document.elementFromPoint(ev.clientX, ev.clientY), led=el && el.closest("[data-led]");
+    if(led) bindLed(+led.dataset.led, t.type);
+  } else { bygOpg.valgt = bygOpg.valgt===t.type ? null : t.type; render(); }
+});
+window.addEventListener("pointercancel", ()=>{ if(traek){ traek.g.remove(); traek=null; } });
+app.addEventListener("click", ev=>{
+  if(nav.screen!=="byg" || !bygOpg) return;
+  const led=ev.target.closest("[data-led]");
+  if(led){ if(bygOpg.valgt) bindLed(+led.dataset.led, bygOpg.valgt); else lejrToast("Vælg først en surring nedenfor – eller træk den herop."); }
+});
+
+/* ---------- Indret dit telt ---------- */
+const INDBO = [
+  { id:"sovepose_r", navn:"Rød sovepose",   svg:"sovepose", farve:"#c62828", pris:10, sted:"gulv" },
+  { id:"sovepose_b", navn:"Blå sovepose",   svg:"sovepose", farve:"#1e5fb4", pris:10, sted:"gulv" },
+  { id:"sovepose_g", navn:"Grøn sovepose",  svg:"sovepose", farve:"#2e7d32", pris:10, sted:"gulv" },
+  { id:"underlag",   navn:"Liggeunderlag",  svg:"underlag", pris:5,  sted:"gulv" },
+  { id:"pude",       navn:"Pude",           svg:"pude",     pris:5,  sted:"gulv" },
+  { id:"rygsaek",    navn:"Rygsæk",         ikon:"🎒", pris:10, sted:"gulv" },
+  { id:"stoevler",   navn:"Vandrestøvler",  ikon:"🥾", pris:5,  sted:"gulv" },
+  { id:"bamse",      navn:"Bamse",          ikon:"🧸", pris:10, sted:"gulv" },
+  { id:"boeger",     navn:"Bøger",          ikon:"📚", pris:10, sted:"gulv" },
+  { id:"kortspil",   navn:"Kortspil",       ikon:"🃏", pris:10, sted:"gulv" },
+  { id:"lommelygte", navn:"Lommelygte",     ikon:"🔦", pris:10, sted:"gulv" },
+  { id:"slik",       navn:"Slikpose",       ikon:"🍬", pris:5,  sted:"gulv" },
+  { id:"kakao",      navn:"Kakao",          ikon:"☕", pris:15, sted:"gulv", krav:["baal",1] },
+  { id:"reb",        navn:"Rulle reb",      ikon:"🪢", pris:15, sted:"gulv", krav:["knob",1] },
+  { id:"taske",      navn:"Førstehjælpstaske", svg:"taske", pris:20, sted:"gulv", krav:["forstehjalp",1] },
+  { id:"lup",        navn:"Lup til insekter", ikon:"🔍", pris:15, sted:"gulv", krav:["dyr",1] },
+  { id:"buket",      navn:"Blomsterbuket",  ikon:"💐", pris:15, sted:"gulv", krav:["planter",1] },
+  { id:"kort",       navn:"Kort",           ikon:"🗺️", pris:15, sted:"gulv", krav:["orientering",1] },
+  { id:"kompas",     navn:"Kompas",         ikon:"🧭", pris:20, sted:"gulv", krav:["orientering",2] },
+  { id:"guitar",     navn:"Guitar til lejrbålet", ikon:"🎸", pris:40, sted:"gulv", krav:["historie",1] },
+  { id:"lanterne",   navn:"Lanterne",       svg:"lanterne", pris:15, sted:"loft" },
+  { id:"vimpler",    navn:"Vimpelguirlande", svg:"vimpler", pris:15, sted:"loft" },
+  { id:"stjerner",   navn:"Selvlysende stjerner", svg:"stjerner", pris:20, sted:"loft", krav:["vejr",1] },
+  { id:"spejderflag",navn:"Spejderflag",    svg:"spejderflag", pris:30, sted:"loft", krav:["historie",2] },
+];
+const INDBOID = Object.fromEntries(INDBO.map(t=>[t.id,t]));
+const TELTFARVER = [["#e58a2e","Orange"],["#4f8a43","Grøn"],["#3f6fa8","Blå"],["#cdb689","Sand"],["#b83a2e","Rød"]];
+// Pladser i teltet: [venstre %, top %, bredde %]
+const TELTPLADS = [
+  { sted:"loft", x:38, y:18, w:24 }, { sted:"loft", x:24, y:36, w:22 }, { sted:"loft", x:54, y:36, w:22 },
+  { sted:"gulv", x:6,  y:58, w:22 }, { sted:"gulv", x:28, y:58, w:22 }, { sted:"gulv", x:50, y:58, w:22 }, { sted:"gulv", x:72, y:58, w:22 },
+  { sted:"gulv", x:4,  y:78, w:23 }, { sted:"gulv", x:27, y:78, w:23 }, { sted:"gulv", x:50, y:78, w:23 }, { sted:"gulv", x:73, y:78, w:23 },
+];
+const INDBOSVG = {
+  sovepose: f=>`<rect x="2" y="13" width="36" height="16" rx="8" fill="${f}"/><rect x="4" y="15" width="11" height="12" rx="5" fill="${shade(f,.35)}"/><path d="M16 21 H36" stroke="${shade(f,-.3)}" stroke-width="1.2" stroke-dasharray="2 1.5"/>`,
+  underlag: ()=>`<rect x="2" y="16" width="36" height="10" rx="2" fill="#4a8fc7"/><path d="M8 16 V26 M14 16 V26 M20 16 V26 M26 16 V26 M32 16 V26" stroke="#3a75a6"/>`,
+  pude: ()=>`<path d="M6 14 Q20 9 34 14 Q37 21 34 28 Q20 33 6 28 Q3 21 6 14Z" fill="#fbf6ea" stroke="#d8cfb8"/>`,
+  taske: ()=>`<rect x="7" y="12" width="26" height="20" rx="3" fill="#c62828"/><path d="M15 12 V8 H25 V12" fill="none" stroke="#8a1c1c" stroke-width="2"/><path d="M20 16 V28 M14 22 H26" stroke="#fff" stroke-width="4"/>`,
+  lanterne: ()=>`<path d="M20 2 V8" stroke="#555" stroke-width="1.5"/><path d="M14 8 H26 L24 12 H16Z" fill="#444"/><rect x="14" y="12" width="12" height="16" rx="2" fill="#ffe7a0" stroke="#444" stroke-width="1.5"/><circle cx="20" cy="20" r="3.5" fill="#ffb627"/><rect x="13" y="28" width="14" height="3" fill="#444"/>`,
+  vimpler: ()=>`<path d="M1 8 Q20 18 39 8" fill="none" stroke="#8b5a2b" stroke-width="1.2"/><path d="M4 9.5 L9 12 L5 20Z" fill="#c62828"/><path d="M11 12.5 L16 14 L12.5 22Z" fill="#f2c94c"/><path d="M18 14 L23 14 L20.5 23Z" fill="#2e7d32"/><path d="M25 13.5 L30 12 L28.5 21.5Z" fill="#1e5fb4"/><path d="M32 11.5 L37 9 L36 18.5Z" fill="#8e44ad"/>`,
+  stjerner: ()=>stjerne(12,14,7,"#fff3a8")+stjerne(28,10,5,"#fff3a8")+stjerne(26,27,6,"#fff3a8")+stjerne(10,30,3.5,"#fff3a8"),
+  spejderflag: ()=>`<path d="M5 4 V36" stroke="#8b5a2b" stroke-width="2"/><rect x="6" y="5" width="30" height="20" fill="#5d2a7e"/><g transform="translate(21 15) scale(.3)">${SYM.historie}</g>`,
+};
+let teltValg = null;   // { type:"ny", id } eller { type:"flyt", p }
+function indboIkon(t){ return t.svg ? `<svg viewBox="0 0 40 40" aria-hidden="true">${INDBOSVG[t.svg](t.farve)}</svg>` : `<span class="emo">${t.ikon}</span>`; }
+function teltData(c,i){ c.telte=c.telte||{}; return c.telte[i] || (c.telte[i]={ farve:0, ting:{} }); }
+
+function scrTelt(){
+  const c=cur(), i=nav.params.i, b=BYGID[c.lejr[i]], t=teltData(c,i), farve=TELTFARVER[t.farve][0];
+  const valgt = teltValg && (teltValg.type==="ny" ? INDBOID[teltValg.id] : INDBOID[t.ting[teltValg.p]]);
+  const lys = Object.values(t.ting).includes("lanterne");
+  let scene = `<svg viewBox="0 0 300 260" preserveAspectRatio="none" class="teltbg" aria-hidden="true">
+      <rect width="300" height="260" fill="${lys?"#3a3428":"#23271d"}"/>
+      <path d="M150 6 L296 252 H4Z" fill="${shade(farve,-.18)}"/>
+      <path d="M150 6 L230 252 H70Z" fill="${farve}"/>
+      <path d="M150 6 L150 252" stroke="${shade(farve,-.35)}" stroke-width="3"/>
+      <path d="M150 6 L70 252 M150 6 L230 252" stroke="${shade(farve,-.28)}" stroke-width="1.5" opacity=".6"/>
+      <path d="M58 150 H242 L296 252 H4Z" fill="#4c5a3a"/><path d="M58 150 H242 L296 252 H4Z" fill="url(#weave)" opacity=".08"/>
+      ${lys?`<circle cx="150" cy="70" r="120" fill="#ffd27a" opacity=".16"/>`:""}
+    </svg>`;
+  TELTPLADS.forEach((p,k)=>{
+    const ting=INDBOID[t.ting[k]];
+    let cls="tplads "+p.sted;
+    if(valgt && !ting && valgt.sted===p.sted) cls+=" kan";
+    if(teltValg && teltValg.type==="flyt" && teltValg.p===k) cls+=" flyttes";
+    scene += `<button class="${cls}" style="left:${p.x}%;top:${p.y}%;width:${p.w}%" data-a="tplads" data-p="${k}" aria-label="${ting?ting.navn:p.sted==="loft"?"Tom plads i loftet":"Tom plads på gulvet"}">${ting?indboIkon(ting):""}</button>`;
+  });
+  let h = `<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${b.navn}</h1><span class="spacer"></span></div>
+    <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(lejrPoint(c))}</b> point</span><span class="chip">🧺 ${Object.keys(t.ting).length} ting</span></div>`;
+  if(valgt) h += `<div class="byggebar"><div class="bik">${indboIkon(valgt)}</div><div><b>${teltValg.type==="ny"?"Sæt ind":"Flyt"}: ${valgt.navn}</b><small>Tryk på en plads ${valgt.sted==="loft"?"oppe i teltet":"på gulvet"} med hvid ramme.</small></div><button class="btn secondary" data-a="teltannuller">Fortryd</button></div>`;
+  h += `<div class="teltscene">${scene}</div>
+    <div class="card"><div class="lbl" style="margin-top:0">Teltdugens farve</div><div class="swatches">${TELTFARVER.map(([f,n],k)=>`<button class="sw ${t.farve===k?"on":""}" style="background:${f}" data-a="teltfarve" data-k="${k}" aria-label="${n}"></button>`).join("")}</div></div>
+    <div class="sect">Ting til teltet</div><p class="muted" style="margin:-4px 0 12px;font-size:14px">Vælg en ting og tryk på en plads i teltet. Tryk på en ting i teltet for at flytte eller fjerne den.</p><div class="shop">`;
+  for(const ting of INDBO){
+    const ok=harKrav(c,ting), raad=lejrPoint(c)>=ting.pris, on=teltValg&&teltValg.type==="ny"&&teltValg.id===ting.id;
+    const kravHTML = ting.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[ting.krav[0]], ok?ting.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[ting.krav[1]].navn}</span>` : `<span class="krav ok">${ting.sted==="loft"?"Hænger i loftet":"Til gulvet"}</span>`;
+    h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgindbo" data-id="${ting.id}"><span class="ik">${indboIkon(ting)}</span><b>${ting.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${ting.pris}</span></button>`;
+  }
+  return h + `</div>`;
+}
+function vaelgIndbo(id){
+  const c=cur(), t=INDBOID[id];
+  if(!harKrav(c,t)){ lejrToast(`🔒 ${t.navn} kræver mærket <b>${kravTekst(t)}</b>.`); return; }
+  if(lejrPoint(c)<t.pris){ lejrToast(`Du mangler ${t.pris-lejrPoint(c)} point til ${t.navn}.`); return; }
+  teltValg = (teltValg && teltValg.id===id) ? null : { type:"ny", id };
+  render(); if(teltValg) document.querySelector(".teltscene").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function teltPlads(p){
+  const c=cur(), i=nav.params.i, t=teltData(c,i), her=INDBOID[t.ting[p]], plads=TELTPLADS[p];
+  if(teltValg && teltValg.type==="flyt"){
+    const ting=INDBOID[t.ting[teltValg.p]];
+    if(p===teltValg.p){ teltValg=null; render(); return; }
+    if(her){ lejrToast("Pladsen er optaget."); return; }
+    if(ting.sted!==plads.sted){ lejrToast(ting.sted==="loft"?"Den skal hænge oppe i teltet.":"Den skal stå på gulvet."); return; }
+    t.ting[p]=t.ting[teltValg.p]; delete t.ting[teltValg.p]; teltValg=null; save(); render(); return;
+  }
+  if(teltValg && teltValg.type==="ny"){
+    const ting=INDBOID[teltValg.id];
+    if(her){ lejrToast("Pladsen er optaget."); return; }
+    if(ting.sted!==plads.sted){ lejrToast(ting.sted==="loft"?"Den skal hænge oppe i teltet.":"Den skal stå på gulvet."); return; }
+    if(lejrPoint(c)<ting.pris){ teltValg=null; render(); return; }
+    t.ting[p]=ting.id; c.brugt=(c.brugt||0)+ting.pris; teltValg=null; save(); render(); vibrer(30);
+    lejrToast(`${ting.navn} er sat ind i teltet.`); return;
+  }
+  if(her){
+    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik">${indboIkon(her)}</div><h2 style="margin-top:6px">${her.navn}</h2>
+      <div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-fjern">Fjern (+${her.pris})</button></div><button class="btn secondary" id="m-luk">Luk</button></div></div>`;
+    const $=s=>modalRoot.querySelector(s), luk=()=>{ modalRoot.innerHTML=""; };
+    $("#m-luk").onclick=luk;
+    $("#m-flyt").onclick=()=>{ luk(); teltValg={type:"flyt",p}; render(); };
+    $("#m-fjern").onclick=()=>{ luk(); delete t.ting[p]; c.brugt=Math.max(0,(c.brugt||0)-her.pris); save(); render(); };
+    return;
+  }
+  lejrToast("Vælg en ting nedenfor, og tryk så her.");
+}
 
 /* ---------- Faner ---------- */
 const FANER = [["profil","👤","Profil"],["maerker","🏅","Mærker"],["lejr","⛺","Lejrplads"],["traening","🎯","Træning"]];
@@ -2783,6 +3126,17 @@ const actions = {
   vaelgbyg(d){ vaelgByg(d.id); },
   celle(d){ lejrCelle(+d.i); },
   lejrannuller(){ lejrValg=null; render(); },
+  bygstop(){ go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
+  bygstart(){
+    const c=cur(), o=bygOpg, b=BYGID[o.id];
+    if(lejrFelter(c)[o.idx] || lejrPoint(c)<b.pris){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
+    placer(c,o.idx,b); lejrNy=o.idx; go("lejr"); vibrer([40,30,80]);
+    lejrToast(`🏗️ Surringerne holder! Patruljen bygger ${b.navn} – færdig om ${tidTekst(BYGTID[b.id]||0)}.`);
+  },
+  vaelgindbo(d){ vaelgIndbo(d.id); },
+  tplads(d){ teltPlads(+d.p); },
+  teltannuller(){ teltValg=null; render(); },
+  teltfarve(d){ const c=cur(); teltData(c,nav.params.i).farve=+d.k; save(); render(); },
   async installer(){ if(!installPrompt) return; installPrompt.prompt(); try{ await installPrompt.userChoice; }catch(e){} installPrompt=null; render(); },
 };
 app.addEventListener("click", ev => {
