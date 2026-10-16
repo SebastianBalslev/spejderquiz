@@ -9,6 +9,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - 524 spørgsmål med forklaringer
 - Karakter med valgfrit udseende og ranger fra Ny spejder til Mesterspejder
 - Fri træning, nedtælling på 20 sekunder, point og streak
+- Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
 
 ## Ret eller tilføj spørgsmål
@@ -21,6 +22,9 @@ Q("knob", 1, "Spørgsmålet?",
 ```
 
 Det rigtige svar står altid først. Niveau 1 = bronze, 2 = sølv, 3 = guld.
+
+## Ret i lejrpladsen
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv.
 
 ## Installér som app
 Appen kan installeres på telefonen fra https://sebastianbalslev.github.io/spejderquiz/ og virker derefter uden internet.
