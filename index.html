@@ -282,6 +282,32 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 @keyframes ledpuls{50%{opacity:.45}}
 @keyframes ledfejl{30%{stroke-width:6}}
 
+.aktscene{border-radius:20px;overflow:hidden;margin-bottom:10px;box-shadow:0 8px 20px rgba(40,30,10,.25);background:#0d1630}
+.aktsvg{display:block;width:100%;height:auto}
+.navnskilt{font-size:10px;fill:#f3e3c3;font-weight:700}
+.flamme{transform-box:fill-box;transform-origin:50% 100%;animation:flak .45s ease-in-out infinite alternate}
+.flamme.b{animation-duration:.33s}.flamme.c{animation-duration:.27s}
+.gnist{opacity:0;animation:gnist 2.7s linear infinite}
+.aktbesked{background:var(--paper);border-radius:16px;padding:12px 14px;min-height:50px;line-height:1.45;box-shadow:0 2px 0 var(--line);animation:fadein .3s;margin-bottom:4px}
+.aktbesked.tom{visibility:hidden}
+.aktbesked small{display:inline-block;margin-top:4px}
+.aktopg{background:var(--paper);border-radius:16px;padding:12px 14px;margin:10px 0;text-align:center;line-height:1.4}
+.stjerneknap{cursor:pointer}
+#gondol{transform:translate(58px,48px)}
+#gondol.tur{animation:sus 3s ease-in forwards}
+#flaget{transform:translateY(170px)}
+#flaget.oppe{animation:hejs 3s ease-out forwards}
+#baad.sejler{animation:sejl 3.4s ease-in-out forwards}
+#baad.ude{transform:translateX(150px)}
+.boelge{animation:boelge 2s ease-in-out infinite alternate}
+.dukop{transform-box:fill-box;transform-origin:50% 100%;animation:byg .6s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes flak{from{transform:scaleY(.88) skewX(-4deg)}to{transform:scaleY(1.08) skewX(4deg)}}
+@keyframes gnist{0%{opacity:0;transform:translate(0,0)}10%{opacity:1}100%{opacity:0;transform:translate(10px,-80px)}}
+@keyframes sus{to{transform:translate(276px,176px)}}
+@keyframes hejs{to{transform:translateY(20px)}}
+@keyframes sejl{to{transform:translateX(150px)}}
+@keyframes boelge{to{transform:translateX(8px)}}
+
 /* Modal / fejring */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(30,35,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
 .modal{width:100%;max-width:400px;margin:0}
@@ -2136,7 +2162,7 @@ function avatarSVG(look, badges, rankI, crop){
   const scarf=(TOERKLAEDE[look.toerklaede]||TOERKLAEDE[0])[0], scarfD=shade(scarf,-.22);
   const shirt=(BLUSE[look.bluse]||BLUSE[0])[0], shirtD=shade(shirt,-.16);
   const f=look.frisure||0;
-  let s = `<svg viewBox="${crop?"30 22 140 140":"0 0 200 280"}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spejder">`;
+  let s = `<svg viewBox="${typeof crop==="string"?crop:crop?"30 22 140 140":"0 0 200 280"}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spejder">`;
   // hår bagved
   if(f===2) s+=`<path d="M48,92 Q44,32 100,32 Q156,32 152,92 L158,172 Q140,168 130,150 L70,150 Q60,168 42,172Z" fill="${hairD}"/>`;
   if(f===3) s+=`<path d="M136,56 Q188,58 178,126 Q174,146 162,152 Q168,116 148,90Z" fill="${hairD}"/>`;
@@ -2207,6 +2233,7 @@ function go(screen, params, push){
   if(screen!=="lejr") lejrValg=null;
   if(screen!=="telt") teltValg=null;
   if(screen!=="byg") bygOpg=null;
+  if(screen!=="akt") akt=null;
   nav = { screen, params: params || {} };
   if(push !== false){ try{ history.pushState(nav, ""); }catch(e){} }
   render();
@@ -2230,13 +2257,15 @@ function render(){
   if((s==="quiz" || s==="resultat") && !quiz) s = "profil";
   if(s==="emne" && !EMNE[nav.params.id]) s = "maerker";
   if(s==="byg" && !bygOpg) s = "lejr";
+  if(s==="akt" && !(cur() && cur().lejr && AKT_FOR[cur().lejr[nav.params.i]] && !underByg(cur(),nav.params.i))) s = "lejr";
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt }[s];
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz") startTimer();
   startLejrUr();
+  aktEfterRender();
   renderFaner();
 }
 
@@ -2853,8 +2882,9 @@ function visFeltMenu(i){
   if(bygger){
     knapper = `<p class="byggetid">⏳ Færdig om <b id="m-tid">${fmtTid(restTid(c,i))}</b></p>
       <button class="btn gold" id="m-hjaelp">💪 Hjælp patruljen: svar på et spørgsmål (−1 min)</button>`;
-  } else if(TELT_IDS.includes(her.id)){
-    knapper = `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
+  } else {
+    knapper = (AKT_FOR[her.id]||[]).map(([a,t])=>`<button class="btn gold" data-akt="${a}">${t}</button>`).join("");
+    if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
   }
   knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
     <small class="muted">River du ned, får du ${her.pris+indbo} point tilbage.</small>
@@ -2868,6 +2898,7 @@ function visFeltMenu(i){
     c.brugt=Math.max(0,(c.brugt||0)-t); save(); render(); lejrToast(`${her.navn} er revet ned – du fik ${t} point tilbage.`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-hjaelp")) $("#m-hjaelp").onclick=()=>hjaelpSpm(i);
+  modalRoot.querySelectorAll("[data-akt]").forEach(k=>k.onclick=()=>{ luk(); go("akt",{ i, a:k.dataset.akt }); });
   if(bygger){ const ur=setInterval(()=>{ const el=$("#m-tid"); if(!el){ clearInterval(ur); return; } const ms=restTid(c,i); if(ms<=0){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(ms); },1000); }
 }
 
@@ -3071,6 +3102,245 @@ function teltPlads(p){
   lejrToast("Vælg en ting nedenfor, og tryk så her.");
 }
 
+/* ---------- Aktiviteter på lejrpladsen ----------
+   Hvilke aktiviteter hver bygning har: [aktivitet, knaptekst] */
+const AKT_FOR = {
+  baal:       [["baal","🔥 Sæt dig ved bålet"]],
+  lejrbaal:   [["baal","🔥 Sæt dig ved lejrbålet"]],
+  koekken:    [["koekken","🍞 Bag snobrød"]],
+  bord:       [["spis","🍽️ Spis med patruljen"]],
+  kikkert:    [["stjerner","🔭 Kig på stjernerne"]],
+  svaevebane: [["svaeve","🎢 Tag en tur på svævebanen"]],
+  flag:       [["flag","🇩🇰 Hejs flaget"]],
+  kano:       [["sejl","🛶 Tag på kanotur"]],
+  sejlbaad:   [["sejl","⛵ Tag på sejltur"]],
+  fuglekasse: [["dyr","👀 Kig efter fugle"]],
+  hjort:      [["dyr","👀 Kig på hjorten"]],
+  raev:       [["dyr","👀 Kig på ræven"]],
+};
+const AKT_LOFT = 5;   // hvor mange gange om dagen hver aktivitet giver point
+
+const HISTORIER = [
+  ["Budbringerne i Mafeking", "Da byen Mafeking i Sydafrika var belejret i 1899-1900, hjalp unge drenge til som budbringere på cykel. Baden-Powell så, hvor dygtige og ansvarsfulde de var – og det gav ham idéen til spejderbevægelsen."],
+  ["Den første lejr", "I 1907 tog Baden-Powell omkring 20 drenge med på lejr på Brownsea Island i England. De blev delt i patruljer med hver sin leder. Patruljesystemet bruger spejdere stadig i dag."],
+  ["Venstre hånd", "En gammel historie fortæller, at krigere i Afrika bar skjoldet i venstre hånd. For at hilse med venstre hånd måtte de lægge skjoldet fra sig – et tegn på tillid. Derfor hilser spejdere med venstre hånd."],
+  ["Akela og ulvene", "I Kiplings Junglebog er Akela den gamle leder af ulveflokken, som tager sig af menneskebarnet Mowgli. Derfor kaldes ulvelederen i mange spejdergrupper for Akela."],
+  ["Nordstjernen", "Sømænd har i tusindvis af år fundet vej efter Nordstjernen. Den står næsten stille over Nordpolen, mens alle de andre stjerner drejer rundt om den i løbet af natten."],
+  ["Træmærkets perler", "Ifølge historien kom de første træperler til Træmærket fra en lang halskæde, som Baden-Powell fik i Afrika. I dag får spejderledere perlerne, når de har gennemført en lang lederuddannelse."],
+  ["Jamboree i Danmark", "I 1924 blev den 2. verdensjamboree holdt i Ermelunden nord for København. Omkring 5.000 spejdere fra mange lande slog lejr i de danske skove."],
+  ["Det sidste budskab", "Baden-Powell skrev et sidste brev til alle spejdere. Han bad dem om at prøve at forlade verden en lille smule bedre, end de fandt den."],
+  ["Tørklædet", "Spejdertørklædet er ikke kun pynt. Det trekantede tørklæde kan bruges som armslynge, forbinding, solbeskyttelse – eller til at binde sammen med et andet tørklæde som et nødreb."],
+  ["Liljen", "Spejderliljen stammer fra den lilje, man brugte til at markere nord på gamle kort og kompasser. Den skal minde spejderen om at holde den rigtige kurs."],
+];
+const DYREFAKTA = {
+  fuglekasse: ["🐦", "Musvitten", ["Musvitten er en af de fugle, der oftest flytter ind i fuglekasser i Danmark.", "Et musvitpar kan fodre ungerne flere hundrede gange om dagen.", "Indgangshullet til en musvitkasse skal være omkring 3 cm – så kan større fugle ikke komme ind."]],
+  hjort:      ["🦌", "Kronhjorten", ["Kronhjorten er Danmarks største vilde landpattedyr.", "Hjorten smider sit gevir hvert år og får et nyt, som vokser frem i løbet af sommeren.", "I brunsttiden om efteråret brøler hjortene så højt, at det kan høres langt væk."]],
+  raev:       ["🦊", "Ræven", ["Ræven kan høre en mus pusle under sneen – og springe ned på den i et højt hop.", "Rævens unger kaldes hvalpe og fødes i en grav om foråret.", "Ræven bruger sin buskede hale som et varmt tæppe, når den sover."]],
+};
+const SOEDYR = [
+  ["🦢", "En knopsvane glider forbi. Den er Danmarks nationalfugl og kan veje over 10 kg."],
+  ["🪶", "En fiskehejre står musestille i sivene og venter på, at en fisk kommer forbi."],
+  ["🦆", "En flok gråænder svømmer forbi. Hannen kendes på sit grønne, skinnende hoved."],
+  ["🐟", "Du ser en fisk springe! Fisk springer ofte for at fange insekter i vandoverfladen."],
+  ["🐦", "En blå isfugl suser lavt hen over vandet og dykker efter en lille fisk."],
+  ["🐸", "En frø hopper i vandet fra en åkande. Frøer kan trække vejret gennem huden."],
+];
+const RETTER = ["snobrød og pølser", "pandekager bagt over bålet", "gullasch fra en Dutch oven", "bagte kartofler med kryddersmør", "bålpizza med skinke og ost", "grød med kanel og sukker"];
+
+let akt = null;       // tilstand for den aktivitet, man er i gang med
+let aktUr = null;
+
+function dagens(c){ const d=new Date().toDateString(); if(!c.dag || c.dag.dato!==d) c.dag={ dato:d, akt:{} }; return c.dag; }
+function belon(c, id, pts){
+  const d=dagens(c), n=d.akt[id]||0;
+  if(n>=AKT_LOFT) return `<small class="muted">Du har fået dagens point for denne aktivitet – men det er stadig hyggeligt!</small>`;
+  d.akt[id]=n+1; c.point+=pts; save();
+  return `<b class="plus">+${pts} point</b>`;
+}
+function patrulje(c){
+  const andre = state.chars.filter(x=>x.id!==c.id).slice(0,3).map(x=>({ navn:x.navn, look:x.look }));
+  const faste = [ { navn:"Emil", look:{hud:1,haarfarve:1,frisure:1,bluse:0} }, { navn:"Sofie", look:{hud:3,haarfarve:0,frisure:5,bluse:1} }, { navn:"Noah", look:{hud:4,haarfarve:0,frisure:4,bluse:2} } ];
+  for(let k=0; andre.length<3; k++) andre.push({ navn:faste[k].navn, look:{ ...faste[k].look, toerklaede:c.look.toerklaede } });
+  return andre;
+}
+function figur(look, x, y, w){ return avatarSVG(look,null,0,"10 24 180 170").replace("<svg ", `<svg x="${x-w/2}" y="${y-w*0.47}" width="${w}" height="${w*0.94}" `); }
+function stjernehimmel(n, seed){
+  let s="", r=seed||7; const rnd=()=>{ r=(r*9301+49297)%233280; return r/233280; };
+  for(let k=0;k<n;k++) s+=`<circle cx="${(rnd()*320).toFixed(0)}" cy="${(rnd()*120).toFixed(0)}" r="${(rnd()*1.1+.3).toFixed(1)}" fill="#fff" opacity="${(rnd()*.6+.3).toFixed(2)}"/>`;
+  return s;
+}
+function baalSVG(ild){
+  return `<g id="ild" style="transform:scale(${.7+ild*.18});transform-origin:160px 168px;transition:transform .6s">
+    <circle cx="160" cy="150" r="60" fill="url(#gloed)" opacity="${.35+ild*.15}"/>
+    <path d="M128 172 L192 160 M128 160 L192 172" stroke="#5c3a20" stroke-width="9" stroke-linecap="round"/>
+    <path class="flamme" d="M160 96 C172 116 186 126 182 148 C179 164 170 170 160 170 C150 170 138 164 138 148 C138 132 150 126 152 110 C156 120 158 126 158 132 C163 120 162 108 160 96Z" fill="#f4772e"/>
+    <path class="flamme b" d="M160 118 C168 130 176 138 173 152 C171 163 166 168 160 168 C153 168 147 163 147 153 C147 141 156 136 157 126 C159 132 160 135 160 139 C163 132 162 125 160 118Z" fill="#f9b233"/>
+    <path class="flamme c" d="M160 136 C165 144 168 150 167 157 C166 163 163 166 160 166 C156 166 153 163 153 158 C153 151 158 148 160 136Z" fill="#ffe28a"/>
+    ${[0,1,2,3,4,5].map(k=>`<circle class="gnist" style="animation-delay:${k*.45}s" cx="${150+k*4}" cy="130" r="1.6" fill="#ffd27a"/>`).join("")}
+  </g>`;
+}
+
+function scrAkt(){
+  const c=cur(), a=nav.params.a, b=BYGID[c.lejr[nav.params.i]];
+  if(!akt || akt.a!==a) akt={ a, ild:2, besked:"" };
+  let titel=b.navn, scene="", knapper="";
+  const defs=`<defs><radialGradient id="gloed"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+    <linearGradient id="nat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1630"/><stop offset="1" stop-color="#2a3550"/></linearGradient>
+    <linearGradient id="dag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3f0"/><stop offset="1" stop-color="#e5f2d8"/></linearGradient></defs>`;
+  const skov=`<path d="M0 118 l12 -30 12 30 8 -20 14 -36 14 36 8 -16 12 -28 12 28 10 -22 16 -40 16 40 8 -18 12 -30 12 30 10 -24 14 -34 14 34 8 -14 12 -30 12 30 10 -20 V240 H0Z" fill="#14231a"/>`;
+  if(a==="baal" || a==="koekken"){
+    const venner=patrulje(c), ret = a==="koekken" ? "snobroed" : "skum";
+    titel = a==="koekken" ? "Lejrkøkkenet" : b.navn;
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(45,3)}<circle cx="270" cy="34" r="12" fill="#f4f1d0"/><circle cx="265" cy="30" r="12" fill="url(#nat)"/>
+      ${skov}<ellipse cx="160" cy="185" rx="170" ry="70" fill="#22351f"/>
+      ${figur(venner[1].look,160,104,64)}<rect x="132" y="118" width="56" height="10" rx="5" fill="#5c3a20"/>
+      <circle cx="160" cy="172" r="34" fill="none" stroke="#7a7064" stroke-width="7" stroke-dasharray="8 5"/>
+      ${baalSVG(akt.ild)}
+      ${figur(venner[0].look,58,158,74)}<rect x="22" y="174" width="72" height="12" rx="6" fill="#6b4626"/>
+      ${figur(venner[2].look,262,158,74)}<rect x="226" y="174" width="72" height="12" rx="6" fill="#6b4626"/>
+      <g id="pind" ${akt.rist==null?'style="display:none"':""}><path d="M206 236 L170 150" stroke="#8b5a2b" stroke-width="3.5" stroke-linecap="round"/>
+        ${ret==="skum"?`<rect id="ret" x="161" y="133" width="15" height="17" rx="5" fill="${ristFarve(akt.rist||0,ret)}" transform="rotate(-22 168 142)"/>`
+          :`<path id="ret" d="M162 128 q6 4 0 8 q-6 4 0 8 q6 4 0 8 q-6 4 0 8" stroke="${ristFarve(akt.rist||0,ret)}" stroke-width="9" fill="none" stroke-linecap="round" transform="rotate(-22 168 145)"/>`}</g>
+      ${figur(c.look,160,222,92)}
+      <text x="58" y="208" text-anchor="middle" class="navnskilt">${esc(venner[0].navn)}</text><text x="262" y="208" text-anchor="middle" class="navnskilt">${esc(venner[2].navn)}</text>
+    </svg>`;
+    knapper = `<button class="btn earth" data-a="braende">🪵 Læg brænde på</button>
+      <button class="btn gold" id="ristknap">${ret==="skum"?"🍡 Hold nede for at riste en skumfidus":"🍞 Hold nede for at bage snobrød"}</button>`;
+    if(a==="baal") knapper += `<div class="row"><button class="btn" data-a="historie">📖 Hør en historie</button><button class="btn" data-a="baalquiz">❓ Lejrbålsquiz</button></div>`;
+  }
+  else if(a==="stjerner"){
+    titel="Stjernekikkerten";
+    const opg = STJERNEOPG[akt.trin||0];
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(70,11)}${stjernehimmel(30,29).replace(/cy="(\d+)"/g,(m,y)=>`cy="${+y+110}"`)}
+      ${(akt.fundet||[]).includes("karl")?`<path d="${KARL.map((p,k)=>(k?"L":"M")+p.join(" ")).join(" ")} L${KARL[3].join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
+      ${(akt.fundet||[]).includes("nord")?`<path d="M${KARL[1].join(" ")} L${POLARIS.join(" ")}" stroke="#ffe28a" stroke-width="1.2" stroke-dasharray="4 4"/>`:""}
+      ${(akt.fundet||[]).includes("kass")?`<path d="M${KASS.map(p=>p.join(" ")).join(" L")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
+      ${KARL.map(p=>stjerneKnap(p,"karl",2.6)).join("")}${KASS.map(p=>stjerneKnap(p,"kass",2.4)).join("")}${stjerneKnap(POLARIS,"nord",2.8)}
+      <path d="M0 240 V222 l14 -14 14 14 10 -10 14 -18 14 18 10 -8 12 -14 12 14 10 -10 16 -20 16 20 8 -9 12 -15 12 15 10 -12 14 -17 14 17 8 -7 12 -15 12 15 10 -10 V240Z" fill="#0a120d"/>
+    </svg>`;
+    knapper = opg ? `<div class="aktopg">🔭 <b>${opg[1]}</b><br><small class="muted">${opg[2]}</small></div>` :
+      `<div class="aktopg">⭐ Du har fundet alle tre! Kom tilbage en anden aften og find dem igen.</div><button class="btn" data-a="stjernerigen">🔁 Start forfra</button>`;
+  }
+  else if(a==="svaeve"){
+    titel="Svævebanen";
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#dag)"/><ellipse cx="160" cy="250" rx="220" ry="60" fill="#86b25a"/>
+      <g stroke="#8b5a2b" stroke-width="5" stroke-linecap="round"><path d="M20 230 L50 40 M80 230 L50 40 M50 230 L50 40 M272 230 L290 180 M308 230 L290 180"/></g>
+      <path d="M50 44 L290 184" stroke="#444" stroke-width="2"/>
+      <g class="${akt.tur?"tur":""}" id="gondol"><circle r="4" fill="#666"/><path d="M0 0 V24" stroke="#c62828" stroke-width="3"/>${figur(c.look,0,38,46)}<rect x="-18" y="54" width="36" height="5" rx="2" fill="#c62828"/><path d="M-16 54 L-4 22 M16 54 L4 22" stroke="#c62828" stroke-width="1.5"/></g>
+    </svg>`;
+    knapper = `<button class="btn gold" data-a="svaevetur" ${akt.tur?"disabled":""}>🎢 Sus afsted!</button>`;
+  }
+  else if(a==="flag"){
+    titel="Flagstangen";
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#dag)"/><circle cx="60" cy="50" r="18" fill="#ffd166"/><ellipse cx="160" cy="250" rx="220" ry="60" fill="#86b25a"/>
+      <path d="M160 230 V20" stroke="#ddd6c4" stroke-width="5"/><circle cx="160" cy="18" r="5" fill="#f2c94c"/>
+      <g id="flaget" class="${akt.hejst?"oppe":""}"><rect x="163" y="0" width="64" height="44" fill="#c8102e"/><rect x="183" y="0" width="9" height="44" fill="#fff"/><rect x="163" y="17.5" width="64" height="9" fill="#fff"/></g>
+      ${figur(c.look,110,200,70)}${figur(patrulje(c)[0].look,215,200,70)}
+    </svg>`;
+    knapper = `<button class="btn gold" data-a="hejs" ${akt.hejst?"disabled":""}>🇩🇰 Hejs flaget</button>`;
+  }
+  else if(a==="sejl"){
+    const baad = b.id==="kano" ? "🛶" : "⛵";
+    titel = b.id==="kano" ? "Kanotur" : "Sejltur";
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#dag)"/>${skov.replace('fill="#14231a"','fill="#2f5e2f"').replace("M0 118","M0 112")}
+      <rect y="112" width="320" height="128" fill="#3d8fc4"/>${[130,160,195,225].map((y,k)=>`<path class="boelge" style="animation-delay:${k*.3}s" d="M${10+k*20} ${y} q10 -5 20 0 t20 0 M${170-k*10} ${y+8} q10 -5 20 0 t20 0" stroke="#bfe4f7" stroke-width="2" fill="none"/>`).join("")}
+      <text id="baad" class="${akt.tur?"sejler":akt.ude?"ude":""}" x="40" y="190" font-size="54">${baad}</text>
+      ${akt.dyr?`<text x="245" y="160" font-size="38" class="dukop">${akt.dyr[0]}</text>`:""}
+    </svg>`;
+    knapper = `<button class="btn" data-a="sejltur" ${akt.tur?"disabled":""}>${baad} Ud på søen</button>`;
+  }
+  else if(a==="dyr"){
+    const [ikon,navn,fakta]=DYREFAKTA[b.id];
+    titel=navn;
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#dag)"/>${skov.replace('fill="#14231a"','fill="#2f5e2f"')}<ellipse cx="160" cy="250" rx="220" ry="80" fill="#6f9a45"/>
+      <text x="160" y="190" font-size="92" text-anchor="middle" class="dukop">${ikon}</text>${figur(c.look,40,214,70)}</svg>`;
+    knapper = `<button class="btn" data-a="dyrfakta">👀 Kig nærmere</button>`;
+  }
+  else if(a==="spis"){
+    const venner=patrulje(c);
+    titel="Aftensmad";
+    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#dag)"/>${skov.replace('fill="#14231a"','fill="#2f5e2f"')}<ellipse cx="160" cy="250" rx="220" ry="90" fill="#86b25a"/>
+      ${figur(venner[1].look,110,140,64)}${figur(venner[2].look,210,140,64)}
+      <rect x="40" y="160" width="240" height="16" rx="4" fill="#c49a63" stroke="#8b5a2b"/><g stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"><path d="M70 176 L60 230 M70 176 L84 230 M250 176 L236 230 M250 176 L264 230"/></g>
+      <text x="160" y="160" font-size="30" text-anchor="middle">${akt.spist?"🍽️":"🥘"}</text><text x="100" y="160" font-size="20">🥤</text><text x="205" y="160" font-size="20">🍞</text>
+      ${figur(c.look,60,206,70)}${figur(venner[0].look,262,206,70)}</svg>`;
+    knapper = `<button class="btn gold" data-a="spis" ${akt.spist?"disabled":""}>🍽️ Velbekomme!</button>`;
+  }
+  const d=dagens(c), brugt=d.akt[a]||0;
+  return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${titel}</h1><span class="spacer"></span></div>
+    <div class="aktscene">${scene}</div>
+    <div class="aktbesked ${akt.besked?"":"tom"}" id="aktbesked">${akt.besked||"&nbsp;"}</div>
+    ${knapper}
+    <p class="muted center" style="font-size:13px;margin-top:6px">Point fra ${titel.toLowerCase()} i dag: ${Math.min(brugt,AKT_LOFT)} af ${AKT_LOFT}</p>`;
+}
+
+/* Riste skumfiduser og bage snobrød: hold knappen nede, og slip når den er gylden */
+function ristFarve(p, ret){
+  const trin = ret==="skum"
+    ? [[0,"#fffaf0"],[.45,"#f7e7b8"],[.65,"#e8b44a"],[.85,"#9a5a24"],[1,"#2b211a"]]
+    : [[0,"#f3e6c8"],[.45,"#ead29a"],[.65,"#d3a04f"],[.85,"#8b5a2b"],[1,"#2b211a"]];
+  for(let k=1;k<trin.length;k++){
+    if(p<=trin[k][0]){ const [p0,c0]=trin[k-1],[p1,c1]=trin[k], t=(p-p0)/(p1-p0);
+      const h=(x,i)=>parseInt(x.slice(1+i*2,3+i*2),16), m=i=>Math.round(h(c0,i)+(h(c1,i)-h(c0,i))*t);
+      return "#"+[0,1,2].map(i=>m(i).toString(16).padStart(2,"0")).join(""); }
+  }
+  return "#2b211a";
+}
+function aktBesked(html){ akt.besked=html; const el=document.getElementById("aktbesked"); if(el){ el.innerHTML=html; el.classList.remove("tom"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; } }
+function aktEfterRender(){
+  clearInterval(aktUr); aktUr=null;
+  if(nav.screen!=="akt" || !akt) return;
+  if(akt.a==="baal" || akt.a==="koekken"){
+    aktUr=setInterval(()=>{ if(nav.screen!=="akt"){ clearInterval(aktUr); return; }
+      if(akt.ild>1 && akt.rist==null){ akt.ild--; const g=document.getElementById("ild"); if(g) g.style.transform=`scale(${.7+akt.ild*.18})`;
+        if(akt.ild===1) aktBesked("Bålet er ved at gå ud – læg mere brænde på! 🪵"); } }, 9000);
+    const knap=document.getElementById("ristknap"); if(!knap) return;
+    const ret = akt.a==="koekken" ? "snobroed" : "skum";
+    let raf=null, t0=0;
+    const start=ev=>{ ev.preventDefault();
+      if(akt.ild<2){ aktBesked("Bålet er for lille. Læg brænde på først! 🪵"); return; }
+      akt.rist=0; t0=performance.now(); document.getElementById("pind").style.display="";
+      aktBesked(ret==="skum"?"Hold skumfidusen over gløderne… slip, når den er gylden!":"Drej snobrødet over gløderne… slip, når det er gyldenbrunt!");
+      const fart = ret==="skum" ? 3800 : 5200;
+      const loop=now=>{ akt.rist=(now-t0)/fart*(akt.ild>=3?1.25:1); const el=document.getElementById("ret"); if(el){ el.setAttribute(ret==="skum"?"fill":"stroke", ristFarve(Math.min(akt.rist,1),ret)); }
+        if(akt.rist>=1.08){ stop(); return; } raf=requestAnimationFrame(loop); };
+      raf=requestAnimationFrame(loop); };
+    const stop=()=>{ if(akt.rist==null) return; cancelAnimationFrame(raf); const p=akt.rist; akt.rist=null; vurderRist(p,ret); };
+    knap.addEventListener("pointerdown",start); knap.addEventListener("pointerup",stop); knap.addEventListener("pointerleave",stop); knap.addEventListener("pointercancel",stop);
+    knap.addEventListener("contextmenu",e=>e.preventDefault());
+  }
+}
+function vurderRist(p, ret){
+  const c=cur(), navn = ret==="skum" ? "Skumfidusen" : "Snobrødet";
+  let t;
+  if(p<.45) t=`${navn} er stadig bleg. Hold den lidt længere over gløderne næste gang.`;
+  else if(p<.58) t=`${navn} er let ristet. Næsten! Lidt længere, så bliver den gylden.`;
+  else if(p<.8){ t=`😋 Perfekt gylden! ${belon(c, akt.a, 5)}`; c.ristet=(c.ristet||0)+1; save(); konfettiLille(); vibrer([30,30,60]); }
+  else if(p<1) t=`${navn} blev lidt for mørk – men den smager stadig.`;
+  else t=`🔥 Øv, ${navn.toLowerCase()} brændte! Slip lidt før næste gang.`;
+  aktBesked(t);
+  setTimeout(()=>{ if(nav.screen==="akt" && akt && akt.rist==null){ const pind=document.getElementById("pind"); if(pind) pind.style.display="none"; } }, 2200);
+}
+function konfettiLille(){
+  const farver=["#f4cb4e","#e76f51","#ffffff","#8ab17d"];
+  for(let i=0;i<24;i++){ const d=document.createElement("div"); d.className="confetti"; d.style.left=(35+Math.random()*30)+"vw";
+    d.style.background=pick(farver); d.style.animationDuration=(1.8+Math.random())+"s"; d.style.setProperty("--r",(Math.random()*720-360)+"deg");
+    document.body.appendChild(d); setTimeout(()=>d.remove(),3200); }
+}
+
+/* Stjernekikkerten */
+const KARL = [[97,190],[123,177],[150,180],[180,187],[215,175],[220,205],[185,215]];
+const POLARIS = [190,25];
+const KASS = [[30,70],[50,48],[72,66],[92,44],[112,60]];
+const STJERNEOPG = [
+  ["karl","Find Karlsvognen","Den ligner en vogn med fire hjul og en lang stang. Tryk på en af dens stjerner."],
+  ["nord","Find Nordstjernen","Forlæng linjen gennem de to bageste stjerner i vognkassen cirka fem gange opad."],
+  ["kass","Find Kassiopeia","Den ligner et stort W og står på den anden side af Nordstjernen."],
+];
+function stjerneKnap([x,y], gruppe, r){
+  return `<g class="stjerneknap" data-a="stjerne" data-g="${gruppe}"><circle cx="${x}" cy="${y}" r="13" fill="transparent"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${r*2.2}" fill="#fff" opacity=".12"/></g>`;
+}
+
 /* ---------- Faner ---------- */
 const FANER = [["profil","👤","Profil"],["maerker","🏅","Mærker"],["lejr","⛺","Lejrplads"],["traening","🎯","Træning"]];
 function renderFaner(){
@@ -3136,6 +3406,52 @@ const actions = {
   vaelgindbo(d){ vaelgIndbo(d.id); },
   tplads(d){ teltPlads(+d.p); },
   teltannuller(){ teltValg=null; render(); },
+  braende(){
+    if(akt.ild>=3){ aktBesked("Bålet brænder godt nu. Pas på – et for stort bål er farligt! 🔥"); return; }
+    akt.ild++; const g=document.getElementById("ild"); if(g) g.style.transform=`scale(${.7+akt.ild*.18})`;
+    aktBesked(akt.ild>=3 ? "Bålet blusser op! Nu er der gode gløder at riste over. 🔥" : "Flammerne tager fat i det tørre brænde. 🪵");
+  },
+  historie(){
+    const c=cur(); c.hoert=c.hoert||[];
+    const nye=HISTORIER.filter(h=>!c.hoert.includes(h[0])), h=pick(nye.length?nye:HISTORIER), ven=pick(patrulje(c));
+    let ekstra=""; if(!c.hoert.includes(h[0])){ c.hoert.push(h[0]); ekstra=" "+belon(c,"baal",5); save(); }
+    aktBesked(`<b>📖 ${esc(ven.navn)} fortæller: ${h[0]}</b><br>${h[1]}${ekstra}<br><small class="muted">Du har hørt ${c.hoert.length} af ${HISTORIER.length} historier.</small>`);
+  },
+  baalquiz(){
+    const c=cur(), q=pick(SPORGSMAL.filter(x=>x.niveau<=2)), opts=shuffle(q.svar.map((t,k)=>({t,ok:k===0})));
+    modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="qtopic">${badgeHTML(EMNE[q.emne],c.badges[q.emne]||0,"xs")} Lejrbålsquiz · ${EMNE[q.emne].navn}</div>
+      <p class="qtext" style="text-align:left;font-size:19px">${esc(q.spm)}</p><div id="m-svar">${opts.map((o,k)=>`<button class="ans" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`).join("")}</div></div></div>`;
+    modalRoot.querySelectorAll("#m-svar .ans").forEach(btn=>btn.onclick=()=>{
+      modalRoot.innerHTML="";
+      if(opts[+btn.dataset.k].ok){ vibrer(30); aktBesked(`✅ Rigtigt! Patruljen klapper. ${belon(c,"baal",5)}<br><small>💡 ${esc(q.forklaring)}</small>`); }
+      else { vibrer([60,40,60]); aktBesked(`❌ Ikke helt. Svaret er: <b>${esc(q.svar[0])}</b><br><small>💡 ${esc(q.forklaring)}</small>`); }
+    });
+  },
+  stjerne(d){
+    const c=cur(), opg=STJERNEOPG[akt.trin||0]; if(!opg) return;
+    if(d.g===opg[0]){ akt.fundet=[...(akt.fundet||[]),opg[0]]; akt.trin=(akt.trin||0)+1; vibrer(30);
+      akt.besked = `⭐ Flot! Du fandt ${opg[1].replace("Find ","")}. ${belon(c,"stjerner",4)}`; render(); }
+    else aktBesked(`Det er ikke den. ${opg[2]}`);
+  },
+  stjernerigen(){ akt.trin=0; akt.fundet=[]; akt.besked=""; render(); },
+  svaevetur(){
+    const c=cur(); akt.tur=true; akt.besked="Hold godt fast…"; render();
+    setTimeout(()=>{ if(!akt||akt.a!=="svaeve") return; akt.tur=false; akt.besked=`Wuhuu! 🎉 Sikke en tur! ${belon(c,"svaeve",3)}`; render(); vibrer([40,30,40]); }, 3200);
+  },
+  hejs(){
+    const c=cur(); akt.hejst=true; akt.besked="Alle står ret, mens flaget hejses…"; render();
+    setTimeout(()=>{ if(!akt||akt.a!=="flag") return; aktBesked(`🇩🇰 Flaget er hejst! I Danmark hejses flaget tidligst kl. 8 og tages ned ved solnedgang. ${belon(c,"flag",3)}`); }, 3100);
+  },
+  sejltur(){
+    const c=cur(); akt.tur=true; akt.ude=false; akt.dyr=null; akt.besked="Du glider ud over søen…"; render();
+    setTimeout(()=>{ if(!akt||akt.a!=="sejl") return; akt.tur=false; akt.ude=true; akt.dyr=pick(SOEDYR); akt.besked=`${akt.dyr[1]} ${belon(c,"sejl",3)}`; render(); }, 3400);
+  },
+  dyrfakta(){
+    const c=cur(), [ikon,navn,fakta]=DYREFAKTA[c.lejr[nav.params.i]];
+    akt.fi=((akt.fi??-1)+1)%fakta.length;
+    aktBesked(`${ikon} <b>${navn}:</b> ${fakta[akt.fi]} ${belon(c,"dyr",3)}`);
+  },
+  spis(){ const c=cur(); akt.spist=true; akt.besked=`Patruljen spiser ${pick(RETTER)}. Husk at sige tak for mad! 😋 ${belon(c,"spis",4)}`; render(); },
   teltfarve(d){ const c=cur(); teltData(c,nav.params.i).farve=+d.k; save(); render(); },
   async installer(){ if(!installPrompt) return; installPrompt.prompt(); try{ await installPrompt.userChoice; }catch(e){} installPrompt=null; render(); },
 };

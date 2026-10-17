@@ -12,6 +12,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
 - Telte kan man gå ind i og indrette
+- Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
 - Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
 
 ## Ret eller tilføj spørgsmål
@@ -26,7 +27,7 @@ Q("knob", 1, "Spørgsmålet?",
 Det rigtige svar står altid først. Niveau 1 = bronze, 2 = sølv, 3 = guld.
 
 ## Ret i lejrpladsen
-Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Byggetider står i `BYGTID`, surringsopgaverne i `OPGAVER` og tingene til teltet i `INDBO`.
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Byggetider står i `BYGTID`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
 
 ## Installér som app
 Appen kan installeres på telefonen fra https://sebastianbalslev.github.io/spejderquiz/ og virker derefter uden internet.
