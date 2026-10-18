@@ -113,6 +113,12 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
 .backup>b,.fejlkort>b{display:block;color:var(--forest)}
+.ugetop{display:flex;gap:12px;align-items:center}
+.ugetop b{display:block;color:var(--forest)}.ugetop small{color:var(--muted);line-height:1.35;display:block}
+.ugenr{flex:none;width:56px;height:56px;border-radius:14px;background:var(--forest);color:#fff;display:grid;place-items:center;align-content:center;font-weight:800;font-size:22px;line-height:1}
+.ugetop .ugenr small{font-size:11px;font-weight:700;color:#fff;opacity:.85;text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.ugebest{margin:10px 0 0;font-size:15px}
+.ugekort>.btn{margin:10px 0 0}
 .fejlkort>small{color:var(--muted);line-height:1.35;display:block;margin:2px 0 0}
 .fejlkort>.btn{margin:12px 0 0}
 .backup>small{color:var(--muted);line-height:1.35;display:block;margin:2px 0 10px}
@@ -3990,6 +3996,7 @@ function scrProfil(){
     <button class="btn" data-a="til" data-to="maerker">🏅 Mine mærker</button>
     <button class="btn" data-a="til" data-to="lejr">⛺ Byg din lejrplads <small style="font-weight:600;opacity:.85">· 🪙 ${fmt(lejrPoint(c))}</small></button>
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
+    ${ugeKort(c)}
     ${timerToggle()}
     ${backupKort(c)}
     ${installKort()}
@@ -4145,7 +4152,7 @@ function raekkeHTML(q){
 
 function scrQuiz(){
   const c=cur(), q=quiz.qs[quiz.i], e=EMNE[q.emne], n=quiz.qs.length;
-  const label = quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
+  const label = quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="afbryd" aria-label="Stop">✕</button>
       <div class="qinfo"><small>${label}</small><b>Spørgsmål ${quiz.i+1} af ${n}</b></div>
       <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
@@ -4182,9 +4189,10 @@ function scrResultat(){
     msg = andel>=.9 ? "Fantastisk! 🌟" : andel>=.7 ? "Godt gået! 👍" : andel>=.5 ? "Godt trænet! 💪" : "Øvelse gør mester! 🌱";
     col = "var(--moss)";
     var sub = "Træning tæller ikke til mærkerne.";
+    if(quiz.mode==="uge"){ const b=ugeBedst(c, quiz.uge); sub = quiz.nyRekord && b ? `Nyt bedste resultat for uge ${quiz.uge.uge}! 🏅` : `Dit bedste i uge ${quiz.uge.uge} er stadig ${b.r}/${b.n}.`; }
     if(quiz.mode==="fejl"){ const f=fejlAntal(c); sub = f ? `Du har ${f} spørgsmål tilbage at øve. Et spørgsmål forsvinder, når du har svaret rigtigt to gange i træk.` : "Du har ikke flere fejl at øve – flot! 🎉"; }
   }
-  let h = `<div class="topbar"><span class="spacer"></span><h1>${test?"Prøven er slut":"Træning slut"}</h1><span class="spacer"></span></div>
+  let h = `<div class="topbar"><span class="spacer"></span><h1>${test?"Prøven er slut":quiz.mode==="uge"?"Ugens udfordring":"Træning slut"}</h1><span class="spacer"></span></div>
     <div class="card center">
       <div class="score" style="--p:${r/n*100};--c:${col}"><div>${r}/${n}</div></div>
       <div class="resmsg">${msg}</div><p class="muted" style="margin:6px 0 2px">${sub}</p>
@@ -4196,7 +4204,8 @@ function scrResultat(){
     if(!quiz.bestaaet) h += `<button class="btn" data-a="igen">🔁 Prøv igen</button>`;
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
   } else {
-    if(quiz.mode!=="fejl" || fejlAntal(c)) h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>`;
+    if(quiz.mode==="uge") h += `<button class="btn earth" data-a="igen">🔁 Prøv ugens udfordring igen</button>`;
+    else if(quiz.mode!=="fejl" || fejlAntal(c)) h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>`;
     h += `<button class="btn secondary" data-a="traening" data-id="${quiz.emne==="alle"?"":quiz.emne}">${quiz.mode==="fejl"?"Til træning":"Vælg andet emne"}</button>`;
   }
   h += `<button class="btn secondary" data-a="til" data-to="profil">Til profilen</button>`;
@@ -4227,18 +4236,48 @@ function noterFejl(c, id, ok){
 }
 function fejlSpg(c){ const f = c.forkert || {}; return SPORGSMAL.filter(q => q.id in f); }
 function fejlAntal(c){ return fejlSpg(c).length; }
+/* ---------- Ugens udfordring: 10 spørgsmål på tværs af emner, ens for alle i samme uge ---------- */
+function isoUge(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dag = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - dag);   // torsdag i samme uge
+  const aar = t.getUTCFullYear(), uge = Math.ceil(((t - Date.UTC(aar,0,1)) / 864e5 + 1) / 7);
+  return { aar, uge, key: aar + "-U" + String(uge).padStart(2,"0") };
+}
+function seedRng(seed){   // mulberry32 – samme seed giver altid samme rækkefølge
+  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function ugensSpg(u){
+  const rnd = seedRng(u.aar * 100 + u.uge);
+  const bland = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const emner = bland(EMNER.map(e => e.id)).slice(0, ANTAL_SPG);
+  const niv = bland([1,1,1,2,2,2,2,3,3,3]);
+  return emner.map((e,i) => {
+    const pool = SPORGSMAL.filter(q => q.emne===e && q.niveau===niv[i]).sort((a,b) => a.id < b.id ? -1 : 1);
+    return pool[Math.floor(rnd() * pool.length)];
+  });
+}
+function ugeBedst(c, u){ return (c.uge || {})[u.key]; }
+function ugeKort(c){
+  const u = isoUge(new Date()), b = ugeBedst(c, u);
+  return `<div class="card ugekort"><div class="ugetop"><span class="ugenr"><small>Uge</small>${u.uge}</span>
+      <div><b>🗓️ Ugens udfordring</b><small>10 spørgsmål fra forskellige emner – de samme for alle spejdere hele ugen.</small></div></div>
+    <div class="ugebest">${b ? `Dit bedste resultat i uge ${u.uge}: <b>${b.r}/${b.n}</b>${b.r===b.n?" 🏆":""}` : "Du har ikke prøvet ugens udfordring endnu."}</div>
+    <button class="btn ${b?"secondary":"gold"}" data-a="ugestart">${b ? "Prøv igen" : "Tag ugens udfordring"}</button></div>`;
+}
+
 function startQuiz(mode, emne, niveau){
   const c = cur();
   const pool = mode==="fejl" ? fejlSpg(c)
     : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau));
   if(!pool.length) return;
-  let valgte = vaelgSpg(pool, ANTAL_SPG, c);
+  let valgte = mode==="uge" ? ugensSpg(isoUge(new Date())) : vaelgSpg(pool, ANTAL_SPG, c);
   // En knob-prøve har altid mindst én opgave, hvor man skal vise, hvordan der bindes
   const binde = pool.filter(q=>q.type==="raekke");
   if(mode==="test" && binde.length && !valgte.some(q=>q.type==="raekke")) valgte = shuffle([vaelgSpg(binde,1,c)[0], ...valgte.slice(0, ANTAL_SPG-1)]);
   valgte.forEach(q => { c.seen[q.id] = (c.seen[q.id]||0) + 1; });
   save();
-  quiz = { mode, emne, niveau, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
+  quiz = { mode, emne, niveau, uge: mode==="uge" ? isoUge(new Date()) : null, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
            done:false, medTimer:!!c.timer, tLeft:opgTid(valgte[0]), tMax:opgTid(valgte[0]),
            qs: valgte.map(q => q.type==="raekke"
              ? { ...q, rr:{ valgt:[], blandet:shuffle(q.trin.map((_,i)=>i)) } }
@@ -4283,6 +4322,14 @@ function afslut(){
       nyt = quiz.niveau;
       if(rankIdx(c) > før) nyRang = RANG[rankIdx(c)];
     }
+  }
+  if(quiz.mode==="uge"){
+    c.uge = c.uge || {};
+    const før = c.uge[quiz.uge.key];
+    quiz.nyRekord = !før || quiz.rigtige > før.r;
+    if(quiz.nyRekord) c.uge[quiz.uge.key] = { r:quiz.rigtige, n:quiz.qs.length };
+    // Gem kun de seneste 12 uger
+    Object.keys(c.uge).sort().slice(0, -12).forEach(k => delete c.uge[k]);
   }
   c.quizzer = (c.quizzer||0) + 1;
   save();
@@ -5726,6 +5773,7 @@ const actions = {
   afbryd(){ askQuit(); },
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   fejlstart(){ startQuiz("fejl", "alle", 0); },
+  ugestart(){ startQuiz("uge", "alle", 0); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
   vaelgbyg(d){ vaelgByg(d.id); },
