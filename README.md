@@ -5,8 +5,8 @@ En mobilvenlig quiz-app for spejdere i alderen 10-16 år. Man laver sin egen spe
 Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes direkte i telefonens browser.
 
 ## Indhold
-- 12 emner med hvert sit mærke i bronze, sølv og guld
-- 524 spørgsmål med forklaringer
+- 13 emner med hvert sit mærke i bronze, sølv og guld – bl.a. Koder og signaler med blinkende morselampe og semafor
+- Over 570 spørgsmål med forklaringer, heraf opgaver hvor man skal vise, hvordan knob og surringer bindes
 - Karakter med valgfrit udseende og ranger fra Ny spejder til Mesterspejder
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
@@ -25,6 +25,8 @@ Q("knob", 1, "Spørgsmålet?",
 ```
 
 Det rigtige svar står altid først. Niveau 1 = bronze, 2 = sølv, 3 = guld.
+
+Opgaver, hvor man skal sætte trin i rækkefølge, skrives med `R(...)` (trinnene i den rigtige rækkefølge). Spørgsmål med morselampe eller semafor skrives med `QM(...)` og fx `{ type:"morse", tekst:"HEJ" }` eller `{ type:"semafor", tekst:"KANO" }` til sidst.
 
 ## Ret i lejrpladsen
 Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Byggetider står i `BYGTID`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
