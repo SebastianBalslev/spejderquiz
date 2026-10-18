@@ -331,6 +331,43 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 .trinknap.bad{background:var(--bad-bg);border-color:var(--bad)}.trinknap.bad .nr{background:var(--bad)}
 .facit{margin:6px 0 0;padding-left:22px}.facit li{margin:3px 0}
 
+.psmall{font-size:14px;margin:-4px 0 10px}
+.pemb{width:52px;height:52px;flex:none;border-radius:50%;background:#e2ebd2;display:grid;place-items:center;font-size:30px}
+.pemb.stor{width:74px;height:74px;font-size:44px;background:#fff7d6;box-shadow:inset 0 0 0 3px #e8c95a}
+.pbanner{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,#dfe9cf 0,var(--paper) 80%)}
+.pbtekst{flex:1;min-width:0}.pbtekst h2{font-size:22px;color:var(--forest)}.pbtekst small{color:var(--muted)}
+.pbanner .badge{margin:0}
+.pmedlemmer{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-bottom:12px}
+.pm{background:var(--paper);border-radius:16px;padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 2px 0 var(--line);min-width:0}
+.pm b{font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pm small{font-size:11px;color:var(--muted)}
+.pm.mig{outline:2px solid var(--moss)}
+.phoved{width:52px;height:52px;flex:none;border-radius:50%;background:#e4ecd6;overflow:hidden;display:inline-block}
+.phoved svg{width:100%;height:100%;display:block}
+.phoved.lille{width:30px;height:30px;vertical-align:middle}
+.prk{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.prk>div{flex:1;min-width:0}.prk b{display:block}.prk small{color:var(--muted);font-size:13px}
+.prk .btn{width:auto;margin:0;min-height:44px;padding:8px 14px;font-size:15px}
+.card.prk{margin-bottom:8px}
+div.prk+div.prk{border-top:1px solid var(--line)}
+.lvlrow{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.lvlrow .badge{margin:0;flex:none}
+.lvlrow .lvltxt{flex:1;min-width:0}.lvlrow .lvltxt b{display:block}.lvlrow .lvltxt small{display:block;color:var(--muted);font-size:13px}
+.lvlrow .btn{width:auto;margin:0;min-height:46px;padding:8px 16px;font-size:16px}
+.lvlrow.laast{opacity:.7}
+.pik{width:56px;height:56px;display:grid;place-items:center;border-radius:14px;background:#e2ebd2;flex:none}.pik svg{width:46px;height:46px}
+.pvalgliste{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.pvalg{display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:8px 12px;border:2px solid var(--line);border-radius:16px;background:var(--paper);text-align:left;box-shadow:0 3px 0 var(--line)}
+.pvalg>span:nth-child(2){flex:1;min-width:0}.pvalg b{display:block;font-size:16px}.pvalg small{color:var(--muted);font-size:13px}
+.pvalg.on{border-color:var(--forest);background:#eef4e2}
+.pvalg .tjek{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;color:#fff}
+.pvalg.on .tjek{background:var(--forest);border-color:var(--forest)}
+.pvalg:disabled{opacity:.45}
+.pvalg .badge.xs{width:34px;height:34px}
+.skiftkort{padding:22px 16px}
+.skiftav{width:140px;height:140px;margin:0 auto 8px;border-radius:50%;background:#e4ecd6;overflow:hidden}.skiftav svg{width:100%;height:100%}
+.skiftnavn{font-size:22px}
+.turchip{display:flex;align-items:center;gap:8px;background:#fff7d6;border:2px solid #e8c95a;border-radius:14px;padding:8px 12px;margin-bottom:10px;font-size:15px;line-height:1.3}
+
 /* Modal / fejring */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(30,35,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
 .modal{width:100%;max-width:400px;margin:0}
@@ -2508,12 +2545,14 @@ function go(screen, params, push){
   if(screen!=="telt") teltValg=null;
   if(screen!=="byg") bygOpg=null;
   if(screen!=="akt") akt=null;
+  if(!["pquiz","presultat"].includes(screen)) pquiz=null;
   nav = { screen, params: params || {} };
   if(push !== false){ try{ history.pushState(nav, ""); }catch(e){} }
   render();
   window.scrollTo(0,0);
 }
 window.addEventListener("popstate", ev => {
+  if(nav.screen==="pquiz" && pquiz && !pquiz.done){ try{ history.pushState(nav, ""); }catch(e){} actions.pafbryd(); return; }
   if(nav.screen==="quiz" && quiz && !quiz.done){
     try{ history.pushState(nav, ""); }catch(e){}
     askQuit(); return;
@@ -2531,11 +2570,13 @@ function render(){
   if((s==="quiz" || s==="resultat") && !quiz) s = "profil";
   if(s==="emne" && !EMNE[nav.params.id]) s = "maerker";
   if(s==="byg" && !bygOpg) s = "lejr";
+  if(s==="pedit" && !pdraft) s = "patrulje";
+  if((s==="pquiz" || s==="presultat") && !pquiz) s = "patrulje";
   if(s==="akt" && !(cur() && cur().lejr && AKT_FOR[cur().lejr[nav.params.i]] && !underByg(cur(),nav.params.i))) s = "lejr";
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat }[s];
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); } else stopMedia();
   startLejrUr();
@@ -2563,7 +2604,7 @@ function scrEditor(){
   const ny = !draft.id, L = draft.look;
   const sw = (key, list) => `<div class="swatches">${list.map((x,i)=>{ const col=Array.isArray(x)?x[0]:x, nm=Array.isArray(x)?x[1]:"Farve "+(i+1);
       return `<button class="sw ${L[key]===i?"on":""}" style="background:${col}" data-a="look" data-k="${key}" data-i="${i}" aria-label="${nm}"></button>`; }).join("")}</div>`;
-  const back = state.chars.length ? `<button class="iconbtn" data-a="til" data-to="${ny?"vaelg":"profil"}" aria-label="Tilbage">←</button>` : `<span class="spacer"></span>`;
+  const back = state.chars.length ? `<button class="iconbtn" data-a="til" data-to="${ny?(draft.retur||"vaelg"):"profil"}" aria-label="Tilbage">←</button>` : `<span class="spacer"></span>`;
   return `<div class="topbar">${back}<h1>${ny?"Opret din spejder":"Redigér spejder"}</h1><span class="spacer"></span></div>
     <div class="card profile"><div class="preview">${avatarSVG(L, draft.badges, draft.rank||0)}</div></div>
     <div class="card">
@@ -3313,22 +3354,36 @@ function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emne
 /* ---------- Surringsopgaven ---------- */
 function scrByg(){
   const b=BYGID[bygOpg.id], o=OPGAVER[bygOpg.id], n=o.led.length, done=Object.keys(bygOpg.bundet).length, faerdig=done===n;
+  const pat=bygOpg.patrulje, turC=pat && state.chars.find(x=>x.id===bygOpg.tur);
+  if(pat && bygOpg.skift && !faerdig){
+    const mine=o.led.filter((_,k)=>bygOpg.ejere[k]===turC.id && !bygOpg.bundet[k]).length;
+    return `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>Patruljen bygger: ${b.navn}</h1><span class="spacer"></span></div>
+      <div class="bygstatus card"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>
+      ${giverTelefon(turC, `${esc(turC.navn)} skal binde ${mine} surring${mine===1?"":"er"} på ${b.navn.toLowerCase()}.`, `Jeg er ${esc(turC.navn)} – klar!`, "pbygklar")}`;
+  }
   let svg = `<svg viewBox="-10 -10 220 215" class="bygsvg" id="bygsvg">${o.bund||""}`;
   if(faerdig) svg += o.pynt||"";
   o.poles.forEach(([x1,y1,x2,y2])=>{ svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8b5a2b" stroke-width="7" stroke-linecap="round"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b07a45" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`; });
   o.led.forEach(([x,y,type],k)=>{
     if(bygOpg.bundet[k]) svg += `<g transform="translate(${x} ${y})" class="${bygOpg.nyt===k?"bundet-ny":""}"><circle r="12" fill="${REB}" stroke="#8b5a2b" stroke-width="2"/><path d="M-8 -6 L6 8 M-6 -8 L8 6 M-8 6 L6 -8 M-6 8 L8 -6" stroke="#b08a50" stroke-width="2.2"/></g>`;
+    else if(pat && bygOpg.ejere[k]!==bygOpg.tur){ const ej=state.chars.find(x=>x.id===bygOpg.ejere[k]);
+      svg += `<g transform="translate(${x} ${y})" class="andens"><circle r="14" fill="rgba(0,0,0,.28)" stroke="#fff" stroke-width="1.5" stroke-dasharray="2 3"/><text y="5" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">${esc((ej?ej.navn:"?")[0].toUpperCase())}</text></g>`; }
     else svg += `<g transform="translate(${x} ${y})" class="led ${bygOpg.forkert===k?"forkert":""}" data-led="${k}"><circle r="16" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="2.5" stroke-dasharray="4 3"/><text y="6" text-anchor="middle" font-size="17" font-weight="800" fill="#2f4a2b">?</text></g>`;
   });
   svg += `</svg>`;
   bygOpg.nyt=null; bygOpg.forkert=null;
-  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>Byg: ${b.navn}</h1><span class="spacer"></span></div>
+  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${pat?"Patruljen bygger":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
+    ${pat&&!faerdig?`<div class="turchip">${hoved(turC,"lille")} <b>${esc(turC.navn)}s tur</b> – bind dine surringer. De andres står med forbogstav.</div>`:""}
     <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
   if(!faerdig){
     h += `<p class="center" style="margin:4px 0 10px"><b>Træk den rigtige surring hen på hvert <span class="qmark">?</span></b><br><small class="muted">Du kan også trykke på en surring og så på knudepunktet.</small></p>
       <div class="surbakke">${Object.entries(SURRINGER).map(([id,s])=>`<button class="surchip ${bygOpg.valgt===id?"on":""}" data-sur="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5a2b" stroke-linecap="round">${s.ikon}</svg>${s.navn}</button>`).join("")}</div>`;
   } else {
     const tid=BYGTID[b.id];
+    if(pat){ const pr=PPROJ.find(x=>x.id===b.id), pp=patruljer().find(x=>x.id===pat), forste=!(pp.projekter||{})[b.id];
+      return h + `<div class="card center"><div class="resmsg">Patruljen har bundet alle surringer! 🎉</div>
+        <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs, men I hjalp hinanden i mål.`}${forste?` Alle i patruljen får <b>+${pr.point} point</b>.`:""}</p></div>
+        <button class="btn gold" data-a="pbygslut">🏆 Færdiggør projektet</button>`; }
     h += `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
       <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`}${tid?` Patruljen skal bruge <b>${tidTekst(tid)}</b> på at bygge resten.`:""}</p></div>
       <button class="btn gold" data-a="bygstart">🏗️ Start byggeriet (🪙 ${b.pris})</button>`;
@@ -3338,7 +3393,8 @@ function scrByg(){
 function bindLed(k,type){
   const o=OPGAVER[bygOpg.id];
   if(bygOpg.bundet[k]) return;
-  if(o.led[k][2]===type){ bygOpg.bundet[k]=true; bygOpg.nyt=k; bygOpg.valgt=null; vibrer(30); render(); }
+  if(bygOpg.patrulje && bygOpg.ejere[k]!==bygOpg.tur) return;
+  if(o.led[k][2]===type){ bygOpg.bundet[k]=true; bygOpg.nyt=k; bygOpg.valgt=null; vibrer(30); render(); if(bygOpg.patrulje) pbygTurFaerdig(); }
   else { bygOpg.fejl++; bygOpg.forkert=k; vibrer([60,40,60]); render(); lejrToast(`Ikke en ${SURRINGER[type].navn.toLowerCase()}. ${SURRINGER[o.led[k][2]].hint}`); }
 }
 // Træk-og-slip af surringer
@@ -3545,7 +3601,8 @@ function belon(c, id, pts){
   return `<b class="plus">+${pts} point</b>`;
 }
 function patrulje(c){
-  const andre = state.chars.filter(x=>x.id!==c.id).slice(0,3).map(x=>({ navn:x.navn, look:x.look }));
+  const mp=minPatrulje(c), kilde = mp ? medlemmer(mp).filter(x=>x.id!==c.id).concat(state.chars.filter(x=>x.id!==c.id && !mp.medlemmer.includes(x.id))) : state.chars.filter(x=>x.id!==c.id);
+  const andre = kilde.slice(0,3).map(x=>({ navn:x.navn, look:x.look }));
   const faste = [ { navn:"Emil", look:{hud:1,haarfarve:1,frisure:1,bluse:0} }, { navn:"Sofie", look:{hud:3,haarfarve:0,frisure:5,bluse:1} }, { navn:"Noah", look:{hud:4,haarfarve:0,frisure:4,bluse:2} } ];
   for(let k=0; andre.length<3; k++) andre.push({ navn:faste[k].navn, look:{ ...faste[k].look, toerklaede:c.look.toerklaede } });
   return andre;
@@ -3728,8 +3785,171 @@ function stjerneKnap([x,y], gruppe, r){
   return `<g class="stjerneknap" data-a="stjerne" data-g="${gruppe}"><circle cx="${x}" cy="${y}" r="13" fill="transparent"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${r*2.2}" fill="#fff" opacity=".12"/></g>`;
 }
 
+/* =====================================================================
+   PATRULJEN – flere spejdere løser opgaver sammen på samme telefon
+   ===================================================================== */
+const PDYR = [["🐺","Ulv"],["🦊","Ræv"],["🦅","Ørn"],["🦫","Bæver"],["🐿️","Egern"],["🦌","Hjort"],["🦉","Ugle"],["🐻","Bjørn"]];
+const PMAERKE = { id:"patrulje", navn:"Samarbejde", farve:"#8a3b12" };
+SYM.patrulje = `<g fill="#f6e3c4"><circle cx="-15" cy="-9" r="6"/><circle cx="15" cy="-9" r="6"/><circle cx="0" cy="-14" r="7"/>
+  <path d="M-25 14 Q-25 -1 -15 -1 Q-7 -1 -7 8Z"/><path d="M25 14 Q25 -1 15 -1 Q7 -1 7 8Z"/><path d="M-11 18 Q-11 -5 0 -5 Q11 -5 11 18Z"/></g>
+  <path d="M-20 20 H20" stroke="#f6e3c4" stroke-width="3" stroke-linecap="round"/>`;
+const PPROJ = [
+  { id:"bord",       navn:"Pionerbord",  krav:1, point:20 },
+  { id:"port",       navn:"Lejrport",    krav:2, point:40 },
+  { id:"taarn",      navn:"Udsigtstårn", krav:3, point:60 },
+  { id:"svaevebane", navn:"Svævebane",   krav:3, point:80 },
+];
+const PKRAV = [null, 7, 8, 9];   // rigtige ud af 10 for patruljens samarbejdsmærke
+let pdraft = null, pquiz = null;
+
+function patruljer(){ return state.patruljer || (state.patruljer = []); }
+function minPatrulje(c){ return c ? patruljer().find(p => p.medlemmer.includes(c.id)) : null; }
+function medlemmer(p){ return p.medlemmer.map(id => state.chars.find(x => x.id===id)).filter(Boolean); }
+function hoved(c, cls){ return `<span class="phoved ${cls||""}">${avatarSVG(c.look,null,0,true)}</span>`; }
+function giverTelefon(c, tekst, knap, action){
+  return `<div class="card skiftkort center"><div class="skiftav">${avatarSVG(c.look,null,0,true)}</div>
+    <div class="skiftnavn">📱 Giv telefonen til <b>${esc(c.navn)}</b></div><p class="muted">${tekst}</p>
+    <button class="btn gold" data-a="${action}">${knap}</button></div>`;
+}
+
+function scrPatrulje(){
+  const c=cur(), p=minPatrulje(c);
+  let h = `<div class="topbar"><span class="spacer"></span><h1>Patrulje</h1><span class="spacer"></span></div>`;
+  if(!p){
+    h += `<div class="card center"><div style="font-size:54px">🚩</div><h2>Du er ikke med i en patrulje endnu</h2>
+      <p class="muted">I en patrulje løser I opgaver sammen på samme telefon: I tager en patruljequiz på skift og bygger pionerprojekter, hvor hver spejder binder sine egne surringer.</p></div>
+      <button class="btn" data-a="pny">🚩 Opret en patrulje</button>`;
+    const andre = patruljer();
+    if(andre.length){
+      h += `<div class="sect" style="margin-top:14px">Bliv medlem af en patrulje på denne telefon</div>`;
+      h += andre.map(o=>`<div class="card prk"><span class="pemb">${PDYR[o.dyr][0]}</span><div><b>${esc(o.navn)}</b><small>${medlemmer(o).map(m=>esc(m.navn)).join(", ")||"Ingen medlemmer"}</small></div>
+        <button class="btn secondary" data-a="pjoin" data-id="${o.id}">Bliv medlem</button></div>`).join("");
+    }
+    return h;
+  }
+  const ms=medlemmer(p), lvl=p.maerke||0, nok=ms.length>=2;
+  h += `<div class="card pbanner"><div class="pemb stor">${PDYR[p.dyr][0]}</div><div class="pbtekst"><h2>${esc(p.navn)}</h2>
+      <small>${ms.length} medlemmer · 🤝 ${fmt(p.point||0)} patruljepoint</small></div>${badgeHTML(PMAERKE, lvl, "sm")}</div>
+    <div class="pmedlemmer">${ms.map(m=>`<div class="pm ${m.id===c.id?"mig":""}">${hoved(m)}<b>${esc(m.navn)}</b><small>${RANG[rankIdx(m)].ikon} ${antal(m)} mærker</small></div>`).join("")}</div>`;
+  if(!nok) h += `<div class="card center"><p style="margin:0">Der skal være mindst 2 spejdere i patruljen, før I kan løse opgaver sammen.</p></div>`;
+  h += `<button class="btn secondary" data-a="pedit">✏️ Redigér patrulje og medlemmer</button>`;
+
+  h += `<div class="sect" style="margin-top:16px">🎯 Patruljequiz – samarbejdsmærket</div>
+    <p class="muted psmall">I svarer på skift. Før hvert spørgsmål vælger I, hvem der skal svare – vælg den, der ved mest om emnet! I har 3 jokere, hvor resten af patruljen hjælper.</p>`;
+  for(let n=1;n<=3;n++){
+    const done=lvl>=n, klar=lvl===n-1, laast=!nok || lvl<n-1;
+    h += `<div class="card lvlrow ${laast?"laast":""}">${badgeHTML(PMAERKE, laast&&!done?0:n, "sm"+(klar?" faded":""))}
+      <div class="lvltxt"><b>${NIVEAUER[n].navn}</b><small>${NIVEAUER[n].svaer} · mindst ${PKRAV[n]} af 10 rigtige sammen</small><small>${done?"✅ Bestået":klar?"Klar":"🔒 Låst"}</small></div>
+      <button class="btn ${done?"secondary":""}" data-a="pquizstart" data-n="${n}" ${laast?"disabled":""}>${done?"Igen":"Start"}</button></div>`;
+  }
+  h += `<div class="sect" style="margin-top:16px">🪢 Byg sammen – pionerprojekter</div>
+    <p class="muted psmall">Surringerne fordeles mellem jer, og hver spejder binder sine egne. Mindst én i patruljen skal have Knob og reb på det rigtige niveau.</p>`;
+  const knobMax = Math.max(0, ...ms.map(m=>m.badges.knob||0));
+  for(const pr of PPROJ){
+    const b=BYGID[pr.id], o=OPGAVER[pr.id], bygget=(p.projekter||{})[pr.id], ok=nok && knobMax>=pr.krav;
+    h += `<div class="card lvlrow ${ok?"":"laast"}"><span class="ik pik">${bygIkon(b)}</span>
+      <div class="lvltxt"><b>${pr.navn}</b><small>${o.led.length} surringer · +${pr.point} point til hver</small>
+      <small>${bygget?"🏆 Bygget af patruljen":knobMax>=pr.krav?"Klar til at bygge":`🔒 Kræver Knob og reb – ${NIVEAUER[pr.krav].navn.toLowerCase()}`}</small></div>
+      <button class="btn ${bygget?"secondary":""}" data-a="pbygstart" data-id="${pr.id}" ${ok?"":"disabled"}>${bygget?"Igen":"Byg"}</button></div>`;
+  }
+  return h;
+}
+
+function scrPedit(){
+  const ny=!pdraft.id, alle=state.chars;
+  return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="patrulje" aria-label="Tilbage">←</button><h1>${ny?"Opret patrulje":"Redigér patrulje"}</h1><span class="spacer"></span></div>
+    <div class="card">
+      <label class="lbl" for="pnavn">Patruljens navn</label>
+      <input type="text" id="pnavn" maxlength="24" value="${esc(pdraft.navn)}" placeholder="Fx Ulvene eller Rævepatruljen" autocomplete="off">
+      <div class="lbl">Patruljedyr</div><div class="chips">${PDYR.map(([ik,n],k)=>`<button class="chip ${pdraft.dyr===k?"on":""}" data-a="pdyr" data-k="${k}">${ik} ${n}</button>`).join("")}</div>
+      <div class="lbl">Medlemmer (${pdraft.medlemmer.length})</div>
+      <div class="pvalgliste">${alle.map(m=>{ const on=pdraft.medlemmer.includes(m.id), anden=patruljer().find(o=>o.id!==pdraft.id && o.medlemmer.includes(m.id));
+        return `<button class="pvalg ${on?"on":""}" data-a="pmedlem" data-id="${m.id}">${hoved(m)}<span><b>${esc(m.navn)}</b><small>${anden&&!on?`Er i ${esc(anden.navn)}`:RANG[rankIdx(m)].navn}</small></span><span class="tjek">${on?"✓":""}</span></button>`; }).join("")}</div>
+      <button class="btn secondary" data-a="pnyspejder">＋ Opret en ny spejder til patruljen</button>
+    </div>
+    <button class="btn" data-a="pgem">${ny?"Opret patrulje 🚩":"Gem patrulje"}</button>
+    ${ny?"":`<button class="btn secondary" data-a="pslet">Opløs patruljen</button>`}`;
+}
+
+/* ---------- Patruljequiz ---------- */
+function startPquiz(n){
+  const p=minPatrulje(cur()), ms=medlemmer(p);
+  const pool=SPORGSMAL.filter(q=>q.niveau===n && !q.type && !q.media);
+  const valgte=vaelgSpg(pool, ANTAL_SPG, cur());
+  pquiz = { p:p.id, niveau:n, i:0, fase:"vaelg", hvem:null, rigtige:0, joker:3, jokerBrugt:false, svar:[], done:false,
+    max: Math.ceil(ANTAL_SPG/ms.length)+1, antal:{}, res:{},
+    qs: valgte.map(q=>({ ...q, opts: shuffle(q.svar.map((t,i)=>({t, ok:i===0}))) })) };
+  go("pquiz");
+}
+function scrPquiz(){
+  const p=patruljer().find(x=>x.id===pquiz.p), ms=medlemmer(p), q=pquiz.qs[pquiz.i], e=EMNE[q.emne], hvem=ms.find(m=>m.id===pquiz.hvem);
+  let h = `<div class="quiztop"><button class="iconbtn" data-a="pafbryd" aria-label="Stop">✕</button>
+      <div class="qinfo"><small>${PDYR[p.dyr][0]} ${esc(p.navn)} · ${NIVEAUER[pquiz.niveau].navn}</small><b>Spørgsmål ${pquiz.i+1} af ${pquiz.qs.length}</b></div>
+      <div class="qstats"><span>🤝 ${pquiz.rigtige} rigtige</span><span>🃏 ${pquiz.joker} jokere</span></div></div>
+    <div class="dots">${pquiz.qs.map((_,k)=>`<i class="${pquiz.svar[k]===true?"ok":pquiz.svar[k]===false?"bad":k===pquiz.i?"now":""}"></i>`).join("")}</div>`;
+  if(pquiz.fase==="vaelg"){
+    h += `<div class="card"><div class="qtopic">${badgeHTML(e,1,"xs")} Næste spørgsmål: ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div>
+      <h2 style="margin:10px 0 4px">Hvem i patruljen skal svare?</h2><p class="muted psmall" style="margin:0">Tip: Vælg den, der har det bedste mærke i ${e.navn.toLowerCase()}. Alle skal svare mindst én gang, og ingen kan svare mere end ${pquiz.max} gange.</p></div>
+      <div class="pvalgliste">${ms.map(m=>{ const n=pquiz.antal[m.id]||0, mangler=ms.filter(x=>!(pquiz.antal[x.id]||0)).length, tilbage=pquiz.qs.length-pquiz.i;
+        const fuld=n>=pquiz.max || (n>0 && tilbage<=mangler), l=m.badges[e.id]||0;
+        return `<button class="pvalg" data-a="phvem" data-id="${m.id}" ${fuld?"disabled":""}>${hoved(m)}<span><b>${esc(m.navn)}</b><small>${l?`${NIVEAUER[l].navn} i ${e.navn.toLowerCase()}`:"Intet mærke i emnet"} · har svaret ${n} gange</small></span>${badgeHTML(e,l,"xs")}</button>`; }).join("")}</div>`;
+    return h;
+  }
+  if(pquiz.fase==="skift") return h + giverTelefon(hvem, `${esc(hvem.navn)} skal svare på et spørgsmål om ${e.navn.toLowerCase()}.`, `Jeg er ${esc(hvem.navn)} – klar!`, "pklar");
+  h += `<div class="card qcard"><div class="qtopic">${hoved(hvem,"lille")} ${esc(hvem.navn)} svarer · ${e.navn}</div><p class="qtext">${esc(q.spm)}</p></div>
+    <div class="answers">${q.opts.map((o,k)=>{
+      if(q.fjernet && q.fjernet.includes(k)) return "";
+      let cls=""; if(pquiz.svaret){ cls = o.ok ? "correct" : k===pquiz.valgt ? "wrong" : "dim"; }
+      return `<button class="ans ${cls}" data-a="psvar" data-k="${k}" ${pquiz.svaret?"disabled":""}><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`; }).join("")}</div>`;
+  if(!pquiz.svaret) h += `<button class="btn earth" data-a="pjoker" ${pquiz.joker<1||q.fjernet?"disabled":""}>🤝 Spørg patruljen – fjern 2 forkerte svar (${pquiz.joker} tilbage)</button>`;
+  else {
+    const ok=pquiz.svar[pquiz.i];
+    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 til ${esc(hvem.navn)} og patruljen</span>`:"Desværre – forkert"}</b>
+      ${ok?"":`<p>Det rigtige svar er: <b>${esc(q.svar[0])}</b></p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
+      <button class="btn" data-a="pnaeste">${pquiz.i+1>=pquiz.qs.length?"Se patruljens resultat 🏁":"Næste spørgsmål →"}</button>`;
+  }
+  return h;
+}
+function pAfslut(){
+  const p=patruljer().find(x=>x.id===pquiz.p);
+  pquiz.done=true; pquiz.bestaaet = pquiz.rigtige >= PKRAV[pquiz.niveau];
+  let nyt=false;
+  if(pquiz.bestaaet && (p.maerke||0) < pquiz.niveau){ p.maerke=pquiz.niveau; nyt=true; }
+  p.quizzer=(p.quizzer||0)+1; save();
+  go("presultat");
+  if(nyt) fejr(PMAERKE, pquiz.niveau, null);
+}
+function scrPresultat(){
+  const p=patruljer().find(x=>x.id===pquiz.p), ms=medlemmer(p), r=pquiz.rigtige, n=pquiz.qs.length;
+  return `<div class="topbar"><span class="spacer"></span><h1>Patruljens resultat</h1><span class="spacer"></span></div>
+    <div class="card center"><div class="score" style="--p:${r/n*100};--c:${pquiz.bestaaet?"var(--ok)":"var(--bad)"}"><div>${r}/${n}</div></div>
+      <div class="resmsg">${pquiz.bestaaet?"I klarede det sammen! 🎉":"Ikke helt – prøv igen sammen!"}</div>
+      <p class="muted">${pquiz.bestaaet?`${PDYR[p.dyr][0]} ${esc(p.navn)} har bestået ${NIVEAUER[pquiz.niveau].navn.toLowerCase()} i samarbejde.`:`I skal have mindst ${PKRAV[pquiz.niveau]} rigtige sammen.`}</p></div>
+    <div class="card"><div class="sect" style="margin-top:0">Hvem svarede hvad</div>
+      ${ms.map(m=>{ const x=pquiz.res[m.id]||{r:0,n:0}; return `<div class="prk">${hoved(m,"lille")}<div><b>${esc(m.navn)}</b><small>${x.r} af ${x.n} rigtige</small></div><b>+${x.r*10}</b></div>`; }).join("")}</div>
+    ${pquiz.bestaaet?"":`<button class="btn" data-a="pquizstart" data-n="${pquiz.niveau}">🔁 Prøv igen</button>`}
+    <button class="btn secondary" data-a="til" data-to="patrulje">Til patruljen</button>`;
+}
+
+/* ---------- Byg sammen ---------- */
+function startPbyg(id){
+  const p=minPatrulje(cur()), ms=medlemmer(p), o=OPGAVER[id];
+  const raekke=shuffle(ms.map(m=>m.id));
+  bygOpg = { id, idx:null, bundet:{}, valgt:null, fejl:0, patrulje:p.id, ejere:o.led.map((_,k)=>raekke[k%raekke.length]), tur:raekke[0], skift:true, fejlPr:{} };
+  go("byg");
+}
+function pbygTurFaerdig(){
+  const o=OPGAVER[bygOpg.id];
+  const mine=o.led.map((_,k)=>k).filter(k=>bygOpg.ejere[k]===bygOpg.tur && !bygOpg.bundet[k]);
+  if(mine.length) return;
+  const rest=o.led.map((_,k)=>k).filter(k=>!bygOpg.bundet[k]);
+  if(!rest.length) return;
+  bygOpg.tur=bygOpg.ejere[rest[0]]; bygOpg.skift=true;
+  setTimeout(()=>{ if(nav.screen==="byg") render(); }, 700);
+}
+
 /* ---------- Faner ---------- */
-const FANER = [["profil","👤","Profil"],["maerker","🏅","Mærker"],["lejr","⛺","Lejrplads"],["traening","🎯","Træning"]];
+const FANER = [["profil","👤","Profil"],["maerker","🏅","Mærker"],["lejr","⛺","Lejrplads"],["patrulje","🚩","Patrulje"],["traening","🎯","Træning"]];
 function renderFaner(){
   const el=document.getElementById("tabs"), vis=FANER.some(f=>f[0]===nav.screen) || nav.screen==="emne";
   el.hidden=!vis; document.body.classList.toggle("has-tabs", vis);
@@ -3751,6 +3971,8 @@ const actions = {
     const c = state.chars.find(x=>x.id===d.id); if(!c) return;
     confirmBox(`Vil du slette <b>${esc(c.navn)}</b>?<br><small class="muted">Alle mærker og point forsvinder.</small>`, "Slet", "Fortryd", () => {
       state.chars = state.chars.filter(x=>x.id!==d.id);
+      patruljer().forEach(p=>{ p.medlemmer=p.medlemmer.filter(id=>id!==d.id); });
+      state.patruljer = patruljer().filter(p=>p.medlemmer.length);
       if(state.active===d.id) state.active=null;
       save(); render();
     });
@@ -3764,7 +3986,9 @@ const actions = {
     } else {
       const c = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), navn, look:{...draft.look},
                   badges:{}, point:0, bedsteStreak:0, best:{}, seen:{}, timer:false, quizzer:0 };
-      state.chars.push(c); state.active=c.id;
+      state.chars.push(c);
+      if(draft.retur==="pedit" && pdraft){ pdraft.medlemmer.push(c.id); save(); draft=null; go("pedit"); return; }
+      state.active=c.id;
     }
     save(); draft=null; go("profil");
   },
@@ -3794,7 +4018,52 @@ const actions = {
   vaelgbyg(d){ vaelgByg(d.id); },
   celle(d){ lejrCelle(+d.i); },
   lejrannuller(){ lejrValg=null; render(); },
-  bygstop(){ go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
+  bygstop(){ if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
+  pny(){ pdraft={ navn:"", dyr:0, medlemmer:[cur().id] }; go("pedit"); },
+  pedit(){ const p=minPatrulje(cur()); pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, medlemmer:[...p.medlemmer] }; go("pedit"); },
+  pjoin(d){ const p=patruljer().find(x=>x.id===d.id); patruljer().forEach(o=>{ o.medlemmer=o.medlemmer.filter(id=>id!==cur().id); }); p.medlemmer.push(cur().id); save(); render(); lejrToast(`Velkommen i ${esc(p.navn)}! 🚩`); },
+  pdyr(d){ pdraft.dyr=+d.k; render(); },
+  pmedlem(d){ const i=pdraft.medlemmer.indexOf(d.id); if(i>=0) pdraft.medlemmer.splice(i,1); else if(pdraft.medlemmer.length<8) pdraft.medlemmer.push(d.id); else lejrToast("En patrulje kan højst have 8 medlemmer."); render(); },
+  pnyspejder(){ draft={ navn:"", look:randLook(), retur:"pedit" }; go("editor"); },
+  pgem(){
+    const navn=(pdraft.navn||"").trim();
+    if(!navn){ const el=document.getElementById("pnavn"); el.classList.remove("err"); void el.offsetWidth; el.classList.add("err"); el.placeholder="Giv patruljen et navn!"; el.focus(); return; }
+    if(!pdraft.medlemmer.length){ lejrToast("Vælg mindst én spejder til patruljen."); return; }
+    let p = pdraft.id && patruljer().find(x=>x.id===pdraft.id);
+    if(!p){ p={ id:"p"+Date.now().toString(36), point:0, maerke:0, projekter:{} }; patruljer().push(p); }
+    patruljer().forEach(o=>{ if(o!==p) o.medlemmer=o.medlemmer.filter(id=>!pdraft.medlemmer.includes(id)); });
+    p.navn=navn; p.dyr=pdraft.dyr; p.medlemmer=[...pdraft.medlemmer];
+    state.patruljer=patruljer().filter(o=>o.medlemmer.length);
+    save(); pdraft=null; go("patrulje"); lejrToast(`${PDYR[p.dyr][0]} ${esc(p.navn)} er klar!`);
+  },
+  pslet(){ confirmBox(`Vil du opløse patruljen <b>${esc(pdraft.navn)}</b>?<br><small class="muted">Spejderne og deres mærker bliver ikke slettet.</small>`, "Opløs", "Fortryd", ()=>{
+    state.patruljer=patruljer().filter(x=>x.id!==pdraft.id); save(); pdraft=null; go("patrulje"); }); },
+  pquizstart(d){ startPquiz(+d.n); },
+  phvem(d){ pquiz.hvem=d.id; pquiz.fase="skift"; render(); window.scrollTo(0,0); },
+  pklar(){ pquiz.fase="svar"; pquiz.svaret=false; pquiz.valgt=null; render(); window.scrollTo(0,0); },
+  pjoker(){ const q=pquiz.qs[pquiz.i]; if(pquiz.joker<1 || q.fjernet) return;
+    const forkerte=q.opts.map((o,k)=>o.ok?-1:k).filter(k=>k>=0); q.fjernet=shuffle(forkerte).slice(0,2); pquiz.joker--; render();
+    lejrToast("🤝 Patruljen hjælper – to forkerte svar er fjernet."); },
+  psvar(d){
+    if(pquiz.svaret) return;
+    const q=pquiz.qs[pquiz.i], k=+d.k, ok=q.opts[k].ok, m=state.chars.find(x=>x.id===pquiz.hvem), p=patruljer().find(x=>x.id===pquiz.p);
+    pquiz.svaret=true; pquiz.valgt=k; pquiz.svar[pquiz.i]=ok;
+    pquiz.antal[m.id]=(pquiz.antal[m.id]||0)+1;
+    const r=pquiz.res[m.id]||(pquiz.res[m.id]={r:0,n:0}); r.n++;
+    if(ok){ r.r++; pquiz.rigtige++; m.point+=10; p.point=(p.point||0)+10; vibrer(30); } else vibrer([60,40,60]);
+    save(); render(); const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
+  },
+  pnaeste(){ pquiz.i++; pquiz.fase="vaelg"; pquiz.svaret=false; pquiz.hvem=null; if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
+  pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ pquiz=null; go("patrulje"); }); },
+  pbygstart(d){ startPbyg(d.id); },
+  pbygklar(){ bygOpg.skift=false; bygOpg.valgt=null; render(); window.scrollTo(0,0); },
+  pbygslut(){
+    const p=patruljer().find(x=>x.id===bygOpg.patrulje), pr=PPROJ.find(x=>x.id===bygOpg.id);
+    p.projekter=p.projekter||{};
+    const forste=!p.projekter[pr.id];
+    if(forste){ p.projekter[pr.id]=true; medlemmer(p).forEach(m=>{ m.point+=pr.point; }); p.point=(p.point||0)+pr.point*medlemmer(p).length; }
+    save(); go("patrulje"); konfettiLille(); lejrToast(forste?`🏆 ${pr.navn} er bygget af hele patruljen! Alle fik +${pr.point} point.`:`🏆 I byggede ${pr.navn.toLowerCase()} igen – flot samarbejde!`);
+  },
   bygstart(){
     const c=cur(), o=bygOpg, b=BYGID[o.id];
     if(lejrFelter(c)[o.idx] || lejrPoint(c)<b.pris){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
@@ -3863,7 +4132,8 @@ app.addEventListener("click", ev => {
 app.addEventListener("keydown", ev => {
   if((ev.key==="Enter"||ev.key===" ") && ev.target.matches(".charrow")){ ev.preventDefault(); ev.target.click(); }
 });
-app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.navn = ev.target.value; ev.target.classList.remove("err"); } });
+app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.navn = ev.target.value; ev.target.classList.remove("err"); }
+  if(ev.target.id==="pnavn" && pdraft){ pdraft.navn = ev.target.value; ev.target.classList.remove("err"); } });
 app.addEventListener("change", ev => { if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); } });
 
 /* ---------- Offline (service worker) ---------- */

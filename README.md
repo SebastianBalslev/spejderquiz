@@ -14,6 +14,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Telte kan man gå ind i og indrette
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
 - Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
+- Patruljer: saml spejderne i en patrulje og løs opgaver sammen på samme telefon – patruljequiz på skift (man vælger, hvem der skal svare, og har jokere) og pionerprojekter, hvor hver spejder binder sine egne surringer. Patruljen kan optjene samarbejdsmærket i bronze, sølv og guld
 
 ## Ret eller tilføj spørgsmål
 Spørgsmålene står øverst i den første `<script>`-blok i `index.html`:
