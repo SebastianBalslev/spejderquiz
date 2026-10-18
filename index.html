@@ -4103,9 +4103,16 @@ function scrResultat(){
 /* ---------- Quiz-logik ---------- */
 function vaelgSpg(pool, n, c){
   c.seen = c.seen || {};
+  const tekster = new Set();           // samme morse/semafor-tekst må ikke komme to gange i én prøve
   return shuffle(pool.slice())
     .map(q => ({ q, s: c.seen[q.id]||0 }))
     .sort((a,b) => a.s - b.s)          // de mindst sete spørgsmål først
+    .filter(({q}) => {
+      if(!q.media) return true;
+      const t = q.media.tekst.toUpperCase();
+      if(tekster.has(t)) return false;
+      tekster.add(t); return true;
+    })
     .slice(0, n).map(x => x.q);
 }
 function startQuiz(mode, emne, niveau){
