@@ -112,7 +112,9 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div{flex:1;min-width:0}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
-.backup>b{display:block;color:var(--forest)}
+.backup>b,.fejlkort>b{display:block;color:var(--forest)}
+.fejlkort>small{color:var(--muted);line-height:1.35;display:block;margin:2px 0 0}
+.fejlkort>.btn{margin:12px 0 0}
 .backup>small{color:var(--muted);line-height:1.35;display:block;margin:2px 0 10px}
 .backup .row{display:flex;gap:8px}
 .backup .btn{min-height:48px;font-size:16px;padding:10px 12px}
@@ -3656,7 +3658,7 @@ function shade(hex,p){
 function vibrer(m){ try{ navigator.vibrate && navigator.vibrate(m); }catch(e){} }
 function fmt(n){ return Number(n).toLocaleString("da-DK"); }
 
-SPORGSMAL.forEach(q => { q.id = hash(q.emne+"|"+q.spm); });
+SPORGSMAL.forEach(q => { q.id = hash(q.emne+"|"+q.spm+(q.media?"|"+q.media.type+":"+q.media.tekst:"")); });
 
 /* ---------- Gem / hent ---------- */
 const LS_KEY = "spejderquiz.v1";
@@ -3947,13 +3949,24 @@ function scrTraening(){
   if(!p.emne) p.emne = "alle";
   if(p.niveau == null) p.niveau = 0;
   const chip = (k,v,label) => `<button class="chip ${p[k]===v?"on":""}" data-a="tvalg" data-k="${k}" data-v="${v}">${label}</button>`;
+  const fejl = fejlAntal(cur());
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Fri træning</h1><span class="spacer"></span></div>
+    ${fejl ? fejlKort(cur()) : ""}
     <div class="card"><p style="margin-top:0">Øv dig uden pres – træning tæller ikke til mærkerne, men du får stadig point.</p>
       <div class="sect">Emne</div><div class="chips">${chip("emne","alle","🌍 Alle emner")}${EMNER.map(e=>chip("emne",e.id,e.navn)).join("")}</div>
       <div class="sect" style="margin-top:16px">Sværhedsgrad</div><div class="chips">${chip("niveau",0,"Blandet")}${chip("niveau",1,"Let")}${chip("niveau",2,"Mellem")}${chip("niveau",3,"Svær")}</div>
     </div>
     ${timerToggle()}
-    <button class="btn earth" data-a="tstart">Start træning 🎯</button>`;
+    <button class="btn earth" data-a="tstart">Start træning 🎯</button>
+    ${fejl ? "" : fejlKort(cur())}`;
+}
+
+function fejlKort(c){
+  const n = fejlAntal(c);
+  return `<div class="card fejlkort"><b>🔁 Øv dine fejl</b><small>${n
+    ? `Du har svaret forkert på <b>${n}</b> spørgsmål. Et spørgsmål forsvinder fra listen, når du har svaret rigtigt på det to gange i træk.`
+    : "Her samles de spørgsmål, du svarer forkert på, så du kan øve dem igen."}</small>
+    ${n ? `<button class="btn" data-a="fejlstart">Øv ${Math.min(n, ANTAL_SPG)} af dine fejl</button>` : ""}</div>`;
 }
 
 /* ---------- Opgavetyper: rækkefølge, morselampe og semafor ---------- */
@@ -4052,7 +4065,7 @@ function raekkeHTML(q){
 
 function scrQuiz(){
   const c=cur(), q=quiz.qs[quiz.i], e=EMNE[q.emne], n=quiz.qs.length;
-  const label = (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
+  const label = quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="afbryd" aria-label="Stop">✕</button>
       <div class="qinfo"><small>${label}</small><b>Spørgsmål ${quiz.i+1} af ${n}</b></div>
       <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
@@ -4085,9 +4098,11 @@ function scrResultat(){
     else { msg="Ikke bestået – endnu!"; col="var(--bad)"; }
     var sub = quiz.bestaaet ? `Du klarede ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøven i ${EMNE[quiz.emne].navn}.` : `Du skal have mindst ${krav} rigtige. Prøv igen – du får nye spørgsmål.`;
   } else {
-    msg = r>=9 ? "Fantastisk! 🌟" : r>=7 ? "Godt gået! 👍" : r>=5 ? "Godt trænet! 💪" : "Øvelse gør mester! 🌱";
+    const andel = r/n;
+    msg = andel>=.9 ? "Fantastisk! 🌟" : andel>=.7 ? "Godt gået! 👍" : andel>=.5 ? "Godt trænet! 💪" : "Øvelse gør mester! 🌱";
     col = "var(--moss)";
     var sub = "Træning tæller ikke til mærkerne.";
+    if(quiz.mode==="fejl"){ const f=fejlAntal(c); sub = f ? `Du har ${f} spørgsmål tilbage at øve. Et spørgsmål forsvinder, når du har svaret rigtigt to gange i træk.` : "Du har ikke flere fejl at øve – flot! 🎉"; }
   }
   let h = `<div class="topbar"><span class="spacer"></span><h1>${test?"Prøven er slut":"Træning slut"}</h1><span class="spacer"></span></div>
     <div class="card center">
@@ -4101,8 +4116,8 @@ function scrResultat(){
     if(!quiz.bestaaet) h += `<button class="btn" data-a="igen">🔁 Prøv igen</button>`;
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
   } else {
-    h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>
-          <button class="btn secondary" data-a="traening" data-id="${quiz.emne==="alle"?"":quiz.emne}">Vælg andet emne</button>`;
+    if(quiz.mode!=="fejl" || fejlAntal(c)) h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>`;
+    h += `<button class="btn secondary" data-a="traening" data-id="${quiz.emne==="alle"?"":quiz.emne}">${quiz.mode==="fejl"?"Til træning":"Vælg andet emne"}</button>`;
   }
   h += `<button class="btn secondary" data-a="til" data-to="profil">Til profilen</button>`;
   h += `<div class="card"><details><summary>📋 Gennemgang af svarene</summary><ul class="review">${quiz.qs.map((q,k)=>`<li class="${quiz.svar[k]?"ok":"bad"}"><b>${esc(q.spm)}</b><span>Svar: ${esc(q.svar[0])}</span></li>`).join("")}</ul></details></div>`;
@@ -4124,9 +4139,18 @@ function vaelgSpg(pool, n, c){
     })
     .slice(0, n).map(x => x.q);
 }
+// Øv dine fejl: c.forkert[id] = antal rigtige svar i træk siden sidste fejl. Ved 2 forsvinder spørgsmålet.
+function noterFejl(c, id, ok){
+  c.forkert = c.forkert || {};
+  if(!ok){ c.forkert[id] = 0; return; }
+  if(id in c.forkert && ++c.forkert[id] >= 2) delete c.forkert[id];
+}
+function fejlSpg(c){ const f = c.forkert || {}; return SPORGSMAL.filter(q => q.id in f); }
+function fejlAntal(c){ return fejlSpg(c).length; }
 function startQuiz(mode, emne, niveau){
   const c = cur();
-  const pool = SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau));
+  const pool = mode==="fejl" ? fejlSpg(c)
+    : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau));
   if(!pool.length) return;
   let valgte = vaelgSpg(pool, ANTAL_SPG, c);
   // En knob-prøve har altid mindst én opgave, hvor man skal vise, hvordan der bindes
@@ -4146,6 +4170,7 @@ function svar(k, okRaekke){
   stopTimer();
   const c=cur(), q=quiz.qs[quiz.i], ok = q.type==="raekke" ? (k>=0 && !!okRaekke) : (k>=0 && q.opts[k].ok);
   quiz.answered=true; quiz.valgt=k; quiz.svar[quiz.i]=ok;
+  noterFejl(c, q.id, ok);
   if(ok){
     quiz.rigtige++; quiz.streak++; quiz.maxStreak=Math.max(quiz.maxStreak,quiz.streak);
     const pts = 10 + Math.min(quiz.streak-1,5)*2 + (quiz.medTimer ? Math.min(5, Math.ceil(Math.max(0,quiz.tLeft)/4)) : 0);
@@ -5620,6 +5645,7 @@ const actions = {
   mediaforfra(){ startMedia(quiz.qs[quiz.i]); },
   afbryd(){ askQuit(); },
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
+  fejlstart(){ startQuiz("fejl", "alle", 0); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
   vaelgbyg(d){ vaelgByg(d.id); },
