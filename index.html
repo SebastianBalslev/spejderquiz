@@ -369,7 +369,7 @@ div.prk+div.prk{border-top:1px solid var(--line)}
 .turchip{display:flex;align-items:center;gap:8px;background:#fff7d6;border:2px solid #e8c95a;border-radius:14px;padding:8px 12px;margin-bottom:10px;font-size:15px;line-height:1.3}
 
 .lagerkort{padding:10px}
-.lagerliste{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.lagerliste{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 4px}
 .lagerchip{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
 .lagerchip .matik{width:34px;height:34px}.lagerchip b{font-size:18px;color:var(--forest);font-variant-numeric:tabular-nums}.lagerchip small{font-size:11px;color:var(--muted);text-align:center;line-height:1.15;hyphens:manual;max-width:100%}
 .matik{display:inline-block;vertical-align:middle}.matik.lille{width:18px;height:18px}
@@ -393,9 +393,17 @@ div.prk+div.prk{border-top:1px solid var(--line)}
 @keyframes vakl{50%{transform:rotate(-6deg)}}
 @keyframes hug{50%{transform:rotate(-30deg)}}
 
+.celle.niv2{box-shadow:inset 0 0 0 2px #cd8a4a}.celle.niv3{box-shadow:inset 0 0 0 2px #dfe4e9}
+.celle.niv4{box-shadow:inset 0 0 0 3px #f4cb4e}.celle.niv5{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 2px rgba(244,203,78,.8);z-index:1}
+.nivmark{position:absolute;top:1px;left:3px;z-index:2;font-size:9px;line-height:1;color:#f4cb4e;text-shadow:0 0 2px #2a2a1f,0 0 2px #2a2a1f;letter-spacing:-1px}
+.opgniv{margin:12px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.opgniv .nivstj{color:#e0a923;font-size:20px;letter-spacing:2px}.opgniv small{color:var(--muted)}
+.opgkost{font-weight:700;font-size:15px;margin:-4px 0 4px}.opgkost small{font-weight:400;color:var(--muted)}
+small.mangler{color:var(--bad);display:block;margin-bottom:8px}
+
 /* Modal / fejring */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(30,35,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
-.modal{width:100%;max-width:400px;margin:0}
+.modal{width:100%;max-width:400px;margin:0;max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain}
 .modal p{font-size:18px;margin:4px 0 8px;text-align:center}
 .celebrate{background:radial-gradient(circle at 50% 40%,#3c6a35 0,#1e321a 75%);overflow:hidden}
 .rays{position:absolute;left:50%;top:40%;width:900px;height:900px;margin:-450px 0 0 -450px;
@@ -3159,12 +3167,15 @@ const PIONER = {
     <g><ellipse cx="33" cy="9" rx="3" ry="2.2" fill="#f2c94c"/><path d="M32 7.5 v3 M34 7.5 v3" stroke="#222"/><ellipse cx="33" cy="7" rx="2" ry="1.2" fill="#fff" opacity=".8"/></g>`,
 };
 
+// Alle ventetider ganges med denne faktor (2 = dobbelt så lang tid). Sæt den ned, hvis spillet skal gå hurtigere.
+const TIDSFAKTOR = 2;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
 const BYGTID = { telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
   fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
   vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:60, flag:60, liljeskilt:180,
   jamboree:600, insekthotel:180, bistade:300, morselampe:60, semaforpost:120, radiomast:300 };
+for(const k in BYGTID) BYGTID[k] *= TIDSFAKTOR;
 const TELT_IDS = ["telt","patruljetelt","jamboree"];
 
 /* ---------- Surringsopgaver til pionerarbejde ----------
@@ -3208,12 +3219,17 @@ let bygOpg = null;     // igangværende surringsopgave
 let lejrUr = null;     // opdaterer byggetider på skærmen
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
-function bygIkon(b){ return b.svg ? `<svg viewBox="0 0 40 40" aria-hidden="true">${PIONER[b.svg]}</svg>` : `<span class="emo">${b.ikon}</span>`; }
+function bygIkon(b, niv){
+  niv = niv || 1;
+  if(!b.svg) return `<span class="emo">${b.ikon}</span>`;
+  const indhold = b.id==="port" ? portSVG(niv) : PIONER[b.svg] + nivPynt(niv);
+  return `<svg viewBox="0 0 40 40" aria-hidden="true">${indhold}</svg>`;
+}
 function harKrav(c,b){ return !b.krav || (c.badges[b.krav[0]]||0) >= b.krav[1]; }
 function kravTekst(b){ return `${EMNE[b.krav[0]].navn} – ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`; }
 function erVand(i){ return VAND.has(Math.floor(i/LEJR_KOL)+","+(i%LEJR_KOL)); }
 function kanStaa(b,i){ return !!b.vand === erVand(i); }
-function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; return c.lejr; }
+function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; c.lejrNiv = c.lejrNiv || {}; c.lejrOpg = c.lejrOpg || {}; c.lejrInv = c.lejrInv || {}; return c.lejr; }
 function restTid(c,i){ const t=(c.lejrTid||{})[i]; return t ? Math.max(0, t-Date.now()) : 0; }
 function underByg(c,i){ return restTid(c,i) > 0; }
 function fmtTid(ms){
@@ -3224,7 +3240,7 @@ function tidTekst(sek){ return sek>=60 ? `${Math.round(sek/60)} min` : `${sek} s
 
 function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
-  const nyt=tjekArbejde(c); if(nyt.length) setTimeout(()=>lejrToast(nyt.join("<br>")), 50);
+  const nyt=[...fuldfoerByg(c), ...tjekArbejde(c)]; if(nyt.length) setTimeout(()=>{ lejrToast(nyt.join("<br>")); vibrer([60,40,60]); }, 50);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : BYGID[felter[lejrValg.idx]]);
   let h = `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}s lejrplads</h1><span class="spacer"></span></div>
     <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b> point at bygge for</span><span class="chip">🏗️ ${antalByg} bygget</span></div>`;
@@ -3241,9 +3257,10 @@ function scrLejr(){
     if(valgt && !b && kanStaa(valgt,i)) cls += " kan";
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
     if(lejrNy===i) cls += " ny";
-    const bygger = b && underByg(c,i);
+    const bygger = b && underByg(c,i), niv = b ? lejrNiv(c,i) : 1;
     if(bygger) cls += " bygger";
-    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(bygger?" (bygges)":""):erVand(i)?"Sø":"Græs"}">${b?bygIkon(b):""}${bygger?`<span class="tid" data-tid="${i}">⏳ ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    if(niv>1) cls += " niv"+niv;
+    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":""):erVand(i)?"Sø":"Græs"}">${b?bygIkon(b,niv):""}${niv>1&&!bygger?`<span class="nivmark">${"★".repeat(niv-1)}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += `</div>`;
   lejrNy = null;
@@ -3282,7 +3299,7 @@ function startLejrUr(){
       const i=+el.dataset.tid, ms=restTid(c,i);
       if(ms<=0) faerdig=i; else el.textContent="⏳ "+fmtTid(ms);
     });
-    if(faerdig!==null){ delete c.lejrTid[faerdig]; save(); lejrNy=faerdig; render(); lejrToast(`🎉 ${BYGID[c.lejr[faerdig]].navn} er færdigbygget!`); vibrer([60,40,60]); }
+    if(faerdig!==null) render();
   }, 1000);
 }
 
@@ -3298,7 +3315,7 @@ function vaelgByg(id){
   if(!harKrav(c,b)){ lejrToast(`🔒 ${b.navn} kræver mærket <b>${kravTekst(b)}</b>. Tag prøven under Mærker.`); return; }
   if(lejrPoint(c) < b.pris){ lejrToast(`Du mangler ${b.pris-lejrPoint(c)} point til ${b.navn}. Svar på flere spørgsmål!`); return; }
   if(!harMat(c,BYGMAT[b.id])){ const m=manglerMat(c,BYGMAT[b.id]);
-    lejrToast(`Du mangler ${matTekst(m)} til ${b.navn}. ${m.rafter||m.granris?"Sæt nogen til at fælde grantræer og afgrene dem.":"Sæt nogen til at fælde løvtræer og kløve brænde."}`); return; }
+    lejrToast(`Du mangler ${matTekst(m)} til ${b.navn}. ${m.reb?"Saml plantefibre, sno tovværk og takl det.":m.rafter||m.granris?"Sæt nogen til at fælde grantræer og afgrene dem.":"Sæt nogen til at fælde løvtræer og kløve brænde."}`); return; }
   lejrValg = (lejrValg && lejrValg.id===id) ? null : { type:"ny", id };
   render();
   if(lejrValg){ const t=document.getElementById("toast"); if(t) t.hidden=true; lejrScrollKort(); }
@@ -3306,6 +3323,7 @@ function vaelgByg(id){
 function placer(c,i,b){
   const felter=lejrFelter(c);
   felter[i]=b.id; c.brugt=(c.brugt||0)+b.pris; brugMat(c, BYGMAT[b.id], -1);
+  c.lejrNiv[i]=1; c.lejrInv[i]={ p:b.pris, m:{ ...(BYGMAT[b.id]||{}) } }; delete c.lejrOpg[i];
   if(BYGTID[b.id]) c.lejrTid[i]=Date.now()+BYGTID[b.id]*1000;
   save();
 }
@@ -3314,6 +3332,7 @@ function flytFelt(c,fra,til){
   f[til]=f[fra]; delete f[fra];
   if(c.lejrTid[fra]){ c.lejrTid[til]=c.lejrTid[fra]; delete c.lejrTid[fra]; }
   if(c.telte[fra]){ c.telte[til]=c.telte[fra]; delete c.telte[fra]; }
+  ["lejrNiv","lejrOpg","lejrInv"].forEach(k=>{ if(c[k] && c[k][fra]!=null){ c[k][til]=c[k][fra]; delete c[k][fra]; } });
 }
 function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.ting||{}).reduce((s,id)=>s+(INDBOID[id]?INDBOID[id].pris:0),0) : 0; }
 
@@ -3349,18 +3368,21 @@ function visFeltMenu(i){
     knapper = `<p class="byggetid">⏳ Færdig om <b id="m-tid">${fmtTid(restTid(c,i))}</b></p>
       <button class="btn gold" id="m-hjaelp">💪 Hjælp patruljen: svar på et spørgsmål (−1 min)</button>`;
   } else {
-    knapper = (AKT_FOR[her.id]||[]).map(([a,t])=>`<button class="btn gold" data-akt="${a}">${t}</button>`).join("");
+    knapper = (AKT_FOR[her.id]||[]).map(([a,t])=>`<button class="btn" data-akt="${a}">${t}</button>`).join("");
     if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
+    knapper += opgHTML(c, i);
   }
+  const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
   knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
-    <small class="muted">River du ned, får du ${her.pris+indbo} point${BYGMAT[her.id]?" og materialerne":""} tilbage.</small>
+    <small class="muted">River du ned, får du ${inv.p+indbo} point${Object.keys(inv.m).length?" og materialerne":""} tilbage.</small>
     <button class="btn secondary" id="m-luk">Luk</button>`;
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik ${bygger?"bygger":""}">${bygIkon(her)}</div>
-    <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?"Patruljen er i gang med at bygge.":her.besk}</p>${knapper}</div></div>`;
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
+    <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?(c.lejrOpg[i]?`Patruljen opgraderer til niveau ${c.lejrOpg[i]}.`:"Patruljen er i gang med at bygge."):her.besk}</p>${knapper}</div></div>`;
   const $=s=>modalRoot.querySelector(s);
   $("#m-luk").onclick=luk;
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
-  $("#m-riv").onclick=()=>{ luk(); const t=her.pris+indboVaerdi(c,i); brugMat(c, BYGMAT[her.id], 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i];
+  if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
+  $("#m-riv").onclick=()=>{ luk(); const t=inv.p+indboVaerdi(c,i); brugMat(c, inv.m, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     c.brugt=Math.max(0,(c.brugt||0)-t); save(); render(); lejrToast(`${her.navn} er revet ned – du fik ${t} point tilbage.`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-hjaelp")) $("#m-hjaelp").onclick=()=>hjaelpSpm(i);
@@ -3379,9 +3401,9 @@ function hjaelpSpm(i){
     modalRoot.innerHTML="";
     if(ok){
       c.lejrTid[i]=(c.lejrTid[i]||Date.now())-60000;
-      if(restTid(c,i)<=0){ delete c.lejrTid[i]; lejrNy=i; }
+      if(restTid(c,i)<=0) c.lejrTid[i]=Date.now()-1;
       save(); render(); vibrer(30);
-      lejrToast(restTid(c,i)>0 ? `✅ Rigtigt! Byggeriet går et minut hurtigere.` : `✅ Rigtigt! ${b.navn} er færdigbygget! 🎉`);
+      if(restTid(c,i)>0) lejrToast(`✅ Rigtigt! Byggeriet går et minut hurtigere.`);
     } else {
       vibrer([60,40,60]); render();
       lejrToast(`Desværre. Det rigtige svar var: <b>${esc(q.svar[0])}</b>`);
@@ -3636,6 +3658,7 @@ function dagens(c){ const d=new Date().toDateString(); if(!c.dag || c.dag.dato!=
 function belon(c, id, pts){
   const d=dagens(c), n=d.akt[id]||0;
   if(n>=AKT_LOFT) return `<small class="muted">Du har fået dagens point for denne aktivitet – men det er stadig hyggeligt!</small>`;
+  if(nav.screen==="akt" && nav.params.i!=null) pts += lejrNiv(c, nav.params.i) - 1;
   d.akt[id]=n+1; c.point+=pts; save();
   return `<b class="plus">+${pts} point</b>`;
 }
@@ -3998,29 +4021,38 @@ const MATSVG = {
   loevstamme: `<rect x="3" y="11" width="30" height="16" rx="3" fill="#7a6a5a"/><ellipse cx="33" cy="19" rx="4" ry="8" fill="#e3c08a" stroke="#6b5a4a"/><circle cx="33" cy="19" r="3" fill="none" stroke="#b08a50"/>`,
   rafter: `<g stroke-linecap="round"><path d="M3 30 L37 8" stroke="#c49a63" stroke-width="4"/><path d="M3 35 L37 13" stroke="#b07a45" stroke-width="4"/><path d="M8 37 L37 19" stroke="#c49a63" stroke-width="4"/></g>`,
   braende: `<path d="M6 34 L20 22 L34 34Z" fill="#9a6232"/><path d="M8 34 L14 20 L20 34Z M20 34 L26 20 L32 34Z" fill="#b07a45" stroke="#7c4a22"/><path d="M14 20 L20 12 L26 20Z" fill="#e3c08a" stroke="#7c4a22"/>`,
+  fibre: `<g stroke="#8a9a4a" stroke-width="1.6" stroke-linecap="round"><path d="M10 36 Q14 20 12 4 M16 36 Q18 20 20 5 M22 36 Q22 22 28 6 M28 36 Q26 22 33 9"/></g><path d="M8 26 H32" stroke="#c49a63" stroke-width="3"/>`,
+  rebraa: `<path d="M6 30 C6 18 30 22 30 12 C30 6 22 6 22 12" fill="none" stroke="#c9a46a" stroke-width="5" stroke-linecap="round"/><path d="M6 30 C6 18 30 22 30 12" fill="none" stroke="#8b6a3a" stroke-width="1.2" stroke-dasharray="2 2"/><g stroke="#c9a46a" stroke-width="1"><path d="M4 33 l-2 3 M6 34 l0 3 M8 33 l2 3"/></g>`,
+  reb: `<path d="M6 30 C6 18 30 22 30 12 C30 6 22 6 22 12" fill="none" stroke="#c9a46a" stroke-width="5" stroke-linecap="round"/><path d="M6 30 C6 18 30 22 30 12" fill="none" stroke="#8b6a3a" stroke-width="1.2" stroke-dasharray="2 2"/><rect x="3.5" y="27" width="5" height="5" rx="1" fill="#c62828"/><rect x="19.5" y="9" width="5" height="5" rx="1" fill="#c62828"/>`,
   granris: `<path d="M8 34 L32 8" stroke="#6b4626" stroke-width="2"/><g stroke="#3f7a35" stroke-width="2.4" stroke-linecap="round"><path d="M12 30 l-5 -3 M12 30 l3 5 M17 24 l-5 -3 M17 24 l3 5 M22 19 l-5 -3 M22 19 l3 5 M27 13 l-5 -3 M27 13 l3 5"/></g>`,
 };
 const MAT = {
   granstamme: "granstamme", loevstamme: "løvstamme", rafter: "rafte", braende: "brænde", granris: "granris",
+  fibre: "bundt plantefibre", rebraa: "utaklet reb", reb: "taklet reb",
 };
-const MATFLERTAL = { granstamme:"granstammer", loevstamme:"løvstammer", rafter:"rafter", braende:"brænde", granris:"granris" };
+const MATFLERTAL = { granstamme:"granstammer", loevstamme:"løvstammer", rafter:"rafter", braende:"brænde", granris:"granris",
+  fibre:"plantefibre", rebraa:"utaklede reb", reb:"taklede reb" };
 function matIkon(m, cls){ return `<svg viewBox="0 0 40 40" class="matik ${cls||""}" aria-hidden="true">${MATSVG[m]}</svg>`; }
 function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MAT[m]:MATFLERTAL[m]}`).join(" og "); }
 
 // Materialer, de enkelte ting koster at bygge
-const BYGMAT = { bord:{rafter:4}, baare:{rafter:2}, port:{rafter:8}, taarn:{rafter:12}, svaevebane:{rafter:10}, badebro:{rafter:8},
-  shelter:{rafter:2, granris:3}, traehytte:{rafter:6}, vejviser:{rafter:1}, flag:{rafter:1}, semaforpost:{rafter:1}, hytte:{rafter:6, braende:4},
-  baal:{braende:3}, koekken:{braende:4}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2} };
+const BYGMAT = { bord:{rafter:4, reb:2}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
+  shelter:{rafter:2, granris:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
+  baal:{braende:3}, koekken:{braende:4}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
-const GENVAEKST = 5*60;   // sekunder før et fældet træ er vokset op igen
+const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder før et fældet træ er vokset op igen
 const JOB = {
   faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, besk:"Giver en granstamme" },
   faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, besk:"Giver en løvstamme" },
   afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2, granris:1}, besk:"Grenene skæres af – så har I lige rafter" },
   kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, besk:"Stammen saves og kløves til brænde" },
   saml:      { navn:"Saml grene og kvas", ikon:"🧺", tid:20,  fag:"baal", giver:{braende:1}, besk:"Døde grene fra skovbunden" },
+  fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
+  sno:       { navn:"Sno tovværk", ikon:"🪢", tid:90, fag:"knob", bruger:{fibre:3}, giver:{rebraa:1}, besk:"Fibrene snos til kordeler, som slås sammen til et reb" },
+  takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
 };
+for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
 
 function lagerEjer(c){ return minPatrulje(c) || c; }
 function lager(c){ const o=lagerEjer(c); return o.lager || (o.lager={}); }
@@ -4087,6 +4119,7 @@ function visJobValg(id, kunTrae){
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen ${j.trae==="gran"?"grantræer":"løvtræer"} at fælde lige nu – de vokser op igen.`;
     if(j.bruger && !harMat(c,j.bruger)) grund = `Kræver ${matTekst(j.bruger)} på lageret.`;
+    if(j.kraever && (m.badges[j.kraever[0]]||0) < j.kraever[1]) grund = `${esc(m.navn)} skal have ${EMNE[j.kraever[0]].navn} i ${NIVEAUER[j.kraever[1]].navn.toLowerCase()} for at kunne takle.`;
     const tid=jobTid(m,jid), lvl=m.badges[j.fag]||0;
     return `<button class="pvalg" data-job="${jid}" ${grund?"disabled":""}><span class="jobik">${j.ikon}</span><span><b>${j.navn}</b>
       <small>${grund || `${j.besk} · ${tidTekst(tid)}${lvl?` · hurtigere, fordi ${esc(m.navn)} har ${EMNE[j.fag].navn} i ${NIVEAUER[lvl].navn.toLowerCase()}`:""}`}</small></span>
@@ -4127,6 +4160,76 @@ function traeKlik(i){
     m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot:i }; save(); render(); vibrer(30);
     lejrToast(`🪓 ${esc(m.navn)} fælder ${type==="gran"?"grantræet":"løvtræet"}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
   });
+}
+
+/* ---------- Opgradering af alt på lejrpladsen ---------- */
+const MAKSNIV = 5;
+const NIVNAVN = ["", "Normal", "Forbedret", "Flot", "Prægtig", "Mester"];
+const NIVTEKST = { port: ["", "En enkel port af rafter.", "Flag på begge stolper.", "Tag med patruljens mærke.", "Sidetårne og vimpelguirlande.", "Lygter og guldspir – lejrens flotteste indgang!"] };
+
+function portSVG(n){
+  let s = "";
+  if(n>=4) s += `<g stroke="${TRAE}" stroke-width="2.2" stroke-linecap="round"><path d="M1.5 38 V15 M4.5 38 V15 M35.5 38 V15 M38.5 38 V15 M0.5 17 H5.5 M34.5 17 H39.5 M1.5 30 L4.5 24 M38.5 30 L35.5 24"/></g>`;
+  s += PIONER.port;
+  if(n>=3) s += `<path d="M5 8.5 L20 1 L35 8.5Z" fill="#2f6b3a" stroke="#1f4a28" stroke-width=".8"/><circle cx="20" cy="5.6" r="2.3" fill="#f2c94c" stroke="#a8790c" stroke-width=".5"/>`;
+  if(n>=4) s += `<path d="M7 21 Q20 27 33 21" fill="none" stroke="#5c3a20" stroke-width=".6"/>${[[10,22.5,"#c62828"],[15,24.5,"#f2c94c"],[20,25.2,"#2e7d32"],[25,24.5,"#1e5fb4"],[30,22.5,"#8e44ad"]].map(([x,y,f])=>`<path d="M${x-1.6} ${y-.6} L${x+1.6} ${y-.6} L${x} ${y+2.6}Z" fill="${f}"/>`).join("")}`;
+  if(n>=2) s += `<path d="M9.5 6 V0.5 L16 2.5 L9.5 4.5" fill="#c62828"/><path d="M30.5 6 V0.5 L37 2.5 L30.5 4.5" fill="#c62828"/>`;
+  if(n>=5) s += `<circle cx="20" cy="0.9" r="1.4" fill="#f2c94c"/><g><circle cx="9.5" cy="21" r="1.8" fill="#ffe680"/><circle cx="30.5" cy="21" r="1.8" fill="#ffe680"/><circle cx="9.5" cy="21" r="3.6" fill="#ffe680" opacity=".3"/><circle cx="30.5" cy="21" r="3.6" fill="#ffe680" opacity=".3"/></g>`;
+  return s;
+}
+function nivPynt(n){
+  let s="";
+  if(n>=3) s += `<path d="M34 1.5 V11" stroke="#777" stroke-width=".8"/><path d="M34 1.5 L39.5 3.5 L34 5.5Z" fill="#c62828"/>`;
+  if(n>=4) s += `<path d="M0.5 4 Q6 8 11.5 4" fill="none" stroke="#5c3a20" stroke-width=".5"/><path d="M2 4.6 L4 4.6 L3 7Z" fill="#f2c94c"/><path d="M5 5.8 L7 5.8 L6 8.2Z" fill="#1e5fb4"/><path d="M8 5 L10 5 L9 7.4Z" fill="#c62828"/>`;
+  if(n>=5) s += stjerne(4.5, 35, 3.6, "#f2c94c");
+  return s;
+}
+function lejrNiv(c,i){ return (c.lejrNiv||{})[i] || 1; }
+function opgKost(c, b, ny){
+  const p = Math.round(b.pris*0.5*(ny-1)) + 10*(ny-1);
+  const base = BYGMAT[b.id], m = {};
+  if(base) Object.entries(base).forEach(([k,n])=>{ m[k]=Math.ceil(n*0.5*(ny-1)); });
+  else { m.rafter = ny-1; if(ny>=3) m.reb = ny-2; }
+  const tid = Math.round((BYGTID[b.id] || 60*TIDSFAKTOR) * 0.75 * (ny-1));
+  const kravNiv = b.krav && ny>=4 ? 3 : 0;
+  return { p, m, tid, kravNiv };
+}
+function opgHTML(c, i){
+  const b=BYGID[c.lejr[i]], n=lejrNiv(c,i);
+  let h = `<div class="opgniv"><span class="nivstj">${"★".repeat(n)}${"☆".repeat(MAKSNIV-n)}</span><b>Niveau ${n}: ${NIVNAVN[n]}</b>${NIVTEKST[b.id]?`<small>${NIVTEKST[b.id][n]}</small>`:""}</div>`;
+  if(n>=MAKSNIV) return h + `<p class="muted psmall" style="margin:4px 0 10px">🏆 ${b.navn} er på højeste niveau.</p>`;
+  const k=opgKost(c,b,n+1), mangler=[];
+  if(lejrPoint(c)<k.p) mangler.push(`${k.p-lejrPoint(c)} point`);
+  if(!harMat(c,k.m)) mangler.push(matTekst(manglerMat(c,k.m)));
+  if(k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv) mangler.push(`${EMNE[b.krav[0]].navn} i guld`);
+  h += `<button class="btn gold" id="m-opg" ${mangler.length?"disabled":""}>⬆️ Opgrader til niveau ${n+1}: ${NIVNAVN[n+1]}</button>
+    <div class="opgkost">🪙 ${k.p} · ${Object.entries(k.m).filter(([,x])=>x>0).map(([mm,x])=>`${matIkon(mm,"lille")}${x}`).join(" ")} · ⏳ ${tidTekst(k.tid)}${NIVTEKST[b.id]?`<br><small>${NIVTEKST[b.id][n+1]}</small>`:""}</div>
+    ${mangler.length?`<small class="mangler">Du mangler: ${mangler.join(", ")}</small>`:`<small class="muted">${AKT_FOR[b.id]?"Højere niveau giver flere point ved aktiviteten.":"Højere niveau gør din lejrplads flottere."}</small>`}`;
+  return h;
+}
+function opgrader(c, i){
+  const b=BYGID[c.lejr[i]], n=lejrNiv(c,i), k=opgKost(c,b,n+1);
+  if(n>=MAKSNIV || lejrPoint(c)<k.p || !harMat(c,k.m)) return;
+  c.brugt=(c.brugt||0)+k.p; brugMat(c,k.m,-1);
+  const inv = c.lejrInv[i] || (c.lejrInv[i]={ p:b.pris, m:{ ...(BYGMAT[b.id]||{}) } });
+  inv.p += k.p; Object.entries(k.m).forEach(([mm,x])=>{ inv.m[mm]=(inv.m[mm]||0)+x; });
+  c.lejrOpg[i]=n+1; c.lejrTid[i]=Date.now()+k.tid*1000;
+  save(); render(); vibrer(40);
+  lejrToast(`⬆️ Patruljen går i gang med at opgradere ${b.navn.toLowerCase()} til niveau ${n+1}. Færdig om ${tidTekst(k.tid)}.`);
+}
+// Færdiggør byggerier og opgraderinger, hvis tiden er gået
+function fuldfoerByg(c){
+  lejrFelter(c); const msg=[];
+  Object.keys(c.lejrTid).forEach(i=>{
+    if(c.lejrTid[i] > Date.now()) return;
+    delete c.lejrTid[i];
+    const b=BYGID[c.lejr[i]]; if(!b) return;
+    if(c.lejrOpg[i]){ c.lejrNiv[i]=c.lejrOpg[i]; delete c.lejrOpg[i]; msg.push(`⬆️ ${b.navn} er opgraderet til niveau ${c.lejrNiv[i]}: ${NIVNAVN[c.lejrNiv[i]]}!`); }
+    else msg.push(`🎉 ${b.navn} er færdigbygget!`);
+    lejrNy=+i;
+  });
+  if(msg.length) save();
+  return msg;
 }
 
 /* ---------- Faner ---------- */
