@@ -11,6 +11,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
+- Materialer og arbejde på lejrpladsen: sæt patruljens spejdere til at fælde grantræer (→ granstammer → afgrenes til rafter) og løvtræer (→ løvstammer → kløves til brænde). Pionerarbejde koster rafter, og bål koster brænde
 - Telte kan man gå ind i og indrette
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
 - Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
@@ -30,7 +31,7 @@ Det rigtige svar står altid først. Niveau 1 = bronze, 2 = sølv, 3 = guld.
 Opgaver, hvor man skal sætte trin i rækkefølge, skrives med `R(...)` (trinnene i den rigtige rækkefølge). Spørgsmål med morselampe eller semafor skrives med `QM(...)` og fx `{ type:"morse", tekst:"HEJ" }` eller `{ type:"semafor", tekst:"KANO" }` til sidst.
 
 ## Ret i lejrpladsen
-Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Byggetider står i `BYGTID`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
 
 ## Installér som app
 Appen kan installeres på telefonen fra https://sebastianbalslev.github.io/spejderquiz/ og virker derefter uden internet.
