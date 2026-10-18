@@ -112,6 +112,12 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div{flex:1;min-width:0}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
+.backup>b{display:block;color:var(--forest)}
+.backup>small{color:var(--muted);line-height:1.35;display:block;margin:2px 0 10px}
+.backup .row{display:flex;gap:8px}
+.backup .btn{min-height:48px;font-size:16px;padding:10px 12px}
+.backup .row .btn{flex:1;margin:0}
+.backup>.btn{margin:8px 0 0}
 .install .btn{width:auto;min-height:46px;margin:0;padding:10px 16px;font-size:16px}
 /* Mærker */
 .badge{position:relative;width:84px;height:84px;margin:0 auto}
@@ -3838,6 +3844,7 @@ function scrVaelg(){
       <button class="iconbtn" data-a="slet" data-id="${c.id}" aria-label="Slet ${esc(c.navn)}">🗑️</button></div>`).join("");
   }
   h += `<button class="btn" data-a="ny">＋ Opret ny spejder</button>`;
+  h += state.chars.length ? backupKort(null) : `<button class="btn secondary" data-a="backuplaes">📥 Indlæs backup eller spejder fra fil</button>`;
   h += installKort();
   if(state.chars.length) h += `<p class="muted center" style="font-size:14px">Flere spejdere kan dele telefonen – fx søskende eller hele patruljen.</p>`;
   return h;
@@ -3859,7 +3866,8 @@ function scrEditor(){
       <div class="lbl">Tørklæde</div>${sw("toerklaede",TOERKLAEDE)}
       <div class="lbl">Bluse</div>${sw("bluse",BLUSE)}
     </div>
-    <button class="btn" data-a="gemkar">${ny?"Start eventyret! ⛺":"Gem ændringer"}</button>`;
+    <button class="btn" data-a="gemkar">${ny?"Start eventyret! ⛺":"Gem ændringer"}</button>
+    ${ny && !state.chars.length ? `<button class="btn secondary" data-a="backuplaes">📥 Har du en backup? Indlæs den her</button>` : ""}`;
 }
 
 function timerToggle(){
@@ -3902,6 +3910,7 @@ function scrProfil(){
     <button class="btn" data-a="til" data-to="lejr">⛺ Byg din lejrplads <small style="font-weight:600;opacity:.85">· 🪙 ${fmt(lejrPoint(c))}</small></button>
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
     ${timerToggle()}
+    ${backupKort(c)}
     ${installKort()}
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
 }
@@ -4199,6 +4208,100 @@ function confirmBox(html, ja, nej, onJa, onNej){
   modalRoot.querySelector("#m-nej").onclick = () => { modalRoot.innerHTML=""; onNej && onNej(); };
   modalRoot.querySelector("#m-ja").onclick  = () => { modalRoot.innerHTML=""; onJa && onJa(); };
 }
+function infoBox(html){
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><p>${html}</p><div class="row"><button class="btn" id="m-ja">OK</button></div></div></div>`;
+  modalRoot.querySelector("#m-ja").onclick = () => { modalRoot.innerHTML=""; };
+}
+
+/* ---------- Backup ---------- */
+const BACKUP_APP = "spejderquiz";
+function dato(){ return new Date().toISOString().slice(0,10); }
+function filnavn(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[æÆ]/g,"ae").replace(/[øØ]/g,"oe").replace(/[åÅ]/g,"aa").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase() || "spejder"; }
+// Del filen, hvis telefonen kan, ellers download den
+async function delFil(navn, data, titel){
+  const tekst = JSON.stringify(data, null, 1);
+  try{
+    const fil = new File([tekst], navn, { type:"application/json" });
+    if(navigator.canShare && navigator.canShare({ files:[fil] })){ await navigator.share({ files:[fil], title:titel }); return; }
+  }catch(e){ if(e && e.name==="AbortError") return; }
+  const url = URL.createObjectURL(new Blob([tekst], { type:"application/json" }));
+  const a = document.createElement("a"); a.href=url; a.download=navn; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function gyldigSpejder(c){
+  return c && typeof c==="object" && typeof c.id==="string" && c.id && typeof c.navn==="string" && c.navn.trim()
+    && c.look && typeof c.look==="object" && c.badges && typeof c.badges==="object" && !Array.isArray(c.badges);
+}
+// Gør gamle og indlæste spejdere klar, så felter, der mangler, får standardværdier
+function retSpejder(c){
+  c.point = Number(c.point)||0; c.bedsteStreak = Number(c.bedsteStreak)||0; c.quizzer = Number(c.quizzer)||0;
+  c.best = c.best||{}; c.seen = c.seen||{}; c.timer = !!c.timer;
+  EMNER.forEach(e => { const l=c.badges[e.id]; if(l!=null) c.badges[e.id] = Math.max(0, Math.min(3, Math.floor(Number(l)||0))); });
+  return c;
+}
+// Returnerer { type:"alle", state } eller { type:"en", spejder } – eller en fejltekst
+function laesBackup(tekst){
+  let d; try{ d = JSON.parse(tekst); }catch(e){ return "Filen er ikke en gyldig backup-fil."; }
+  if(!d || typeof d!=="object") return "Filen er ikke en gyldig backup-fil.";
+  if(d.app===BACKUP_APP && d.type==="spejder"){
+    return gyldigSpejder(d.spejder) ? { type:"en", spejder:retSpejder(d.spejder) } : "Spejderen i filen er ødelagt.";
+  }
+  const s = d.app===BACKUP_APP && d.type==="backup" ? d.state : d;
+  if(!s || !Array.isArray(s.chars)) return "Filen er ikke en backup fra Spejderquiz.";
+  if(!s.chars.every(gyldigSpejder)) return "Nogle af spejderne i filen er ødelagte.";
+  if(s.patruljer!=null && !Array.isArray(s.patruljer)) return "Patruljerne i filen er ødelagte.";
+  s.chars.forEach(retSpejder);
+  if(!s.chars.some(c => c.id===s.active)) s.active = null;
+  return { type:"alle", state:s };
+}
+function gemBackup(){
+  delFil(`spejderquiz-backup-${dato()}.json`, { app:BACKUP_APP, type:"backup", version:1, gemt:new Date().toISOString(), state }, "Spejderquiz-backup");
+}
+function sendSpejder(c){
+  delFil(`spejderquiz-${filnavn(c.navn)}.json`, { app:BACKUP_APP, type:"spejder", version:1, gemt:new Date().toISOString(), spejder:c }, `Spejderquiz – ${c.navn}`);
+}
+function vaelgBackupFil(){
+  const inp = document.createElement("input");
+  inp.type="file"; inp.accept=".json,application/json";
+  inp.onchange = () => {
+    const f = inp.files && inp.files[0]; if(!f) return;
+    if(f.size > 5e6){ infoBox("Filen er for stor til at være en backup."); return; }
+    const r = new FileReader();
+    r.onload = () => indlaesBackup(String(r.result));
+    r.onerror = () => infoBox("Filen kunne ikke læses.");
+    r.readAsText(f);
+  };
+  inp.click();
+}
+function indlaesBackup(tekst){
+  const b = laesBackup(tekst);
+  if(typeof b==="string"){ infoBox("😕 " + b); return; }
+  if(b.type==="en"){
+    const c = b.spejder, findes = state.chars.find(x => x.id===c.id);
+    confirmBox(findes
+      ? `<b>${esc(c.navn)}</b> findes allerede på telefonen.<br><small class="muted">Vil du erstatte spejderen med den fra filen (${antal(c)} mærker, ${fmt(c.point)} point)?</small>`
+      : `Vil du tilføje <b>${esc(c.navn)}</b> med ${antal(c)} mærker og ${fmt(c.point)} point?`,
+      findes ? "Erstat" : "Tilføj", "Fortryd", () => {
+        if(findes) state.chars = state.chars.map(x => x.id===c.id ? c : x); else state.chars.push(c);
+        state.active = c.id; save(); go("profil");
+      });
+    return;
+  }
+  const s = b.state, n = s.chars.length;
+  confirmBox(`Backuppen har ${n} spejder${n===1?"":"e"}: ${s.chars.map(c=>`<b>${esc(c.navn)}</b>`).join(", ")}.<br><small class="muted">Alt, der er gemt på telefonen nu, bliver overskrevet.</small>`,
+    "Overskriv", "Fortryd", () => {
+      state = s; state.patruljer = state.patruljer || []; save();
+      go(cur() ? "profil" : "vaelg");
+      setTimeout(() => infoBox("✅ Backuppen er indlæst."), 50);
+    });
+}
+function backupKort(c){
+  return `<div class="card backup"><b>💾 Backup</b><small>Gem alle spejdere i en fil, så du ikke mister noget, hvis telefonen bliver skiftet ud.</small>
+    <div class="row"><button class="btn secondary" data-a="backupgem">Gem backup</button><button class="btn secondary" data-a="backuplaes">Indlæs backup</button></div>
+    ${c ? `<button class="btn secondary" data-a="sendspejder">📲 Flyt ${esc(c.navn)} til en anden telefon</button>` : ""}</div>`;
+}
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(()=>{}); }catch(e){}
+
 function askQuit(){
   if(modalRoot.innerHTML) return;
   stopTimer();
@@ -5468,6 +5571,9 @@ document.getElementById("tabs").addEventListener("click", ev => {
 const actions = {
   ny(){ draft = { navn:"", look:randLook() }; go("editor"); },
   vaelg(d){ state.active=d.id; save(); go("profil"); },
+  backupgem(){ gemBackup(); },
+  backuplaes(){ vaelgBackupFil(); },
+  sendspejder(){ sendSpejder(cur()); },
   slet(d){
     const c = state.chars.find(x=>x.id===d.id); if(!c) return;
     confirmBox(`Vil du slette <b>${esc(c.navn)}</b>?<br><small class="muted">Alle mærker og point forsvinder.</small>`, "Slet", "Fortryd", () => {
