@@ -112,7 +112,19 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div{flex:1;min-width:0}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
-.backup>b,.fejlkort>b{display:block;color:var(--forest)}
+.backup>b,.fejlkort>b,.indst>b{display:block;color:var(--forest)}
+.indst .toggle{margin-top:10px}
+.oplaesknap{margin-top:12px}
+/* Større tekst */
+.stortekst .qtext{font-size:25px}
+.stortekst .ans{font-size:21px;min-height:70px}
+.stortekst .fb,.stortekst .fb p{font-size:19px}
+.stortekst .fb b.head{font-size:22px}
+.stortekst .qtopic{font-size:15px}
+.stortekst .trinknap,.stortekst .trinliste li{font-size:19px}
+.stortekst .btn{font-size:20px}
+.stortekst .card p,.stortekst .review li,.stortekst .muted{font-size:18px}
+.stortekst small{font-size:16px}
 .ugetop{display:flex;gap:12px;align-items:center}
 .ugetop b{display:block;color:var(--forest)}.ugetop small{color:var(--muted);line-height:1.35;display:block}
 .ugenr{flex:none;width:56px;height:56px;border-radius:14px;background:var(--forest);color:#fff;display:grid;place-items:center;align-content:center;font-weight:800;font-size:22px;line-height:1}
@@ -3913,8 +3925,9 @@ function render(){
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
                traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat }[s];
+  document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   app.innerHTML = `<div class="screen">${fn()}</div>`;
-  if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); } else stopMedia();
+  if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
   startLejrUr();
   aktEfterRender();
   renderFaner();
@@ -3998,6 +4011,7 @@ function scrProfil(){
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
     ${ugeKort(c)}
     ${timerToggle()}
+    ${indstKort(c)}
     ${backupKort(c)}
     ${installKort()}
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
@@ -4094,7 +4108,7 @@ function mediaHTML(q){
   const m=q.media; if(!m) return "";
   if(m.type==="billede") return `<div class="media billede">${m.svg}</div>`;
   if(m.type==="morse") return `<div class="media morse"><div class="lampe" id="lampe"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#2a2a24"/><circle id="lys" cx="60" cy="60" r="40" fill="#4a4636"/><circle cx="48" cy="46" r="10" fill="#fff" opacity=".12"/></svg></div>
-    <div class="mediaknapper"><button class="chip" data-a="morselyd">${morseLyd?"🔊 Lyd til":"🔈 Lyd fra"}</button><button class="chip" data-a="mediaforfra">↻ Forfra</button></div>
+    <div class="mediaknapper">${indst(cur()).lyd ? `<button class="chip" data-a="morselyd">${morseLyd?"🔊 Lyd til":"🔈 Lyd fra"}</button>` : ""}<button class="chip" data-a="mediaforfra">↻ Forfra</button></div>
     <small class="muted">Lampen blinker ordet igen og igen. Kort blink = prik, langt blink = streg.</small></div>`;
   if(m.type==="semafor"){
     const ord=m.tekst.length>1;
@@ -4158,7 +4172,7 @@ function scrQuiz(){
       <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
     <div class="dots">${quiz.qs.map((_,k)=>`<i class="${quiz.svar[k]===true?"ok":quiz.svar[k]===false?"bad":k===quiz.i?"now":""}"></i>`).join("")}</div>`;
   if(quiz.medTimer && !quiz.answered) h += `<div class="timer" id="timer-row"><div class="bar"><i id="tbar" style="width:${quiz.tLeft/quiz.tMax*100}%"></i></div><span id="tnum">${Math.ceil(quiz.tLeft)}</span></div>`;
-  h += `<div class="card qcard"><div class="qtopic">${badgeHTML(e,c.badges[e.id]||0,"xs")} ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div><p class="qtext">${esc(q.spm)}</p>${mediaHTML(q)}</div>`;
+  h += `<div class="card qcard"><div class="qtopic">${badgeHTML(e,c.badges[e.id]||0,"xs")} ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div><p class="qtext">${esc(q.spm)}</p>${mediaHTML(q)}${indst(c).oplaes && kanOplaese() ? `<button class="chip oplaesknap" data-a="laesop">🗣️ Læs op igen</button>` : ""}</div>`;
   if(q.type==="raekke") h += raekkeHTML(q);
   else h += `<div class="answers">${q.opts.map((o,k)=>{
       let cls="";
@@ -4298,6 +4312,7 @@ function svar(k, okRaekke){
     quiz.ros = pick(["Rigtigt! ✅","Flot! ✅","Sådan! ✅","Godt gået! ✅","Korrekt! ✅"]);
     vibrer(30);
   } else { quiz.streak=0; vibrer([60,40,60]); }
+  lydEffekt(ok);
   save();
   render();
   const fb = document.getElementById("fb");
@@ -4363,6 +4378,79 @@ function confirmBox(html, ja, nej, onJa, onNej){
 function infoBox(html){
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><p>${html}</p><div class="row"><button class="btn" id="m-ja">OK</button></div></div></div>`;
   modalRoot.querySelector("#m-ja").onclick = () => { modalRoot.innerHTML=""; };
+}
+
+/* ---------- Indstillinger (gemmes pr. spejder) ---------- */
+const INDST = { lyd:true, stor:false, oplaes:false };
+function indst(c){ return { ...INDST, ...(c && c.indst || {}) }; }
+const kanOplaese = () => "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+function indstKort(c){
+  const v = indst(c);
+  const t = (id, tit, tekst, paa, slaaFra) => `<label class="toggle"><span>${tit}<small>${tekst}</small></span>
+    <span class="switch"><input type="checkbox" id="${id}" ${paa?"checked":""} ${slaaFra?"disabled":""} aria-label="${tit.replace(/^\S+ /,"")}"><span></span></span></label>`;
+  return `<div class="card indst"><b>⚙️ Indstillinger</b>
+    ${t("ind-lyd", "🔊 Lyd", "Lyde ved rigtige og forkerte svar – og morselampens bip", v.lyd)}
+    ${t("ind-stor", "🔠 Større tekst", "Gør spørgsmål og svar lettere at læse", v.stor)}
+    ${t("ind-oplaes", "🗣️ Læs højt", kanOplaese() ? "Telefonen læser spørgsmål og svar op på dansk" : "Din browser kan desværre ikke læse op", v.oplaes && kanOplaese(), !kanOplaese())}</div>`;
+}
+function saetIndst(k, paa){
+  const c = cur(); if(!c) return;
+  c.indst = { ...indst(c), [k]:paa }; save();
+  if(k==="lyd" && !paa){ morseLyd=false; lydTone(false); }
+  if(k==="oplaes" && !paa) stopOplaes();
+  if(k==="stor") document.body.classList.toggle("stortekst", paa);
+  if(k==="lyd" && paa) lydEffekt(true);
+}
+// Korte lyde ved svar
+function lydKontekst(){
+  if(!lydCtx){ try{ lydCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } }
+  if(lydCtx.state==="suspended") lydCtx.resume();
+  return lydCtx;
+}
+function lydEffekt(ok){
+  if(!indst(cur()).lyd) return;
+  const ctx = lydKontekst(); if(!ctx) return;
+  const t0 = ctx.currentTime;
+  (ok ? [[660,0],[880,.11]] : [[220,0],[175,.14]]).forEach(([f,d]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = ok ? "sine" : "triangle"; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0+d); g.gain.exponentialRampToValueAtTime(0.18, t0+d+.02); g.gain.exponentialRampToValueAtTime(0.0001, t0+d+.22);
+    o.connect(g); g.connect(ctx.destination); o.start(t0+d); o.stop(t0+d+.25);
+  });
+}
+// Oplæsning med speechSynthesis på dansk
+let sidstOplaest = null;
+function stopOplaes(){ sidstOplaest = null; try{ if(kanOplaese()) speechSynthesis.cancel(); }catch(e){} }
+function sig(tekst){
+  if(!kanOplaese()) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(tekst.replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, ""));
+    u.lang = "da-DK"; u.rate = 0.95;
+    const stemme = speechSynthesis.getVoices().find(v => /^da(-|_|$)/i.test(v.lang));
+    if(stemme) u.voice = stemme;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function oplaesTekst(q, efter){
+  if(efter){
+    const ok = quiz.svar[quiz.i];
+    const rigtig = q.type==="raekke" ? q.trin.join(". ") : q.opts.find(o=>o.ok).t;
+    return (ok ? "Rigtigt! " : quiz.valgt<0 ? "Tiden løb ud. Det rigtige svar er: " + rigtig + ". " : "Forkert. Det rigtige svar er: " + rigtig + ". ") + q.forklaring;
+  }
+  let t = q.spm;
+  if(q.media && q.media.type==="morse") t += " Se på lampen.";
+  if(q.media && q.media.type==="semafor") t += " Se på semaforen.";
+  if(q.media && q.media.type==="billede") t += " Se på tegningen.";
+  if(q.type==="raekke") return t + " Sæt trinnene i den rigtige rækkefølge.";
+  return t + " " + q.opts.map((o,k) => `${"ABCD"[k]}: ${o.t}.`).join(" ");
+}
+function oplaesQuiz(tving){
+  if(!quiz || !indst(cur()).oplaes) return;
+  const nøgle = quiz.i + (quiz.answered ? "s" : "q");
+  if(!tving && nøgle===sidstOplaest) return;
+  sidstOplaest = nøgle;
+  sig(oplaesTekst(quiz.qs[quiz.i], quiz.answered));
 }
 
 /* ---------- Backup ---------- */
@@ -5773,6 +5861,7 @@ const actions = {
   afbryd(){ askQuit(); },
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   fejlstart(){ startQuiz("fejl", "alle", 0); },
+  laesop(){ oplaesQuiz(true); },
   ugestart(){ startQuiz("uge", "alle", 0); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
@@ -5897,7 +5986,11 @@ app.addEventListener("keydown", ev => {
 });
 app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.navn = ev.target.value; ev.target.classList.remove("err"); }
   if(ev.target.id==="pnavn" && pdraft){ pdraft.navn = ev.target.value; ev.target.classList.remove("err"); } });
-app.addEventListener("change", ev => { if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); } });
+app.addEventListener("change", ev => {
+  if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); }
+  const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes" }[ev.target.id];
+  if(k) saetIndst(k, ev.target.checked);
+});
 
 /* ---------- Offline (service worker) ---------- */
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
