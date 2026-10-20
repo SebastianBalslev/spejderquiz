@@ -498,7 +498,9 @@ small.mangler{color:var(--bad);display:block;margin-bottom:8px}
 
 /* Modal / fejring */
 .overlay{position:fixed;inset:0;z-index:1000;background:rgba(30,35,20,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
-.modal{width:100%;max-width:400px;margin:0;max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain}
+.modal{width:100%;max-width:400px;margin:0;max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;position:relative}
+.lukx{position:sticky;top:0;float:right;margin:-6px -6px 0 8px;box-shadow:0 2px 6px rgba(0,0,0,.12);width:40px;height:40px;border-radius:50%;border:none;background:var(--paper2);color:var(--ink,#2a2a1f);font-size:20px;font-weight:800;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:2}
+.btn,.chip,.ans{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .modal p{font-size:18px;margin:4px 0 8px;text-align:center}
 .celebrate{background:radial-gradient(circle at 50% 40%,#3c6a35 0,#1e321a 75%);overflow:hidden}
 .rays{position:absolute;left:50%;top:40%;width:900px;height:900px;margin:-450px 0 0 -450px;
@@ -6845,7 +6847,7 @@ const BYG = [
   { id:"sporkasse",   navn:"Sporkasse",         ikon:"🐾", pris:50,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
   { id:"geocache",    navn:"Geocache",          ikon:"📦", pris:50,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
 
-  { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80,  krav:["overlevelse",1], besk:"Et læ af grene og granris." },
+  { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
   { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
   { id:"traehytte",   navn:"Træhytte",          svg:"traehytte", pris:280, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
 
@@ -7023,7 +7025,7 @@ function tidTekst(sek){ return sek>=60 ? `${Math.round(sek/60)} min` : `${sek} s
 
 function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
-  const nyt=[...fuldfoerByg(c), ...tjekArbejde(c)]; if(nyt.length) setTimeout(()=>{ lejrToast(nyt.join("<br>")); vibrer([60,40,60]); }, 50);
+  fuldfoerByg(c); tjekArbejde(c);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : BYGID[felter[lejrValg.idx]]);
   let h = `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}s lejrplads</h1><span class="spacer"></span></div>
     <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b> point at bygge for</span><span class="chip">🏗️ ${antalByg} bygget</span></div>`;
@@ -7099,7 +7101,7 @@ function vaelgByg(id){
   if(!harKrav(c,b)){ lejrToast(`🔒 ${b.navn} kræver mærket <b>${kravTekst(b)}</b>. Tag prøven under Mærker.`); return; }
   if(lejrPoint(c) < b.pris){ lejrToast(`Du mangler ${b.pris-lejrPoint(c)} point til ${b.navn}. Svar på flere spørgsmål!`); return; }
   if(!harMat(c,BYGMAT[b.id])){ const m=manglerMat(c,BYGMAT[b.id]);
-    lejrToast(`Du mangler ${matTekst(m)} til ${b.navn}. ${m.reb?"Saml plantefibre, sno tovværk og takl det.":m.rafter||m.granris?"Sæt nogen til at fælde grantræer og afgrene dem.":"Sæt nogen til at fælde løvtræer og kløve brænde."}`); return; }
+    lejrToast(`Du mangler ${matTekst(m)} til ${b.navn}. ${m.reb?"Saml plantefibre, sno tovværk og takl det.":m.rafter?"Sæt nogen til at fælde grantræer og afgrene dem.":"Sæt nogen til at fælde løvtræer og kløve brænde."}`); return; }
   lejrValg = (lejrValg && lejrValg.id===id) ? null : { type:"ny", id };
   render();
   if(lejrValg){ const t=document.getElementById("toast"); if(t) t.hidden=true; lejrScrollKort(); }
@@ -7158,22 +7160,25 @@ function visFeltMenu(i){
   }
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
   knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
-    <small class="muted">River du ned, får du ${inv.p+indbo} point${Object.keys(inv.m).length?" og materialerne":""} tilbage.</small>
-    <button class="btn secondary" id="m-luk">Luk</button>`;
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
+    <small class="muted">${rivTekst(inv)}</small>`;
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
     <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?(c.lejrOpg[i]?`Patruljen opgraderer til niveau ${c.lejrOpg[i]}.`:"Patruljen er i gang med at bygge."):her.besk}</p>${knapper}</div></div>`;
   const $=s=>modalRoot.querySelector(s);
   $("#m-luk").onclick=luk;
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
-  $("#m-riv").onclick=()=>{ luk(); const t=inv.p+indboVaerdi(c,i); brugMat(c, inv.m, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
-    c.brugt=Math.max(0,(c.brugt||0)-t); save(); render(); lejrToast(`${her.navn} er revet ned – du fik ${t} point tilbage.`); };
+  $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
+    save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-hjaelp")) $("#m-hjaelp").onclick=()=>hjaelpSpm(i);
   modalRoot.querySelectorAll("[data-akt]").forEach(k=>k.onclick=()=>{ luk(); go("akt",{ i, a:k.dataset.akt }); });
   if(bygger){ const ur=setInterval(()=>{ const el=$("#m-tid"); if(!el){ clearInterval(ur); return; } const ms=restTid(c,i); if(ms<=0){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(ms); },1000); }
 }
 
+// Når man river ned, får man ingen point tilbage – kun 30 % af materialerne (rundet ned)
+const RIV_ANDEL = 0.3;
+function rivMat(inv){ return Object.fromEntries(Object.entries(inv.m||{}).filter(([m])=>MAT[m]).map(([m,n])=>[m,Math.floor(n*RIV_ANDEL)]).filter(([,n])=>n>0)); }
+function rivTekst(inv){ const t=rivMat(inv); return `River du ned, får du ingen point tilbage${Object.keys(t).length?` – kun ${matTekst(t)}`:""}.`; }
 function hjaelpSpm(i){
   const c=cur(), b=BYGID[c.lejr[i]];
   const pool=SPORGSMAL.filter(q=>q.niveau<=2 && !q.type && !q.media && (!b.krav || q.emne===b.krav[0]));
@@ -7405,8 +7410,8 @@ function teltPlads(p){
     lejrToast(`${ting.navn} er sat ind i teltet.`); return;
   }
   if(her){
-    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div class="bigik">${indboIkon(her)}</div><h2 style="margin-top:6px">${her.navn}</h2>
-      <div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-fjern">Fjern (+${her.pris})</button></div><button class="btn secondary" id="m-luk">Luk</button></div></div>`;
+    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="bigik">${indboIkon(her)}</div><h2 style="margin-top:6px">${her.navn}</h2>
+      <div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-fjern">Fjern (+${her.pris})</button></div></div></div>`;
     const $=s=>modalRoot.querySelector(s), luk=()=>{ modalRoot.innerHTML=""; };
     $("#m-luk").onclick=luk;
     $("#m-flyt").onclick=()=>{ luk(); teltValg={type:"flyt",p}; render(); };
@@ -7543,7 +7548,7 @@ function aktDel(c, a, b){
       ${figur(c.look,160,222,92)}
       <text x="58" y="208" text-anchor="middle" class="navnskilt">${esc(venner[0].navn)}</text><text x="262" y="208" text-anchor="middle" class="navnskilt">${esc(venner[2].navn)}</text>
     </svg>`;
-    knapper = `<button class="btn earth" data-a="braende">🪵 Læg brænde på</button>
+    knapper = `<button class="btn earth" data-a="braende">🪵 Læg brænde på${nav.screen==="akt"?` (${lager(c).braende||0} tilbage)`:""}</button>
       <button class="btn gold" id="ristknap">${ret==="skum"?"🍡 Hold nede for at riste en skumfidus":"🍞 Hold nede for at bage snobrød"}</button>`;
     if(a==="baal") knapper += `<div class="row"><button class="btn" data-a="historie">📖 Hør en historie</button><button class="btn" data-a="baalquiz">❓ Lejrbålsquiz</button></div>`;
     if(a==="baal" && (c.badges.lejrbaal||0) >= 3) knapper += `<div class="row"><button class="btn" data-a="lraab">📣 Lav et råb</button><button class="btn" data-a="lsketch">🎭 Opfør en sketch</button></div>`;
@@ -7870,20 +7875,19 @@ const MATSVG = {
   fibre: `<g stroke="#8a9a4a" stroke-width="1.6" stroke-linecap="round"><path d="M10 36 Q14 20 12 4 M16 36 Q18 20 20 5 M22 36 Q22 22 28 6 M28 36 Q26 22 33 9"/></g><path d="M8 26 H32" stroke="#c49a63" stroke-width="3"/>`,
   rebraa: `<path d="M6 30 C6 18 30 22 30 12 C30 6 22 6 22 12" fill="none" stroke="#c9a46a" stroke-width="5" stroke-linecap="round"/><path d="M6 30 C6 18 30 22 30 12" fill="none" stroke="#8b6a3a" stroke-width="1.2" stroke-dasharray="2 2"/><g stroke="#c9a46a" stroke-width="1"><path d="M4 33 l-2 3 M6 34 l0 3 M8 33 l2 3"/></g>`,
   reb: `<path d="M6 30 C6 18 30 22 30 12 C30 6 22 6 22 12" fill="none" stroke="#c9a46a" stroke-width="5" stroke-linecap="round"/><path d="M6 30 C6 18 30 22 30 12" fill="none" stroke="#8b6a3a" stroke-width="1.2" stroke-dasharray="2 2"/><rect x="3.5" y="27" width="5" height="5" rx="1" fill="#c62828"/><rect x="19.5" y="9" width="5" height="5" rx="1" fill="#c62828"/>`,
-  granris: `<path d="M8 34 L32 8" stroke="#6b4626" stroke-width="2"/><g stroke="#3f7a35" stroke-width="2.4" stroke-linecap="round"><path d="M12 30 l-5 -3 M12 30 l3 5 M17 24 l-5 -3 M17 24 l3 5 M22 19 l-5 -3 M22 19 l3 5 M27 13 l-5 -3 M27 13 l3 5"/></g>`,
 };
 const MAT = {
-  granstamme: "granstamme", loevstamme: "løvstamme", rafter: "rafte", braende: "brænde", granris: "granris",
+  granstamme: "granstamme", loevstamme: "løvstamme", rafter: "rafte", braende: "brænde",
   fibre: "bundt plantefibre", rebraa: "utaklet reb", reb: "taklet reb",
 };
-const MATFLERTAL = { granstamme:"granstammer", loevstamme:"løvstammer", rafter:"rafter", braende:"brænde", granris:"granris",
+const MATFLERTAL = { granstamme:"granstammer", loevstamme:"løvstammer", rafter:"rafter", braende:"brænde",
   fibre:"plantefibre", rebraa:"utaklede reb", reb:"taklede reb" };
 function matIkon(m, cls){ return `<svg viewBox="0 0 40 40" class="matik ${cls||""}" aria-hidden="true">${MATSVG[m]}</svg>`; }
 function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MAT[m]:MATFLERTAL[m]}`).join(" og "); }
 
 // Materialer, de enkelte ting koster at bygge
 const BYGMAT = { bord:{rafter:4, reb:2}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
-  shelter:{rafter:2, granris:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
+  shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
   baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, signalbaal:{braende:10}, huggeplads:{rafter:2, braende:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
@@ -7891,7 +7895,7 @@ const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder før et fældet træ er vokset 
 const JOB = {
   faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en granstamme" },
   faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en løvstamme" },
-  afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2, granris:1}, besk:"Grenene skæres af – så har I lige rafter" },
+  afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2}, besk:"Grenene skæres af – så har I lige rafter" },
   kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, kraever:["vaerktoej",1], til:"kløve brænde", besk:"Stammen saves og kløves til brænde" },
   saml:      { navn:"Saml grene og kvas", ikon:"🧺", tid:20,  fag:"baal", giver:{braende:1}, besk:"Døde grene fra skovbunden" },
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
@@ -7980,8 +7984,8 @@ function visJobValg(id, kunTrae){
       <small>${grund || `${j.besk} · ${tidTekst(tid)}${lvl?` · hurtigere, fordi ${esc(m.navn)} har ${EMNE[j.fag].navn} i ${NIVEAUER[lvl].navn.toLowerCase()}`:""}`}</small></span>
       ${j.giver?`<span class="jobgiv">+${Object.entries(jobGiver(c,jid)).map(([mm,n])=>`${n}${matIkon(mm,"lille")}`).join(" ")}</span>`:""}</button>`;
   }).join("");
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="center">${hoved(m)}<h2 style="margin:6px 0 2px">Hvad skal ${esc(m.navn)} lave?</h2></div>
-    <div class="pvalgliste" style="margin-top:12px">${muligheder}</div><button class="btn secondary" id="m-luk">Luk</button></div></div>`;
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center">${hoved(m)}<h2 style="margin:6px 0 2px">Hvad skal ${esc(m.navn)} lave?</h2></div>
+    <div class="pvalgliste" style="margin-top:12px">${muligheder}</div></div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{ modalRoot.innerHTML=""; startJob(m, b.dataset.job); });
 }
@@ -8004,11 +8008,11 @@ function traeKlik(i){
   const ledige=arbejdere(c).filter(m=>!m.job);
   if(!ledige.length){ lejrToast("Alle i patruljen er optaget. Vent til nogen bliver færdige."); return; }
   const jid = type==="gran" ? "faeldGran" : "faeldLoev";
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="center"><div style="font-size:60px">${type==="gran"?"🌲":"🌳"}</div><h2 style="margin:4px 0">Hvem skal fælde ${type==="gran"?"grantræet":"løvtræet"}?</h2>
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center"><div style="font-size:60px">${type==="gran"?"🌲":"🌳"}</div><h2 style="margin:4px 0">Hvem skal fælde ${type==="gran"?"grantræet":"løvtræet"}?</h2>
     <p class="muted" style="font-size:15px;margin:0">${type==="gran"?"Grantræer bliver til granstammer, som kan afgrenes til rafter.":"Løvtræer bliver til løvstammer, som kan kløves til brænde."}</p></div>
     <div class="pvalgliste" style="margin-top:12px">${ledige.map(m=>{ const lvl=m.badges.overlevelse||0, laast=jobLaast(m,JOB[jid]);
       return `<button class="pvalg" data-hvem="${m.id}" ${laast?"disabled":""}>${hoved(m)}<span><b>${esc(m.navn)}</b><small>${laast?jobLaastTekst(m,JOB[jid]):`${tidTekst(jobTid(m,jid))}${lvl?` · ${EMNE.overlevelse.navn} i ${NIVEAUER[lvl].navn.toLowerCase()} gør det hurtigere`:""}`}</small></span></button>`; }).join("")}</div>
-    <button class="btn secondary" id="m-luk">Luk</button></div></div>`;
+    </div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelectorAll("[data-hvem]").forEach(b=>b.onclick=()=>{
     modalRoot.innerHTML=""; const m=state.chars.find(x=>x.id===b.dataset.hvem); if(jobLaast(m,JOB[jid])) return;
@@ -9445,6 +9449,9 @@ const actions = {
   teltannuller(){ teltValg=null; render(); },
   braende(){
     if(akt.ild>=3){ aktBesked("Bålet brænder godt nu. Pas på – et for stort bål er farligt! 🔥"); return; }
+    if(nav.screen==="akt"){ const l=lager(cur());
+      if((l.braende||0)<1){ aktBesked("Der er ikke mere brænde på lageret. Kløv brænde eller saml grene på lejrpladsen. 🪵"); return; }
+      l.braende--; save(); const k=document.querySelector('[data-a="braende"]'); if(k) k.textContent=`🪵 Læg brænde på (${l.braende} tilbage)`; }
     akt.ild++; const g=document.getElementById("ild"); if(g) g.style.transform=`scale(${.7+akt.ild*.18})`;
     aktBesked(akt.ild>=3 ? "Bålet blusser op! Nu er der gode gløder at riste over. 🔥" : "Flammerne tager fat i det tørre brænde. 🪵");
   },
