@@ -1,6 +1,6 @@
 # Spejderquiz
 
-En mobilvenlig quiz-app for spejdere i alderen 10-16 år. Man laver sin egen spejder, tager prøver i 22 emner og samler mærker i bronze, sølv og guld.
+En mobilvenlig quiz-app for spejdere i alderen 10-16 år. Man er patruljeleder for en patrulje på 5 spejdere, tager prøver i 22 emner og samler mærker i bronze, sølv og guld.
 
 Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes direkte i telefonens browser.
 
@@ -14,21 +14,24 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
   Mærkesiden viser fremgangen i hver gruppe, fx »Natur: 8 af 21 mærker«. Et emne vises først, når det har mindst 10 spørgsmål på hvert niveau (`ANTAL_SPG_MIN`)
 - 1.664 spørgsmål med forklaringer – mindst 25 pr. emne og niveau. Heraf opgaver, hvor man skal vise, hvordan knob og surringer bindes, og billedspørgsmål med tegninger af dyr, dyrespor, blade, svampe, knob og surringer
 - Den samme morse- eller semaforopgave kommer aldrig to gange i samme prøve
-- Karakter med valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
+- **Én spiller – én patrulje:** når man starter, opretter man en patrulje på 5 spejdere og vælger patruljeleder (det er en selv) og patruljeassistent. Mærkerne er fælles – når man tager et mærke, får hele patruljen det – og patruljen deler lejrpladsen. Patruljelederen har valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - **Øv dine fejl:** spørgsmål, man har svaret forkert på, samles under Træning. Et spørgsmål forsvinder, når man har svaret rigtigt på det to gange i træk
 - **Ugens udfordring:** 10 spørgsmål fra forskellige emner, som er de samme for alle spejdere hele ugen (valgt ud fra år og ugenummer). Spejderens bedste resultat for ugen vises på profilen
-- **Spejderhytten – ugens spejdermøde:** én gang om ugen (ISO-uge) holder spejderen møde i hytten: åbning med flaghejsning i rundkreds, mødets quiz (ugens udfordring), ugens aktivitet efter årstiden, patruljetid (hvis man er i en patrulje med mindst 2) og afslutning ved bålet med en historie. Alt vælges ud fra år + ugenummer, så alle får det samme møde. Mødet giver point og materialer til lejrpladsen (ekstra ved mindst 8 rigtige), møde-point til ting i hytten, fremmødemærket i bronze/sølv/guld (4/12/26 møder) og en mødestreak. For hver 8 møder optjener man en sygemelding, som automatisk redder streaken, hvis man springer en uge over. 10/10 gør en til *ugens stjerne* på profilen. Gamle møder kan ikke indhentes, men quizzerne fra de sidste 4 uger kan trænes uden belønning
+- **Spejderhytten – ugens spejdermøde:** én gang om ugen (ISO-uge) holder spejderen møde i hytten: åbning med flaghejsning i rundkreds, mødets quiz (ugens udfordring), ugens aktivitet efter årstiden, patruljetid og afslutning ved bålet med en historie. Alt vælges ud fra år + ugenummer, så alle får det samme møde. Mødet giver point og materialer til lejrpladsen (ekstra ved mindst 8 rigtige), møde-point til ting i hytten, fremmødemærket i bronze/sølv/guld (4/12/26 møder) og en mødestreak. For hver 8 møder optjener man en sygemelding, som automatisk redder streaken, hvis man springer en uge over. 10/10 gør en til *ugens stjerne* på profilen. Gamle møder kan ikke indhentes, men quizzerne fra de sidste 4 uger kan trænes uden belønning
 - **Indstillinger pr. spejder:** lyd til/fra, større tekst og oplæsning af spørgsmål og svar på dansk
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
-- Materialer og arbejde på lejrpladsen: sæt patruljens spejdere til at fælde grantræer (→ granstammer → afgrenes til rafter) og løvtræer (→ løvstammer → kløves til brænde – kløvning kræver Kniv, sav og økse i bronze, og fældning kræver sølv). Lav jeres eget tovværk: saml brændenælder og bast, sno tovværk og takl det (kræver Knob og reb). Pionerarbejde koster rafter og reb, og bål koster brænde
-- Alt på lejrpladsen kan opgraderes i 5 niveauer (Normal → Mester) – fx bliver lejrporten flottere og flottere
+- Materialer og arbejde på lejrpladsen: plant grantræer og løvtræer på de tomme pladser i skoven. Når de er vokset op, kan patruljens spejdere fælde dem (→ granstammer → afgrenes til rafter, og løvstammer → kløves til brænde). Fældning kræver Kniv, sav og økse i sølv, og kløvning kræver mærket i bronze og en huggeplads, hvor højere niveau giver mere brænde og hurtigere kløvning. Når et træ er fældet, er pladsen tom igen.
+- Lageret har fra start plads til 10 rafter og 10 brænde. Raftegården og Brændeskuret giver 20 pladser mere for hvert niveau. Det, der ikke er plads til, går tabt
+- Brænde på bålet tages fra lageret. River man noget ned, får man ingen point tilbage – kun 30 % af materialerne
+- Byggeri, opgraderinger, job og træer, der vokser, tager tid. Man kan se en reklame for at halvere tiden (én gang pr. byggeri, opgradering, job og træ). Appen er offline, så »reklamerne« er appens egne tips med en nedtælling på 15 sekunder – rigtige reklamer kræver et reklamenetværk i `visReklame` Lav jeres eget tovværk: saml brændenælder og bast, sno tovværk og takl det (kræver Knob og reb). Pionerarbejde koster rafter og reb, og bål koster brænde
+- Alt på lejrpladsen kan opgraderes fra niveau 1 til 99 – fx bliver lejrporten flottere og flottere. Opgraderingen tager længere tid, jo højere niveauet er (fra få minutter til flere dage)
 - Telte kan man gå ind i og indrette
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
-- Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
-- **Backup:** gem alle spejdere i en fil og indlæs den igen – eller flyt en enkelt spejder til en anden telefon. Find det under profilen
-- **Patruljer og adventureløb:** saml spejderne i en patrulje (mindst 2) og gå 10 adventureløb sammen på én telefon – fra 4 til 25 poster. Før start fordeles rollerne patruljeleder, kortlæser, sanitet, bålmester og signalist, og telefonen gives videre til den, der har rollen ved hver post. Posterne er videns-, pioner-, kompas-, signal-, førstehjælps-, bål-, natur-, vand- og kodeposter. Undervejs er der vejkryds (kort og risikabel eller lang og sikker vej), hændelser, energi, jokere og spiltid på et kort, der kan zoomes. De lange løb er delt i etaper med lejrplads (og overnatning) imellem, og løbet gemmes efter hver post. Løbene giver 1-3 stjerner, point og materialer, samarbejdsmærket i bronze/sølv/guld efter løb 3, 6 og 9 og titlen Mesterpatrulje efter løb 10
+- Alt gemmes lokalt i browseren
+- **Backup:** gem patruljen, mærkerne og lejrpladsen i en fil og indlæs den igen. Find det under profilen
+- **Patruljer og adventureløb:** led patruljen gennem 10 adventureløb – fra 4 til 25 poster. Du er selv patruljeleder, og før start fordeler du rollerne kortlæser, sanitet, bålmester og signalist. Posterne er videns-, pioner-, kompas-, signal-, førstehjælps-, bål-, natur-, vand- og kodeposter. Undervejs er der vejkryds (kort og risikabel eller lang og sikker vej), hændelser, energi, jokere og spiltid på et kort, der kan zoomes. De lange løb er delt i etaper med lejrplads (og overnatning) imellem, og løbet gemmes efter hver post. Løbene giver 1-3 stjerner, point og materialer, samarbejdsmærket i bronze/sølv/guld efter løb 3, 6 og 9 og titlen Mesterpatrulje efter løb 10
 
 ## Ret eller tilføj spørgsmål
 Spørgsmålene står øverst i den første `<script>`-blok i `index.html`:
@@ -52,7 +55,7 @@ python3 find_lette_svar.py index.html --md rapport.md
 Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de forkerte, og afslutter med kode 0, når det rigtige svar er det længste i under 35 % af spørgsmålene.
 
 ## Ret i lejrpladsen
-Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (2 = dobbelt tid). Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (4 = fire gange grundtiden). Lagerpladsen styres af `LAGER_START` og `LAGER_PR_NIV`, træerne af `TRAETYPE` og `GENVAEKST`, nedrivning af `RIV_ANDEL`, det højeste niveau af `MAKSNIV`, og reklamerne af `REKLAME_SEK` og `REKLAMER`. Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
 
 ## Det, mærkerne låser op
 Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni nyeste emner låser desuden dette op:
@@ -61,23 +64,26 @@ Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni n
 |---|---|---|---|
 | Stjerner og nattehimmel | Stjernekikkerten og Orion i kikkerten | Planeten Jupiter og den tiltagende/aftagende måne i kikkerten | Stjernetårn |
 | Friluftskøkken | Snobrød over bålet på bålpladsen | Lejrkøkken (før Bål i sølv) | Bagerovn |
-| Kniv, sav og økse | Kløve brænde (job) | Fælde træer (job) | Huggeplads: +2 brænde pr. kløvning og +1 rafte pr. afgrening |
+| Kniv, sav og økse | Huggeplads og kløve brænde (job) | Fælde træer (job) | Kløvning går 25 % hurtigere |
 | Tur og udrustning | Rygsækstativ i teltet | Fleecetrøje, uldsokker, termoflaske og vabelplaster i teltet | Madpakken på løbene giver +3 energi i stedet for +2 |
 | Fugle | Fuglekasse (før Dyr i bronze) | Fugletårn | Fugle flyver hen over lejrpladsen |
 | Spor og sporing | Sporkasse | Hændelsen »Friske spor« på løbene (+10 patruljepoint) | Også »Sporjagt« på løbene (+20 patruljepoint ved rigtigt svar) |
 | GPS og geocaching | Geocache på lejrpladsen | Første »Kig på kortet igen« på et løb er gratis | Pandelampen lyser 60 % længere på løb med mørke (løb 4) |
 | Lejrbål og sang | 6 ekstra historier ved bålet | Lejrbålsplads (før Bål i guld) | Titlen Lejrbålsleder og »Lav et råb« og »Opfør en sketch« ved bålet |
-| Ledelse og ansvar | Man kan oprette en patrulje | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % patruljepoint på løbene |
+| Ledelse og ansvar | Patruljehjørne | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % patruljepoint på løbene |
 
-De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv), Brændeskur (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
+De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv), Bålbænke (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
 
-Ting, der allerede er bygget, bliver stående, selv om kravet er flyttet, og job, der er i gang, gør sig færdige. Ved løbene tæller det højeste mærke i patruljen, men den ekstra joker kræver, at spejderen med rollen patruljeleder selv har mærket. Fordelene vises, når rollerne fordeles, og regnes ud ved start (`loebFordele`). I koden står det i `LAAS_OP` (teksterne ved et nyt mærke), `JOB` (`kraever`), `HUGGEBONUS`, `STJERNEOPG_ALLE`, `HISTORIER_LB`, `RAAB`, `SKETCHES`, `AKT_FOR` (tredje felt er et krav) og `titler`.
+Ting, der allerede er bygget, bliver stående, selv om kravet er flyttet, og job, der er i gang, gør sig færdige. Ved løbene tæller det højeste mærke i patruljen, men den ekstra joker kræver, at spejderen med rollen patruljeleder selv har mærket. Fordelene vises, når rollerne fordeles, og regnes ud ved start (`loebFordele`). I koden står det i `LAAS_OP` (teksterne ved et nyt mærke), `JOB` (`kraever` og `bygning`), `jobGiver`, `STJERNEOPG_ALLE`, `HISTORIER_LB`, `RAAB`, `SKETCHES`, `AKT_FOR` (tredje felt er et krav) og `titler`.
 
 Tilpasninger i forhold til de første ønsker:
 - Sølv i Spor og sporing og guld i Ledelse og ansvar giver bonus til patruljens point, fordi løbene ikke har en anden pointtavle.
 - »Kig på kortet igen virker to gange« er lavet sådan, at det første kortforsøg er gratis og ikke koster en joker.
 - Geocachen er en ting på lejrpladsen med fakta om geocaching, ligesom fuglekassen.
 - Rangen »Patruljeleder« hedder nu »Vildmarksspejder«, så den ikke forveksles med titlen fra Ledelse og ansvar.
+- Patruljen oprettes nu fra start, så Ledelse og ansvar i bronze giver et Patruljehjørne i stedet for retten til at oprette en patrulje. Huggepladsen kræver nu bronze (i stedet for guld), fordi al kløvning kræver en huggeplads.
+
+Gamle gemte spil virker stadig: den aktive spejder bliver patruljeleder i sin patrulje (eller i en ny), patruljen fyldes op til 5 spejdere, og alle i patruljen får de højeste mærker, nogen af dem havde. Spejdere, der ikke var med i patruljen, ligger stadig i de gemte data, men vises ikke. Træerne i en gammel skov bliver stående.
 
 ## Ret i adventureløbene
 Løbene står i listen `LOEB` i `index.html` (søg efter `ADVENTURELØB`). Hvert løb har:
