@@ -6816,8 +6816,8 @@ function konfetti(){
    ===================================================================== */
 const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
-  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 5 mere for hvert niveau." },
-  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 5 mere for hvert niveau." },
+  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
+  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
   { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge på pladsen." },
   { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ." },
   { id:"braende",     navn:"Brændestabel",      ikon:"🪵", pris:20,  besk:"Tørt brænde til bålet." },
@@ -8000,7 +8000,7 @@ function skovData(c){
 }
 function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
 // Lagerplads: rafter og brænde kan kun gemmes, hvis der er plads. Raftegården og brændeskuret giver mere plads for hvert niveau.
-const LAGER_START = 10, LAGER_BYGGET = 20, LAGER_PR_NIV = 5;
+const LAGER_START = 10, LAGER_BYGGET = 20, LAGER_PR_NIV = 10;
 const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur" };
 function lagerPlads(c, m){ if(!LAGER_BYG[m]) return Infinity; const n=bygNiv(cur()||c, LAGER_BYG[m]); return LAGER_START + (n ? LAGER_BYGGET + LAGER_PR_NIV*(n-1) : 0); }
 function lagerTip(m){ return `Byg eller opgrader ${{ rafter:"raftegården", braende:"brændeskuret" }[m]} for at få mere plads.`; }
