@@ -5927,6 +5927,24 @@ const LOEB = [
     intro:"I den gamle granplantage skulle en skattekiste fra spejdernes første lejr være gravet ned. Et gammelt kort viser vejen – men kun med kompasretninger.",
     mellem:["Granerne står i lange, lige rækker. Det er let at gå forkert, så hold øje med kompasset.","Der dufter af harpiks og gran. En mus piler hen over stien.","På et træ er der skåret et pilemærke – I er på rette vej.","I kommer forbi en lysning med en gammel bålplads.","Kortet viser et kryds lidt længere fremme.","Jorden er blød og dækket af grannåle.","Den sidste kompasretning peger mod en stor sten."],
     slut:"Under den store sten graver I en rusten kiste frem. Indeni ligger gamle spejdermærker, et kompas og et brev: »Til den patrulje, der finder denne skat – I er rigtige spejdere!«" },
+  { nr:4, navn:"Natløbet ved mosen", ikon:"🔦", poster:9, niveau:2, etaper:1, energi:4, jokere:3, kryds:1, haendelserPr:3, maalTid:24, moerkt:95, signal:["morse"],
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","pioner"], pioner:["baare","flaade"], bund:"#5f7f45", terraen:{ mose:3, skov:2, soe:1 },
+    nyt:"Nyt: mørkt kort – I kan kun se området tæt på jer – og signalposter med morselampe.",
+    intro:"Det er blevet mørkt, og mosen ligger stille under månen. Ude mellem tuerne blinker lamper i morse. Lederne har lagt et natløb – kan I finde vej med kun pandelampen?",
+    mellem:["Pandelampen lyser kun få meter frem. Uden for lyskeglen er alt sort.","En ugle tuder. Det knirker i træerne, og I holder tæt sammen.","Forude blinker en lampe: kort, kort, kort … lang, lang, lang.","Mosen gynger under fødderne. Følg stien, og gå ikke ud på det bløde.","Der dufter af porse og tørv. Langt væk kan I høre en vej.","En ræv krydser stien – øjnene lyser grønt i lyset fra lampen.","Stjernerne kommer frem over mosen. Karlsvognen står højt på himlen.","I kan høre de andre patruljer råbe i det fjerne.","Det sidste lys blinker lige forude."],
+    slut:"Ved mosens kant står lederne med fakler og varm saft. »I fandt alle posterne i mørket,« siger de. »Nu er I en rigtig natpatrulje!«" },
+  { nr:5, navn:"Kanoturen på søen", ikon:"🛶", poster:11, niveau:2, etaper:1, energi:4, jokere:3, kryds:2, haendelserPr:3, maalTid:28, vejrskift:true,
+    typer:["videns","vand","kompas","natur","forstehjaelp","baal","pioner"], pioner:["flaade"], bund:"#86b25a", terraen:{ soe:4, skov:2, eng:2 },
+    nyt:"Nyt: vandposter om sikkerhed og kanoer – og vejret kan skifte undervejs.",
+    intro:"Patruljen skal padle tværs over søen til en lille ø, hvor der ligger en besked fra lederne. Men vejret over søen kan skifte på et øjeblik, så redningsvestene skal på.",
+    mellem:["Kanoen glider ud fra bredden. Husk: sid lavt og midt i kanoen.","Vandet er spejlblankt, og en fiskehejre står i sivene.","I padler i takt – den bagerste styrer med et J-tag.","En knopsvane kommer tæt på. Hold afstand, den passer på sine unger.","Vinden tager lidt til, og der kommer små bølger.","I trækker kanoerne op på en lille strand og går et stykke til fods.","Øen kommer til syne bag sivene.","Der er en gammel bådebro forude.","I kan se beskeden hænge på et træ på øen.","Solen spejler sig i vandet.","Kun et lille stykke tilbage."],
+    slut:"På øen finder I lederens besked i en vandtæt dåse: »Godt padlet! I har passet på hinanden på vandet.« I padler tilbage i solnedgangen." },
+  { nr:6, navn:"Ugleskoven", ikon:"🦉", poster:13, niveau:2, etaper:1, energi:4, jokere:2, kryds:2, haendelserPr:3, maalTid:32,
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","pioner"], pioner:["port","baare"], bund:"#7aa650", terraen:{ skov:5, bakke:2, mose:1 },
+    nyt:"Nyt: færre jokere og to vejkryds – nu skal I klare mere selv.",
+    intro:"I Ugleskoven bor en gammel slørugle, som ifølge sagnet passer på skovens hemmeligheder. Patruljen skal finde de 13 poster, før uglen flyver ud på jagt i skumringen.",
+    mellem:["Træerne er gamle og tykke, og stien er dækket af mos.","I finder en uglegylp under et træ – med små knogler fra mus.","Der er spor efter et rådyr i det bløde mudder.","En spætte hamrer løs højt oppe i en stamme.","Stien går op ad en bakke. Herfra kan I se ud over hele skoven.","I passerer en gammel jagthytte.","Der hænger en uglekasse på et træ – men den er tom.","Det begynder at blive skumring.","I hører et svagt »hu-hu« i det fjerne.","Bladene rasler i vinden.","En flagermus flagrer forbi.","Skoven bliver tættere og mørkere.","Uglens træ må være lige forude."],
+    slut:"I det gamle egetræ sidder sløruglen og kigger ned på jer med sine store øjne. Under træet ligger en lille træugle – et tegn på, at I har klaret Ugleskoven." },
 ];
 const LOEBNR = Object.fromEntries(LOEB.map(L=>[L.nr,L]));
 const ANTAL_LOEB = 10;
@@ -6029,7 +6047,7 @@ function lavPlan(L, seed){
     if(pt==="videns"){ let e=emner[ei++ % emner.length]; n.emne=e; n.spg=paaNiv(q=>q.emne===e && !q.type && !q.media, 3); }
     else if(pt==="natur"){ const b=paaNiv(q=>q.media && q.media.type==="billede" && ["dyr","planter"].includes(q.emne), 1); n.spg = b.length ? b : paaNiv(q=>["dyr","planter","natur"].includes(q.emne) && !q.type && !q.media, 1); }
     else if(pt==="vand") n.spg = paaNiv(q=>q.emne==="vand" && !q.type && !q.media, 1);
-    else if(pt==="signal") n.spg = paaNiv(q=>q.media && (q.media.type==="morse" || q.media.type==="semafor"), 1);
+    else if(pt==="signal") n.spg = paaNiv(q=>q.media && (L.signal || ["morse","semafor"]).includes(q.media.type), 1);
     else if(pt==="forstehjaelp") n.scen = FH_SCEN.indexOf(fh[fi++ % fh.length]);
     else if(pt==="baal") n.scen = BAAL_OPG.indexOf(baal[bi++ % baal.length]);
     else if(pt==="pioner") n.opg = L.pioner[pi++ % L.pioner.length];
@@ -6060,12 +6078,17 @@ function lavPlan(L, seed){
   indsaet(antalH, () => ({ t:"haend", id: haendPool[hi++ % haendPool.length].id }));
   if(L.vejrskift) indsaet(1, () => ({ t:"haend", id: pick2(["regn","sol"], r) }));
   // Undgå to ens poster i træk: ekstraposten ved et vejkryds får en anden type end naboerne
-  etaper.forEach(et => et.noder.forEach((n,k) => {
-    if(n.t!=="kryds" || !n.ekstra || n.ekstra.t!=="post") return;
-    const for_ = et.noder.slice(0,k).reverse().find(x=>x.t==="post"), efter = et.noder.slice(k+1).find(x=>x.t==="post");
-    const mulige = L.typer.filter(t=>t!=="pioner" && t!==(for_&&for_.pt) && t!==(efter&&efter.pt));
-    if(mulige.length && !mulige.includes(n.ekstra.pt)) n.ekstra = lavPost(pick2(mulige, r));
-  }));
+  etaper.forEach(et => {
+    // Rækkefølgen, hvis patruljen tager alle genveje: posterne og ekstraposterne
+    const seq = []; et.noder.forEach(n => { if(n.t==="post") seq.push({ n }); if(n.t==="kryds" && n.ekstra && n.ekstra.t==="post") seq.push({ k:n }); });
+    seq.forEach((x,k) => {
+      if(!x.k) return;
+      const for_ = k ? (seq[k-1].n || seq[k-1].k.ekstra).pt : null, efter = seq[k+1] ? (seq[k+1].n || seq[k+1].k.ekstra).pt : null;
+      if(x.k.ekstra.pt!==for_ && x.k.ekstra.pt!==efter) return;
+      const mulige = L.typer.filter(t=>t!=="pioner" && t!==for_ && t!==efter);
+      if(mulige.length) x.k.ekstra = lavPost(pick2(mulige, r));
+    });
+  });
   // Nummerér posterne og sæt start og mål/lejr på hver etape
   let nr = 0;
   etaper.forEach((et, e) => {
@@ -6126,7 +6149,7 @@ function startLoeb(){
   const p=minLoebPatrulje(), L=LOEBNR[loebKlar.nr], seed = (Date.now() ^ (Math.random()*1e9)) >>> 0;
   p.igang = { nr:L.nr, seed, plan:lavPlan(L, seed), e:0, i:0, fase:"gaa", energi:L.energi, jokere:L.jokere,
     tid:0, straf:0, etapeTid:0, fejl:0, opgaver:0, mad:{}, roller:loebKlar.roller, ruter:{}, vejr:"sol", besked:"", start:Date.now() };
-  loebKlar = null; loebOpg = null; save();
+  loebKlar = null; loebOpg = null; loebAnim = null; save();
   go("loeb");
 }
 
@@ -6222,7 +6245,7 @@ function loebKort(L, ig){
     else if(n.t==="maal") mark += `<g><path d="M${x} ${y+12} V${y-18}" stroke="#333" stroke-width="2.5"/><rect x="${x}" y="${y-18}" width="22" height="14" fill="#fff" stroke="#333"/><path d="M${x} ${y-18} h5.5 v3.5 h-5.5Z M${x+11} ${y-18} h5.5 v3.5 h-5.5Z M${x+5.5} ${y-14.5} h5.5 v3.5 h-5.5Z M${x+16.5} ${y-14.5} h5.5 v3.5 h-5.5Z M${x} ${y-11} h5.5 v3.5 h-5.5Z M${x+11} ${y-11} h5.5 v3.5 h-5.5Z M${x+5.5} ${y-7.5} h5.5 v3.5 h-5.5Z M${x+16.5} ${y-7.5} h5.5 v3.5 h-5.5Z" fill="#333"/></g>`;
   });
   const p = patruljer().find(x=>x.igang===ig), dyr = PDYR[p ? p.dyr : 0][0];
-  const fra = loebAnim && loebAnim.fra!=null ? pos[loebAnim.fra] : pos[ig.i], [bx,by] = fra;
+  const fra = (loebAnim && pos[loebAnim.fra]) || pos[ig.i], [bx,by] = fra;
   const brik = `<g id="lbrik" style="transform:translate(${bx.toFixed(1)}px,${(by-2).toFixed(1)}px)" data-x="${pos[ig.i][0].toFixed(1)}" data-y="${(pos[ig.i][1]-2).toFixed(1)}"><circle r="15" fill="#fff" stroke="#2f4a2b" stroke-width="3"/><text y="6" text-anchor="middle" font-size="17">${dyr}</text></g>`;
   let moerke = "";
   if(L.moerkt){ const [mx,my]=pos[ig.i];
@@ -6455,7 +6478,7 @@ function loebMaal(){
   let mester = false;
   if(L.nr===ANTAL_LOEB && !p.mester){ p.mester = true; mester = true; }
   p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, hver, mat, foerste, maerke, mester, rekord: !foerste && tid < f.bedsteTid };
-  p.igang = null; loebOpg = null; save();
+  p.igang = null; loebOpg = null; loebAnim = null; save();
   go("loebmaal");
   if(maerke) fejr(PMAERKE, maerke, null);
   else konfetti();
