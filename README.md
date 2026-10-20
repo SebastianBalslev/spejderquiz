@@ -31,7 +31,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, tag på kano- og flådetur på søen m.m.
 - Alt gemmes lokalt i browseren
 - **Backup:** gem patruljen, mærkerne og lejrpladsen i en fil og indlæs den igen. Find det under ⚙️ Indstillinger på forsiden
-- **Patruljer og adventureløb:** led patruljen gennem 10 adventureløb – fra 4 til 25 poster. Du er selv patruljeleder, og før start fordeler du rollerne kortlæser, sanitet, bålmester og signalist. Posterne er videns-, pioner-, kompas-, signal-, førstehjælps-, bål-, natur-, vand- og kodeposter. Undervejs er der vejkryds (kort og risikabel eller lang og sikker vej), hændelser, energi, jokere og spiltid på et kort, der kan zoomes. De lange løb er delt i etaper med lejrplads (og overnatning) imellem, og løbet gemmes efter hver post. Løbene giver 1-3 stjerner, point og materialer, samarbejdsmærket i bronze/sølv/guld efter løb 3, 6 og 9 og titlen Mesterpatrulje efter løb 10
+- **Patruljer og adventureløb:** led patruljen gennem 10 adventureløb – fra 4 til 25 poster. Du er selv patruljeleder, og før start fordeler du rollerne kortlæser, sanitet, bålmester og signalist. Ved vidensposterne svarer du selv – man vælger ikke, hvem i patruljen der svarer – og belønningen er ét samlet pointtal til dig (ikke point til hver spejder). Posterne er videns-, pioner-, kompas-, signal-, førstehjælps-, bål-, natur-, vand- og kodeposter. Undervejs er der vejkryds (kort og risikabel eller lang og sikker vej), hændelser, energi, jokere og spiltid på et kort, der kan zoomes. De lange løb er delt i etaper med lejrplads (og overnatning) imellem, og løbet gemmes efter hver post. Løbene giver 1-3 stjerner, point og materialer, samarbejdsmærket i bronze/sølv/guld efter løb 3, 6 og 9 og titlen Mesterpatrulje efter løb 10
 
 ## Ret eller tilføj spørgsmål
 Spørgsmålene står øverst i den første `<script>`-blok i `index.html`:
@@ -67,10 +67,10 @@ Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni n
 | Kniv, sav og økse | Huggeplads og kløve brænde (job) | Fælde træer (job) | Kløvning går 25 % hurtigere |
 | Tur og udrustning | Rygsækstativ i teltet | Fleecetrøje, uldsokker, termoflaske og vabelplaster i teltet | Madpakken på løbene giver +3 energi i stedet for +2 |
 | Fugle | Fuglekasse (før Dyr i bronze) | Fugletårn | Fugle flyver hen over lejrpladsen |
-| Spor og sporing | Sporkasse | Hændelsen »Friske spor« på løbene (+10 patruljepoint) | Også »Sporjagt« på løbene (+20 patruljepoint ved rigtigt svar) |
+| Spor og sporing | Sporkasse | Hændelsen »Friske spor« på løbene (+10 point) | Også »Sporjagt« på løbene (+20 point ved rigtigt svar) |
 | GPS og geocaching | Geocache på lejrpladsen | Første »Kig på kortet igen« på et løb er gratis | Pandelampen lyser 60 % længere på løb med mørke (løb 4) |
 | Lejrbål og sang | 6 ekstra historier ved bålet | Lejrbålsplads (før Bål i guld) | Titlen Lejrbålsleder og »Lav et råb« og »Opfør en sketch« ved bålet |
-| Ledelse og ansvar | Patruljehjørne | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % patruljepoint på løbene |
+| Ledelse og ansvar | Patruljehjørne | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % point på løbene |
 
 De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv), Bålbænke (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
 

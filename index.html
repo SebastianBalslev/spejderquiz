@@ -7274,7 +7274,7 @@ const LAAS_OP = {
   spor:      { 2:"Friske spor med bonuspoint på løbene", 3:"Sporjagt med ekstra bonuspoint på løbene" },
   gps:       { 2:"Første »Kig på kortet igen« er gratis på løbene", 3:"Pandelampen lyser længere på natløbet" },
   lejrbaal:  { 1:"Flere historier ved bålet", 3:"Titlen Lejrbålsleder – og råb og sketches ved bålet" },
-  ledelse:   { 2:"Som patruljeleder på løbet får du en ekstra joker", 3:"Titlen Patruljeleder – og +25 % patruljepoint på løbene" },
+  ledelse:   { 2:"Som patruljeleder på løbet får du en ekstra joker", 3:"Titlen Patruljeleder – og +25 % point på løbene" },
 };
 function laaserOp(emneId, lvl){ return [...nyeTing(emneId,lvl).map(b=>b.navn), (LAAS_OP[emneId]||{})[lvl]].filter(Boolean).join(" · "); }
 function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emneId && b.krav[1]===lvl); }
@@ -7913,7 +7913,7 @@ function scrPquiz(){
   } else {
     const ok=pquiz.svar[pquiz.i];
     if(lg && !ok) h += jokerHTML(lg, ["kort"]);
-    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 til ${esc(hvem.navn)} og patruljen</span>`:"Desværre – forkert"}</b>
+    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?(pquiz.loeb?`Rigtigt! ✅ <span class="plus">+10 point</span>`:`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 point</span>`):"Desværre – forkert"}</b>
       ${ok?"":`<p>Det rigtige svar er: <b>${esc(q.svar[0])}</b></p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
       <button class="btn" data-a="pnaeste">${pquiz.i+1>=pquiz.qs.length?"Se patruljens resultat 🏁":"Næste spørgsmål →"}</button>`;
   }
@@ -8446,9 +8446,9 @@ const HAENDELSER = [
   { id:"torden", ikon:"⛈️", navn:"Tordenvejr", min:7, vejr:"regn", tekst:"Det lyner og tordner kun få kilometer væk.",
     valg:[{ t:"Undgå høje træer, og sæt jer sammenkrøbet i en lavning", tid:3, besked:"Rigtigt – sådan er man mest sikker i tordenvejr (+3 min)." }, { t:"Stil jer under det højeste træ", energi:-2, besked:"Høje træer tiltrækker lynet. I flytter jer hurtigt (−2 energi)." }] },
   { id:"friskspor", ikon:"🐾", navn:"Friske spor", min:1, spor:2, tekst:"{navn} får øje på friske spor i det bløde mudder ved stien.",
-    valg:[{ t:"Stop og læs sporene sammen", tid:1, point:10, besked:"Et rådyr og dets kid er gået her for lidt siden. Sporlæsning giver bonus (+10 patruljepoint, +1 min)." }, { t:"Gå videre – vi har travlt", besked:"I skynder jer videre uden at se nærmere." }] },
+    valg:[{ t:"Stop og læs sporene sammen", tid:1, point:10, besked:"Et rådyr og dets kid er gået her for lidt siden. Sporlæsning giver bonus (+10 point, +1 min)." }, { t:"Gå videre – vi har travlt", besked:"I skynder jer videre uden at se nærmere." }] },
   { id:"sporjagt", ikon:"🔎", navn:"Sporjagt", min:1, spor:3, tekst:"Et spor fører væk fra stien. Kan I læse, hvem der har været her?", spm:{ emne:"spor" }, okPoint:20,
-    fejl:{ tid:2, besked:"I følger det forkerte spor et stykke (+2 min)." }, ok:"Rigtigt læst! Ægte sporfindere (+20 patruljepoint)." },
+    fejl:{ tid:2, besked:"I følger det forkerte spor et stykke (+2 min)." }, ok:"Rigtigt læst! Ægte sporfindere (+20 point)." },
   { id:"stenskred", ikon:"🪨", navn:"Løse sten", min:9, tekst:"Stien går over en skråning med løse sten.",
     valg:[{ t:"Gå én ad gangen med afstand", tid:2, besked:"Sikkert og roligt (+2 min)." }, { t:"Løb hurtigt over alle sammen", energi:-2, besked:"Stenene skrider, og flere falder (−2 energi)." }] },
 ];
@@ -8626,7 +8626,7 @@ function fordeleTekst(f){
   if(f.kortFri) t.push("🗺️ Første »Kig på kortet igen« er gratis (GPS, sølv)");
   if(f.lys) t.push("🔦 Pandelampen lyser længere i mørket (GPS, guld)");
   if(f.ekstraJoker) t.push("🃏 Patruljelederen har en ekstra joker (Ledelse, sølv)");
-  if(f.pl) t.push("⚜️ +25 % patruljepoint i mål (Ledelse, guld)");
+  if(f.pl) t.push("⚜️ +25 % point i mål (Ledelse, guld)");
   if(f.spor>=2) t.push(`🐾 Sporhændelser med bonuspoint (Spor og sporing, ${f.spor>=3?"guld":"sølv"})`);
   return t;
 }
@@ -8892,7 +8892,7 @@ function startPostOpgave(){
   const ig=aktivtLoeb(), n=nodeNu(ig), p=minLoebPatrulje(), L=LOEBNR[ig.nr];
   if(n.pt==="videns"){
     const ms=medlemmer(p);
-    pquiz = { p:p.id, niveau:L.niveau, loeb:true, i:0, fase:"vaelg", hvem:null, rigtige:0, joker:0, svar:[], done:false,
+    pquiz = { p:p.id, niveau:L.niveau, loeb:true, i:0, fase:"svar", hvem:cur().id, svaret:false, rigtige:0, joker:0, svar:[], done:false,
       max: Math.ceil(n.spg.length/ms.length)+1, antal:{}, res:{},
       qs: n.spg.map(id=>SPGID[id]).filter(Boolean).map(q=>({ ...q, opts: shuffle(q.svar.map((t,i)=>({t, ok:i===0}))) })) };
     go("pquiz"); return;
@@ -8979,9 +8979,10 @@ function loebMaal(){
   const ig=aktivtLoeb(), p=minLoebPatrulje(), L=LOEBNR[ig.nr], ms=medlemmer(p);
   const s = loebStjerner(ig), tid = ig.tid + ig.straf;
   const f = ig.fordele || {}, bonus = ig.bonus || 0;
-  const pp = Math.round((20*L.nr + 15*s) * (f.pl ? 1.25 : 1)) + bonus, hver = 10*L.nr + 5*s;
+  // Én samlet belønning: point til dig og til patruljens pointtal (ikke point til hver spejder)
+  const pp = Math.round((30*L.nr + 20*s) * (f.pl ? 1.25 : 1)) + bonus;
   const mat = { braende: L.nr + s, reb: Math.ceil(L.nr/2) + (s===3?1:0), rafter: L.nr + s };
-  p.point = (p.point||0) + pp; ms.forEach(m=>{ m.point += hver; }); brugMat(cur(), mat, 1);
+  p.point = (p.point||0) + pp; cur().point += pp; brugMat(cur(), mat, 1);
   p.loeb = p.loeb || {};
   const fr = p.loeb[L.nr], foerste = !fr;
   p.loeb[L.nr] = { stjerner: Math.max(s, fr?fr.stjerner:0), bedsteTid: Math.min(tid, fr?fr.bedsteTid:Infinity), gange: (fr?fr.gange:0)+1 };
@@ -8991,7 +8992,7 @@ function loebMaal(){
   if(nyMaerke && (p.maerke||0) < nyMaerke){ p.maerke = nyMaerke; maerke = nyMaerke; }
   let mester = false;
   if(L.nr===ANTAL_LOEB && !p.mester){ p.mester = true; mester = true; }
-  p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, hver, mat, foerste, maerke, mester, rekord: !foerste && tid < fr.bedsteTid, bonus, pl: !!f.pl };
+  p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, mat, foerste, maerke, mester, rekord: !foerste && tid < fr.bedsteTid, bonus, pl: !!f.pl };
   p.igang = null; loebOpg = null; loebAnim = null; save();
   go("loebmaal");
   if(maerke) fejr(PMAERKE, maerke, null);
@@ -9007,7 +9008,7 @@ function scrLoebMaal(){
       <p style="margin:6px 0 0">⏱️ Tid: <b>${mmss(r.tid)}</b>${r.rekord?" · 🏅 Ny rekord!":""} · ❌ ${r.fejl} fejl · ❤️ ${r.energi} energi tilbage</p>
       ${r.mester?`<div class="rankup">🏆 I er nu <b>Mesterpatrulje</b>!</div>`:""}</div>
     <div class="card"><p style="margin:0">${L.slut}</p></div>
-    <div class="card belon"><b>🎁 Belønning</b><div class="belonliste"><span>🤝 +${r.pp} patruljepoint${r.bonus?` (heraf ${r.bonus} for spor)`:""}${r.pl?" · ⚜️ +25 %":""}</span><span>🪙 +${r.hver} point til hver</span>${Object.entries(r.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
+    <div class="card belon"><b>🎁 Belønning</b><div class="belonliste"><span>🪙 +${r.pp} point${r.bonus?` (heraf ${r.bonus} for spor)`:""}${r.pl?" · ⚜️ +25 %":""}</span>${Object.entries(r.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
       <small>Stjerner: ★ for at komme i mål, ★ for højst 20 % fejl og ★ for at have kræfter tilbage og nå i mål på ${L.maalTid} min.</small></div>
     ${r.nr<ANTAL_LOEB && LOEBNR[r.nr+1]?`<button class="btn gold" data-a="loebvaelg" data-n="${r.nr+1}">Næste løb: ${LOEBNR[r.nr+1].navn} →</button>`:""}
     <button class="btn secondary" data-a="til" data-to="patrulje">Til patruljen</button>`;
@@ -9635,12 +9636,12 @@ const actions = {
     pquiz.svaret=true; pquiz.valgt=k; pquiz.svar[pquiz.i]=ok;
     pquiz.antal[m.id]=(pquiz.antal[m.id]||0)+1;
     const r=pquiz.res[m.id]||(pquiz.res[m.id]={r:0,n:0}); r.n++;
-    if(ok){ r.r++; pquiz.rigtige++; m.point+=10; p.point=(p.point||0)+10; vibrer(30); } else vibrer([60,40,60]);
+    if(ok){ r.r++; pquiz.rigtige++; cur().point+=10; p.point=(p.point||0)+10; vibrer(30); } else vibrer([60,40,60]);
     const ig = pquiz.loeb && aktivtLoeb();
     if(ig){ ig.opgaver++; if(!ok){ ig.fejl++; const t=energi(ig,-1); if(t) lejrToast(t); } lydEffekt(ok); }
     save(); render(); const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
   },
-  pnaeste(){ pquiz.i++; pquiz.fase="vaelg"; pquiz.svaret=false; pquiz.hvem=null; if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
+  pnaeste(){ pquiz.i++; pquiz.svaret=false; if(!pquiz.loeb){ pquiz.fase="vaelg"; pquiz.hvem=null; } if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
   pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ const m=pquiz.moede, l=pquiz.loeb; pquiz=null; go(l && aktivtLoeb() ? "loeb" : m && moede ? "moede" : "patrulje"); }); },
   pbygstart(d){ startPbyg(d.id); },
   pbygklar(){ bygOpg.skift=false; bygOpg.valgt=null; render(); window.scrollTo(0,0); },
