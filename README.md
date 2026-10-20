@@ -1,14 +1,20 @@
 # Spejderquiz
 
-En mobilvenlig quiz-app for spejdere i alderen 10-16 år. Man laver sin egen spejder, tager prøver i 13 emner og samler mærker i bronze, sølv og guld.
+En mobilvenlig quiz-app for spejdere i alderen 10-16 år. Man laver sin egen spejder, tager prøver i 22 emner og samler mærker i bronze, sølv og guld.
 
 Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes direkte i telefonens browser.
 
 ## Indhold
-- 13 emner med hvert sit mærke i bronze, sølv og guld – bl.a. Koder og signaler med blinkende morselampe og semafor
-- Næsten 1.000 spørgsmål med forklaringer – mindst 25 pr. emne og niveau. Heraf opgaver, hvor man skal vise, hvordan knob og surringer bindes, og billedspørgsmål med tegninger af dyr, dyrespor, blade, svampe, knob og surringer
+- 22 emner med hvert sit mærke i bronze, sølv og guld, delt i fire grupper på mærkesiden:
+  - **Friluftsliv:** Lejrliv og telte, Tur og udrustning, Bål, Friluftskøkken, Kniv, sav og økse, Overlevelse
+  - **Natur:** Natur og miljø, Dyr, Fugle, Spor og sporing, Planter og svampe, Vejr, Stjerner og nattehimmel
+  - **Færdigheder:** Knob og reb, Førstehjælp, Orientering og kompas, GPS og geocaching, Vand og sejlads, Koder og signaler (med blinkende morselampe og semafor)
+  - **Spejderliv:** Spejderhistorie og traditioner, Lejrbål og sang, Ledelse og ansvar
+
+  Mærkesiden viser fremgangen i hver gruppe, fx »Natur: 8 af 21 mærker«. Et emne vises først, når det har mindst 10 spørgsmål på hvert niveau (`ANTAL_SPG_MIN`)
+- 1.664 spørgsmål med forklaringer – mindst 25 pr. emne og niveau. Heraf opgaver, hvor man skal vise, hvordan knob og surringer bindes, og billedspørgsmål med tegninger af dyr, dyrespor, blade, svampe, knob og surringer
 - Den samme morse- eller semaforopgave kommer aldrig to gange i samme prøve
-- Karakter med valgfrit udseende og ranger fra Ny spejder til Mesterspejder
+- Karakter med valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - **Øv dine fejl:** spørgsmål, man har svaret forkert på, samles under Træning. Et spørgsmål forsvinder, når man har svaret rigtigt på det to gange i træk
 - **Ugens udfordring:** 10 spørgsmål fra forskellige emner, som er de samme for alle spejdere hele ugen (valgt ud fra år og ugenummer). Spejderens bedste resultat for ugen vises på profilen

@@ -1,7 +1,7 @@
 {
   "name": "Spejderquiz",
   "short_name": "Spejderquiz",
-  "description": "Saml spejdermærker i bronze, sølv og guld ved at svare på spørgsmål i 13 emner.",
+  "description": "Saml spejdermærker i bronze, sølv og guld ved at svare på spørgsmål i 22 emner.",
   "lang": "da",
   "start_url": "./",
   "scope": "./",

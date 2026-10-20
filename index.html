@@ -219,6 +219,8 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .summary{display:flex;justify-content:center;gap:14px;font-weight:700;margin-bottom:12px;flex-wrap:wrap}
 .summary span{background:var(--paper);border-radius:999px;padding:6px 12px;box-shadow:0 2px 0 var(--line)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gruppe{display:flex;align-items:center;gap:10px;margin:18px 2px 8px}.gruppe b{font-size:17px;color:var(--forest)}.gruppe b span{font-weight:700;color:var(--muted)}
+.gruppebar{height:6px;border-radius:3px;background:var(--paper2);margin:-2px 2px 10px;overflow:hidden}.gruppebar i{display:block;height:100%;background:linear-gradient(90deg,#b0702f,#9aa6b2,#e0a923)}
 .bcell{background:var(--paper);border:1px solid rgba(220,207,174,.7);border-radius:18px;padding:12px 4px 10px;text-align:center;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;min-height:150px}
 .bcell:active{transform:translateY(2px)}
 .bcell .badge{width:74px;height:74px}
@@ -5871,9 +5873,9 @@ const RING = [
 const RANG = [
   { min:0,  navn:"Ny spejder",      ikon:"🌱" },
   { min:3,  navn:"Spejder",         ikon:"⛺" },
-  { min:9,  navn:"Erfaren spejder", ikon:"🧭" },
-  { min:18, navn:"Vildmarksspejder", ikon:"🚩" },
-  { min:30, navn:"Mesterspejder",   ikon:"🏆" },
+  { min:12, navn:"Erfaren spejder", ikon:"🧭" },
+  { min:28, navn:"Vildmarksspejder", ikon:"🚩" },
+  { min:50, navn:"Mesterspejder",   ikon:"🏆" },
 ];
 const ANTAL_SPG = 10;
 const TID = 20;
@@ -6194,15 +6196,30 @@ function scrProfil(){
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
 }
 
+// Mærkesiden er delt i grupper. Emner, der ikke står her, vises under »Andre«.
+const MGRUPPER = [
+  { navn:"Friluftsliv", ikon:"🏕️", emner:["lejr","tur","baal","koekken","vaerktoej","overlevelse"] },
+  { navn:"Natur",       ikon:"🌿", emner:["natur","dyr","fugle","spor","planter","vejr","stjerner"] },
+  { navn:"Færdigheder", ikon:"🧭", emner:["knob","forstehjalp","orientering","gps","vand","koder"] },
+  { navn:"Spejderliv",  ikon:"⚜️", emner:["historie","lejrbaal","ledelse"] },
+];
 function scrMaerker(){
   const c=cur(); const cnt=[0,0,0,0];
   EMNER.forEach(e=>{ const l=c.badges[e.id]||0; for(let i=1;i<=l;i++) cnt[i]++; });
+  const iGrp = new Set(MGRUPPER.flatMap(g=>g.emner)), grupper = MGRUPPER.concat([{ navn:"Andre", ikon:"🏅", emner:EMNER.map(e=>e.id).filter(id=>!iGrp.has(id)) }]);
+  const gruppeHTML = grupper.map(g=>{
+    const es = g.emner.map(id=>EMNE[id]).filter(e=>e && EMNER.includes(e)); if(!es.length) return "";
+    const har = es.reduce((n,e)=>n+(c.badges[e.id]||0),0), maks = es.length*3;
+    return `<div class="gruppe"><span style="font-size:22px">${g.ikon}</span><b>${g.navn}: <span>${har} af ${maks} mærker</span></b></div>
+      <div class="gruppebar"><i style="width:${Math.round(har/maks*100)}%"></i></div>
+      <div class="grid">${es.map(e=>{ const l=c.badges[e.id]||0;
+        return `<button class="bcell" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:"Låst"}</small></button>`; }).join("")}</div>`;
+  }).join("");
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
-    <div class="grid">${EMNER.map(e=>{ const l=c.badges[e.id]||0;
-      return `<button class="bcell" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:"Låst"}</small></button>`; }).join("")}</div>
-    <p class="muted center" style="font-size:14px">Tryk på et mærke for at tage prøven.</p>
-    <div class="sect">Særlige mærker</div>
+    <p class="muted center" style="font-size:14px;margin-bottom:0">Tryk på et mærke for at tage prøven. Bronze, sølv og guld tæller hver som ét mærke.</p>
+    ${gruppeHTML}
+    <div class="sect" style="margin-top:22px">Særlige mærker</div>
     <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button></div>
     <p class="muted center" style="font-size:14px">Fremmødemærket får du for at komme til spejdermøder i hytten: bronze for ${MOEDE_KRAV[1]}, sølv for ${MOEDE_KRAV[2]} og guld for ${MOEDE_KRAV[3]} møder.</p>`;
 }
