@@ -12,6 +12,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - **Øv dine fejl:** spørgsmål, man har svaret forkert på, samles under Træning. Et spørgsmål forsvinder, når man har svaret rigtigt på det to gange i træk
 - **Ugens udfordring:** 10 spørgsmål fra forskellige emner, som er de samme for alle spejdere hele ugen (valgt ud fra år og ugenummer). Spejderens bedste resultat for ugen vises på profilen
+- **Spejderhytten – ugens spejdermøde:** én gang om ugen (ISO-uge) holder spejderen møde i hytten: åbning med flaghejsning i rundkreds, mødets quiz (ugens udfordring), ugens aktivitet efter årstiden, patruljetid (hvis man er i en patrulje med mindst 2) og afslutning ved bålet med en historie. Alt vælges ud fra år + ugenummer, så alle får det samme møde. Mødet giver point og materialer til lejrpladsen (ekstra ved mindst 8 rigtige), møde-point til ting i hytten, fremmødemærket i bronze/sølv/guld (4/12/26 møder) og en mødestreak. For hver 8 møder optjener man en sygemelding, som automatisk redder streaken, hvis man springer en uge over. 10/10 gør en til *ugens stjerne* på profilen. Gamle møder kan ikke indhentes, men quizzerne fra de sidste 4 uger kan trænes uden belønning
 - **Indstillinger pr. spejder:** lyd til/fra, større tekst og oplæsning af spørgsmål og svar på dansk
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
@@ -46,6 +47,9 @@ Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de
 
 ## Ret i lejrpladsen
 Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (2 = dobbelt tid). Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
+
+## Ret i spejderhytten
+Ugens aktiviteter står i listen `MOEDE_AKT` i `index.html` – mindst én pr. årstid (`foraar`, `sommer`, `efteraar`, `vinter`). Hver aktivitet har en `type`: `surring` (bind surringerne på en ting fra `OPGAVER`, angivet med `opg`), `stjerner`, `baal` eller `koekken` (aktiviteterne fra lejrpladsen) eller en lille quiz med 3 opgaver: `raekke`, `morse`, `semafor`, `billede` (evt. med `emner:[…]`) eller `kode`. Tingene til hytten står i `HYTTE_INDBO` (pris i møde-point, evt. et `krav` som i teltet og placering `x`/`y`/`w` i procent af hyttens tegning). Grænserne for fremmødemærket står i `MOEDE_KRAV`, og belønningen beregnes i `moedeAfslut`. Spejderens møder gemmes i `c.moeder`.
 
 ## Installér som app
 Appen kan installeres på telefonen fra https://sebastianbalslev.github.io/spejderquiz/ og virker derefter uden internet.

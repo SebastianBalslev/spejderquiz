@@ -113,6 +113,33 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
 .backup>b,.fejlkort>b,.indst>b{display:block;color:var(--forest)}
+/* Spejderhytten */
+.hyttescene{aspect-ratio:300/220}
+.hting{position:absolute;aspect-ratio:1;display:grid;place-items:center;pointer-events:none}
+.hting svg{width:100%;height:100%}.hting .emo{font-size:clamp(22px,8vw,40px);line-height:1}
+.hting.trofae{aspect-ratio:auto}
+.hylde{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;padding:4px 4px 6px;border-bottom:6px solid #5c3a20;background:rgba(0,0,0,.12);border-radius:6px 6px 0 0;min-height:30px}
+.hylde .badge.xs{width:clamp(16px,6vw,26px);height:clamp(16px,6vw,26px)}
+.hylde small{color:#fbeedd;font-size:11px;text-align:center}
+.moedekort>.btn{margin:10px 0 0}
+.nedtael{margin-top:8px;font-size:15px;color:var(--muted)}
+.mstats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 12px}
+.mstats div{background:var(--paper);border-radius:14px;padding:8px 4px;text-align:center;box-shadow:0 2px 0 var(--line)}
+.mstats b{display:block;font-size:17px;color:var(--forest)}.mstats span{font-size:11px;color:var(--muted)}
+.ugenr.lille{width:44px;height:44px;font-size:17px;border-radius:12px}
+.lvlrow .ugenr small{color:#fff;font-size:9px;opacity:.85;text-transform:uppercase}
+.hbesked{background:#fff6d8;border:2px solid #f2d27a}
+.hytteknap{background:#2f5d62;box-shadow:0 5px 0 #1f3f43}
+.hytteknap small{font-weight:600;opacity:.85}
+.ugestjerne{background:#fff6d8;border:2px solid #f2c94c;text-align:center}
+.mtrin{display:flex;justify-content:space-between;gap:4px;margin:0 0 6px}
+.mtrin span{flex:1;display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:15px;color:var(--muted)}
+.mtrin span small{font-size:10.5px;font-weight:700;margin-top:2px}
+.mtrin span.nu{color:var(--forest)}.mtrin span.ok{color:var(--ok)}
+.belon .belonliste{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.belonliste span{display:inline-flex;align-items:center;gap:4px;background:var(--paper2);border-radius:20px;padding:4px 10px;font-weight:700;font-size:14px}
+.belonliste .matik{width:20px;height:20px}
+.belon small{display:block;margin-top:4px;color:var(--muted)}
 .indst .toggle{margin-top:10px}
 .oplaesknap{margin-top:12px}
 /* Større tekst */
@@ -3892,7 +3919,7 @@ function go(screen, params, push){
   if(screen!=="lejr") lejrValg=null;
   if(screen!=="telt") teltValg=null;
   if(screen!=="byg") bygOpg=null;
-  if(screen!=="akt") akt=null;
+  if(screen!=="akt" && screen!=="moede") akt=null;
   if(!["pquiz","presultat"].includes(screen)) pquiz=null;
   nav = { screen, params: params || {} };
   if(push !== false){ try{ history.pushState(nav, ""); }catch(e){} }
@@ -3919,17 +3946,19 @@ function render(){
   if(s==="emne" && !EMNE[nav.params.id]) s = "maerker";
   if(s==="byg" && !bygOpg) s = "lejr";
   if(s==="pedit" && !pdraft) s = "patrulje";
+  if(s==="moede" && !moede) s = "hytte";
   if((s==="pquiz" || s==="presultat") && !pquiz) s = "patrulje";
   if(s==="akt" && !(cur() && cur().lejr && AKT_FOR[cur().lejr[nav.params.i]] && !underByg(cur(),nav.params.i))) s = "lejr";
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
   startLejrUr();
   aktEfterRender();
+  startHytteUr();
   renderFaner();
 }
 
@@ -4009,6 +4038,7 @@ function scrProfil(){
     <button class="btn" data-a="til" data-to="maerker">🏅 Mine mærker</button>
     <button class="btn" data-a="til" data-to="lejr">⛺ Byg din lejrplads <small style="font-weight:600;opacity:.85">· 🪙 ${fmt(lejrPoint(c))}</small></button>
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
+    ${hytteKort(c)}
     ${ugeKort(c)}
     ${timerToggle()}
     ${indstKort(c)}
@@ -4024,7 +4054,10 @@ function scrMaerker(){
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
     <div class="grid">${EMNER.map(e=>{ const l=c.badges[e.id]||0;
       return `<button class="bcell" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:"Låst"}</small></button>`; }).join("")}</div>
-    <p class="muted center" style="font-size:14px">Tryk på et mærke for at tage prøven.</p>`;
+    <p class="muted center" style="font-size:14px">Tryk på et mærke for at tage prøven.</p>
+    <div class="sect">Særlige mærker</div>
+    <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button></div>
+    <p class="muted center" style="font-size:14px">Fremmødemærket får du for at komme til spejdermøder i hytten: bronze for ${MOEDE_KRAV[1]}, sølv for ${MOEDE_KRAV[2]} og guld for ${MOEDE_KRAV[3]} møder.</p>`;
 }
 
 function scrEmne(){
@@ -4166,7 +4199,7 @@ function raekkeHTML(q){
 
 function scrQuiz(){
   const c=cur(), q=quiz.qs[quiz.i], e=EMNE[q.emne], n=quiz.qs.length;
-  const label = quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
+  const label = quiz.mode==="moede" ? `🏠 Spejdermøde · Uge ${quiz.uge.uge}` : quiz.mode==="moedeakt" ? `🏠 Ugens aktivitet · ${moede.akt.navn}` : quiz.mode==="moedetraen" ? `Træning · Mødet i uge ${quiz.uge.uge} (uden point)` : quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="afbryd" aria-label="Stop">✕</button>
       <div class="qinfo"><small>${label}</small><b>Spørgsmål ${quiz.i+1} af ${n}</b></div>
       <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
@@ -4182,7 +4215,7 @@ function scrQuiz(){
   if(quiz.answered){
     const ok = quiz.svar[quiz.i];
     const rigtig = q.type==="raekke" ? `<ol class="facit">${q.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>` : `<b>${esc(q.opts.find(o=>o.ok).t)}</b>`;
-    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok ? quiz.ros + `<span class="plus">+${quiz.sidstePoint} point</span>` : quiz.valgt<0 ? "⏰ Tiden løb ud!" : q.type==="raekke" ? "Ikke helt den rigtige rækkefølge" : "Desværre – forkert"}</b>
+    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok ? quiz.ros + (quiz.sidstePoint ? `<span class="plus">+${quiz.sidstePoint} point</span>` : "") : quiz.valgt<0 ? "⏰ Tiden løb ud!" : q.type==="raekke" ? "Ikke helt den rigtige rækkefølge" : "Desværre – forkert"}</b>
       ${ok?"":`<p>${q.type==="raekke"?"Sådan skal det bindes:":"Det rigtige svar er:"} ${rigtig}</p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
       <button class="btn" data-a="naeste">${quiz.i+1>=n?"Se resultat 🏁":"Næste spørgsmål →"}</button>`;
   }
@@ -4203,6 +4236,7 @@ function scrResultat(){
     msg = andel>=.9 ? "Fantastisk! 🌟" : andel>=.7 ? "Godt gået! 👍" : andel>=.5 ? "Godt trænet! 💪" : "Øvelse gør mester! 🌱";
     col = "var(--moss)";
     var sub = "Træning tæller ikke til mærkerne.";
+    if(quiz.mode==="moedetraen") sub = `Træning af mødet i uge ${quiz.uge.uge} giver ingen point eller belønning.`;
     if(quiz.mode==="uge"){ const b=ugeBedst(c, quiz.uge); sub = quiz.nyRekord && b ? `Nyt bedste resultat for uge ${quiz.uge.uge}! 🏅` : `Dit bedste i uge ${quiz.uge.uge} er stadig ${b.r}/${b.n}.`; }
     if(quiz.mode==="fejl"){ const f=fejlAntal(c); sub = f ? `Du har ${f} spørgsmål tilbage at øve. Et spørgsmål forsvinder, når du har svaret rigtigt to gange i træk.` : "Du har ikke flere fejl at øve – flot! 🎉"; }
   }
@@ -4210,7 +4244,7 @@ function scrResultat(){
     <div class="card center">
       <div class="score" style="--p:${r/n*100};--c:${col}"><div>${r}/${n}</div></div>
       <div class="resmsg">${msg}</div><p class="muted" style="margin:6px 0 2px">${sub}</p>
-      <p style="margin:6px 0 0"><b>+${fmt(quiz.point)} point</b> · længste streak: ${quiz.maxStreak} 🔥</p>
+      <p style="margin:6px 0 0">${quiz.mode==="moedetraen"?"":`<b>+${fmt(quiz.point)} point</b> · `}længste streak: ${quiz.maxStreak} 🔥</p>
     </div>`;
   const lvl = c.badges[quiz.emne]||0;
   if(test){
@@ -4219,6 +4253,7 @@ function scrResultat(){
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
   } else {
     if(quiz.mode==="uge") h += `<button class="btn earth" data-a="igen">🔁 Prøv ugens udfordring igen</button>`;
+    else if(quiz.mode==="moedetraen") h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button><button class="btn secondary" data-a="til" data-to="hytte">🏠 Til spejderhytten</button>`;
     else if(quiz.mode!=="fejl" || fejlAntal(c)) h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>`;
     h += `<button class="btn secondary" data-a="traening" data-id="${quiz.emne==="alle"?"":quiz.emne}">${quiz.mode==="fejl"?"Til træning":"Vælg andet emne"}</button>`;
   }
@@ -4255,7 +4290,7 @@ function isoUge(d){
   const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dag = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - dag);   // torsdag i samme uge
   const aar = t.getUTCFullYear(), uge = Math.ceil(((t - Date.UTC(aar,0,1)) / 864e5 + 1) / 7);
-  return { aar, uge, key: aar + "-U" + String(uge).padStart(2,"0") };
+  return { aar, uge, key: aar + "-U" + String(uge).padStart(2,"0"), maaned: t.getUTCMonth() };
 }
 function seedRng(seed){   // mulberry32 – samme seed giver altid samme rækkefølge
   return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
@@ -4282,16 +4317,18 @@ function ugeKort(c){
 
 function startQuiz(mode, emne, niveau){
   const c = cur();
-  const pool = mode==="fejl" ? fejlSpg(c)
+  const fast = { uge:1, moede:1, moedeakt:1, moedetraen:1 }[mode];   // faste spørgsmål ud fra ugen
+  const pool = mode==="fejl" ? fejlSpg(c) : fast ? SPORGSMAL
     : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau));
   if(!pool.length) return;
-  let valgte = mode==="uge" ? ugensSpg(isoUge(new Date())) : vaelgSpg(pool, ANTAL_SPG, c);
+  const ugen = mode==="moede" ? moede.uge : mode==="moedetraen" ? isoUge(new Date(Date.now() - niveau*7*864e5)) : isoUge(new Date());
+  let valgte = mode==="moedeakt" ? moede.aktSpg : fast ? ugensSpg(ugen) : vaelgSpg(pool, ANTAL_SPG, c);
   // En knob-prøve har altid mindst én opgave, hvor man skal vise, hvordan der bindes
   const binde = pool.filter(q=>q.type==="raekke");
   if(mode==="test" && binde.length && !valgte.some(q=>q.type==="raekke")) valgte = shuffle([vaelgSpg(binde,1,c)[0], ...valgte.slice(0, ANTAL_SPG-1)]);
   valgte.forEach(q => { c.seen[q.id] = (c.seen[q.id]||0) + 1; });
   save();
-  quiz = { mode, emne, niveau, uge: mode==="uge" ? isoUge(new Date()) : null, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
+  quiz = { mode, emne, niveau, uge: fast ? ugen : null, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
            done:false, medTimer:!!c.timer, tLeft:opgTid(valgte[0]), tMax:opgTid(valgte[0]),
            qs: valgte.map(q => q.type==="raekke"
              ? { ...q, rr:{ valgt:[], blandet:shuffle(q.trin.map((_,i)=>i)) } }
@@ -4306,7 +4343,7 @@ function svar(k, okRaekke){
   noterFejl(c, q.id, ok);
   if(ok){
     quiz.rigtige++; quiz.streak++; quiz.maxStreak=Math.max(quiz.maxStreak,quiz.streak);
-    const pts = 10 + Math.min(quiz.streak-1,5)*2 + (quiz.medTimer ? Math.min(5, Math.ceil(Math.max(0,quiz.tLeft)/4)) : 0);
+    const pts = quiz.mode==="moedetraen" ? 0 : 10 + Math.min(quiz.streak-1,5)*2 + (quiz.medTimer ? Math.min(5, Math.ceil(Math.max(0,quiz.tLeft)/4)) : 0);
     quiz.point += pts; quiz.sidstePoint = pts; c.point += pts;
     c.bedsteStreak = Math.max(c.bedsteStreak||0, quiz.streak);
     quiz.ros = pick(["Rigtigt! ✅","Flot! ✅","Sådan! ✅","Godt gået! ✅","Korrekt! ✅"]);
@@ -4338,7 +4375,8 @@ function afslut(){
       if(rankIdx(c) > før) nyRang = RANG[rankIdx(c)];
     }
   }
-  if(quiz.mode==="uge"){
+  if(quiz.mode==="moedeakt"){ c.quizzer=(c.quizzer||0)+1; save(); return moedeQuizSlut(); }
+  if(quiz.mode==="uge" || quiz.mode==="moede"){
     c.uge = c.uge || {};
     const før = c.uge[quiz.uge.key];
     quiz.nyRekord = !før || quiz.rigtige > før.r;
@@ -4348,6 +4386,7 @@ function afslut(){
   }
   c.quizzer = (c.quizzer||0) + 1;
   save();
+  if(quiz.mode==="moede") return moedeQuizSlut();
   go("resultat");
   if(nyt) fejr(EMNE[quiz.emne], nyt, nyRang);
 }
@@ -4546,7 +4585,7 @@ function askQuit(){
   if(modalRoot.innerHTML) return;
   stopTimer();
   confirmBox("Vil du stoppe?" + (quiz.mode==="test" ? "<br><small class='muted'>Prøven tæller ikke, men du beholder dine point.</small>" : ""), "Stop", "Fortsæt",
-    () => { const q=quiz; quiz=null; if(q.mode==="test") go("emne",{id:q.emne}); else go("traening",{emne:q.emne,niveau:q.niveau}); },
+    () => { const q=quiz; quiz=null; if(q.mode==="test") go("emne",{id:q.emne}); else if(q.mode==="moede"||q.mode==="moedeakt") go(moede?"moede":"hytte"); else if(q.mode==="moedetraen") go("hytte"); else go("traening",{emne:q.emne,niveau:q.niveau}); },
     () => startTimer());
 }
 function fejr(e, lvl, nyRang){
@@ -4993,7 +5032,7 @@ function scrByg(){
   });
   svg += `</svg>`;
   bygOpg.nyt=null; bygOpg.forkert=null;
-  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${pat?"Patruljen bygger":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
+  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${pat?"Patruljen bygger":bygOpg.moede?"Ugens aktivitet":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
     ${pat&&!faerdig?`<div class="turchip">${hoved(turC,"lille")} <b>${esc(turC.navn)}s tur</b> – bind dine surringer. De andres står med forbogstav.</div>`:""}
     <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
   if(!faerdig){
@@ -5001,6 +5040,9 @@ function scrByg(){
       <div class="surbakke">${Object.entries(SURRINGER).map(([id,s])=>`<button class="surchip ${bygOpg.valgt===id?"on":""}" data-sur="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5a2b" stroke-linecap="round">${s.ikon}</svg>${s.navn}</button>`).join("")}</div>`;
   } else {
     const tid=BYGTID[b.id];
+    if(bygOpg.moede) return h + `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+      <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`} ${b.navn} står klar i hyttens have.</p></div>
+      <button class="btn gold" data-a="moedebygok">Videre med mødet →</button>`;
     if(pat){ const pr=PPROJ.find(x=>x.id===b.id), pp=patruljer().find(x=>x.id===pat), forste=!(pp.projekter||{})[b.id];
       return h + `<div class="card center"><div class="resmsg">Patruljen har bundet alle surringer! 🎉</div>
         <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs, men I hjalp hinanden i mål.`}${forste?` Alle i patruljen får <b>+${pr.point} point</b>.`:""}</p></div>
@@ -5216,6 +5258,7 @@ let aktUr = null;
 
 function dagens(c){ const d=new Date().toDateString(); if(!c.dag || c.dag.dato!==d) c.dag={ dato:d, akt:{} }; return c.dag; }
 function belon(c, id, pts){
+  if(nav.screen==="moede") return "";   // mødet har sin egen belønning
   const d=dagens(c), n=d.akt[id]||0;
   if(n>=AKT_LOFT) return `<small class="muted">Du har fået dagens point for denne aktivitet – men det er stadig hyggeligt!</small>`;
   if(nav.screen==="akt" && nav.params.i!=null) pts += lejrNiv(c, nav.params.i) - 1;
@@ -5246,17 +5289,16 @@ function baalSVG(ild){
   </g>`;
 }
 
-function scrAkt(){
-  const c=cur(), a=nav.params.a, b=BYGID[c.lejr[nav.params.i]];
-  if(!akt || akt.a!==a) akt={ a, ild:2, besked:"" };
-  let titel=b.navn, scene="", knapper="";
+// Scene og knapper for en aktivitet. b er bygningen på lejrpladsen (null i spejderhytten)
+function aktDel(c, a, b){
+  let titel=b?b.navn:"", scene="", knapper="";
   const defs=`<defs><radialGradient id="gloed"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
     <linearGradient id="nat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1630"/><stop offset="1" stop-color="#2a3550"/></linearGradient>
     <linearGradient id="dag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3f0"/><stop offset="1" stop-color="#e5f2d8"/></linearGradient></defs>`;
   const skov=`<path d="M0 118 l12 -30 12 30 8 -20 14 -36 14 36 8 -16 12 -28 12 28 10 -22 16 -40 16 40 8 -18 12 -30 12 30 10 -24 14 -34 14 34 8 -14 12 -30 12 30 10 -20 V240 H0Z" fill="#14231a"/>`;
   if(a==="baal" || a==="koekken"){
     const venner=patrulje(c), ret = a==="koekken" ? "snobroed" : "skum";
-    titel = a==="koekken" ? "Lejrkøkkenet" : b.navn;
+    titel = a==="koekken" ? "Lejrkøkkenet" : b ? b.navn : "Bålet";
     scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(45,3)}<circle cx="270" cy="34" r="12" fill="#f4f1d0"/><circle cx="265" cy="30" r="12" fill="url(#nat)"/>
       ${skov}<ellipse cx="160" cy="185" rx="170" ry="70" fill="#22351f"/>
       ${figur(venner[1].look,160,104,64)}<rect x="132" y="118" width="56" height="10" rx="5" fill="#5c3a20"/>
@@ -5332,6 +5374,12 @@ function scrAkt(){
       ${figur(c.look,60,206,70)}${figur(venner[0].look,262,206,70)}</svg>`;
     knapper = `<button class="btn gold" data-a="spis" ${akt.spist?"disabled":""}>🍽️ Velbekomme!</button>`;
   }
+  return { titel, scene, knapper };
+}
+function scrAkt(){
+  const c=cur(), a=nav.params.a, b=BYGID[c.lejr[nav.params.i]];
+  if(!akt || akt.a!==a) akt={ a, ild:2, besked:"" };
+  const { titel, scene, knapper } = aktDel(c, a, b);
   const d=dagens(c), brugt=d.akt[a]||0;
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${titel}</h1><span class="spacer"></span></div>
     <div class="aktscene">${scene}</div>
@@ -5355,9 +5403,10 @@ function ristFarve(p, ret){
 function aktBesked(html){ akt.besked=html; const el=document.getElementById("aktbesked"); if(el){ el.innerHTML=html; el.classList.remove("tom"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; } }
 function aktEfterRender(){
   clearInterval(aktUr); aktUr=null;
-  if(nav.screen!=="akt" || !akt) return;
+  const her = nav.screen;
+  if(!["akt","moede"].includes(her) || !akt) return;
   if(akt.a==="baal" || akt.a==="koekken"){
-    aktUr=setInterval(()=>{ if(nav.screen!=="akt"){ clearInterval(aktUr); return; }
+    aktUr=setInterval(()=>{ if(nav.screen!==her){ clearInterval(aktUr); return; }
       if(akt.ild>1 && akt.rist==null){ akt.ild--; const g=document.getElementById("ild"); if(g) g.style.transform=`scale(${.7+akt.ild*.18})`;
         if(akt.ild===1) aktBesked("Bålet er ved at gå ud – læg mere brænde på! 🪵"); } }, 9000);
     const knap=document.getElementById("ristknap"); if(!knap) return;
@@ -5381,7 +5430,7 @@ function vurderRist(p, ret){
   let t;
   if(p<.45) t=`${navn} er stadig bleg. Hold den lidt længere over gløderne næste gang.`;
   else if(p<.58) t=`${navn} er let ristet. Næsten! Lidt længere, så bliver den gylden.`;
-  else if(p<.8){ t=`😋 Perfekt gylden! ${belon(c, akt.a, 5)}`; c.ristet=(c.ristet||0)+1; save(); konfettiLille(); vibrer([30,30,60]); }
+  else if(p<.8){ t=`😋 Perfekt gylden! ${belon(c, akt.a, 5)}`; c.ristet=(c.ristet||0)+1; save(); konfettiLille(); vibrer([30,30,60]); if(nav.screen==="moede") moedeAktKlaret(); }
   else if(p<1) t=`${navn} blev lidt for mørk – men den smager stadig.`;
   else t=`🔥 Øv, ${navn.toLowerCase()} brændte! Slip lidt før næste gang.`;
   aktBesked(t);
@@ -5506,8 +5555,8 @@ function startPquiz(n){
 function scrPquiz(){
   const p=patruljer().find(x=>x.id===pquiz.p), ms=medlemmer(p), q=pquiz.qs[pquiz.i], e=EMNE[q.emne], hvem=ms.find(m=>m.id===pquiz.hvem);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="pafbryd" aria-label="Stop">✕</button>
-      <div class="qinfo"><small>${PDYR[p.dyr][0]} ${esc(p.navn)} · ${NIVEAUER[pquiz.niveau].navn}</small><b>Spørgsmål ${pquiz.i+1} af ${pquiz.qs.length}</b></div>
-      <div class="qstats"><span>🤝 ${pquiz.rigtige} rigtige</span><span>🃏 ${pquiz.joker} jokere</span></div></div>
+      <div class="qinfo"><small>${PDYR[p.dyr][0]} ${esc(p.navn)} · ${pquiz.moede?"Patruljetid på mødet":NIVEAUER[pquiz.niveau].navn}</small><b>Spørgsmål ${pquiz.i+1} af ${pquiz.qs.length}</b></div>
+      <div class="qstats"><span>🤝 ${pquiz.rigtige} rigtige</span>${pquiz.moede?"":`<span>🃏 ${pquiz.joker} jokere</span>`}</div></div>
     <div class="dots">${pquiz.qs.map((_,k)=>`<i class="${pquiz.svar[k]===true?"ok":pquiz.svar[k]===false?"bad":k===pquiz.i?"now":""}"></i>`).join("")}</div>`;
   if(pquiz.fase==="vaelg"){
     h += `<div class="card"><div class="qtopic">${badgeHTML(e,1,"xs")} Næste spørgsmål: ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div>
@@ -5523,7 +5572,7 @@ function scrPquiz(){
       if(q.fjernet && q.fjernet.includes(k)) return "";
       let cls=""; if(pquiz.svaret){ cls = o.ok ? "correct" : k===pquiz.valgt ? "wrong" : "dim"; }
       return `<button class="ans ${cls}" data-a="psvar" data-k="${k}" ${pquiz.svaret?"disabled":""}><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`; }).join("")}</div>`;
-  if(!pquiz.svaret) h += `<button class="btn earth" data-a="pjoker" ${pquiz.joker<1||q.fjernet?"disabled":""}>🤝 Spørg patruljen – fjern 2 forkerte svar (${pquiz.joker} tilbage)</button>`;
+  if(!pquiz.svaret && !pquiz.moede) h += `<button class="btn earth" data-a="pjoker" ${pquiz.joker<1||q.fjernet?"disabled":""}>🤝 Spørg patruljen – fjern 2 forkerte svar (${pquiz.joker} tilbage)</button>`;
   else {
     const ok=pquiz.svar[pquiz.i];
     h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 til ${esc(hvem.navn)} og patruljen</span>`:"Desværre – forkert"}</b>
@@ -5533,6 +5582,7 @@ function scrPquiz(){
   return h;
 }
 function pAfslut(){
+  if(pquiz.moede) return moedePatruljeSlut();
   const p=patruljer().find(x=>x.id===pquiz.p);
   pquiz.done=true; pquiz.bestaaet = pquiz.rigtige >= PKRAV[pquiz.niveau];
   let nyt=false;
@@ -5793,6 +5843,345 @@ function fuldfoerByg(c){
 }
 
 /* ---------- Faner ---------- */
+/* =====================================================================
+   SPEJDERHYTTEN – ugens spejdermøde
+   ---------------------------------------------------------------------
+   Ét møde pr. ISO-uge pr. spejder. Alt på mødet (quiz, aktivitet,
+   patruljespørgsmål og historie) vælges ud fra år + ugenummer, så alle
+   spejdere får det samme møde. Data pr. spejder ligger i c.moeder.
+   ===================================================================== */
+const ARSTIDER = { foraar:["🌱","Forår"], sommer:["☀️","Sommer"], efteraar:["🍂","Efterår"], vinter:["❄️","Vinter"] };
+// Ugens aktivitet. type: surring (OPGAVER), stjerner/baal/koekken (aktiviteter fra lejrpladsen),
+// eller en lille quiz med 3 opgaver: raekke, morse, semafor, billede (evt. emner:[…]) og kode.
+const MOEDE_AKT = [
+  { id:"baare",     aarstid:"foraar",   type:"surring", opg:"baare", navn:"Byg en båre", tekst:"Patruljen øver førstehjælp i skoven. Bind surringerne på en båre af rafter, så I kan bære en tilskadekommen." },
+  { id:"knobtrin",  aarstid:"foraar",   type:"raekke",  navn:"Knob til forårslejren", tekst:"Lederen viser knob, og nu skal du selv vise, hvordan de bindes – trin for trin." },
+  { id:"fuglespor", aarstid:"foraar",   type:"billede", emner:["dyr"], navn:"Hvem bor i skoven?", tekst:"Foråret er fuld af liv. Kend dyrene og sporene på tegningerne." },
+  { id:"blade",     aarstid:"foraar",   type:"billede", emner:["planter"], navn:"Kend træer og svampe", tekst:"Patruljen går tur i skoven ved hytten. Hvilke træer og svampe er tegnet?" },
+  { id:"bord",      aarstid:"sommer",   type:"surring", opg:"bord", navn:"Pionerbord til sommerlejren", tekst:"Sommerlejren nærmer sig. Byg patruljens pionerbord, så I har et sted at spise." },
+  { id:"port",      aarstid:"sommer",   type:"surring", opg:"port", navn:"Lejrport til sommerlejren", tekst:"En rigtig lejr har en flot indgang. Bind surringerne på lejrporten." },
+  { id:"semafor",   aarstid:"sommer",   type:"semafor", navn:"Signaler over søen", tekst:"Patruljerne står på hver sin side af søen og sender beskeder med semaforflag." },
+  { id:"snobroed",  aarstid:"sommer",   type:"koekken", navn:"Snobrød over bålet", tekst:"Lyse sommeraftner er perfekte til snobrød. Bag et gyldenbrunt snobrød over gløderne." },
+  { id:"natloeb",   aarstid:"efteraar", type:"morse",   navn:"Natløb med morselampe", tekst:"Det bliver tidligt mørkt. På natløbet blinker posterne beskeder i morse – kan du læse dem?" },
+  { id:"stjerner",  aarstid:"efteraar", type:"stjerner", navn:"Stjerneaften", tekst:"Efterårets mørke aftener er gode til at kigge på stjerner. Find de tre stjernebilleder." },
+  { id:"svampe",    aarstid:"efteraar", type:"billede", emner:["planter","dyr"], navn:"Svampe og spor", tekst:"Efteråret er svampetid, og i mudderet ses spor efter dyrene. Hvad kan du kende?" },
+  { id:"skumfidus", aarstid:"efteraar", type:"baal",    navn:"Skumfiduser ved bålet", tekst:"Mødet slutter ude ved bålet. Rist en perfekt gylden skumfidus." },
+  { id:"vinterhimmel", aarstid:"vinter", type:"stjerner", navn:"Vinterhimlen", tekst:"Om vinteren er himlen mørk allerede til mødet. Find stjernebillederne fra hyttens trappe." },
+  { id:"koder",     aarstid:"vinter",   type:"kode",    navn:"Hemmelige koder", tekst:"Inde i den varme hytte knækker patruljen koder og hemmelige beskeder." },
+  { id:"vinterknob",aarstid:"vinter",   type:"raekke",  navn:"Knob ved pejsen", tekst:"Det er koldt udenfor, så I øver knob inde i hytten. Vis, hvordan de bindes." },
+  { id:"vinterbaal",aarstid:"vinter",   type:"baal",    navn:"Vinterbål", tekst:"Selv i kulden kan man hygge ved bålet. Hold bålet i gang og rist en skumfidus." },
+];
+const MOEDE_KRAV = [null, 4, 12, 26];   // møder til fremmødemærket i bronze, sølv og guld
+const MMAERKE = { id:"moede", navn:"Fremmøde", farve:"#2f5d62" };
+SYM.moede = `<path d="M-26 0 L0 -22 L26 0Z" fill="#f6e3c4"/><rect x="-19" y="-2" width="38" height="24" fill="#f6e3c4"/>
+  <rect x="-6" y="7" width="12" height="15" fill="#2f5d62"/><rect x="9" y="3" width="7" height="7" fill="#2f5d62"/><rect x="-16" y="3" width="7" height="7" fill="#2f5d62"/>
+  <path d="M10 -14 V-28 L20 -24 L10 -20" fill="#c62828" stroke="#f6e3c4" stroke-width="1.5"/>`;
+
+// Ting til hytten, som købes for møde-point. x/y/w er placering i % af hyttens tegning
+const HYTTE_INDBO = [
+  { id:"opslagstavle", navn:"Opslagstavle",        pris:10, x:6,  y:20, w:22, svg:"tavle" },
+  { id:"patruljeflag", navn:"Patruljeflag",        pris:15, x:72, y:14, w:20, svg:"pflag" },
+  { id:"trofae",       navn:"Trofæhylde med dine mærker", pris:20, x:31, y:22, w:38, svg:"trofae" },
+  { id:"lanterne",     navn:"Lanterne",            pris:10, x:44, y:2,  w:12, svg:"lanterne" },
+  { id:"vimpler",      navn:"Vimpelguirlande",     pris:10, x:6,  y:4,  w:30, svg:"vimpler" },
+  { id:"knobtavle",    navn:"Knobtavle",           pris:15, x:75, y:40, w:17, ikon:"🪢", krav:["knob",1] },
+  { id:"kort",         navn:"Kort over området",   pris:15, x:8,  y:44, w:17, ikon:"🗺️", krav:["orientering",1] },
+  { id:"stjernekort",  navn:"Stjernekort",         pris:15, x:64, y:2,  w:14, ikon:"✨", krav:["vejr",1] },
+  { id:"skab",         navn:"Førstehjælpsskab",    pris:15, x:58, y:44, w:14, svg:"taske", krav:["forstehjalp",1] },
+  { id:"ovn",          navn:"Brændeovn",           pris:25, x:4,  y:62, w:22, svg:"ovn" },
+  { id:"baenk",        navn:"Bænk til patruljen",  pris:20, x:32, y:68, w:36, svg:"baenk" },
+  { id:"guitar",       navn:"Guitar",              pris:20, x:74, y:62, w:16, ikon:"🎸" },
+];
+const HYTTE_INDBOID = Object.fromEntries(HYTTE_INDBO.map(t=>[t.id,t]));
+const HYTTESVG = {
+  tavle: ()=>`<rect x="2" y="6" width="36" height="28" rx="2" fill="#c49a63" stroke="#7c4a22" stroke-width="2"/><rect x="6" y="10" width="11" height="9" fill="#fff8d6"/><rect x="21" y="9" width="13" height="10" fill="#d8ecff"/><rect x="9" y="22" width="14" height="9" fill="#ffd9d9"/><circle cx="11" cy="11" r="1.4" fill="#c62828"/><circle cx="27" cy="10" r="1.4" fill="#1e5fb4"/><circle cx="16" cy="23" r="1.4" fill="#2e7d32"/>`,
+  pflag: c=>{ const p=minPatrulje(c), dyr=p?PDYR[p.dyr][0]:"⚜️";
+    return `<path d="M6 2 V38" stroke="#8b5a2b" stroke-width="2.5"/><path d="M7 4 H37 L31 14 L37 24 H7Z" fill="#2f5d62"/><text x="20" y="19" font-size="12" text-anchor="middle">${dyr}</text>`; },
+  ovn: ()=>`<rect x="8" y="12" width="24" height="24" rx="3" fill="#3a3a3a"/><rect x="12" y="20" width="16" height="11" rx="2" fill="#f4772e"/><path d="M15 31 Q20 22 25 31" fill="#ffd166"/><rect x="17" y="0" width="6" height="12" fill="#555"/><rect x="6" y="35" width="28" height="3" fill="#222"/>`,
+  baenk: ()=>`<rect x="1" y="16" width="38" height="6" rx="2" fill="#a8743f" stroke="#6b4626"/><path d="M5 22 V34 M35 22 V34" stroke="#6b4626" stroke-width="3"/>`,
+  lanterne: ()=>INDBOSVG.lanterne(), vimpler: ()=>INDBOSVG.vimpler(), taske: ()=>INDBOSVG.taske(),
+};
+
+let moede = null;   // det møde, spejderen er i gang med
+let hytteUr = null;
+
+function moeder(c){
+  const m = c.moeder || (c.moeder = {});
+  m.holdt = m.holdt || {}; m.hytte = m.hytte || [];
+  m.streak = m.streak || 0; m.sygemeldinger = m.sygemeldinger || 0; m.point = m.point || 0; m.brugt = m.brugt || 0;
+  return m;
+}
+function moedePoint(c){ const m=moeder(c); return Math.max(0, m.point - m.brugt); }
+function antalMoeder(c){ return Object.keys(moeder(c).holdt).length; }
+function moedeNiv(c){ const n=antalMoeder(c); return n>=MOEDE_KRAV[3]?3 : n>=MOEDE_KRAV[2]?2 : n>=MOEDE_KRAV[1]?1 : 0; }
+// Fortløbende ugenummer (uge 0 = ugen der begynder mandag 5. januar 1970), så uger kan trækkes fra hinanden
+function ugeIndex(u){
+  const j4 = Date.UTC(u.aar, 0, 4), man1 = j4 - ((new Date(j4).getUTCDay()||7) - 1) * 864e5;
+  return Math.round((man1/864e5 - 4) / 7) + u.uge - 1;
+}
+function aarstid(u){ const m=u.maaned; return m>=2&&m<=4 ? "foraar" : m>=5&&m<=7 ? "sommer" : m>=8&&m<=10 ? "efteraar" : "vinter"; }
+function ugeRng(u, ekstra){ return seedRng(u.aar*100 + u.uge + ekstra*1000); }
+function ugeValg(rnd, liste){ return liste[Math.floor(rnd()*liste.length)]; }
+function ugeBland(rnd, a){ a=a.slice().sort((x,y)=>x.id<y.id?-1:1); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function ugensAkt(u){ const tid=aarstid(u); return ugeValg(ugeRng(u,1), MOEDE_AKT.filter(a=>a.aarstid===tid)); }
+function aktSpg(a, u){
+  const rnd=ugeRng(u,2);
+  const pool = a.type==="raekke" ? SPORGSMAL.filter(q=>q.type==="raekke")
+    : a.type==="kode" ? SPORGSMAL.filter(q=>q.emne==="koder" && !q.media && q.niveau<=2)
+    : a.type==="billede" ? SPORGSMAL.filter(q=>q.media && q.media.type==="billede" && (!a.emner || a.emner.includes(q.emne)))
+    : SPORGSMAL.filter(q=>q.media && q.media.type===a.type);
+  const valgte=[], tekster=new Set();
+  for(const q of ugeBland(rnd, pool)){
+    const t = q.media && q.media.tekst; if(t && tekster.has(t)) continue;
+    if(t) tekster.add(t); valgte.push(q); if(valgte.length===3) break;
+  }
+  return valgte;
+}
+function ugensHistorie(u){ return ugeValg(ugeRng(u,3), HISTORIER); }
+function patruljeSpg(u){ return ugeBland(ugeRng(u,4), SPORGSMAL.filter(q=>q.niveau<=2 && !q.type && !q.media)).slice(0,3); }
+function harPatruljetid(c){ const p=minPatrulje(c); return !!p && medlemmer(p).length>=2; }
+
+// Streak: tjek om uger er sprunget over. Sygemeldinger redder streaken automatisk.
+function opdaterStreak(c){
+  const m=moeder(c); if(m.sidsteIdx==null) return;
+  const mangler = ugeIndex(isoUge(new Date())) - m.sidsteIdx - 1;
+  if(mangler<=0) return;
+  if(m.streak>0 && m.sygemeldinger>=mangler){
+    m.sygemeldinger-=mangler; m.sidsteIdx+=mangler;
+    m.sygBesked = `🤒 Du missede ${mangler===1?"et møde":mangler+" møder"}, men ${mangler===1?"en sygemelding":mangler+" sygemeldinger"} reddede din streak!`;
+  } else { if(m.streak>0) m.sygBesked = `Din mødestreak på ${m.streak} ${m.streak===1?"uge":"uger"} er slut. Start en ny i denne uge!`; m.streak=0; m.sidsteIdx=null; }
+  save();
+}
+function naesteMoedeMs(){ const d=new Date(), dag=d.getDay()||7; return new Date(d.getFullYear(), d.getMonth(), d.getDate()+8-dag) - d; }
+function nedtaelling(ms){
+  const min=Math.ceil(ms/6e4), d=Math.floor(min/1440), t=Math.floor(min%1440/60), m=min%60;
+  return d ? `${d} ${d===1?"dag":"dage"} og ${t} ${t===1?"time":"timer"}` : t ? `${t} t ${m} min` : `${m} min`;
+}
+function ugeStjerne(c){ const h=moeder(c).holdt[isoUge(new Date()).key]; return !!h && h.rigtige===10; }
+
+/* ---------- Spejderhytten ---------- */
+function hytteIkon(t, c){ return t.svg ? `<svg viewBox="0 0 40 40" aria-hidden="true">${HYTTESVG[t.svg](c)}</svg>` : `<span class="emo">${t.ikon}</span>`; }
+function hytteScene(c){
+  const m=moeder(c), lys=m.hytte.includes("lanterne")||m.hytte.includes("ovn");
+  let h = `<svg viewBox="0 0 300 220" preserveAspectRatio="none" class="teltbg" aria-hidden="true">
+    <rect width="300" height="220" fill="${lys?"#a8794a":"#8d6640"}"/>
+    ${[0,1,2,3,4,5,6,7,8].map(k=>`<path d="M0 ${k*18+4} H300" stroke="#6e4c2c" stroke-width="2"/>`).join("")}
+    <path d="M0 0 L150 -10 L300 0 V8 H0Z" fill="#5c3a20"/><path d="M0 8 H300" stroke="#4a2e14" stroke-width="6"/>
+    <rect x="118" y="70" width="64" height="48" fill="#bfe3f5" stroke="#5c3a20" stroke-width="5"/><path d="M150 70 V118 M118 94 H182" stroke="#5c3a20" stroke-width="3"/>
+    <path d="M0 160 H300 V220 H0Z" fill="#6b4626"/>${[0,1,2,3,4,5].map(k=>`<path d="M${k*60} 160 L${k*60-20} 220" stroke="#5a3a1e" stroke-width="2"/>`).join("")}
+    ${lys?`<circle cx="150" cy="40" r="140" fill="#ffd27a" opacity=".14"/>`:""}</svg>`;
+  for(const id of m.hytte){
+    const t=HYTTE_INDBOID[id]; if(!t) continue;
+    if(t.svg==="trofae"){
+      const vis=[...EMNER.filter(e=>c.badges[e.id]).map(e=>badgeHTML(e,c.badges[e.id],"xs")), moedeNiv(c)?badgeHTML(MMAERKE,moedeNiv(c),"xs"):""].filter(Boolean);
+      h += `<div class="hting trofae" style="left:${t.x}%;top:${t.y}%;width:${t.w}%"><div class="hylde">${vis.length?vis.slice(0,8).join(""):`<small>Tag mærker for at fylde hylden</small>`}</div></div>`;
+    } else h += `<div class="hting" style="left:${t.x}%;top:${t.y}%;width:${t.w}%" title="${t.navn}">${hytteIkon(t,c)}</div>`;
+  }
+  return `<div class="teltscene hyttescene">${h}</div>`;
+}
+function moedeTrin(c){ return ["aabning","quiz","akt", ...(harPatruljetid(c)?["patrulje"]:[]), "afslut"]; }
+const TRINNAVN = { aabning:"Åbning", quiz:"Quiz", akt:"Aktivitet", patrulje:"Patruljetid", afslut:"Afslutning" };
+
+function scrHytte(){
+  const c=cur(), m=moeder(c); opdaterStreak(c);
+  const u=isoUge(new Date()), holdt=m.holdt[u.key], a=ugensAkt(u), [ik,tid]=ARSTIDER[aarstid(u)], lvl=moedeNiv(c), n=antalMoeder(c);
+  let h = `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Spejderhytten</h1><span class="spacer"></span></div>`;
+  if(m.sygBesked){ h += `<div class="card hbesked">${m.sygBesked}</div>`; delete m.sygBesked; save(); }
+  h += hytteScene(c);
+  h += `<div class="card moedekort"><div class="ugetop"><span class="ugenr"><small>Uge</small>${u.uge}</span>
+      <div><b>🏠 Ugens spejdermøde</b><small>${ik} ${tid} · Aktivitet: ${a.navn}</small></div></div>`;
+  if(holdt){
+    h += `<div class="ugebest">✅ Mødet er holdt – du fik <b>${holdt.rigtige}/10</b> i quizzen${holdt.rigtige===10?" og blev ⭐ ugens stjerne":""}.</div>
+      <div class="nedtael">⏳ Næste møde om <b id="hnedtael">${nedtaelling(naesteMoedeMs())}</b></div></div>`;
+  } else if(moede && moede.uge.key===u.key){
+    h += `<div class="ugebest">Mødet er i gang: ${TRINNAVN[moede.trin[moede.i]]}.</div><button class="btn gold" data-a="til" data-to="moede">Fortsæt mødet →</button></div>`;
+  } else {
+    h += `<div class="ugebest">Åbning, quiz, ${a.navn.toLowerCase()}${harPatruljetid(c)?", patruljetid":""} og afslutning ved bålet.</div>
+      <button class="btn gold" data-a="moedestart">Gå til ugens møde</button></div>`;
+  }
+  h += `<div class="mstats"><div><b>${n}</b><span>møder</span></div><div><b>🔥 ${m.streak}</b><span>uger i træk</span></div><div><b>🤒 ${m.sygemeldinger}</b><span>sygemeldinger</span></div><div><b>🏠 ${moedePoint(c)}</b><span>møde-point</span></div></div>
+    <div class="card prk">${badgeHTML(MMAERKE,lvl,"sm")}<div><b>Fremmødemærket${lvl?` – ${NIVEAUER[lvl].navn}`:""}</b><small>${lvl<3?`${MOEDE_KRAV[lvl+1]-n} møder mere til ${NIVEAUER[lvl+1].navn.toLowerCase()}`:"Du har fremmødemærket i guld! 🏆"} · Du får en sygemelding for hver 8 møder.</small></div></div>`;
+  h += `<div class="sect">Ting til hytten</div><p class="muted" style="margin:-4px 0 12px;font-size:14px">Køb ting for møde-point. Du får møde-point, hver gang du er til møde.</p><div class="shop">`;
+  for(const t of HYTTE_INDBO){
+    const har=m.hytte.includes(t.id), ok=harKrav(c,t), raad=moedePoint(c)>=t.pris;
+    const kravHTML = t.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[t.krav[0]], ok?t.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[t.krav[1]].navn}</span>` : "";
+    h += `<button class="item ${ok?"":"laast"} ${har?"valgt":""}" data-a="hyttekoeb" data-id="${t.id}"><span class="ik">${t.svg==="trofae"?badgeHTML(MMAERKE,Math.max(1,lvl),"xs"):hytteIkon(t,c)}</span><b>${t.navn}</b>${kravHTML}<span class="pris ${ok&&!raad&&!har?"mangler":""}">${har?"✓ I hytten":`🏠 ${t.pris}`}</span></button>`;
+  }
+  h += `</div><div class="sect">Træn de seneste møder</div><p class="muted" style="margin:-4px 0 10px;font-size:14px">Gamle møder kan ikke indhentes, men du kan træne quizzerne fra de sidste 4 uger – uden point og belønning.</p>`;
+  for(let k=1;k<=4;k++){
+    const gu=isoUge(new Date(Date.now()-k*7*864e5)), gh=m.holdt[gu.key];
+    h += `<div class="card lvlrow"><span class="ugenr lille"><small>Uge</small>${gu.uge}</span><div class="lvltxt"><b>Mødet i uge ${gu.uge}</b><small>${gh?`Du var med og fik ${gh.rigtige}/10`:"Du var ikke med"}</small></div>
+      <button class="btn secondary" data-a="moedetraen" data-k="${k}">Træn</button></div>`;
+  }
+  return h;
+}
+function startHytteUr(){
+  clearInterval(hytteUr); hytteUr=null;
+  if(nav.screen!=="hytte") return;
+  hytteUr=setInterval(()=>{
+    if(nav.screen!=="hytte"){ clearInterval(hytteUr); return; }
+    const c=cur(), el=document.getElementById("hnedtael");
+    if(c && moeder(c).holdt[isoUge(new Date()).key]){ if(el) el.textContent=nedtaelling(naesteMoedeMs()); }
+    else if(el) render();   // en ny uge er begyndt
+  }, 15000);
+}
+function hytteKoeb(id){
+  const c=cur(), m=moeder(c), t=HYTTE_INDBOID[id];
+  if(m.hytte.includes(id)){
+    confirmBox(`Vil du tage <b>${t.navn.toLowerCase()}</b> ud af hytten?<br><small class="muted">Du får ${t.pris} møde-point tilbage.</small>`, "Tag ud", "Behold", ()=>{
+      m.hytte=m.hytte.filter(x=>x!==id); m.brugt=Math.max(0,m.brugt-t.pris); save(); render(); });
+    return;
+  }
+  if(!harKrav(c,t)){ lejrToast(`🔒 ${t.navn} kræver mærket <b>${kravTekst(t)}</b>.`); return; }
+  if(moedePoint(c)<t.pris){ lejrToast(`Du mangler ${t.pris-moedePoint(c)} møde-point til ${t.navn.toLowerCase()}. Kom til flere møder!`); return; }
+  m.hytte.push(id); m.brugt+=t.pris; save(); render(); vibrer(30);
+  lejrToast(`${t.navn} er sat op i hytten. 🏠`);
+}
+function hytteKort(c){
+  const u=isoUge(new Date()), h=moeder(c).holdt[u.key];
+  return `<button class="btn hytteknap" data-a="til" data-to="hytte">🏠 Spejderhytten <small>· ${h?`møde holdt i uge ${u.uge} ✓`:`ugens møde venter`}</small></button>
+    ${ugeStjerne(c)?`<div class="card ugestjerne">⭐ <b>Ugens stjerne!</b> Du fik 10/10 til spejdermødet i uge ${u.uge}.</div>`:""}`;
+}
+
+/* ---------- Mødet ---------- */
+function startMoede(){
+  const c=cur(), u=isoUge(new Date());
+  if(moeder(c).holdt[u.key]) return;
+  if(!moede || moede.uge.key!==u.key){
+    const a=ugensAkt(u);
+    moede = { uge:u, trin:moedeTrin(c), i:0, akt:a, aktSpg:aktSpg(a,u), rigtige:null, aktOk:null, pat:null, besked:"" };
+  }
+  akt = moede.trin[moede.i]==="aabning" ? { a:"flag", besked:"" } : null;
+  go("moede");
+}
+function moedeVidere(){
+  moede.i++; moede.besked=""; akt=null;
+  const t=moede.trin[moede.i];
+  if(t==="akt" && ["stjerner","baal","koekken"].includes(moede.akt.type)) akt={ a:moede.akt.type, ild:2, besked:"" };
+  if(t==="afslut") moedeAfslut();
+  if(nav.screen==="moede"){ render(); window.scrollTo(0,0); }
+}
+function moedeQuizSlut(){
+  const q=quiz; quiz=null;
+  if(!moede){ go("hytte"); return; }
+  if(q.mode==="moede"){ moede.rigtige=q.rigtige; moedeVidere(); moede.besked = `📝 Du fik <b>${q.rigtige}/10</b> i mødets quiz${q.rigtige>=8?" – flot, det giver ekstra belønning!":"."}`; }
+  else { moede.aktOk = q.rigtige>=2; moedeVidere(); moede.besked = moede.aktOk ? `✅ Ugens aktivitet klaret (${q.rigtige} af 3 rigtige)!` : `Ugens aktivitet: ${q.rigtige} af 3 rigtige. Du skal have mindst 2 for at klare den.`; }
+  go("moede");
+}
+function moedeAktKlaret(){
+  if(!moede || moede.aktOk) return;
+  moede.aktOk = true; moede.besked = `✅ Ugens aktivitet er klaret – flot!`;
+  setTimeout(()=>{ if(nav.screen==="moede"){ render(); window.scrollTo(0,0); } }, 900);
+}
+function moedePatruljeSlut(){
+  moede.pat = pquiz.rigtige;
+  const r=pquiz.rigtige; pquiz=null; moedeVidere();
+  moede.besked = `🤝 Patruljen svarede rigtigt på <b>${r} af 3</b>.`;
+  go("moede");
+}
+function startMoedePquiz(){
+  const p=minPatrulje(cur()), ms=medlemmer(p);
+  pquiz = { p:p.id, niveau:1, moede:true, i:0, fase:"vaelg", hvem:null, rigtige:0, joker:0, svar:[], done:false,
+    max: Math.ceil(3/ms.length)+1, antal:{}, res:{},
+    qs: patruljeSpg(moede.uge).map(q=>({ ...q, opts: shuffle(q.svar.map((t,i)=>({t, ok:i===0}))) })) };
+  go("pquiz");
+}
+// Belønningen gives, når man når afslutningen
+function moedeAfslut(){
+  const c=cur(), m=moeder(c), u=moede.uge;
+  if(isoUge(new Date()).key!==u.key){ moede.forsent=true; return; }
+  if(m.holdt[u.key]) return;
+  opdaterStreak(c);
+  const r=moede.rigtige||0, top=r>=8, idx=ugeIndex(u);
+  const pts = 25 + r*3 + (top?20:0) + (moede.aktOk?10:0) + (moede.pat||0)*5;
+  const mat = top ? { braende:4, reb:2, rafter:4 } : { braende:2, reb:1, rafter:2 };
+  const mp = 10 + r + (top?5:0) + (r===10?5:0) + (moede.aktOk?3:0);
+  const foerNiv = moedeNiv(c);
+  c.point += pts; brugMat(c, mat, 1); m.point += mp;
+  m.holdt[u.key] = { rigtige:r, dato:new Date().toISOString().slice(0,10), akt:!!moede.aktOk, pat:moede.pat };
+  m.streak = m.sidsteIdx===idx-1 ? m.streak+1 : 1; m.sidsteIdx = idx;
+  m.bedsteStreak = Math.max(m.bedsteStreak||0, m.streak);
+  const n=antalMoeder(c), syg = n%8===0;
+  if(syg) m.sygemeldinger++;
+  if(r===10) m.stjerner=(m.stjerner||0)+1;
+  moede.belonning = { pts, mat, mp, syg, nytNiv: moedeNiv(c)>foerNiv ? moedeNiv(c) : 0, top };
+  save();
+}
+
+function moedeScene(c, klasse){
+  const p=minPatrulje(c), andre = p && medlemmer(p).length>=2 ? medlemmer(p).filter(x=>x.id!==c.id).slice(0,5) : patrulje(c);
+  const alle=[c, ...andre], n=alle.length;
+  const pos = alle.map((x,k)=>{ const v=Math.PI/2 + k*2*Math.PI/n; return { x, px:160+Math.cos(v)*112, py:176+Math.sin(v)*34 }; }).sort((a,b)=>a.py-b.py);
+  const figurer = pos.map(f=>figur(f.x.look, f.px, f.py, 46+(f.py-142)*0.5) + `<text x="${f.px.toFixed(0)}" y="${(f.py+20).toFixed(0)}" text-anchor="middle" class="navnskilt">${esc(f.x.navn)}</text>`);
+  const bag = figurer.slice(0, Math.ceil(n/2)).join(""), foran = figurer.slice(Math.ceil(n/2)).join("");
+  return { bag, foran };
+}
+function scrMoede(){
+  const c=cur(), t=moede.trin[moede.i], u=moede.uge;
+  let h = `<div class="topbar"><button class="iconbtn" data-a="moedeforlad" aria-label="Forlad mødet">✕</button><h1>Spejdermøde · uge ${u.uge}</h1><span class="spacer"></span></div>
+    <div class="mtrin">${moede.trin.map((x,k)=>`<span class="${k<moede.i?"ok":k===moede.i?"nu":""}">${k<moede.i?"✓":k+1}<small>${TRINNAVN[x]}</small></span>`).join("")}</div>
+    <div class="dots">${moede.trin.map((_,k)=>`<i class="${k<moede.i?"ok":k===moede.i?"now":""}"></i>`).join("")}</div>`;
+  if(moede.besked) h += `<div class="card hbesked">${moede.besked}</div>`;
+  const dag=`<defs><linearGradient id="mdag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3f0"/><stop offset="1" stop-color="#e5f2d8"/></linearGradient></defs>`;
+  if(t==="aabning"){
+    const { bag, foran } = moedeScene(c);
+    h += `<div class="aktscene"><svg viewBox="0 0 320 240" class="aktsvg">${dag}<rect width="320" height="240" fill="url(#mdag)"/><circle cx="270" cy="40" r="16" fill="#ffd166"/>
+        <path d="M18 120 L18 80 L60 52 L102 80 L102 120Z" fill="#8d6640"/><path d="M10 82 L60 46 L110 82" fill="none" stroke="#5c3a20" stroke-width="8"/><rect x="50" y="94" width="18" height="26" fill="#5c3a20"/>
+        <ellipse cx="160" cy="250" rx="230" ry="90" fill="#86b25a"/>
+        ${bag}<path d="M160 205 V20" stroke="#ddd6c4" stroke-width="5"/><circle cx="160" cy="18" r="5" fill="#f2c94c"/>
+        <g id="flaget" class="${akt&&akt.hejst?"oppe":""}"><rect x="163" y="0" width="64" height="44" fill="#c8102e"/><rect x="183" y="0" width="9" height="44" fill="#fff"/><rect x="163" y="17.5" width="64" height="9" fill="#fff"/></g>
+        ${foran}</svg></div>
+      <div class="aktbesked ${akt&&akt.besked?"":"tom"}" id="aktbesked">${(akt&&akt.besked)||"&nbsp;"}</div>
+      <div class="aktopg">Patruljen står i rundkreds om flagstangen ved hytten. Mødet begynder med flaghejsning.</div>
+      <button class="btn earth" data-a="hejs" ${akt&&akt.hejst?"disabled":""}>🇩🇰 Hejs flaget</button>
+      <button class="btn gold" data-a="moedeklar" ${akt&&akt.hejst?"":"disabled"}>✋ Vi er klar!</button>`;
+  }
+  else if(t==="quiz"){
+    h += `<div class="card center"><div style="font-size:48px">📝</div><h2>Mødets quiz</h2>
+      <p class="muted">10 spørgsmål fra ugens udfordring – de samme for alle spejdere i uge ${u.uge}. Får du mindst 8 rigtige, giver det ekstra belønning, og 10/10 gør dig til ugens stjerne ⭐.</p></div>
+      <button class="btn gold" data-a="moedequiz">Start quizzen</button>`;
+  }
+  else if(t==="akt"){
+    const a=moede.akt, [ik,tid]=ARSTIDER[a.aarstid];
+    h += `<div class="card"><small class="muted">${ik} ${tid}s aktivitet</small><h2 style="margin:4px 0">${a.navn}</h2><p style="margin:0">${a.tekst}</p></div>`;
+    if(moede.aktOk){
+      h += `<button class="btn gold" data-a="moedevidere">Videre →</button>`;
+    } else if(a.type==="surring"){
+      h += `<button class="btn gold" data-a="moedebyg">🪢 Byg ${BYGID[a.opg].navn.toLowerCase()}</button>`;
+    } else if(["stjerner","baal","koekken"].includes(a.type)){
+      const d=aktDel(c, a.type, null);
+      h += `<div class="aktscene">${d.scene}</div><div class="aktbesked ${akt.besked?"":"tom"}" id="aktbesked">${akt.besked||"&nbsp;"}</div>`;
+      h += a.type==="stjerner" ? d.knapper : `<button class="btn earth" data-a="braende">🪵 Læg brænde på</button>
+        <button class="btn gold" id="ristknap">${a.type==="baal"?"🍡 Hold nede for at riste en skumfidus":"🍞 Hold nede for at bage snobrød"}</button>`;
+    } else {
+      h += `<button class="btn gold" data-a="moedeaktquiz">Start opgaven (3 opgaver)</button>`;
+    }
+    if(!moede.aktOk) h += `<button class="btn secondary" data-a="moedespring">Spring aktiviteten over</button>`;
+  }
+  else if(t==="patrulje"){
+    const p=minPatrulje(c);
+    h += `<div class="card center"><div style="font-size:48px">${PDYR[p.dyr][0]}</div><h2>Patruljetid</h2>
+      <p class="muted">${esc(p.navn)} svarer på 3 spørgsmål på skift. Vælg, hvem der skal svare, og giv telefonen videre.</p></div>
+      <button class="btn gold" data-a="moedepatrulje">Start patruljetid</button>`;
+  }
+  else if(t==="afslut"){
+    const { bag, foran } = moedeScene(c), hi=ugensHistorie(u), b=moede.belonning;
+    h += `<div class="aktscene"><svg viewBox="0 0 320 240" class="aktsvg"><defs><radialGradient id="gloed"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+        <linearGradient id="nat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1630"/><stop offset="1" stop-color="#2a3550"/></linearGradient></defs>
+        <rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(45,u.uge)}<ellipse cx="160" cy="210" rx="190" ry="70" fill="#22351f"/>
+        ${bag}<g transform="translate(0 4)">${baalSVG(3)}</g>${foran}</svg></div>
+      <div class="card"><b>📖 Ugens historie: ${hi[0]}</b><p style="margin:6px 0 0">${hi[1]}</p></div>`;
+    if(moede.forsent) h += `<div class="card hbesked">Ugen sluttede, før mødet blev færdigt, så det tæller desværre ikke. Kom til næste uges møde!</div>`;
+    else if(b) h += `<div class="card belon"><b>🎁 Belønning for mødet</b>
+        <div class="belonliste"><span>🪙 +${b.pts} point</span><span>🏠 +${b.mp} møde-point</span>${Object.entries(b.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
+        ${b.top?`<small>⭐ Ekstra belønning for mindst 8 rigtige i quizzen.</small>`:""}
+        ${moede.rigtige===10?`<small>⭐ Du er <b>ugens stjerne</b> med 10/10!</small>`:""}
+        <small>🔥 Mødestreak: <b>${moeder(c).streak} ${moeder(c).streak===1?"uge":"uger"}</b> i træk.${b.syg?" 🤒 Du har optjent en sygemelding!":""}</small></div>`;
+    h += `<button class="btn gold" data-a="moedeslut">🏁 Afslut mødet</button>`;
+  }
+  return h;
+}
+
 const FANER = [["profil","👤","Profil"],["maerker","🏅","Mærker"],["lejr","⛺","Lejrplads"],["patrulje","🚩","Patrulje"],["traening","🎯","Træning"]];
 function renderFaner(){
   const el=document.getElementById("tabs"), vis=FANER.some(f=>f[0]===nav.screen) || nav.screen==="emne";
@@ -5862,6 +6251,22 @@ const actions = {
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   fejlstart(){ startQuiz("fejl", "alle", 0); },
   laesop(){ oplaesQuiz(true); },
+  moedestart(){ startMoede(); },
+  moedeklar(){ if(akt && akt.hejst) moedeVidere(); },
+  moedequiz(){ startQuiz("moede", "alle", 0); },
+  moedeaktquiz(){ startQuiz("moedeakt", "alle", 0); },
+  moedebyg(){ bygOpg = { id:moede.akt.opg, idx:null, bundet:{}, valgt:null, fejl:0, moede:true }; go("byg"); },
+  moedebygok(){ const fejl=bygOpg.fejl; moede.aktOk=true; moedeVidere(); moede.besked=`✅ ${BYGID[moede.akt.opg].navn} er bygget${fejl?"":" uden fejl"}!`; go("moede"); },
+  moedespring(){ moede.aktOk=false; moedeVidere(); moede.besked="Aktiviteten blev sprunget over – det giver lidt mindre belønning."; render(); },
+  moedevidere(){ moedeVidere(); },
+  moedepatrulje(){ startMoedePquiz(); },
+  moedeslut(){ const b=moede.belonning; moede=null; go("hytte"); if(b && b.nytNiv) fejr(MMAERKE, b.nytNiv, null); else if(b) konfettiLille(); },
+  moedeforlad(){
+    if(moede.trin[moede.i]==="afslut"){ actions.moedeslut(); return; }
+    go("hytte"); lejrToast("Mødet venter på dig – du kan fortsætte senere i denne uge.");
+  },
+  hyttekoeb(d){ hytteKoeb(d.id); },
+  moedetraen(d){ startQuiz("moedetraen", "alle", +d.k); },
   ugestart(){ startQuiz("uge", "alle", 0); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
@@ -5870,7 +6275,7 @@ const actions = {
   lejrannuller(){ lejrValg=null; render(); },
   trae(d){ traeKlik(+d.i); },
   nytjob(d){ visJobValg(d.id); },
-  bygstop(){ if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
+  bygstop(){ if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
   pny(){ pdraft={ navn:"", dyr:0, medlemmer:[cur().id] }; go("pedit"); },
   pedit(){ const p=minPatrulje(cur()); pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, medlemmer:[...p.medlemmer] }; go("pedit"); },
   pjoin(d){ const p=patruljer().find(x=>x.id===d.id); patruljer().forEach(o=>{ o.medlemmer=o.medlemmer.filter(id=>id!==cur().id); }); p.medlemmer.push(cur().id); save(); render(); lejrToast(`Velkommen i ${esc(p.navn)}! 🚩`); },
@@ -5906,7 +6311,7 @@ const actions = {
     save(); render(); const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
   },
   pnaeste(){ pquiz.i++; pquiz.fase="vaelg"; pquiz.svaret=false; pquiz.hvem=null; if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
-  pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ pquiz=null; go("patrulje"); }); },
+  pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ const m=pquiz.moede; pquiz=null; go(m && moede ? "moede" : "patrulje"); }); },
   pbygstart(d){ startPbyg(d.id); },
   pbygklar(){ bygOpg.skift=false; bygOpg.valgt=null; render(); window.scrollTo(0,0); },
   pbygslut(){
@@ -5949,7 +6354,9 @@ const actions = {
   stjerne(d){
     const c=cur(), opg=STJERNEOPG[akt.trin||0]; if(!opg) return;
     if(d.g===opg[0]){ akt.fundet=[...(akt.fundet||[]),opg[0]]; akt.trin=(akt.trin||0)+1; vibrer(30);
-      akt.besked = `⭐ Flot! Du fandt ${opg[1].replace("Find ","")}. ${belon(c,"stjerner",4)}`; render(); }
+      akt.besked = `⭐ Flot! Du fandt ${opg[1].replace("Find ","")}. ${belon(c,"stjerner",4)}`;
+      if(nav.screen==="moede" && !STJERNEOPG[akt.trin]){ moedeAktKlaret(); return; }
+      render(); }
     else aktBesked(`Det er ikke den. ${opg[2]}`);
   },
   stjernerigen(){ akt.trin=0; akt.fundet=[]; akt.besked=""; render(); },
