@@ -14,7 +14,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
   Mærkesiden viser fremgangen i hver gruppe, fx »Natur: 8 af 21 mærker«. Et emne vises først, når det har mindst 10 spørgsmål på hvert niveau (`ANTAL_SPG_MIN`)
 - 1.664 spørgsmål med forklaringer – mindst 25 pr. emne og niveau. Heraf opgaver, hvor man skal vise, hvordan knob og surringer bindes, og billedspørgsmål med tegninger af dyr, dyrespor, blade, svampe, knob og surringer
 - Den samme morse- eller semaforopgave kommer aldrig to gange i samme prøve
-- **Én spiller – én patrulje:** når man starter, opretter man en patrulje på 5 spejdere og vælger patruljeleder (det er en selv) og patruljeassistent. Mærkerne er fælles – når man tager et mærke, får hele patruljen det – og patruljen deler lejrpladsen. Patruljelederen har valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
+- **Én spiller – én patrulje:** når man starter, opretter man en patrulje på 5 spejdere og vælger patruljeleder (det er en selv) og patruljeassistent. Under »Redigér patruljen« kan man ændre navn og udseende på alle i patruljen. Mærkerne er fælles – når man tager et mærke, får hele patruljen det – og patruljen deler lejrpladsen. Patruljelederen har valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
 - Fri træning, nedtælling på 20 sekunder, point og streak
 - **Øv dine fejl:** spørgsmål, man har svaret forkert på, samles under Træning. Et spørgsmål forsvinder, når man har svaret rigtigt på det to gange i træk
 - **Ugens udfordring:** 10 spørgsmål fra forskellige emner, som er de samme for alle spejdere hele ugen (valgt ud fra år og ugenummer). Spejderens bedste resultat for ugen vises på profilen
@@ -23,7 +23,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
 - Materialer og arbejde på lejrpladsen: plant grantræer og løvtræer på de tomme pladser i skoven. Når de er vokset op, kan patruljens spejdere fælde dem (→ granstammer → afgrenes til rafter, og løvstammer → kløves til brænde). Fældning kræver Kniv, sav og økse i sølv, og kløvning kræver mærket i bronze og en huggeplads, hvor højere niveau giver mere brænde og hurtigere kløvning. Når et træ er fældet, er pladsen tom igen.
-- Lageret har fra start plads til 10 rafter og 10 brænde. Raftegården og Brændeskuret giver 20 pladser mere for hvert niveau. Det, der ikke er plads til, går tabt
+- Lageret har fra start plads til 10 rafter og 10 brænde. Raftegården og Brændeskuret giver 20 pladser mere, når de er bygget, og 5 mere for hvert niveau, de opgraderes. Det, der ikke er plads til, går tabt
 - Brænde på bålet tages fra lageret. River man noget ned, får man ingen point tilbage – kun 30 % af materialerne
 - Byggeri, opgraderinger, job og træer, der vokser, tager tid. Man kan se en reklame for at halvere tiden (én gang pr. byggeri, opgradering, job og træ). Appen er offline, så »reklamerne« er appens egne tips med en nedtælling på 15 sekunder – rigtige reklamer kræver et reklamenetværk i `visReklame` Lav jeres eget tovværk: saml brændenælder og bast, sno tovværk og takl det (kræver Knob og reb). Pionerarbejde koster rafter og reb, og bål koster brænde
 - Alt på lejrpladsen kan opgraderes fra niveau 1 til 99 – fx bliver lejrporten flottere og flottere. Opgraderingen tager længere tid, jo højere niveauet er (fra få minutter til flere dage)
@@ -55,7 +55,7 @@ python3 find_lette_svar.py index.html --md rapport.md
 Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de forkerte, og afslutter med kode 0, når det rigtige svar er det længste i under 35 % af spørgsmålene.
 
 ## Ret i lejrpladsen
-Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (4 = fire gange grundtiden). Lagerpladsen styres af `LAGER_START` og `LAGER_PR_NIV`, træerne af `TRAETYPE` og `GENVAEKST`, nedrivning af `RIV_ANDEL`, det højeste niveau af `MAKSNIV`, og reklamerne af `REKLAME_SEK` og `REKLAMER`. Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (4 = fire gange grundtiden). Lagerpladsen styres af `LAGER_START`, `LAGER_BYGGET` og `LAGER_PR_NIV`, træerne af `TRAETYPE` og `GENVAEKST`, nedrivning af `RIV_ANDEL`, det højeste niveau af `MAKSNIV`, og reklamerne af `REKLAME_SEK` og `REKLAMER`. Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
 
 ## Det, mærkerne låser op
 Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni nyeste emner låser desuden dette op:
@@ -83,7 +83,7 @@ Tilpasninger i forhold til de første ønsker:
 - Rangen »Patruljeleder« hedder nu »Vildmarksspejder«, så den ikke forveksles med titlen fra Ledelse og ansvar.
 - Patruljen oprettes nu fra start, så Ledelse og ansvar i bronze giver et Patruljehjørne i stedet for retten til at oprette en patrulje. Huggepladsen kræver nu bronze (i stedet for guld), fordi al kløvning kræver en huggeplads.
 
-Gamle gemte spil virker stadig: den aktive spejder bliver patruljeleder i sin patrulje (eller i en ny), patruljen fyldes op til 5 spejdere, og alle i patruljen får de højeste mærker, nogen af dem havde. Spejdere, der ikke var med i patruljen, ligger stadig i de gemte data, men vises ikke. Træerne i en gammel skov bliver stående.
+Gamle gemte spil virker stadig: den aktive spejder bliver patruljeleder i sin patrulje (eller i en ny), patruljen fyldes op til 5 spejdere (har den flere, fjernes de sidste – patruljelederen og -assistenten bliver), og alle i patruljen får de højeste mærker, nogen af dem havde. Spejdere, der ikke var med i patruljen, fjernes. Træerne i en gammel skov bliver stående.
 
 ## Ret i adventureløbene
 Løbene står i listen `LOEB` i `index.html` (søg efter `ADVENTURELØB`). Hvert løb har:

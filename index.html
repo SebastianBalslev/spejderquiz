@@ -6118,7 +6118,7 @@ window.addEventListener("popstate", ev => {
 
 function render(){
   let s = nav.screen;
-  if(!cur() && !["vaelg","pedit"].includes(s)) s = "vaelg";
+  if(!cur() && !["vaelg","pedit"].includes(s) && !(s==="editor" && draft && draft.retur==="pedit")) s = "vaelg";
   if(s==="editor" && !draft) s = cur() ? "profil" : "vaelg";
   if((s==="quiz" || s==="resultat") && !quiz) s = "profil";
   if(s==="emne" && !EMNE[nav.params.id]) s = "maerker";
@@ -6159,7 +6159,7 @@ function scrEditor(){
   const ny = !draft.id, L = draft.look;
   const sw = (key, list) => `<div class="swatches">${list.map((x,i)=>{ const col=Array.isArray(x)?x[0]:x, nm=Array.isArray(x)?x[1]:"Farve "+(i+1);
       return `<button class="sw ${L[key]===i?"on":""}" style="background:${col}" data-a="look" data-k="${key}" data-i="${i}" aria-label="${nm}"></button>`; }).join("")}</div>`;
-  const back = draft.foerste ? `<span class="spacer"></span>` : `<button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button>`;
+  const back = draft.foerste ? `<span class="spacer"></span>` : `<button class="iconbtn" data-a="til" data-to="${draft.retur||"profil"}" aria-label="Tilbage">←</button>`;
   return `<div class="topbar">${back}<h1>${draft.foerste?"Sådan ser du ud":"Redigér spejder"}</h1><span class="spacer"></span></div>
     <div class="card profile"><div class="preview">${avatarSVG(L, draft.badges, draft.rank||0)}</div></div>
     <div class="card">
@@ -6816,8 +6816,8 @@ function konfetti(){
    ===================================================================== */
 const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
-  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til flere rafter – mere for hvert niveau." },
-  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til mere brænde – mere for hvert niveau." },
+  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 5 mere for hvert niveau." },
+  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 5 mere for hvert niveau." },
   { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge på pladsen." },
   { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ." },
   { id:"braende",     navn:"Brændestabel",      ikon:"🪵", pris:20,  besk:"Tørt brænde til bålet." },
@@ -7779,11 +7779,17 @@ function sikrPatrulje(){
   let p = patruljer().find(x=>x.medlemmer.includes(pl.id));
   if(!p){ p = { id:"p"+Date.now().toString(36), navn:`${pl.navn}s patrulje`, dyr:0, medlemmer:[pl.id], point:0, maerke:0, projekter:{} }; }
   p.medlemmer = p.medlemmer.filter(id=>state.chars.some(c=>c.id===id));
+  if(p.medlemmer.length > PATRULJE_STR){
+    const behold = [pl.id, p.assistent].filter(id=>p.medlemmer.includes(id));
+    p.medlemmer = p.medlemmer.filter(id=>behold.includes(id) || p.medlemmer.filter(x=>!behold.includes(x)).indexOf(id) < PATRULJE_STR-behold.length);
+  }
   const brugt = new Set(medlemmer(p).map(m=>m.navn));
   for(const n of STANDARDNAVNE){ if(p.medlemmer.length>=PATRULJE_STR) break; if(brugt.has(n)) continue; const m=nySpejder(n); state.chars.push(m); p.medlemmer.push(m.id); }
   if(!p.medlemmer.includes(p.leder)) p.leder = pl.id;
   if(!p.medlemmer.includes(p.assistent) || p.assistent===p.leder) p.assistent = p.medlemmer.find(id=>id!==p.leder);
   state.patruljer = [p]; state.active = p.leder;
+  // Spejdere uden for patruljen bruges ikke i enkeltspilleren og fjernes
+  state.chars = state.chars.filter(c=>p.medlemmer.includes(c.id));
   save();
 }
 function minPatruljeleder(){ const p=patruljer()[0]; return p ? state.chars.find(x=>x.id===p.leder) : null; }
@@ -7835,10 +7841,10 @@ function scrPedit(){
     </div>
     <div class="card">
       <div class="lbl" style="margin-top:0">Patruljens ${pdraft.navne.length} spejdere</div>
-      <p class="muted psmall" style="margin:0 0 8px">${ny?"Vælg, hvem der er patruljeleder – det er dig – og hvem der er patruljeassistent.":"Du er patruljeleder. Du kan give spejderne nye navne og vælge en ny patruljeassistent."}</p>
+      <p class="muted psmall" style="margin:0 0 8px">${ny?"Vælg, hvem der er patruljeleder – det er dig – og hvem der er patruljeassistent. Med ✏️ kan du ændre en spejders udseende.":"Du er patruljeleder. Du kan give spejderne nye navne, ændre deres udseende med ✏️ og vælge en ny patruljeassistent."}</p>
       <div class="pnavne">${pdraft.navne.map((n,k)=>`<div class="pnavn ${k===pdraft.leder?"pl":""}">${hoved({ look:pdraft.looks[k] })}
         <input type="text" data-pn="${k}" maxlength="20" value="${esc(n)}" placeholder="Navn" autocomplete="off" aria-label="Navn på spejder ${k+1}">
-        <span class="prolle">${ny?`<button class="chip ${k===pdraft.leder?"on":""}" data-a="ppl" data-k="${k}">⚜️ PL</button>`:k===pdraft.leder?`<span class="chip on">⚜️ PL</span>`:""}${k!==pdraft.leder?`<button class="chip ${k===pdraft.assistent?"on":""}" data-a="ppa" data-k="${k}">🔰 PA</button>`:""}</span></div>`).join("")}</div>
+        <button class="chip" data-a="pudseende" data-k="${k}" aria-label="Redigér udseende">✏️</button><span class="prolle">${ny?`<button class="chip ${k===pdraft.leder?"on":""}" data-a="ppl" data-k="${k}">⚜️ PL</button>`:k===pdraft.leder?`<span class="chip on">⚜️ PL</span>`:""}${k!==pdraft.leder?`<button class="chip ${k===pdraft.assistent?"on":""}" data-a="ppa" data-k="${k}">🔰 PA</button>`:""}</span></div>`).join("")}</div>
       <small class="muted">⚜️ PL = patruljeleder (dig) · 🔰 PA = patruljeassistent</small>
     </div>
     <button class="btn" data-a="pgem">${ny?"Næste: lav din spejder ⚜️":"Gem patruljen"}</button>
@@ -7994,9 +8000,9 @@ function skovData(c){
 }
 function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
 // Lagerplads: rafter og brænde kan kun gemmes, hvis der er plads. Raftegården og brændeskuret giver mere plads for hvert niveau.
-const LAGER_START = 10, LAGER_PR_NIV = 20;
+const LAGER_START = 10, LAGER_BYGGET = 20, LAGER_PR_NIV = 5;
 const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur" };
-function lagerPlads(c, m){ return LAGER_BYG[m] ? LAGER_START + LAGER_PR_NIV*bygNiv(cur()||c, LAGER_BYG[m]) : Infinity; }
+function lagerPlads(c, m){ if(!LAGER_BYG[m]) return Infinity; const n=bygNiv(cur()||c, LAGER_BYG[m]); return LAGER_START + (n ? LAGER_BYGGET + LAGER_PR_NIV*(n-1) : 0); }
 function lagerTip(m){ return `Byg eller opgrader ${{ rafter:"raftegården", braende:"brændeskuret" }[m]} for at få mere plads.`; }
 function lagerFuldt(c, m){ return (lager(c)[m]||0) >= lagerPlads(c,m); }
 function harMat(c, mat){ const l=lager(c); return !mat || Object.entries(mat).every(([m,n])=>(l[m]||0)>=n); }
@@ -9427,6 +9433,7 @@ const actions = {
   gemkar(){
     const navn = (draft.navn||"").trim();
     if(!navn){ const el=document.getElementById("navn"); el.classList.remove("err"); void el.offsetWidth; el.classList.add("err"); el.placeholder="Husk at skrive et navn!"; el.focus(); return; }
+    if(draft.retur==="pedit" && pdraft){ pdraft.navne[draft.pk]=navn; pdraft.looks[draft.pk]={...draft.look}; draft=null; go("pedit"); return; }
     if(draft.id){
       const c = state.chars.find(x=>x.id===draft.id); c.navn=navn; c.look={...draft.look};
     } else {
@@ -9516,9 +9523,11 @@ const actions = {
   pny(){ const navne=shuffle(STANDARDNAVNE.slice()).slice(0,PATRULJE_STR);
     pdraft={ navn:"", dyr:0, navne, looks:navne.map(()=>randLook()), leder:0, assistent:1 }; go("pedit"); },
   pedit(){ const p=minPatrulje(cur()), ms=medlemmer(p);
-    pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, ids:ms.map(m=>m.id), navne:ms.map(m=>m.navn), looks:ms.map(m=>m.look), leder:ms.findIndex(m=>m.id===p.leder), assistent:ms.findIndex(m=>m.id===p.assistent) }; go("pedit"); },
+    pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, ids:ms.map(m=>m.id), navne:ms.map(m=>m.navn), looks:ms.map(m=>({...m.look})), leder:ms.findIndex(m=>m.id===p.leder), assistent:ms.findIndex(m=>m.id===p.assistent) }; go("pedit"); },
   pdyr(d){ pdraft.dyr=+d.k; render(); },
   ppl(d){ const k=+d.k; if(pdraft.id) return; pdraft.leder=k; if(pdraft.assistent===k) pdraft.assistent=pdraft.navne.findIndex((_,j)=>j!==k); render(); },
+  pudseende(d){ const k=+d.k; pdraft.navne=pdraft.navne.map((n,j)=>{ const el=document.querySelector(`[data-pn="${j}"]`); return el?el.value:n; });
+    draft={ navn:pdraft.navne[k], look:{...pdraft.looks[k]}, badges:{}, rank:0, retur:"pedit", pk:k }; go("editor"); },
   ppa(d){ const k=+d.k; if(k===pdraft.leder) return; pdraft.assistent=k; render(); },
   pgem(){
     const navn=(pdraft.navn||"").trim();
@@ -9527,7 +9536,7 @@ const actions = {
     if(tom>=0){ const el=document.querySelector(`[data-pn="${tom}"]`); if(el){ el.classList.add("err"); el.placeholder="Skriv et navn!"; el.focus(); } return; }
     if(pdraft.id){
       const p=minPatrulje(cur());
-      pdraft.ids.forEach((id,k)=>{ const m=state.chars.find(x=>x.id===id); if(m) m.navn=pdraft.navne[k].trim(); });
+      pdraft.ids.forEach((id,k)=>{ const m=state.chars.find(x=>x.id===id); if(m){ m.navn=pdraft.navne[k].trim(); m.look={...pdraft.looks[k]}; } });
       p.navn=navn; p.dyr=pdraft.dyr; p.assistent=pdraft.ids[pdraft.assistent];
       save(); pdraft=null; go("patrulje"); lejrToast(`${PDYR[p.dyr][0]} ${esc(p.navn)} er gemt.`); return;
     }
