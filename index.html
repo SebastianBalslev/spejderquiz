@@ -147,6 +147,8 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .mestertrofae{margin-top:10px;background:linear-gradient(135deg,#fff3c4,#f4cb4e);border-radius:14px;padding:10px;text-align:center}
 .loebtekst{font-style:italic;line-height:1.45}
 .haend{text-align:center}
+.lejrvalg{flex-direction:column;gap:6px;margin-top:8px}.lejrvalg .chip{justify-content:flex-start;text-align:left;white-space:normal}
+.qstats .rest{color:#b3261e}
 /* Spejderhytten */
 .hyttescene{aspect-ratio:300/220}
 .hting{position:absolute;aspect-ratio:1;display:grid;place-items:center;pointer-events:none}
@@ -5901,6 +5903,7 @@ const POSTTYPER = {
   baal:         { navn:"Bålposten",          ikon:"🔥", rolle:"baal" },
   natur:        { navn:"Naturposten",        ikon:"🌿", rolle:"kort" },
   vand:         { navn:"Vandposten",         ikon:"🛶", rolle:"sanitet" },
+  kode:         { navn:"Kodeposten",         ikon:"🔐", rolle:"signal" },
 };
 const JOKERE = {
   ring:  { navn:"Ring til lederen", ikon:"📞", tekst:"fjerner 2 forkerte svar" },
@@ -5945,6 +5948,34 @@ const LOEB = [
     intro:"I Ugleskoven bor en gammel slørugle, som ifølge sagnet passer på skovens hemmeligheder. Patruljen skal finde de 13 poster, før uglen flyver ud på jagt i skumringen.",
     mellem:["Træerne er gamle og tykke, og stien er dækket af mos.","I finder en uglegylp under et træ – med små knogler fra mus.","Der er spor efter et rådyr i det bløde mudder.","En spætte hamrer løs højt oppe i en stamme.","Stien går op ad en bakke. Herfra kan I se ud over hele skoven.","I passerer en gammel jagthytte.","Der hænger en uglekasse på et træ – men den er tom.","Det begynder at blive skumring.","I hører et svagt »hu-hu« i det fjerne.","Bladene rasler i vinden.","En flagermus flagrer forbi.","Skoven bliver tættere og mørkere.","Uglens træ må være lige forude."],
     slut:"I det gamle egetræ sidder sløruglen og kigger ned på jer med sine store øjne. Under træet ligger en lille træugle – et tegn på, at I har klaret Ugleskoven." },
+  { nr:7, navn:"Stormen over heden", ikon:"🌪️", poster:15, niveau:3, etaper:2, energi:3, jokere:2, kryds:2, haendelserPr:2, maalTid:42, vejrEnergi:true, regnbaal:true, startVejr:"regn",
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","pioner"], pioner:["taarn","baare"], bund:"#9aa86a", terraen:[{ hede:4, bakke:2, skov:1 }, { hede:3, bakke:3, mose:1 }],
+    nyt:"Nyt: to etaper med lejrplads imellem. Regn og storm koster ekstra energi på lange ruter, og bålet skal tændes i regnvejr.",
+    intro:"Over den store hede trækker et uvejr ind. Patruljen skal krydse heden til fyrtårnet ved kysten og tænde lyset, før stormen for alvor rammer.",
+    etapeTekst:["", "Efter en nat i lejren er regnen blevet til storm. I kan se fyrtårnet langt ude ved kysten – nu gælder det!"],
+    mellem:["Lyngen er våd, og regnen pisker ind fra vest.","Vinden river i regntøjet. Hold sammen, og hold øje med kortet.","I passerer en gammel gravhøj, der rejser sig over lyngen.","En flok krager kæmper mod vinden.","Stien er blevet til en lille bæk.","Lyn oplyser heden langt væk. I tæller sekunderne til tordenen.","I finder læ bag en klynge enebærbuske.","Et får står og gnaver i lyngen, helt uanfægtet af vejret.","Bakkerne bliver højere mod kysten.","Fyrtårnet blinker svagt gennem regnen."],
+    slut:"Gennemblødte, men stolte når I fyrtårnet og tænder lyset. Langt ude på havet blinker et skib tilbage. Patruljen har trodset stormen!" },
+  { nr:8, navn:"Den gamle borgruin", ikon:"🏰", poster:18, niveau:3, etaper:2, energi:3, jokere:2, kryds:3, haendelserPr:2, maalTid:50, kode:true,
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","pioner"], pioner:["port","taarn"], bund:"#88a95a", terraen:[{ skov:3, bakke:2, soe:1 }, { ruin:4, bakke:2, soe:1 }],
+    nyt:"Nyt: kodeposter i flere trin – et kodeord fra én post skal bruges senere i løbet.",
+    intro:"På bakken over skoven ligger ruinerne af en gammel borg. Ifølge sagnet gemte borgherren sin skat i en kiste med en kodelås. Patruljen skal samle sporene og finde koden.",
+    etapeTekst:["", "Næste morgen står borgruinen mørk mod himlen. Husk kodeordet fra i går – I får brug for det!"],
+    mellem:["Stien går op gennem en gammel bøgeskov.","I finder et forvitret skilt: »Til borgen«.","Der ligger store, firkantede sten mellem træerne – rester af en mur.","En ravn sidder på en gren og holder øje med jer.","Voldgraven er fyldt med vand og åkander.","I går gennem en port, hvor der engang hang en vindebro.","Tårnet er styrtet sammen, men trappen er der stadig.","I finder ridser i en sten – måske et gammelt tegn?","Vinden suser gennem de tomme vinduer.","Under borggården er der en kælder med en tung trædør."],
+    slut:"I kælderen står kisten. Med kodeordet åbner låsen med et klik! Indeni ligger gamle mønter og et brev fra borgherren: »Skatten er jeres – del den med jeres venner.«" },
+  { nr:9, navn:"Ekspeditionen over fjeldet", ikon:"⛰️", poster:21, niveau:3, etaper:3, energi:3, jokere:1, kryds:3, haendelserPr:2, maalTid:60, vejrEnergi:true, overnatning:true,
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","vand","pioner"], pioner:["svaevebane","bro"], bund:"#8faa6a", terraen:[{ skov:3, bakke:2, soe:1 }, { fjeld:3, soe:2, mose:1 }, { fjeld:5, hede:1 }],
+    nyt:"Nyt: tre etaper med overnatning – byg lejren med telt, bål og mad mellem etaperne.",
+    intro:"Patruljen er på ekspedition i fjeldet. Over tre dage skal I vandre fra dalen, forbi fjeldsøerne og op til varden på toppen – med alt, I skal bruge, i rygsækkene.",
+    etapeTekst:["", "Dag 2: I vågner til fuglesang og frisk luft. Nu går turen op til fjeldsøerne.", "Dag 3: Den sidste dag. Toppen og varden venter – det bliver koldt og blæsende deroppe."],
+    mellem:["Stien snor sig op gennem birkeskoven.","En bæk fosser ned ad fjeldsiden. I fylder drikkedunkene.","Træerne bliver lavere og lavere.","Der ligger stadig sne i skyggen af klipperne.","En ren står og kigger på jer fra en bakketop.","Fjeldsøen er så klar, at I kan se bunden.","I følger varderne – små stenbunker, der viser vej.","Vinden er kold heroppe. Huer og handsker på!","En ørn svæver højt over jer.","Skyerne driver forbi under jer.","Toppen er tæt på."],
+    slut:"På toppen står den store varde. Patruljen lægger hver sin sten på den og nyder udsigten over fjeldet. I har klaret tre dages ekspedition sammen!" },
+  { nr:10, navn:"Mesterløbet: Den store vildmarksrejse", ikon:"🏆", poster:25, niveau:3, etaper:3, energi:3, jokere:1, kryds:3, haendelserPr:2, maalTid:55, tidsgraense:20, vejrEnergi:true, regnbaal:true, overnatning:true, kode:true, mester:true,
+    typer:["videns","kompas","signal","natur","forstehjaelp","baal","vand","pioner"], pioner:["svaevebane","taarn","flaade"], bund:"#86a95a", terraen:[{ skov:4, soe:1, mose:2 }, { hede:3, bakke:2, ruin:2 }, { fjeld:4, soe:2 }],
+    nyt:"Mesterløbet: alle posttyper, alle roller skal bruges, og hver etape skal klares på højst 20 minutters spiltid.",
+    intro:"Det store mesterløb! Patruljen skal gennem skov, hede og fjeld på tre etaper og bruge alt, hvad I har lært. Men pas på: hver etape skal klares på højst 20 minutter.",
+    etapeTekst:["", "Etape 2: Heden og den gamle ruin. Husk kodeordet fra første etape!", "Etape 3: Op over fjeldet til målet. Giv alt, hvad I har!"],
+    mellem:["Det gælder om at arbejde sammen – hver rolle tæller.","Stien går gennem tæt skov. Kortlæseren går forrest.","I krydser en mose på gamle træplanker.","Bålmesteren tjekker, at tændstikkerne er tørre.","Signalisten holder øje med lamper og flag i det fjerne.","Saniteten tjekker fødderne for vabler.","Patruljelederen kigger på uret – I skal holde tempoet.","Heden breder sig ud foran jer.","Ruinen tårner sig op på bakken.","Fjeldet rejser sig i horisonten.","Vinden blæser koldt på toppen.","Målet er lige forude – I kan høre jubel!"],
+    slut:"Under jubel fra lederne løber I i mål. I har klaret Mesterløbet og er nu en ægte MESTERPATRULJE! Jeres navn bliver skrevet på mestertavlen i spejderhytten." },
 ];
 const LOEBNR = Object.fromEntries(LOEB.map(L=>[L.nr,L]));
 const ANTAL_LOEB = 10;
@@ -6058,6 +6089,15 @@ function lavPlan(L, seed){
   // Fordel posterne på etaper
   const etaper = [], pr = Math.ceil(L.poster / L.etaper);
   for(let e=0;e<L.etaper;e++) etaper.push({ noder: poster.slice(e*pr, (e+1)*pr) });
+  if(L.kode){
+    const ord = tag(SPORGSMAL.filter(q=>q.media && ["morse","semafor"].includes(q.media.type) && q.media.tekst.length>2), 1);
+    const sidst = etaper[etaper.length-1].noder, foerst = etaper[0].noder;
+    // Kodeposterne erstatter en post, så antallet passer, og ingen ens poster kommer i træk
+    const erstat = (liste, fra, til) => { for(let k=fra;k<til;k++){ const f=liste[k-1], e=liste[k+1]; if((!f||f.pt!=="kode") && (!e||e.pt!=="kode")){ liste[k] = null; return k; } } return -1; };
+    const k1 = erstat(foerst, 1, foerst.length-1), k2 = erstat(sidst, Math.max(1, sidst.length-4), sidst.length);
+    if(k1>=0) foerst[k1] = { t:"post", pt:"kode", del:1, spg:ord };
+    if(k2>=0) sidst[k2] = { t:"post", pt:"kode", del:2, spg:ord };
+  }
   // Vejkryds og hændelser sættes ind mellem posterne (aldrig før første post)
   const haendPool = bland(HAENDELSER.filter(h=>h.min<=L.nr));
   let hi = 0;
@@ -6133,8 +6173,8 @@ function startLoebValg(nr){
 function scrLoebRoller(){
   const p=minLoebPatrulje(), ig=loebIgang(p), ms=medlemmer(p);
   const roller = ig ? ig.roller : loebKlar.roller, L = LOEBNR[ig ? ig.nr : loebKlar.nr];
-  const etape = ig ? ig.e+1 : 1;
-  let h = `<div class="topbar"><button class="iconbtn" data-a="${ig?"loebvis":"til"}" data-to="patrulje" aria-label="Tilbage">←</button><h1>${ig?`Etape ${etape} af ${L.etaper}`:"Fordel rollerne"}</h1><span class="spacer"></span></div>
+  const etape = ig ? ig.e+2 : 1;
+  let h = `<div class="topbar"><button class="iconbtn" data-a="til" data-to="patrulje" aria-label="Tilbage">←</button><h1>${ig?`Etape ${etape} af ${L.etaper}`:"Fordel rollerne"}</h1><span class="spacer"></span></div>
     <div class="card loebhead"><span class="pemb">${L.ikon}</span><div><b>Løb ${L.nr}: ${L.navn}</b><small>${ig?"I kan bytte roller før hver etape.":L.nyt}</small></div></div>
     <p class="muted psmall">Hver post har en rolle, og telefonen gives til den, der har rollen. ${ms.length<ROLLER.length?"I er færre end 5, så nogle har flere roller.":""}</p>
     <div class="pvalgliste">${ROLLER.map(r=>{ const m=ms.find(x=>x.id===roller[r.id]) || ms[0];
@@ -6148,7 +6188,8 @@ function scrLoebRoller(){
 function startLoeb(){
   const p=minLoebPatrulje(), L=LOEBNR[loebKlar.nr], seed = (Date.now() ^ (Math.random()*1e9)) >>> 0;
   p.igang = { nr:L.nr, seed, plan:lavPlan(L, seed), e:0, i:0, fase:"gaa", energi:L.energi, jokere:L.jokere,
-    tid:0, straf:0, etapeTid:0, fejl:0, opgaver:0, mad:{}, roller:loebKlar.roller, ruter:{}, vejr:"sol", besked:"", start:Date.now() };
+    tid:0, straf:0, etapeTid:0, etapeStraf:0, fejl:0, opgaver:0, mad:{}, roller:loebKlar.roller, ruter:{}, vejr:L.startVejr||"sol", besked:"", start:Date.now() };
+  p.igang.etapeKopi = JSON.stringify(p.igang.plan.etaper[0].noder);
   loebKlar = null; loebOpg = null; loebAnim = null; save();
   go("loeb");
 }
@@ -6158,7 +6199,7 @@ function startLoebUr(){
   clearInterval(loebUr); loebUr=null;
   const ig=aktivtLoeb();
   const paaLoeb = nav.screen==="loeb" || (nav.screen==="pquiz" && pquiz && pquiz.loeb) || (nav.screen==="byg" && bygOpg && bygOpg.loeb);
-  if(!ig || !paaLoeb || ["maal"].includes(ig.fase)) return;
+  if(!ig || !paaLoeb || ["maal","lejr","roller"].includes(ig.fase)) return;
   loebSidst = Date.now(); let n = 0;
   loebUr = setInterval(()=>{
     const ig2=aktivtLoeb(); if(!ig2){ clearInterval(loebUr); return; }
@@ -6169,7 +6210,19 @@ function startLoebUr(){
     tjekTidsgraense(ig2);
   }, 1000);
 }
-function tjekTidsgraense(ig){}
+function etapeRest(ig){ const L=LOEBNR[ig.nr]; return L.tidsgraense ? L.tidsgraense*60000 - (ig.etapeTid + ig.straf - (ig.etapeStraf||0)) : null; }
+function tjekTidsgraense(ig){
+  const rest = etapeRest(ig); if(rest==null || ig.fase==="lejr" || ig.fase==="roller") return;
+  const el=document.getElementById("lrest"); if(el) el.textContent = mmss(Math.max(0,rest));
+  if(rest > 0) return;
+  // Tiden er gået: etapen skal tages om
+  const L=LOEBNR[ig.nr];
+  ig.plan.etaper[ig.e].noder = JSON.parse(ig.etapeKopi);
+  Object.keys(ig.ruter).filter(k=>k.startsWith(ig.e+":")).forEach(k=>delete ig.ruter[k]);
+  ig.i=0; ig.fase="gaa"; ig.energi=L.energi; ig.etapeTid=0; ig.straf=ig.etapeStraf||0; delete ig.mad[ig.e];
+  ig.besked = `⏰ Tiden løb ud! Etape ${ig.e+1} skal klares på ${L.tidsgraense} minutter, så I må tage den om.`;
+  pquiz=null; bygOpg=null; loebOpg=null; loebAnim=null; save(); go("loeb"); vibrer([100,60,100]);
+}
 function mmss(ms){ const s=Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
 function loebTidTekst(ig){ return mmss(ig.tid) + (ig.straf ? ` + ${mmss(ig.straf)}` : ""); }
 
@@ -6210,9 +6263,10 @@ const TERRAEN = {
 function loebKort(L, ig){
   const { pos, W, H } = kortLayout(L, ig), nd = noder(ig), rnd = seedRng(ig.seed*3 + ig.e);
   let bg = `<rect width="${W}" height="${H}" fill="${L.bund}"/>`;
-  if(L.terraen.aa){ const y = H*0.45; bg += `<path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#4a9fd0" stroke-width="14" fill="none"/><path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#9fd3f0" stroke-width="3" fill="none" stroke-dasharray="6 10"/>`; }
+  if(!Array.isArray(L.terraen) && L.terraen.aa){ const y = H*0.45; bg += `<path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#4a9fd0" stroke-width="14" fill="none"/><path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#9fd3f0" stroke-width="3" fill="none" stroke-dasharray="6 10"/>`; }
   const fri = (x,y,d) => pos.every(([a,b]) => Math.hypot(a-x,b-y) > d);
-  for(const [type, antal] of Object.entries(L.terraen)){
+  const terraen = Array.isArray(L.terraen) ? L.terraen[ig.e] : L.terraen;
+  for(const [type, antal] of Object.entries(terraen)){
     if(!TERRAEN[type]) continue;
     const ialt = Math.round(antal * (1 + (nd.length/10)));
     for(let k=0;k<ialt;k++){ for(let f=0;f<25;f++){ const x=20+rnd()*(W-40), y=20+rnd()*(H-40); if(fri(x,y,46)){ bg += TERRAEN[type](x,y,.8+rnd()*.5); break; } } }
@@ -6271,6 +6325,11 @@ function postOpgave(n){
   if(n.pt==="forstehjaelp"){ const s=FH_SCEN[n.scen]; return { art:"raekke", titel:s.titel, spm:s.tekst+" Sæt trinnene i den rigtige rækkefølge.", trin:s.trin, ekstra:[], forklaring:s.forklaring }; }
   if(n.pt==="baal"){ const s=BAAL_OPG[n.scen]; return { art:"raekke", titel:s.titel, spm:s.tekst+" Vælg de rigtige ting i den rigtige rækkefølge – to af tingene skal ikke bruges.", trin:s.trin, ekstra:s.ekstra, forklaring:s.forklaring }; }
   const q = SPGID[n.spg[0]];
+  if(n.pt==="kode" && n.del===2){
+    const ig=aktivtLoeb(), k1 = ig && ig.plan.etaper.flatMap(e=>e.noder).find(x=>x.pt==="kode" && x.del===1);
+    return { art:"valg", spm:`Kisten er låst med en kodelås. Hvilket kodeord fandt I ved kodeposten${k1&&k1.nr?` (post ${k1.nr})`:""}?`, svar:q.svar, forklaring:`Kodeordet var ${q.svar[0]}. ${ig && ig.kode ? "I huskede det fra den første kodepost." : "Det stod i signalet ved den første kodepost."}` };
+  }
+  if(n.pt==="kode") return { art:"valg", spm:q.spm+" Husk ordet – det er et kodeord, I skal bruge senere!", svar:q.svar, forklaring:q.forklaring, media:q.media, q };
   return { art:"valg", spm:q.spm, svar:q.svar, forklaring:q.forklaring, media:q.media, q };
 }
 function nyLoebOpg(ig){
@@ -6367,7 +6426,7 @@ function loebGaa(){
   if(n.t==="post"){ ig.fase="post"; loebOpg=null; }
   else if(n.t==="kryds") ig.fase="kryds";
   else if(n.t==="haend"){ ig.fase="haend"; ig.hsvar=null; }
-  else if(n.t==="lejr") ig.fase="lejr";
+  else if(n.t==="lejr"){ ig.fase="lejr"; ig.energi = LOEBNR[ig.nr].energi; ig.lejr = {}; }
   else if(n.t==="maal") return loebMaal();
   save(); render();
 }
@@ -6505,7 +6564,7 @@ function scrLoeb(){
   const vejr = { sol:"☀️", regn:"🌧️", storm:"🌪️", taage:"🌫️" }[ig.vejr] || "☀️";
   let h = `<div class="quiztop"><button class="iconbtn" data-a="loebmenu" aria-label="Menu">☰</button>
       <div class="qinfo"><small>${L.ikon} Løb ${L.nr}: ${L.navn}${L.etaper>1?` · <b>Etape ${ig.e+1} af ${L.etaper}</b>`:""}</small><b>${hjerter(ig)}</b></div>
-      <div class="qstats"><span>⏱️ <b id="ltid">${loebTidTekst(ig)}</b></span><span>🃏 ${ig.jokere} ${vejr}</span></div></div>`;
+      <div class="qstats"><span>⏱️ <b id="ltid">${loebTidTekst(ig)}</b></span>${L.tidsgraense?`<span class="rest">⏳ <b id="lrest">${mmss(Math.max(0,etapeRest(ig)))}</b></span>`:""}<span>🃏 ${ig.jokere} ${vejr}</span></div></div>`;
   // Under opgaven ved en post vises kun opgaven
   if(ig.fase==="post" && loebOpg && loebOpg.trin==="svar") return h + opgaveHTML(ig);
   if(ig.fase==="post"){
@@ -6519,7 +6578,7 @@ function scrLoeb(){
   const tekst = ig.besked ? `<div class="card hbesked">${ig.besked}</div>` : "";
   if(ig.fase==="gaa"){
     const naeste = nd[ig.i+1], postNr = nd.slice(0, ig.i+1).filter(x=>x.t==="post" && x.nr).length;
-    const fortael = ig.i===0 && !ig.besked ? (ig.e===0 ? L.intro : (L.etapeTekst||[])[ig.e] || "En ny dag på løbet begynder.") : (L.mellem[postNr % L.mellem.length]);
+    const fortael = ig.i===0 ? (ig.e===0 ? L.intro : (L.etapeTekst||[])[ig.e] || "En ny dag på løbet begynder.") : (L.mellem[postNr % L.mellem.length]);
     h += tekst + `<div class="card loebtekst"><p style="margin:0">${fortael}</p></div>`;
     const knap = naeste.t==="maal" ? "🏁 Gå i mål" : naeste.t==="lejr" ? "⛺ Gå til lejrpladsen" : naeste.t==="post" ? `🥾 Gå til post ${naeste.nr||"+"}` : "🥾 Gå videre ad stien";
     h += `<button class="btn gold" data-a="lgaa">${knap}</button>`;
@@ -6550,8 +6609,33 @@ function scrLoeb(){
   else if(ig.fase==="lejr") h += lejrEtapeHTML(ig);
   return h;
 }
-function lejrEtapeHTML(ig){ return ""; }
-function startEtape(){}
+const OVERNATNING = [
+  { id:"telt", ikon:"⛺", spm:"Hvor slår I teltet op?", svar:["På en flad, lidt højere plet","I lavningen helt nede ved søen","Under det store, døde træ"], ok:"Godt valg – her løber regnvandet væk, og intet kan falde ned.", fejl:"Det var ikke så godt. I sover dårligt og vågner trætte (−1 energi)." },
+  { id:"baal", ikon:"🔥", spm:"Hvor tænder I bål?", svar:["På bålpladsen langt fra teltene","Lige foran teltindgangen","Under grantræerne, hvor der er læ"], ok:"Sikkert – gnister kan ikke nå teltene eller træerne.", fejl:"Det er farligt! I må flytte bålet, og det tager kræfter (−1 energi)." },
+  { id:"mad",  ikon:"🍲", spm:"Hvad laver I til aftensmad?", svar:["Pasta med pølser og grøntsager","Kun slik og sodavand","Kylling, der kun er stegt halvt"], ok:"Mættende og varmt – det giver energi til i morgen.", fejl:"Det giver ikke meget energi til i morgen (−1 energi)." },
+];
+function lejrEtapeHTML(ig){
+  const L=LOEBNR[ig.nr];
+  let h = `<div class="card center"><div style="font-size:44px">⛺</div><h2 style="margin:2px 0">Etape ${ig.e+1} er klaret!</h2>
+    <p class="muted" style="margin:4px 0 0">${L.overnatning?"I slår lejr for natten. Byg lejren, spis og sov – så er I klar til i morgen.":"I holder hvil på lejrpladsen og spiser. Energien er fyldt op igen."}</p></div>`;
+  const mangler = L.overnatning ? OVERNATNING.filter(o=>!ig.lejr[o.id]) : [];
+  if(L.overnatning){
+    h += OVERNATNING.map(o=>{ const r=ig.lejr[o.id];
+      if(r) return `<div class="card prk"><span style="font-size:28px">${o.ikon}</span><div><b>${o.spm}</b><small>${r==="ok"?"✅ "+o.ok:"❌ "+o.fejl}</small></div></div>`;
+      const valg = seedRng(ig.seed + ig.e*31 + o.id.length)() < .5 ? [0,1,2] : [1,0,2];
+      return `<div class="card"><b>${o.ikon} ${o.spm}</b><div class="row lejrvalg">${valg.map(k=>`<button class="chip" data-a="lovernat" data-o="${o.id}" data-k="${k}">${o.svar[k]}</button>`).join("")}</div></div>`; }).join("");
+  }
+  if(!mangler.length) h += `<div class="card">${hjerter(ig)} <b>Energien er fyldt op.</b> ${L.overnatning?"God nat! 🌙":""}</div>
+    <button class="btn gold" data-a="letape">🥾 Videre til etape ${ig.e+2} af ${L.etaper}</button>
+    <button class="btn secondary" data-a="lpause">💾 Gem løbet og fortsæt en anden dag</button>`;
+  return h;
+}
+function startEtape(){
+  const ig=aktivtLoeb(); if(!ig) return;
+  ig.e++; ig.i=0; ig.fase="gaa"; ig.etapeTid=0; ig.etapeStraf=ig.straf; ig.besked=""; ig.lejr=null;
+  ig.etapeKopi = JSON.stringify(noder(ig));
+  loebAnim=null; loebOpg=null; save(); go("loeb");
+}
 function loebMenu(){
   const ig=aktivtLoeb(), L=LOEBNR[ig.nr];
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><h2 style="margin-top:0">${L.ikon} ${L.navn}</h2>
@@ -7033,12 +7117,16 @@ const actions = {
   lvaelg(d){ if(!loebOpg || loebOpg.svaret || loebOpg.raekke.length>=loebOpg.o.trin.length) return; loebOpg.raekke.push(d.t); render(); },
   lfjern(d){ if(!loebOpg || loebOpg.svaret) return; loebOpg.raekke.splice(+d.k,1); render(); },
   ltjek(){ const o=loebOpg.o; loebSvar(loebOpg.raekke.length===o.trin.length && loebOpg.raekke.every((t,k)=>t===o.trin[k])); },
-  lpostok(){ const ig=aktivtLoeb(), n=nodeNu(ig), pt=POSTTYPER[n.pt]; nodeFaerdig(`${pt.ikon} ${pt.navn}${n.nr?` (post ${n.nr})`:""}: ${loebOpg.ok?"klaret! ✅":"ikke klaret denne gang."}`); },
+  lpostok(){ const ig=aktivtLoeb(), n=nodeNu(ig), pt=POSTTYPER[n.pt]; if(n.pt==="kode" && n.del===1) ig.kode = SPGID[n.spg[0]].svar[0]; nodeFaerdig(`${pt.ikon} ${pt.navn}${n.nr?` (post ${n.nr})`:""}: ${loebOpg.ok?"klaret! ✅":"ikke klaret denne gang."}`); },
   ljoker(d){ brugJoker(d.j); },
   lkryds(d){ loebKryds(d.v); },
   lhaend(d){ loebHaendValg(+d.k); },
   lhsvar(d){ const ig=aktivtLoeb(); loebHaendSvar(ig.hsvar[+d.k].ok); },
   loebmenu(){ loebMenu(); },
+  lovernat(d){ const ig=aktivtLoeb(), o=OVERNATNING.find(x=>x.id===d.o); if(!ig || ig.lejr[o.id]) return;
+    const ok = +d.k===0; ig.lejr[o.id] = ok ? "ok" : "fejl"; if(!ok) energi(ig,-1); vibrer(ok?30:[60,40,60]); save(); render(); },
+  letape(){ const ig=aktivtLoeb(); ig.fase="roller"; save(); go("loebroller"); },
+  lpause(){ save(); go("patrulje"); lejrToast("Løbet er gemt. I kan fortsætte fra patruljesiden."); },
   lzoom(d){ loebZoom = Math.max(.7, Math.min(2.2, loebZoom*(+d.d>0?1.3:1/1.3))); render(); },
   loebbygok(){ loebBygSlut(); },
   moedetraen(d){ startQuiz("moedetraen", "alle", +d.k); },

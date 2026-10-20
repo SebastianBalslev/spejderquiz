@@ -22,7 +22,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
 - Flere spejdere på samme telefon. Alt gemmes lokalt i browseren
 - **Backup:** gem alle spejdere i en fil og indlæs den igen – eller flyt en enkelt spejder til en anden telefon. Find det under profilen
-- Patruljer: saml spejderne i en patrulje og løs opgaver sammen på samme telefon – patruljequiz på skift (man vælger, hvem der skal svare, og har jokere) og pionerprojekter, hvor hver spejder binder sine egne surringer. Patruljen kan optjene samarbejdsmærket i bronze, sølv og guld
+- **Patruljer og adventureløb:** saml spejderne i en patrulje (mindst 2) og gå 10 adventureløb sammen på én telefon – fra 4 til 25 poster. Før start fordeles rollerne patruljeleder, kortlæser, sanitet, bålmester og signalist, og telefonen gives videre til den, der har rollen ved hver post. Posterne er videns-, pioner-, kompas-, signal-, førstehjælps-, bål-, natur-, vand- og kodeposter. Undervejs er der vejkryds (kort og risikabel eller lang og sikker vej), hændelser, energi, jokere og spiltid på et kort, der kan zoomes. De lange løb er delt i etaper med lejrplads (og overnatning) imellem, og løbet gemmes efter hver post. Løbene giver 1-3 stjerner, point og materialer, samarbejdsmærket i bronze/sølv/guld efter løb 3, 6 og 9 og titlen Mesterpatrulje efter løb 10
 
 ## Ret eller tilføj spørgsmål
 Spørgsmålene står øverst i den første `<script>`-blok i `index.html`:
@@ -47,6 +47,17 @@ Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de
 
 ## Ret i lejrpladsen
 Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (2 = dobbelt tid). Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
+
+## Ret i adventureløbene
+Løbene står i listen `LOEB` i `index.html` (søg efter `ADVENTURELØB`). Hvert løb har:
+- `nr`, `navn`, `ikon`, `poster` (antal), `niveau` (spørgsmålenes sværhed 1-3) og `etaper`
+- `energi` (start-energi), `jokere`, `kryds` (antal vejkryds), `haendelserPr` (én hændelse pr. så mange poster, 0 = ingen) og `maalTid` (minutter for tredje stjerne)
+- `typer` (posttyperne i løbet, fx `videns`, `pioner`, `kompas`, `signal`, `forstehjaelp`, `baal`, `natur`, `vand`) og `pioner` (projekterne fra `OPGAVER`)
+- kortet: `bund` (farve) og `terraen` (fx `{ skov:3, soe:1 }` – eller en liste med ét kort pr. etape). Muligheder: skov, plantage, bakke, eng, soe, mose, hede, fjeld, ruin og aa
+- historien: `intro`, `mellem` (tekster mellem posterne), `slut` og evt. `etapeTekst` (start på hver etape)
+- særlige regler: `moerkt` (mørkt kort, radius), `signal` (fx `["morse"]`), `vejrskift`, `startVejr`, `vejrEnergi` (regn og storm koster ekstra på lange ruter), `regnbaal`, `kode` (kodeposter i to trin), `overnatning` og `tidsgraense` (minutter pr. etape)
+
+Et nyt løb tilføjes ved at sætte et nyt objekt ind i `LOEB` med næste nummer og tælle `ANTAL_LOEB` op. Løbet åbner, når det forrige er gennemført. Hændelserne står i `HAENDELSER`, førstehjælpsscenarierne i `FH_SCEN`, bålopgaverne i `BAAL_OPG` og rollerne i `ROLLER`. Et løb i gang gemmes i patruljens `igang`, og resultaterne gemmes i `loeb`.
 
 ## Ret i spejderhytten
 Ugens aktiviteter står i listen `MOEDE_AKT` i `index.html` – mindst én pr. årstid (`foraar`, `sommer`, `efteraar`, `vinter`). Hver aktivitet har en `type`: `surring` (bind surringerne på en ting fra `OPGAVER`, angivet med `opg`), `stjerner`, `baal` eller `koekken` (aktiviteterne fra lejrpladsen) eller en lille quiz med 3 opgaver: `raekke`, `morse`, `semafor`, `billede` (evt. med `emner:[…]`) eller `kode`. Tingene til hytten står i `HYTTE_INDBO` (pris i møde-point, evt. et `krav` som i teltet og placering `x`/`y`/`w` i procent af hyttens tegning). Grænserne for fremmødemærket står i `MOEDE_KRAV`, og belønningen beregnes i `moedeAfslut`. Spejderens møder gemmes i `c.moeder`.
