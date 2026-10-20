@@ -6133,7 +6133,7 @@ function render(){
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
@@ -6198,7 +6198,7 @@ function installKort(){
 function scrProfil(){
   const c=cur(), r=rankIdx(c), n=antal(c), next=RANG[r+1];
   const pct = next ? Math.round((n-RANG[r].min)/(next.min-RANG[r].min)*100) : 100;
-  return `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}</h1><button class="iconbtn" data-a="rediger" aria-label="Redigér udseende">✏️</button></div>
+  return `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}</h1><button class="iconbtn" data-a="til" data-to="indst" aria-label="Indstillinger">⚙️</button></div>
     <div class="card profile">
       <div class="rank-pill">${RANG[r].ikon} ${RANG[r].navn}</div>
       ${minPatrulje(c)?`<p class="muted psmall" style="margin:6px 0 0">⚜️ Patruljeleder for ${PDYR[minPatrulje(c).dyr][0]} ${esc(minPatrulje(c).navn)}</p>`:""}
@@ -6216,8 +6216,6 @@ function scrProfil(){
     <button class="btn" data-a="til" data-to="lejr">⛺ Byg din lejrplads <small style="font-weight:600;opacity:.85">· 🪙 ${fmt(lejrPoint(c))}</small></button>
     <button class="btn earth" data-a="traening">🎯 Fri træning</button>
     ${hytteKort(c)}
-    ${indstKort(c)}
-    ${backupKort(c)}
     ${installKort()}
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
 }
@@ -6613,11 +6611,20 @@ function infoBox(html){
 const INDST = { lyd:true, stor:false, oplaes:false };
 function indst(c){ return { ...INDST, ...(c && c.indst || {}) }; }
 const kanOplaese = () => "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+// Indstillinger: udseende, lyd/tekst/oplæsning og backup
+function scrIndst(){
+  const c=cur();
+  return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Indstillinger</h1><span class="spacer"></span></div>
+    <button class="btn secondary" data-a="rediger">✏️ Redigér dit udseende og navn</button>
+    <button class="btn secondary" data-a="pedit">🚩 Redigér patruljen</button>
+    ${indstKort(c)}
+    ${backupKort(c)}`;
+}
 function indstKort(c){
   const v = indst(c);
   const t = (id, tit, tekst, paa, slaaFra) => `<label class="toggle"><span>${tit}<small>${tekst}</small></span>
     <span class="switch"><input type="checkbox" id="${id}" ${paa?"checked":""} ${slaaFra?"disabled":""} aria-label="${tit.replace(/^\S+ /,"")}"><span></span></span></label>`;
-  return `<div class="card indst"><b>⚙️ Indstillinger</b>
+  return `<div class="card indst"><b>🔊 Lyd og tekst</b>
     ${t("ind-lyd", "🔊 Lyd", "Lyde ved rigtige og forkerte svar – og morselampens bip", v.lyd)}
     ${t("ind-stor", "🔠 Større tekst", "Gør spørgsmål og svar lettere at læse", v.stor)}
     ${t("ind-oplaes", "🗣️ Læs højt", kanOplaese() ? "Telefonen læser spørgsmål og svar op på dansk" : "Din browser kan desværre ikke læse op", v.oplaes && kanOplaese(), !kanOplaese())}</div>`;
@@ -9449,9 +9456,9 @@ const actions = {
       if(draft.retur==="pedit" && pdraft){ pdraft.medlemmer.push(c.id); save(); draft=null; go("pedit"); return; }
       state.active=c.id;
     }
-    save(); const foerste=draft.foerste; draft=null; go("profil"); if(foerste) lejrToast("Velkommen, patruljeleder! ⚜️");
+    save(); const foerste=draft.foerste, retur=draft.retur; draft=null; go(retur||"profil"); if(foerste) lejrToast("Velkommen, patruljeleder! ⚜️");
   },
-  rediger(){ const c=cur(); draft={ id:c.id, navn:c.navn, look:{...c.look}, badges:c.badges, rank:rankIdx(c) }; go("editor"); },
+  rediger(){ const c=cur(); draft={ id:c.id, navn:c.navn, look:{...c.look}, badges:c.badges, rank:rankIdx(c), retur:"indst" }; go("editor"); },
   emne(d){ go("emne",{id:d.id}); },
   proeve(d){ startQuiz("test", d.id, +d.n); },
   traening(d){ go("traening",{ emne:d.id||"alle", niveau:0 }); },
