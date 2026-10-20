@@ -113,6 +113,40 @@ input.err{border-color:var(--bad);animation:shake .4s}
 .install div>b{display:block;color:var(--forest)}
 .install small{color:var(--muted);line-height:1.35;display:block}
 .backup>b,.fejlkort>b,.indst>b{display:block;color:var(--forest)}
+/* Adventureløb */
+.kortramme{position:relative;margin-bottom:10px}
+.kortscroll{overflow:auto;max-height:min(50vh,360px);border-radius:18px;box-shadow:inset 0 0 0 3px rgba(0,0,0,.12),0 8px 20px rgba(40,30,10,.2);background:#6f9a45;-webkit-overflow-scrolling:touch}
+.loebkort{display:block;min-width:100%;height:auto}
+.btn.rute{flex-direction:column;gap:2px}
+.zoom{position:absolute;right:8px;bottom:8px;display:flex;gap:6px}
+.zoom .chip{width:40px;height:40px;padding:0;font-size:22px;font-weight:800;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.sti{fill:none;stroke:#efdfb4;stroke-width:6;stroke-linecap:round;opacity:.9}
+.sti.fravalgt{opacity:.25}
+.gaaet{fill:none;stroke:#7a4b2a;stroke-width:3;stroke-dasharray:6 5;stroke-linecap:round}
+#lbrik{transition:transform 1.1s ease-in-out}
+.lpost.naeste{animation:blink 1.2s ease-in-out infinite}
+.hjerter{font-size:14px;letter-spacing:-1px;white-space:nowrap}
+.loebhead{display:flex;align-items:center;gap:12px}.loebhead b{display:block}.loebhead small{color:var(--muted)}
+.rollerk{min-height:56px}.rolleik{font-size:24px;width:30px;text-align:center}.rollenavn{font-size:14px;max-width:70px;overflow:hidden;text-overflow:ellipsis}
+.rollerk .chip{padding:6px 10px}
+.jokerbar{background:var(--paper);border-radius:16px;padding:10px 12px;margin:10px 0;box-shadow:0 2px 0 var(--line)}
+.jokerbar small{display:block;color:var(--muted);margin-bottom:6px}.jokerbar .row{flex-wrap:wrap;gap:6px}.jokerbar .chip{flex:1 1 auto;justify-content:center}
+.kompassvg{display:block;width:100%;max-width:260px;margin:8px auto 0}
+.opgtitel{display:block;margin-top:8px;color:var(--forest)}
+.stjerner3 span{font-size:44px;color:#d8cfb8}.stjerner3 span.on{color:#f2b630;text-shadow:0 2px 0 #b07a00}
+.stjsm span{color:#cfc4a6}.stjsm span.on{color:#e0a020}
+.loebnr{flex:none;width:46px;height:46px;border-radius:12px;background:#e2ebd2;display:grid;place-items:center;align-content:center;font-size:22px;line-height:1}
+.loebnr small{font-size:11px;font-weight:800;color:var(--forest)}
+.loebrk .lvltxt small+small{margin-top:1px}
+.fortsaet{display:flex;align-items:center;gap:10px;background:#fff7d6;border:2px solid #e8c95a}
+.fortsaet>div{flex:1;min-width:0}.fortsaet b{display:block}.fortsaet small{color:var(--muted);font-size:13px}
+.fortsaet .btn{width:auto;margin:0;min-height:44px;padding:8px 14px}
+.trofaetop{display:flex;align-items:center;gap:12px}.trofaetop b{display:block}.trofaetop small{color:var(--muted)}
+.tider{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;margin-top:10px}
+.tider div{background:var(--paper2);border-radius:12px;padding:6px;text-align:center}.tider span{display:block;font-size:13px}.tider b{display:block}.tider small{color:#b07a00;font-size:12px}
+.mestertrofae{margin-top:10px;background:linear-gradient(135deg,#fff3c4,#f4cb4e);border-radius:14px;padding:10px;text-align:center}
+.loebtekst{font-style:italic;line-height:1.45}
+.haend{text-align:center}
 /* Spejderhytten */
 .hyttescene{aspect-ratio:300/220}
 .hting{position:absolute;aspect-ratio:1;display:grid;place-items:center;pointer-events:none}
@@ -3947,18 +3981,24 @@ function render(){
   if(s==="byg" && !bygOpg) s = "lejr";
   if(s==="pedit" && !pdraft) s = "patrulje";
   if(s==="moede" && !moede) s = "hytte";
+  if(s==="loeb" && !aktivtLoeb()) s = "patrulje";
+  if(s==="loebroller" && !loebKlar && !(aktivtLoeb() && aktivtLoeb().fase==="roller")) s = aktivtLoeb() ? "loeb" : "patrulje";
+  if(s==="loebmaal" && !(minPatrulje(cur()) && minPatrulje(cur()).sidsteLoeb)) s = "patrulje";
   if((s==="pquiz" || s==="presultat") && !pquiz) s = "patrulje";
   if(s==="akt" && !(cur() && cur().lejr && AKT_FOR[cur().lejr[nav.params.i]] && !underByg(cur(),nav.params.i))) s = "lejr";
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede }[s];
+               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
+  if(s==="loeb" && loebOpg && loebOpg.trin==="svar" && loebOpg.o.media && !loebOpg.svaret) startMedia({ media:loebOpg.o.media });
   startLejrUr();
   aktEfterRender();
   startHytteUr();
+  startLoebUr();
+  loebEfterRender();
   renderFaner();
 }
 
@@ -4152,7 +4192,7 @@ function mediaHTML(q){
 }
 function startMedia(q){
   stopMedia();
-  const m=q && q.media; if(!m || nav.screen!=="quiz") return;
+  const m=q && q.media; if(!m || !["quiz","loeb"].includes(nav.screen)) return;
   if(m.type==="morse"){
     const enhed=230, seq=[];
     [...m.tekst].forEach((bog,bi)=>{
@@ -5013,7 +5053,7 @@ function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emne
 
 /* ---------- Surringsopgaven ---------- */
 function scrByg(){
-  const b=BYGID[bygOpg.id], o=OPGAVER[bygOpg.id], n=o.led.length, done=Object.keys(bygOpg.bundet).length, faerdig=done===n;
+  const b=BYGID[bygOpg.id] || { id:bygOpg.id, navn:opgNavn(bygOpg.id) }, o=OPGAVER[bygOpg.id], n=o.led.length, done=Object.keys(bygOpg.bundet).length, faerdig=done===n;
   const pat=bygOpg.patrulje, turC=pat && state.chars.find(x=>x.id===bygOpg.tur);
   if(pat && bygOpg.skift && !faerdig){
     const mine=o.led.filter((_,k)=>bygOpg.ejere[k]===turC.id && !bygOpg.bundet[k]).length;
@@ -5032,7 +5072,7 @@ function scrByg(){
   });
   svg += `</svg>`;
   bygOpg.nyt=null; bygOpg.forkert=null;
-  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${pat?"Patruljen bygger":bygOpg.moede?"Ugens aktivitet":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
+  let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${bygOpg.loeb?"Pionerposten":pat?"Patruljen bygger":bygOpg.moede?"Ugens aktivitet":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
     ${pat&&!faerdig?`<div class="turchip">${hoved(turC,"lille")} <b>${esc(turC.navn)}s tur</b> – bind dine surringer. De andres står med forbogstav.</div>`:""}
     <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
   if(!faerdig){
@@ -5043,6 +5083,9 @@ function scrByg(){
     if(bygOpg.moede) return h + `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
       <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`} ${b.navn} står klar i hyttens have.</p></div>
       <button class="btn gold" data-a="moedebygok">Videre med mødet →</button>`;
+    if(bygOpg.loeb) return h + `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+      <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs.`} ${b.navn} holder, og patruljen kan komme videre.</p></div>
+      <button class="btn gold" data-a="loebbygok">Videre på løbet →</button>`;
     if(pat){ const pr=PPROJ.find(x=>x.id===b.id), pp=patruljer().find(x=>x.id===pat), forste=!(pp.projekter||{})[b.id];
       return h + `<div class="card center"><div class="resmsg">Patruljen har bundet alle surringer! 🎉</div>
         <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs, men I hjalp hinanden i mål.`}${forste?` Alle i patruljen får <b>+${pr.point} point</b>.`:""}</p></div>
@@ -5486,9 +5529,10 @@ function giverTelefon(c, tekst, knap, action){
 function scrPatrulje(){
   const c=cur(), p=minPatrulje(c);
   let h = `<div class="topbar"><span class="spacer"></span><h1>Patrulje</h1><span class="spacer"></span></div>`;
+  if(p) h += loebFortsaetHTML(p);
   if(!p){
     h += `<div class="card center"><div style="font-size:54px">🚩</div><h2>Du er ikke med i en patrulje endnu</h2>
-      <p class="muted">I en patrulje løser I opgaver sammen på samme telefon: I tager en patruljequiz på skift og bygger pionerprojekter, hvor hver spejder binder sine egne surringer.</p></div>
+      <p class="muted">I en patrulje går I adventureløb sammen på én telefon: 10 løb med poster, vejkryds og hændelser, hvor hver spejder har sin rolle – patruljeleder, kortlæser, sanitet, bålmester eller signalist.</p></div>
       <button class="btn" data-a="pny">🚩 Opret en patrulje</button>`;
     const andre = patruljer();
     if(andre.length){
@@ -5502,27 +5546,10 @@ function scrPatrulje(){
   h += `<div class="card pbanner"><div class="pemb stor">${PDYR[p.dyr][0]}</div><div class="pbtekst"><h2>${esc(p.navn)}</h2>
       <small>${ms.length} medlemmer · 🤝 ${fmt(p.point||0)} patruljepoint</small></div>${badgeHTML(PMAERKE, lvl, "sm")}</div>
     <div class="pmedlemmer">${ms.map(m=>`<div class="pm ${m.id===c.id?"mig":""}">${hoved(m)}<b>${esc(m.navn)}</b><small>${RANG[rankIdx(m)].ikon} ${antal(m)} mærker</small></div>`).join("")}</div>`;
-  if(!nok) h += `<div class="card center"><p style="margin:0">Der skal være mindst 2 spejdere i patruljen, før I kan løse opgaver sammen.</p></div>`;
+  if(!nok) h += `<div class="card center"><p style="margin:0">Der skal være mindst 2 spejdere i patruljen, før I kan gå adventureløb sammen.</p></div>`;
   h += `<button class="btn secondary" data-a="pedit">✏️ Redigér patrulje og medlemmer</button>`;
 
-  h += `<div class="sect" style="margin-top:16px">🎯 Patruljequiz – samarbejdsmærket</div>
-    <p class="muted psmall">I svarer på skift. Før hvert spørgsmål vælger I, hvem der skal svare – vælg den, der ved mest om emnet! I har 3 jokere, hvor resten af patruljen hjælper.</p>`;
-  for(let n=1;n<=3;n++){
-    const done=lvl>=n, klar=lvl===n-1, laast=!nok || lvl<n-1;
-    h += `<div class="card lvlrow ${laast?"laast":""}">${badgeHTML(PMAERKE, laast&&!done?0:n, "sm"+(klar?" faded":""))}
-      <div class="lvltxt"><b>${NIVEAUER[n].navn}</b><small>${NIVEAUER[n].svaer} · mindst ${PKRAV[n]} af 10 rigtige sammen</small><small>${done?"✅ Bestået":klar?"Klar":"🔒 Låst"}</small></div>
-      <button class="btn ${done?"secondary":""}" data-a="pquizstart" data-n="${n}" ${laast?"disabled":""}>${done?"Igen":"Start"}</button></div>`;
-  }
-  h += `<div class="sect" style="margin-top:16px">🪢 Byg sammen – pionerprojekter</div>
-    <p class="muted psmall">Surringerne fordeles mellem jer, og hver spejder binder sine egne. Mindst én i patruljen skal have Knob og reb på det rigtige niveau.</p>`;
-  const knobMax = Math.max(0, ...ms.map(m=>m.badges.knob||0));
-  for(const pr of PPROJ){
-    const b=BYGID[pr.id], o=OPGAVER[pr.id], bygget=(p.projekter||{})[pr.id], ok=nok && knobMax>=pr.krav;
-    h += `<div class="card lvlrow ${ok?"":"laast"}"><span class="ik pik">${bygIkon(b)}</span>
-      <div class="lvltxt"><b>${pr.navn}</b><small>${o.led.length} surringer · +${pr.point} point til hver</small>
-      <small>${bygget?"🏆 Bygget af patruljen":knobMax>=pr.krav?"Klar til at bygge":`🔒 Kræver Knob og reb – ${NIVEAUER[pr.krav].navn.toLowerCase()}`}</small></div>
-      <button class="btn ${bygget?"secondary":""}" data-a="pbygstart" data-id="${pr.id}" ${ok?"":"disabled"}>${bygget?"Igen":"Byg"}</button></div>`;
-  }
+  h += loebListeHTML(p, nok) + trofaeHTML(p);
   return h;
 }
 
@@ -5555,8 +5582,8 @@ function startPquiz(n){
 function scrPquiz(){
   const p=patruljer().find(x=>x.id===pquiz.p), ms=medlemmer(p), q=pquiz.qs[pquiz.i], e=EMNE[q.emne], hvem=ms.find(m=>m.id===pquiz.hvem);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="pafbryd" aria-label="Stop">✕</button>
-      <div class="qinfo"><small>${PDYR[p.dyr][0]} ${esc(p.navn)} · ${pquiz.moede?"Patruljetid på mødet":NIVEAUER[pquiz.niveau].navn}</small><b>Spørgsmål ${pquiz.i+1} af ${pquiz.qs.length}</b></div>
-      <div class="qstats"><span>🤝 ${pquiz.rigtige} rigtige</span>${pquiz.moede?"":`<span>🃏 ${pquiz.joker} jokere</span>`}</div></div>
+      <div class="qinfo"><small>${PDYR[p.dyr][0]} ${esc(p.navn)} · ${pquiz.loeb?`❓ Vidensposten${aktivtLoeb()?` · ${hjerter(aktivtLoeb())}`:""}`:pquiz.moede?"Patruljetid på mødet":NIVEAUER[pquiz.niveau].navn}</small><b>Spørgsmål ${pquiz.i+1} af ${pquiz.qs.length}</b></div>
+      <div class="qstats"><span>🤝 ${pquiz.rigtige} rigtige</span>${pquiz.moede?"":pquiz.loeb?`<span>⏱️ <b id="ltid">${aktivtLoeb()?loebTidTekst(aktivtLoeb()):""}</b></span>`:`<span>🃏 ${pquiz.joker} jokere</span>`}</div></div>
     <div class="dots">${pquiz.qs.map((_,k)=>`<i class="${pquiz.svar[k]===true?"ok":pquiz.svar[k]===false?"bad":k===pquiz.i?"now":""}"></i>`).join("")}</div>`;
   if(pquiz.fase==="vaelg"){
     h += `<div class="card"><div class="qtopic">${badgeHTML(e,1,"xs")} Næste spørgsmål: ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div>
@@ -5567,14 +5594,18 @@ function scrPquiz(){
     return h;
   }
   if(pquiz.fase==="skift") return h + giverTelefon(hvem, `${esc(hvem.navn)} skal svare på et spørgsmål om ${e.navn.toLowerCase()}.`, `Jeg er ${esc(hvem.navn)} – klar!`, "pklar");
-  h += `<div class="card qcard"><div class="qtopic">${hoved(hvem,"lille")} ${esc(hvem.navn)} svarer · ${e.navn}</div><p class="qtext">${esc(q.spm)}</p></div>
+  h += `<div class="card qcard"><div class="qtopic">${hoved(hvem,"lille")} ${esc(hvem.navn)} svarer · ${e.navn}</div><p class="qtext">${esc(q.spm)}</p></div>${q.hint?`<div class="card hbesked">${q.hint}</div>`:""}
     <div class="answers">${q.opts.map((o,k)=>{
       if(q.fjernet && q.fjernet.includes(k)) return "";
       let cls=""; if(pquiz.svaret){ cls = o.ok ? "correct" : k===pquiz.valgt ? "wrong" : "dim"; }
       return `<button class="ans ${cls}" data-a="psvar" data-k="${k}" ${pquiz.svaret?"disabled":""}><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`; }).join("")}</div>`;
-  if(!pquiz.svaret && !pquiz.moede) h += `<button class="btn earth" data-a="pjoker" ${pquiz.joker<1||q.fjernet?"disabled":""}>🤝 Spørg patruljen – fjern 2 forkerte svar (${pquiz.joker} tilbage)</button>`;
-  else {
+  const lg = pquiz.loeb && aktivtLoeb();
+  if(!pquiz.svaret){
+    if(lg) h += jokerHTML(lg, ["ring","lokal"]);
+    else if(!pquiz.moede) h += `<button class="btn earth" data-a="pjoker" ${pquiz.joker<1||q.fjernet?"disabled":""}>🤝 Spørg patruljen – fjern 2 forkerte svar (${pquiz.joker} tilbage)</button>`;
+  } else {
     const ok=pquiz.svar[pquiz.i];
+    if(lg && !ok) h += jokerHTML(lg, ["kort"]);
     h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 til ${esc(hvem.navn)} og patruljen</span>`:"Desværre – forkert"}</b>
       ${ok?"":`<p>Det rigtige svar er: <b>${esc(q.svar[0])}</b></p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
       <button class="btn" data-a="pnaeste">${pquiz.i+1>=pquiz.qs.length?"Se patruljens resultat 🏁":"Næste spørgsmål →"}</button>`;
@@ -5583,6 +5614,7 @@ function scrPquiz(){
 }
 function pAfslut(){
   if(pquiz.moede) return moedePatruljeSlut();
+  if(pquiz.loeb) return loebPquizSlut();
   const p=patruljer().find(x=>x.id===pquiz.p);
   pquiz.done=true; pquiz.bestaaet = pquiz.rigtige >= PKRAV[pquiz.niveau];
   let nyt=false;
@@ -5843,6 +5875,704 @@ function fuldfoerByg(c){
 }
 
 /* ---------- Faner ---------- */
+/* =====================================================================
+   ADVENTURELØB – patruljen går et løb sammen på én telefon
+   ---------------------------------------------------------------------
+   Løbene står i LOEB. Hvert løb har sin egen historie (intro, mellem,
+   slut), sit eget kort (terraen) og sine egne poster (typer). Sværheden
+   styres af felterne: niveau, energi, jokere, kryds, haendelserPr, etaper.
+   Et løb i gang gemmes i p.igang, resultaterne i p.loeb[nr].
+   ===================================================================== */
+const ROLLER = [
+  { id:"leder",   navn:"Patruljeleder", ikon:"⚜️", opg:"bruger jokerne og vælger rute ved vejkryds" },
+  { id:"kort",    navn:"Kortlæser",     ikon:"🧭", opg:"kompas- og naturposter" },
+  { id:"sanitet", navn:"Sanitet",       ikon:"⛑️", opg:"førstehjælps- og vandposter" },
+  { id:"baal",    navn:"Bålmester",     ikon:"🔥", opg:"bålposter" },
+  { id:"signal",  navn:"Signalist",     ikon:"🚩", opg:"signal- og kodeposter" },
+];
+const ROLLEID = Object.fromEntries(ROLLER.map(r=>[r.id,r]));
+// rolle:null = hele patruljen (man vælger selv, hvem der svarer, eller surringerne fordeles)
+const POSTTYPER = {
+  videns:       { navn:"Vidensposten",       ikon:"❓", rolle:null },
+  pioner:       { navn:"Pionerposten",       ikon:"🪢", rolle:null },
+  kompas:       { navn:"Kompasposten",       ikon:"🧭", rolle:"kort" },
+  signal:       { navn:"Signalposten",       ikon:"🚩", rolle:"signal" },
+  forstehjaelp: { navn:"Førstehjælpsposten", ikon:"⛑️", rolle:"sanitet" },
+  baal:         { navn:"Bålposten",          ikon:"🔥", rolle:"baal" },
+  natur:        { navn:"Naturposten",        ikon:"🌿", rolle:"kort" },
+  vand:         { navn:"Vandposten",         ikon:"🛶", rolle:"sanitet" },
+};
+const JOKERE = {
+  ring:  { navn:"Ring til lederen", ikon:"📞", tekst:"fjerner 2 forkerte svar" },
+  lokal: { navn:"Spørg en lokal",   ikon:"🧑‍🌾", tekst:"giver et hint" },
+  kort:  { navn:"Kig på kortet igen", ikon:"🗺️", tekst:"nyt forsøg efter et forkert svar" },
+};
+
+const LOEB = [
+  { nr:1, navn:"Det forsvundne patruljeflag", ikon:"🚩", poster:4, niveau:1, etaper:1, energi:5, jokere:3, kryds:0, haendelserPr:0, maalTid:10,
+    typer:["videns","natur","forstehjaelp","baal"], pioner:[], bund:"#8fbb62", terraen:{ skov:3, bakke:1, eng:2 },
+    nyt:"Jeres første løb: lær posterne og rollerne at kende.",
+    intro:"I aftes forsvandt patruljeflaget fra hytten! Der ligger en seddel på døren: »Følg posterne gennem skoven, så finder I flaget.« Patruljen pakker rygsækkene og går ud ad stien.",
+    mellem:["Stien snor sig ind mellem de høje bøgetræer. Ved næste post hænger der en rød snor.","I finder fodspor i det bløde mudder – nogen har gået her før jer.","En skovskade skræpper højt. Måske ved den, hvor flaget er?","Der skimtes noget rødt mellem træerne forude …"],
+    slut:"Bag den sidste post står et gammelt egetræ – og højt oppe i grenene vajer patruljeflaget! Det var lederne, der havde gemt det. Patruljen hejser flaget med et stort hurra." },
+  { nr:2, navn:"Bæverens dæmning", ikon:"🦫", poster:5, niveau:1, etaper:1, energi:5, jokere:3, kryds:1, haendelserPr:0, maalTid:13,
+    typer:["videns","natur","pioner","forstehjaelp","baal"], pioner:["bro"], bund:"#86b25a", terraen:{ skov:3, aa:1, soe:1, eng:1 },
+    nyt:"Nyt: det første vejkryds og den første pionerpost – byg en bro over åen.",
+    intro:"Ude ved åen har en bæver bygget en dæmning, og nu er stien oversvømmet. Skovløberen beder patruljen om at finde en ny vej – og måske bygge en bro.",
+    mellem:["Vandet klukker i åen. I ser gnavede træstubbe – bæveren har været på arbejde.","Stien deler sig. Den ene vej går tæt langs vandet.","En isfugl suser blå hen over vandet.","Dæmningen er bygget af grene, mudder og sten – flot håndværk!","Snart er I ved skovløberens hus."],
+    slut:"Patruljen når frem til skovløberen, som giver jer varm kakao. »I fandt en god vej uden at forstyrre bæveren,« siger han. »Dæmningen får lov at blive.«" },
+  { nr:3, navn:"Skattejagten i plantagen", ikon:"🗝️", poster:7, niveau:1, etaper:1, energi:5, jokere:3, kryds:1, haendelserPr:3, maalTid:18,
+    typer:["videns","kompas","natur","pioner","forstehjaelp","baal"], pioner:["bro","baare"], bund:"#8cb35e", terraen:{ plantage:3, skov:1, bakke:1, eng:1 },
+    nyt:"Nyt: kompasposter og de første hændelser undervejs.",
+    intro:"I den gamle granplantage skulle en skattekiste fra spejdernes første lejr være gravet ned. Et gammelt kort viser vejen – men kun med kompasretninger.",
+    mellem:["Granerne står i lange, lige rækker. Det er let at gå forkert, så hold øje med kompasset.","Der dufter af harpiks og gran. En mus piler hen over stien.","På et træ er der skåret et pilemærke – I er på rette vej.","I kommer forbi en lysning med en gammel bålplads.","Kortet viser et kryds lidt længere fremme.","Jorden er blød og dækket af grannåle.","Den sidste kompasretning peger mod en stor sten."],
+    slut:"Under den store sten graver I en rusten kiste frem. Indeni ligger gamle spejdermærker, et kompas og et brev: »Til den patrulje, der finder denne skat – I er rigtige spejdere!«" },
+];
+const LOEBNR = Object.fromEntries(LOEB.map(L=>[L.nr,L]));
+const ANTAL_LOEB = 10;
+
+// Førstehjælp: sæt trinnene i den rigtige rækkefølge
+const FH_SCEN = [
+  { niveau:1, titel:"Et sår på knæet", tekst:"En spejder er faldet over en rod og har en rift på knæet.", trin:["Vask hænder eller tag handsker på","Skyl såret med rent vand","Dup huden omkring såret tør","Sæt et plaster på"], forklaring:"Rene hænder og rent vand forebygger betændelse." },
+  { niveau:1, titel:"Næseblod", tekst:"En spejder får næseblod midt på stien.", trin:["Lad personen sidde ned","Læn hovedet forover","Klem om den bløde del af næsen","Hold trykket i 10 minutter"], forklaring:"Hovedet skal forover, så blodet ikke løber ned i halsen." },
+  { niveau:1, titel:"Brændt på gryden", tekst:"En spejder brænder hånden på den varme gryde.", trin:["Flyt hånden væk fra det varme","Køl med lunkent vand i 20 minutter","Tag ringe og ur af","Dæk løst med en ren forbinding"], forklaring:"Lunkent vand i 20 minutter køler uden at give nedkøling." },
+  { niveau:1, titel:"Hvepsestik", tekst:"En hveps stikker en spejder i armen.", trin:["Gå væk fra hvepsene","Køl stikket med koldt vand","Hold øje med tegn på allergi","Hent en voksen, hvis hævelsen breder sig"], forklaring:"De fleste stik er ufarlige, men allergi kan være livstruende." },
+  { niveau:2, titel:"Forstuvet ankel", tekst:"En spejder vrider om på foden. Brug RICE-princippet.", trin:["Ro – stop med at gå på foden","Is – køl anklen","Kompression – læg en støttebandage","Elevation – løft benet op"], forklaring:"RICE: Rest, Ice, Compression, Elevation." },
+  { niveau:2, titel:"Kraftig blødning", tekst:"En spejder skærer sig dybt på en kniv. Brug førstehjælpens fire hovedpunkter.", trin:["Stands ulykken – læg kniven væk","Giv livreddende førstehjælp – tryk på såret","Tilkald hjælp – ring 112","Giv almindelig førstehjælp – hold personen varm og rolig"], forklaring:"Først sikkerhed, så det livreddende, så hjælp og til sidst almindelig førstehjælp." },
+  { niveau:2, titel:"Brækket arm", tekst:"En spejder falder ned fra en sten og har ondt i armen.", trin:["Lad personen holde armen i ro","Støt armen i en armslynge af tørklædet","Køl det ømme sted","Få personen til lægevagten eller skadestuen"], forklaring:"Armslyngen holder armen i ro, til en læge har set på den." },
+  { niveau:2, titel:"Bevidstløs i skoven", tekst:"I finder en person, der ligger stille. Personen trækker vejret normalt.", trin:["Sørg for, at stedet er sikkert","Tjek, om personen reagerer","Skab frie luftveje","Tjek vejrtrækningen i 10 sekunder","Læg personen i aflåst sideleje"], forklaring:"Aflåst sideleje holder luftvejene frie hos en bevidstløs, der trækker vejret." },
+  { niveau:3, titel:"Hjertestop", tekst:"En mand falder om ved søen og trækker ikke vejret normalt.", trin:["Sørg for, at stedet er sikkert","Tjek reaktion og vejrtrækning","Ring 112 og få hentet en hjertestarter","Giv 30 brysttryk","Giv 2 indblæsninger","Brug hjertestarteren, når den kommer"], forklaring:"Hurtig hjerte-lunge-redning og hjertestarter redder liv." },
+  { niveau:3, titel:"Kvælning", tekst:"En spejder får mad galt i halsen og kan hverken tale eller hoste.", trin:["Spørg: »Er du ved at blive kvalt?«","Giv 5 slag mellem skulderbladene","Giv 5 tryk på maven","Gentag og ring 112, hvis det ikke hjælper"], forklaring:"Skiftevis 5 rygslag og 5 tryk på maven." },
+  { niveau:3, titel:"Nedkølet efter kæntring", tekst:"En spejder er faldet i den kolde sø og ryster over hele kroppen.", trin:["Få personen op af vandet og i læ","Skift det våde tøj ud med tørt","Pak personen ind i sovepose og tæpper","Giv en varm, sød drik"], forklaring:"Tørt tøj og isolering først – en varm drik giver energi, når personen er vågen." },
+  { niveau:3, titel:"Hedeslag", tekst:"På en varm dag bliver en spejder rød, varm og forvirret.", trin:["Flyt personen i skygge","Tag overflødigt tøj af","Køl ned med vand og blæst","Ring 112"], forklaring:"Hedeslag er livstruende – køl ned og få hjælp." },
+];
+// Bål: vælg de rigtige materialer og læg dem i den rigtige rækkefølge (ekstra = forkerte materialer)
+const BAAL_OPG = [
+  { niveau:1, titel:"Bål til snobrød", tekst:"Byg et bål, der giver gode gløder til snobrød.", trin:["Birkebark og tørt græs","Tynde, tørre kviste","Grene så tykke som en finger","Kløvet brænde"], ekstra:["Våde blade","En plastikpose"], forklaring:"Start småt og tørt, og byg langsomt op." },
+  { niveau:1, titel:"Sluk bålet", tekst:"Patruljen er færdig ved bålet. Sluk det helt.", trin:["Hæld vand på gløderne","Rør rundt i asken","Hæld mere vand på","Mærk efter, at alt er koldt"], ekstra:["Dæk det med tørre blade","Lad det brænde ud af sig selv"], forklaring:"Vand, rør rundt og mere vand – til der ikke er varme tilbage." },
+  { niveau:2, titel:"Bål med ildstål", tekst:"Tænd bålet uden tændstikker – kun med ildstål.", trin:["Skær en fedtpind med tynde spåner","Slå gnister ned i birkebarken","Pust forsigtigt på gløden","Læg tynde kviste på","Byg op med tykkere brænde"], ekstra:["Hæld sprit på","Brug grønne, friske grene"], forklaring:"Gnisterne skal lande i noget, der fænger let." },
+  { niveau:2, titel:"Et sikkert bålsted", tekst:"Gør bålstedet klar, før I tænder op.", trin:["Find en anvist bålplads","Fjern tørre blade og grene omkring","Stil en spand vand klar","Tænd et lille bål"], ekstra:["Byg bålet under et grantræ","Tænd bålet tæt på teltene"], forklaring:"Et sikkert bålsted er ryddet og har vand ved hånden." },
+  { niveau:3, titel:"Madbål til Dutch oven", tekst:"Lav et bål, I kan bage brød på i en Dutch oven.", trin:["Tænd op med tørt optænding","Lad bålet brænde ned til gløder","Stil gryden i gløderne","Læg gløder på låget"], ekstra:["Stil gryden i de høje flammer","Hæld vand på gløderne"], forklaring:"Gløder giver jævn varme – flammer brænder brødet." },
+  { niveau:3, titel:"Bål i regnvejr", regn:true, tekst:"Det regner, og alt i skovbunden er vådt. Få gang i bålet alligevel.", trin:["Saml birkebark og døde grangrene under træerne","Kløv brænde, så det tørre inderste kommer frem","Byg et lille pyramidebål i læ","Læg langsomt tykkere brænde på"], ekstra:["Brug de våde grene fra jorden","Byg bålet stort fra starten"], forklaring:"Birkebark brænder selv fugtig, og inde i kløvet brænde er træet tørt." },
+];
+// Hændelser undervejs. min = første løb, hændelsen kan komme i. vejr sætter vejret.
+const HAENDELSER = [
+  { id:"regn", ikon:"🌧️", navn:"Regnbyge", min:3, vejr:"regn", tekst:"Skyerne trækker sammen, og det begynder at regne.",
+    valg:[{ t:"Tag regntøj på med det samme", besked:"Smart! I holder jer tørre og varme." }, { t:"Fortsæt i t-shirt – det går nok over", energi:-1, besked:"Det gik ikke over. I bliver våde og kolde (−1 energi)." }] },
+  { id:"raev", ikon:"🦊", navn:"En sulten ræv", min:3, tekst:"En ræv sniger sig hen mod rygsækkene, hvor madpakkerne ligger!",
+    valg:[{ t:"Pak maden væk og lav lidt larm", besked:"Ræven løber ind i skoven igen. Vilde dyr skal ikke fodres." }, { t:"Giv den en pølse", tid:2, besked:"Ræven følger efter jer og tigger. I bruger tid på at jage den væk (+2 min)." }] },
+  { id:"sko", ikon:"🥾", navn:"Skoen går i stykker", min:3, tekst:"{navn}s sål går løs fra skoen.",
+    valg:[{ t:"Bind sålen fast med snor", tid:2, besked:"Med et par råbåndsknob holder skoen hele vejen (+2 min)." }, { t:"Gå videre i strømpesokker", energi:-1, besked:"Av, sten og rødder! Det er hårdt for fødderne (−1 energi)." }] },
+  { id:"vabel", ikon:"🩹", navn:"En vabel", min:3, tekst:"{navn} har ondt i hælen. En vabel er på vej.",
+    valg:[{ t:"Stop og sæt vabelplaster på", tid:1, besked:"Godt! En lille pause nu sparer mange problemer (+1 min)." }, { t:"Bid tænderne sammen", energi:-1, besked:"Vablen bliver værre og værre (−1 energi)." }] },
+  { id:"traee", ikon:"🌲", navn:"Væltet træ", min:3, tekst:"Et stort væltet træ ligger tværs over stien.",
+    valg:[{ t:"Hjælp hinanden forsigtigt over", besked:"I giver hinanden en hånd og kommer sikkert over." }, { t:"Gå langt uden om gennem krattet", tid:3, besked:"Krattet er tæt, og det tager tid (+3 min)." }] },
+  { id:"hund", ikon:"🐕", navn:"En forvildet hund", min:3, tekst:"En hund uden ejer løber rundt på stien. Den har halsbånd på.",
+    valg:[{ t:"Læs halsbåndet og ring til ejeren", tid:2, energi:1, besked:"Ejeren kommer glad og giver jer saftevand (+1 energi, +2 min)." }, { t:"Lad den være og gå videre", besked:"Hunden løber sin vej. Måske fandt den selv hjem." }] },
+  { id:"taage", ikon:"🌫️", navn:"Tåge", min:3, vejr:"taage", tekst:"Tågen lægger sig tæt over landskabet. Svar rigtigt for at finde vej.", spm:{ emne:"orientering" }, fejl:{ tid:3, besked:"I går en omvej i tågen (+3 min)." }, ok:"Med kort og kompas finder I vej gennem tågen." },
+  { id:"kompas", ikon:"🧭", navn:"Kompasset er væk", min:4, tekst:"Kompasset er faldet ud af lommen! Kan I finde vej uden?", spm:{ emne:"orientering" }, fejl:{ tid:4, energi:-1, besked:"I farer vild en stund (+4 min, −1 energi)." }, ok:"Godt klaret – I finder vej med solen og kortet." },
+  { id:"moerke", ikon:"🌙", navn:"Mørket falder på", min:4, tekst:"Det bliver mørkt, før I er fremme.",
+    valg:[{ t:"Tænd pandelamperne og gå samlet", besked:"I går tæt sammen, og ingen bliver væk." }, { t:"Spred jer for at finde stien hurtigere", tid:3, energi:-1, besked:"I mister hinanden og må råbe jer sammen igen (+3 min, −1 energi)." }] },
+  { id:"sol", ikon:"☀️", navn:"Solen bryder frem", min:5, vejr:"sol", tekst:"Skyerne letter, og solen bryder frem.",
+    valg:[{ t:"Tag solcreme på og drik vand", besked:"Godt tænkt – det er nemt at blive solskoldet på tur." }, { t:"Smid trøjerne og løb videre", energi:-1, besked:"I bliver tørstige og trætte i varmen (−1 energi)." }] },
+  { id:"storm", ikon:"🌪️", navn:"Storm", min:7, vejr:"storm", tekst:"Vinden tager til, og grene begynder at falde ned i skoven.",
+    valg:[{ t:"Gå ud af skoven til åbent land", tid:2, besked:"Klogt! I skov er der fare for nedfaldne grene (+2 min)." }, { t:"Søg ly under de store træer", energi:-2, besked:"En gren rammer stien lige ved siden af jer. Det var farligt (−2 energi)." }] },
+  { id:"torden", ikon:"⛈️", navn:"Tordenvejr", min:7, vejr:"regn", tekst:"Det lyner og tordner kun få kilometer væk.",
+    valg:[{ t:"Undgå høje træer, og sæt jer sammenkrøbet i en lavning", tid:3, besked:"Rigtigt – sådan er man mest sikker i tordenvejr (+3 min)." }, { t:"Stil jer under det højeste træ", energi:-2, besked:"Høje træer tiltrækker lynet. I flytter jer hurtigt (−2 energi)." }] },
+  { id:"stenskred", ikon:"🪨", navn:"Løse sten", min:9, tekst:"Stien går over en skråning med løse sten.",
+    valg:[{ t:"Gå én ad gangen med afstand", tid:2, besked:"Sikkert og roligt (+2 min)." }, { t:"Løb hurtigt over alle sammen", energi:-2, besked:"Stenene skrider, og flere falder (−2 energi)." }] },
+];
+// Ekstra pionerprojekter til løbene (de øvrige ligger i OPGAVER fra lejrpladsen)
+OPGAVER.bro = { navn:"Bro over åen", poles:[[40,52,40,190],[160,52,160,190],[8,75,192,75],[8,125,192,125],[40,75,160,125],[40,125,160,75]],
+  led:[[40,75,"kvadrat"],[160,75,"kvadrat"],[40,125,"kvadrat"],[160,125,"kvadrat"],[100,100,"diagonal"]],
+  bund:`<rect x="-10" y="150" width="220" height="55" fill="#4a9fd0"/><path d="M-10 162 q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0" stroke="#bfe4f7" stroke-width="3" fill="none"/>`,
+  pynt:`<rect x="4" y="62" width="192" height="10" rx="2" fill="#c49a63" stroke="#8b5a2b"/><path d="M40 62 V72 M80 62 V72 M120 62 V72 M160 62 V72" stroke="#8b5a2b"/>` };
+OPGAVER.flaade = { navn:"Tømmerflåde", poles:[[55,30,55,175],[100,30,100,175],[145,30,145,175],[25,60,175,60],[25,145,175,145]],
+  led:[[55,60,"kvadrat"],[100,60,"kvadrat"],[145,60,"kvadrat"],[55,145,"kvadrat"],[100,145,"kvadrat"],[145,145,"kvadrat"]],
+  bund:`<rect x="-10" y="-10" width="220" height="215" fill="#4a9fd0"/><path d="M-10 190 q15 -6 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0" stroke="#bfe4f7" stroke-width="3" fill="none"/>`,
+  pynt:`<path d="M100 20 V-6 L130 10Z" fill="#f3e3c3" stroke="#8b5a2b"/>` };
+function opgNavn(id){ return (BYGID[id] || OPGAVER[id] || {}).navn || id; }
+
+let loebKlar = null;   // roller, der fordeles før et nyt løb: { nr, roller }
+let loebOpg = null;    // opgaven ved den post, patruljen står ved lige nu (gemmes ikke)
+let loebUr = null, loebSidst = 0, loebZoom = 1, loebAnim = null;
+const SPGID = {}; SPORGSMAL.forEach(q => { SPGID[q.id] = q; });
+
+function loebAaben(p, nr){ const res=p.loeb||{}; return nr===1 || !!res[nr-1] || (p.maerke||0)*3 >= nr-1; }
+function loebIgang(p){ return p && p.igang && LOEBNR[p.igang.nr] ? p.igang : null; }
+function minLoebPatrulje(){ return minPatrulje(cur()); }
+function aktivtLoeb(){ return loebIgang(minLoebPatrulje()); }
+function rolleNavn(ig, rolle){ const m=state.chars.find(x=>x.id===ig.roller[rolle]); return m ? m.navn : "?"; }
+function rollePerson(ig, rolle){ return state.chars.find(x=>x.id===ig.roller[rolle]) || medlemmer(patruljer().find(x=>x.igang===ig))[0]; }
+
+/* ---------- Plan: posterne, vejkryds og hændelser vælges ved start ud fra et seed ---------- */
+function lavPlan(L, seed){
+  const rnd = seedRng(seed), r = n => Math.floor(rnd()*n);
+  const bland = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=r(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const brugt = new Set(), tekster = new Set();
+  const tag = (pool, n) => { const ud=[]; for(const q of bland(pool)){ if(brugt.has(q.id)) continue; const t=q.media&&q.media.tekst; if(t && tekster.has(t)) continue; brugt.add(q.id); if(t) tekster.add(t); ud.push(q.id); if(ud.length===n) break; } return ud; };
+  const paaNiv = (f, n) => { let ids = tag(SPORGSMAL.filter(q=>q.niveau===L.niveau && f(q)), n); if(ids.length<n) ids = ids.concat(tag(SPORGSMAL.filter(q=>q.niveau<L.niveau && f(q)), n-ids.length)); return ids; };
+  // Posttyper: bland typerne igen og igen, så alle bruges, og ingen to ens poster kommer i træk
+  const typer = [];
+  while(typer.length < L.poster){
+    let runde = bland(L.typer);
+    if(runde[0]===typer[typer.length-1]) runde.push(runde.shift());
+    typer.push(...runde);
+  }
+  typer.length = L.poster;
+  const emner = bland(EMNER.map(e=>e.id).filter(e=>e!=="koder")); let ei = 0;
+  const fh = bland(FH_SCEN.filter(s=>s.niveau===L.niveau)).concat(bland(FH_SCEN.filter(s=>s.niveau!==L.niveau)));
+  const baal = bland(BAAL_OPG.filter(s=>s.niveau===L.niveau && (!s.regn || L.regnbaal))).concat(bland(BAAL_OPG.filter(s=>s.niveau!==L.niveau && !s.regn)));
+  let fi=0, bi=0, pi=0;
+  const lavPost = (pt) => {
+    const n = { t:"post", pt };
+    if(pt==="videns"){ let e=emner[ei++ % emner.length]; n.emne=e; n.spg=paaNiv(q=>q.emne===e && !q.type && !q.media, 3); }
+    else if(pt==="natur"){ const b=paaNiv(q=>q.media && q.media.type==="billede" && ["dyr","planter"].includes(q.emne), 1); n.spg = b.length ? b : paaNiv(q=>["dyr","planter","natur"].includes(q.emne) && !q.type && !q.media, 1); }
+    else if(pt==="vand") n.spg = paaNiv(q=>q.emne==="vand" && !q.type && !q.media, 1);
+    else if(pt==="signal") n.spg = paaNiv(q=>q.media && (q.media.type==="morse" || q.media.type==="semafor"), 1);
+    else if(pt==="forstehjaelp") n.scen = FH_SCEN.indexOf(fh[fi++ % fh.length]);
+    else if(pt==="baal") n.scen = BAAL_OPG.indexOf(baal[bi++ % baal.length]);
+    else if(pt==="pioner") n.opg = L.pioner[pi++ % L.pioner.length];
+    else if(pt==="kompas") n.kompas = lavKompas(L.niveau, rnd);
+    return n;
+  };
+  let poster = typer.map(lavPost);
+  // Fordel posterne på etaper
+  const etaper = [], pr = Math.ceil(L.poster / L.etaper);
+  for(let e=0;e<L.etaper;e++) etaper.push({ noder: poster.slice(e*pr, (e+1)*pr) });
+  // Vejkryds og hændelser sættes ind mellem posterne (aldrig før første post)
+  const haendPool = bland(HAENDELSER.filter(h=>h.min<=L.nr));
+  let hi = 0;
+  const indsaet = (antal, lav) => {
+    for(let k=0;k<antal;k++){
+      const e = k % L.etaper, noder = etaper[e].noder, pos = 1 + r(Math.max(1, noder.length-1));
+      noder.splice(pos, 0, lav());
+    }
+  };
+  indsaet(L.kryds, () => {
+    const risici = L.haendelserPr ? ["mose","haendelse","post"] : ["mose","post"], risiko = risici[r(risici.length)];
+    const k = { t:"kryds", risiko, rul: rnd() };
+    if(risiko==="post") k.ekstra = lavPost(pick2(L.typer.filter(t=>t!=="pioner"), r));
+    if(risiko==="haendelse") k.ekstra = { t:"haend", id: haendPool[hi++ % haendPool.length].id };
+    return k;
+  });
+  const antalH = L.haendelserPr ? Math.round(L.poster / L.haendelserPr) : 0;
+  indsaet(antalH, () => ({ t:"haend", id: haendPool[hi++ % haendPool.length].id }));
+  if(L.vejrskift) indsaet(1, () => ({ t:"haend", id: pick2(["regn","sol"], r) }));
+  // Undgå to ens poster i træk: ekstraposten ved et vejkryds får en anden type end naboerne
+  etaper.forEach(et => et.noder.forEach((n,k) => {
+    if(n.t!=="kryds" || !n.ekstra || n.ekstra.t!=="post") return;
+    const for_ = et.noder.slice(0,k).reverse().find(x=>x.t==="post"), efter = et.noder.slice(k+1).find(x=>x.t==="post");
+    const mulige = L.typer.filter(t=>t!=="pioner" && t!==(for_&&for_.pt) && t!==(efter&&efter.pt));
+    if(mulige.length && !mulige.includes(n.ekstra.pt)) n.ekstra = lavPost(pick2(mulige, r));
+  }));
+  // Nummerér posterne og sæt start og mål/lejr på hver etape
+  let nr = 0;
+  etaper.forEach((et, e) => {
+    et.noder.forEach(n => { if(n.t==="post") n.nr = ++nr; });
+    et.noder.unshift({ t:"start", ok:true });
+    et.noder.push({ t: e===L.etaper-1 ? "maal" : "lejr" });
+  });
+  return { etaper };
+}
+function pick2(a, r){ return a[r(a.length)]; }
+function lavKompas(niv, rnd){
+  const r = n => Math.floor(rnd()*n);
+  const RET = [["nord",0],["nordøst",45],["øst",90],["sydøst",135],["syd",180],["sydvest",225],["vest",270],["nordvest",315]];
+  let grader, tekst, mulige;
+  if(niv===1){ const [n,g]=[RET[0],RET[2],RET[4],RET[6]][r(4)]; grader=g; tekst=`Gå mod ${n}.`; mulige=[0,90,180,270]; }
+  else if(niv===2){ const [n,g]=RET[r(8)]; grader=g; tekst=`Gå ${g}° (${n}).`; mulige=RET.map(x=>x[1]); }
+  else {
+    grader = r(24)*15;
+    if(rnd()<.5){ const fra=(grader+180)%360; tekst=`I kom hertil i retningen ${fra}°. Gå samme vej tilbage.`; }
+    else tekst=`Gå i retningen ${grader}°.`;
+    mulige=[...Array(24).keys()].map(k=>k*15);
+  }
+  // Fire flag: det rigtige og tre andre retninger, der ikke ligger for tæt på
+  const andre = mulige.filter(g=>Math.abs(((g-grader+540)%360)-180)>=40 || niv===1).filter(g=>g!==grader);
+  const valgt=[grader];
+  while(valgt.length<4 && andre.length){ const g=andre.splice(r(andre.length),1)[0]; if(valgt.every(v=>Math.abs(((g-v+540)%360)-180)>=40)) valgt.push(g); }
+  const flag = valgt.sort((a,b)=>a-b).map((g,k)=>({ b:"ABCD"[k], g }));
+  return { grader, tekst, flag, rigtig: flag.find(f=>f.g===grader).b };
+}
+
+/* ---------- Start og roller ---------- */
+function fordelRoller(ms, tilfaeldig){
+  const liste = tilfaeldig ? shuffle(ms.slice()) : ms.slice(), ud = {};
+  ROLLER.forEach((r,k) => { ud[r.id] = liste[k % liste.length].id; });
+  return ud;
+}
+function startLoebValg(nr){
+  const p=minLoebPatrulje(); if(!p || loebIgang(p)) return;
+  loebKlar = { nr, roller: fordelRoller(medlemmer(p), true) };
+  go("loebroller");
+}
+function scrLoebRoller(){
+  const p=minLoebPatrulje(), ig=loebIgang(p), ms=medlemmer(p);
+  const roller = ig ? ig.roller : loebKlar.roller, L = LOEBNR[ig ? ig.nr : loebKlar.nr];
+  const etape = ig ? ig.e+1 : 1;
+  let h = `<div class="topbar"><button class="iconbtn" data-a="${ig?"loebvis":"til"}" data-to="patrulje" aria-label="Tilbage">←</button><h1>${ig?`Etape ${etape} af ${L.etaper}`:"Fordel rollerne"}</h1><span class="spacer"></span></div>
+    <div class="card loebhead"><span class="pemb">${L.ikon}</span><div><b>Løb ${L.nr}: ${L.navn}</b><small>${ig?"I kan bytte roller før hver etape.":L.nyt}</small></div></div>
+    <p class="muted psmall">Hver post har en rolle, og telefonen gives til den, der har rollen. ${ms.length<ROLLER.length?"I er færre end 5, så nogle har flere roller.":""}</p>
+    <div class="pvalgliste">${ROLLER.map(r=>{ const m=ms.find(x=>x.id===roller[r.id]) || ms[0];
+      return `<div class="pvalg rollerk"><span class="rolleik">${r.ikon}</span><span><b>${r.navn}</b><small>${r.opg}</small></span>${hoved(m,"lille")}<b class="rollenavn">${esc(m.navn)}</b><button class="chip" data-a="loebbyt" data-r="${r.id}">Byt</button></div>`; }).join("")}</div>
+    <button class="btn secondary" data-a="loebtilfaeldig">🎲 Fordel tilfældigt</button>`;
+  const uden = ms.filter(m=>!Object.values(roller).includes(m.id));
+  if(uden.length && ms.length<=ROLLER.length) h += `<p class="muted psmall">⚠️ ${uden.map(m=>esc(m.navn)).join(" og ")} har ingen rolle endnu.</p>`;
+  h += `<button class="btn gold" data-a="loebgo">${ig?`🥾 Start etape ${etape}`:"🥾 Start løbet"}</button>`;
+  return h;
+}
+function startLoeb(){
+  const p=minLoebPatrulje(), L=LOEBNR[loebKlar.nr], seed = (Date.now() ^ (Math.random()*1e9)) >>> 0;
+  p.igang = { nr:L.nr, seed, plan:lavPlan(L, seed), e:0, i:0, fase:"gaa", energi:L.energi, jokere:L.jokere,
+    tid:0, straf:0, etapeTid:0, fejl:0, opgaver:0, mad:{}, roller:loebKlar.roller, ruter:{}, vejr:"sol", besked:"", start:Date.now() };
+  loebKlar = null; loebOpg = null; save();
+  go("loeb");
+}
+
+/* ---------- Spiltid ---------- */
+function startLoebUr(){
+  clearInterval(loebUr); loebUr=null;
+  const ig=aktivtLoeb();
+  const paaLoeb = nav.screen==="loeb" || (nav.screen==="pquiz" && pquiz && pquiz.loeb) || (nav.screen==="byg" && bygOpg && bygOpg.loeb);
+  if(!ig || !paaLoeb || ["maal"].includes(ig.fase)) return;
+  loebSidst = Date.now(); let n = 0;
+  loebUr = setInterval(()=>{
+    const ig2=aktivtLoeb(); if(!ig2){ clearInterval(loebUr); return; }
+    const d = Math.min(5000, Date.now()-loebSidst); loebSidst = Date.now();
+    ig2.tid += d; ig2.etapeTid += d;
+    const el=document.getElementById("ltid"); if(el) el.textContent = loebTidTekst(ig2);
+    if(++n % 10 === 0) save();
+    tjekTidsgraense(ig2);
+  }, 1000);
+}
+function tjekTidsgraense(ig){}
+function mmss(ms){ const s=Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
+function loebTidTekst(ig){ return mmss(ig.tid) + (ig.straf ? ` + ${mmss(ig.straf)}` : ""); }
+
+/* ---------- Energi, jokere og hændelser ---------- */
+function energi(ig, d){
+  const L=LOEBNR[ig.nr];
+  ig.energi = Math.min(L.energi, ig.energi + d);
+  if(ig.energi <= 0){
+    ig.straf += 5*60000; ig.energi = Math.ceil(L.energi/2);
+    return ` 😮‍💨 Patruljen er helt udmattet og må hvile – <b>+5 min</b> straftid, og energien er tilbage på ${ig.energi}.`;
+  }
+  return "";
+}
+function hjerter(ig){ const L=LOEBNR[ig.nr]; return `<span class="hjerter" aria-label="${ig.energi} energi">${"❤️".repeat(Math.max(0,ig.energi))}${"🤍".repeat(Math.max(0,L.energi-ig.energi))}</span>`; }
+function noder(ig){ return ig.plan.etaper[ig.e].noder; }
+function nodeNu(ig){ return noder(ig)[ig.i]; }
+
+/* ---------- Kortet ---------- */
+function kortLayout(L, ig){
+  const nd = noder(ig), kol = L.nr<=3 ? 3 : L.nr<=6 ? 4 : 5, dx=108, dy=104, mx=52, my=58;
+  const rnd = seedRng(ig.seed + ig.e*7), rk = Math.ceil(nd.length/kol);
+  const pos = nd.map((n,k) => { const r=Math.floor(k/kol); let c=k%kol; if(r%2) c=kol-1-c;
+    return [mx + c*dx + (rnd()-.5)*34, my + r*dy + (rnd()-.5)*30]; });
+  return { pos, W: mx*2 + (kol-1)*dx, H: my*2 + (rk-1)*dy };
+}
+const TERRAEN = {
+  skov: (x,y,s)=>[[-14,6],[0,-6],[14,8],[4,14],[-8,-14]].map(([a,b])=>`<path d="M${x+a} ${y+b-14*s} l${9*s} ${16*s} h${-18*s}Z" fill="#3f7a35"/><path d="M${x+a} ${y+b+2*s} v${4*s}" stroke="#6b4626" stroke-width="2"/>`).join(""),
+  plantage: (x,y,s)=>[0,1,2].map(i=>[0,1,2,3].map(j=>`<path d="M${x-24+j*16} ${y-16+i*16-9} l6 12 h-12Z" fill="#2f6a35"/>`).join("")).join(""),
+  bakke: (x,y,s)=>`<ellipse cx="${x}" cy="${y}" rx="${34*s}" ry="${20*s}" fill="none" stroke="#a7884f" stroke-width="2"/><ellipse cx="${x}" cy="${y}" rx="${20*s}" ry="${11*s}" fill="none" stroke="#a7884f" stroke-width="2"/><ellipse cx="${x}" cy="${y}" rx="${7*s}" ry="${4*s}" fill="#b89c63"/>`,
+  eng: (x,y,s)=>[[-12,0],[0,-6],[12,2],[4,8]].map(([a,b])=>`<path d="M${x+a} ${y+b} l-3 -7 M${x+a} ${y+b} l0 -8 M${x+a} ${y+b} l3 -7" stroke="#5f8f3a" stroke-width="1.6"/>`).join("")+`<circle cx="${x-6}" cy="${y-8}" r="2.5" fill="#f2c94c"/><circle cx="${x+9}" cy="${y-4}" r="2.5" fill="#fff"/>`,
+  soe: (x,y,s)=>`<ellipse cx="${x}" cy="${y}" rx="${42*s}" ry="${24*s}" fill="#4a9fd0"/><path d="M${x-18} ${y-4} q6 -4 12 0 M${x+4} ${y+6} q6 -4 12 0" stroke="#bfe4f7" stroke-width="2" fill="none"/>`,
+  mose: (x,y,s)=>`<ellipse cx="${x}" cy="${y}" rx="${36*s}" ry="${20*s}" fill="#7f9a5c"/>${[[-16,-4],[6,-8],[14,6],[-6,8]].map(([a,b])=>`<path d="M${x+a-5} ${y+b} h10" stroke="#4a8fb0" stroke-width="2"/><path d="M${x+a} ${y+b} l-2 -6 M${x+a} ${y+b} l2 -6" stroke="#4f6a2f" stroke-width="1.4"/>`).join("")}`,
+  hede: (x,y,s)=>[[-14,0],[6,-8],[12,8],[-4,10]].map(([a,b])=>`<ellipse cx="${x+a}" cy="${y+b}" rx="11" ry="7" fill="#9b6aa8" opacity=".75"/>`).join(""),
+  fjeld: (x,y,s)=>`<path d="M${x-40*s} ${y+18} L${x-12} ${y-30*s} L${x+8} ${y+18}Z" fill="#8e9aa3"/><path d="M${x-12} ${y-30*s} l-8 12 h16Z" fill="#fff"/><path d="M${x-6} ${y+18} L${x+20} ${y-20*s} L${x+42*s} ${y+18}Z" fill="#a4afb7"/><path d="M${x+20} ${y-20*s} l-6 9 h12Z" fill="#fff"/>`,
+  ruin: (x,y,s)=>`<path d="M${x-24} ${y+12} V${y-10} h8 v6 h6 v-10 h8 v24" fill="none" stroke="#8a8478" stroke-width="5"/><path d="M${x+6} ${y+12} V${y-4} h10 v16" fill="none" stroke="#9a9488" stroke-width="5"/><circle cx="${x-30}" cy="${y+14}" r="3" fill="#9a9488"/>`,
+  aa: null,   // åen tegnes på tværs af kortet
+};
+function loebKort(L, ig){
+  const { pos, W, H } = kortLayout(L, ig), nd = noder(ig), rnd = seedRng(ig.seed*3 + ig.e);
+  let bg = `<rect width="${W}" height="${H}" fill="${L.bund}"/>`;
+  if(L.terraen.aa){ const y = H*0.45; bg += `<path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#4a9fd0" stroke-width="14" fill="none"/><path d="M0 ${y} C${W*.25} ${y-40} ${W*.45} ${y+40} ${W*.7} ${y} S${W} ${y-20} ${W} ${y}" stroke="#9fd3f0" stroke-width="3" fill="none" stroke-dasharray="6 10"/>`; }
+  const fri = (x,y,d) => pos.every(([a,b]) => Math.hypot(a-x,b-y) > d);
+  for(const [type, antal] of Object.entries(L.terraen)){
+    if(!TERRAEN[type]) continue;
+    const ialt = Math.round(antal * (1 + (nd.length/10)));
+    for(let k=0;k<ialt;k++){ for(let f=0;f<25;f++){ const x=20+rnd()*(W-40), y=20+rnd()*(H-40); if(fri(x,y,46)){ bg += TERRAEN[type](x,y,.8+rnd()*.5); break; } } }
+  }
+  // Stien – ved vejkryds tegnes både den korte og den lange vej
+  let sti = "", gaaet = "";
+  for(let k=0;k<nd.length-1;k++){
+    const [x1,y1]=pos[k], [x2,y2]=pos[k+1], n=nd[k], d=`M${x1.toFixed(0)} ${y1.toFixed(0)} L${x2.toFixed(0)} ${y2.toFixed(0)}`;
+    if(n.t==="kryds"){
+      const mx=(x1+x2)/2, my=(y1+y2)/2, nx=-(y2-y1), ny=x2-x1, l=Math.hypot(nx,ny)||1, bx=mx+nx/l*46, by=my+ny/l*46;
+      const lang=`M${x1.toFixed(0)} ${y1.toFixed(0)} Q${bx.toFixed(0)} ${by.toFixed(0)} ${x2.toFixed(0)} ${y2.toFixed(0)}`;
+      const valg = ig.ruter[ig.e+":"+k];
+      if(n.risiko==="mose" && !valg) bg += TERRAEN.mose(mx, my, .7);
+      sti += `<path d="${d}" class="sti ${valg==="lang"?"fravalgt":""}"/><path d="${lang}" class="sti ${valg==="kort"?"fravalgt":""}"/>`;
+      if(k < ig.i) gaaet += `<path d="${valg==="lang"?lang:d}" class="gaaet"/>`;
+      if(!valg) sti += `<text x="${mx.toFixed(0)}" y="${(my+4).toFixed(0)}" text-anchor="middle" font-size="12">⚠️</text><text x="${bx.toFixed(0)}" y="${(by+4).toFixed(0)}" text-anchor="middle" font-size="11">🛡️</text>`;
+    } else {
+      sti += `<path d="${d}" class="sti"/>`;
+      if(k < ig.i) gaaet += `<path d="${d}" class="gaaet"/>`;
+    }
+  }
+  let mark = "";
+  nd.forEach((n,k) => {
+    const [x,y] = pos[k];
+    if(n.t==="start") mark += `<circle cx="${x}" cy="${y}" r="11" fill="#fff8e1" stroke="#5c3a20" stroke-width="2"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="800" fill="#5c3a20">${ig.e?"⛺":"S"}</text>`;
+    else if(n.t==="post") mark += `<g class="lpost ${n.ok?"ok":""} ${k===ig.i+1?"naeste":""}"><path d="M${x} ${y+12} V${y-16}" stroke="#5c3a20" stroke-width="2.5"/><path d="M${x} ${y-16} h20 l-5 7 l5 7 h-20Z" fill="${n.ok?"#4f8a3a":"#d0402c"}" stroke="#fff" stroke-width="1"/><text x="${x+9}" y="${y-5}" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">${n.nr||"+"}</text><ellipse cx="${x}" cy="${y+12}" rx="7" ry="2.5" fill="rgba(0,0,0,.25)"/></g>`;
+    else if(n.t==="kryds") mark += `<g><path d="M${x} ${y+12} V${y-14}" stroke="#6b4626" stroke-width="3"/><path d="M${x-14} ${y-12} h14 v-7 h-14 l-4 3.5Z M${x} ${y-4} h14 l4 3.5 l-4 3.5 h-14Z" fill="#c49a63" stroke="#6b4626"/></g>`;
+    else if(n.t==="haend" && k<=ig.i) mark += `<text x="${x}" y="${y+6}" text-anchor="middle" font-size="18">${(HAENDELSER.find(h=>h.id===n.id)||{ikon:"⚠️"}).ikon}</text>`;
+    else if(n.t==="lejr") mark += `<text x="${x}" y="${y+8}" text-anchor="middle" font-size="24">⛺</text>`;
+    else if(n.t==="maal") mark += `<g><path d="M${x} ${y+12} V${y-18}" stroke="#333" stroke-width="2.5"/><rect x="${x}" y="${y-18}" width="22" height="14" fill="#fff" stroke="#333"/><path d="M${x} ${y-18} h5.5 v3.5 h-5.5Z M${x+11} ${y-18} h5.5 v3.5 h-5.5Z M${x+5.5} ${y-14.5} h5.5 v3.5 h-5.5Z M${x+16.5} ${y-14.5} h5.5 v3.5 h-5.5Z M${x} ${y-11} h5.5 v3.5 h-5.5Z M${x+11} ${y-11} h5.5 v3.5 h-5.5Z M${x+5.5} ${y-7.5} h5.5 v3.5 h-5.5Z M${x+16.5} ${y-7.5} h5.5 v3.5 h-5.5Z" fill="#333"/></g>`;
+  });
+  const p = patruljer().find(x=>x.igang===ig), dyr = PDYR[p ? p.dyr : 0][0];
+  const fra = loebAnim && loebAnim.fra!=null ? pos[loebAnim.fra] : pos[ig.i], [bx,by] = fra;
+  const brik = `<g id="lbrik" style="transform:translate(${bx.toFixed(1)}px,${(by-2).toFixed(1)}px)" data-x="${pos[ig.i][0].toFixed(1)}" data-y="${(pos[ig.i][1]-2).toFixed(1)}"><circle r="15" fill="#fff" stroke="#2f4a2b" stroke-width="3"/><text y="6" text-anchor="middle" font-size="17">${dyr}</text></g>`;
+  let moerke = "";
+  if(L.moerkt){ const [mx,my]=pos[ig.i];
+    moerke = `<defs><radialGradient id="lys${ig.e}"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="mmask${ig.e}"><rect width="${W}" height="${H}" fill="#fff"/><circle cx="${mx}" cy="${my}" r="${L.moerkt}" fill="url(#lys${ig.e})"/></mask></defs><rect width="${W}" height="${H}" fill="#0b1324" opacity=".93" mask="url(#mmask${ig.e})"/>`; }
+  return `<div class="kortramme"><div class="kortscroll" id="kortscroll"><svg viewBox="0 0 ${W} ${H}" width="${(W*loebZoom).toFixed(0)}" class="loebkort">${bg}${sti}${gaaet}${mark}${moerke}${brik}</svg></div>
+    <div class="zoom"><button class="chip" data-a="lzoom" data-d="-1" aria-label="Zoom ud">−</button><button class="chip" data-a="lzoom" data-d="1" aria-label="Zoom ind">+</button></div></div>`;
+}
+function loebEfterRender(){
+  if(nav.screen!=="loeb") return;
+  const scr=document.getElementById("kortscroll"), brik=document.getElementById("lbrik");
+  if(!scr || !brik) return;
+  const svg=scr.querySelector("svg"), z = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+  const tx=+brik.dataset.x, ty=+brik.dataset.y;
+  scr.scrollLeft = tx*z - scr.clientWidth/2; scr.scrollTop = ty*z - scr.clientHeight/2;
+  if(loebAnim){ loebAnim=null; requestAnimationFrame(()=>requestAnimationFrame(()=>{ brik.style.transform=`translate(${tx}px,${ty}px)`; })); }
+}
+
+/* ---------- Opgaverne ved posterne ---------- */
+function postOpgave(n){
+  if(n.pt==="kompas"){ const k=n.kompas;
+    return { art:"valg", spm:`${k.tekst} Hvilket flag står ved den næste post?`, svar:[k.rigtig, ...k.flag.map(f=>f.b).filter(b=>b!==k.rigtig)], kompas:k,
+      forklaring:`Retningen ${k.grader}° peger på flag ${k.rigtig}. Drej kompashuset til gradtallet, og følg retningspilen.` }; }
+  if(n.pt==="forstehjaelp"){ const s=FH_SCEN[n.scen]; return { art:"raekke", titel:s.titel, spm:s.tekst+" Sæt trinnene i den rigtige rækkefølge.", trin:s.trin, ekstra:[], forklaring:s.forklaring }; }
+  if(n.pt==="baal"){ const s=BAAL_OPG[n.scen]; return { art:"raekke", titel:s.titel, spm:s.tekst+" Vælg de rigtige ting i den rigtige rækkefølge – to af tingene skal ikke bruges.", trin:s.trin, ekstra:s.ekstra, forklaring:s.forklaring }; }
+  const q = SPGID[n.spg[0]];
+  return { art:"valg", spm:q.spm, svar:q.svar, forklaring:q.forklaring, media:q.media, q };
+}
+function nyLoebOpg(ig){
+  const n=nodeNu(ig), o=postOpgave(n);
+  loebOpg = { e:ig.e, i:ig.i, trin: POSTTYPER[n.pt].rolle ? "skift" : "svar", o, valgt:null, svaret:false, ok:null, fjernet:[], hint:"" };
+  if(o.art==="valg") loebOpg.opts = shuffle(o.svar.map((t,k)=>({ t, ok:k===0 })));
+  else { loebOpg.blandet = shuffle([...o.trin, ...o.ekstra]); loebOpg.raekke = []; }
+}
+function kompasSVG(k){
+  const cx=110, cy=100, R=74;
+  const fl = k.flag.map(f=>{ const a=f.g*Math.PI/180, x=cx+Math.sin(a)*R, y=cy-Math.cos(a)*R;
+    return `<path d="M${cx} ${cy} L${x.toFixed(1)} ${y.toFixed(1)}" stroke="#9cb36a" stroke-width="1.5" stroke-dasharray="3 4"/><g><path d="M${x.toFixed(1)} ${(y+10).toFixed(1)} V${(y-12).toFixed(1)}" stroke="#5c3a20" stroke-width="2"/><path d="M${x.toFixed(1)} ${(y-12).toFixed(1)} h16 l-4 6 l4 6 h-16Z" fill="#d0402c"/><text x="${(x+7).toFixed(1)}" y="${(y-2.5).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">${f.b}</text></g>`; }).join("");
+  const streger = [...Array(36).keys()].map(i=>{ const a=i*10*Math.PI/180, r1=i%9===0?R-26:R-31; return `<path d="M${(cx+Math.sin(a)*r1).toFixed(1)} ${(cy-Math.cos(a)*r1).toFixed(1)} L${(cx+Math.sin(a)*(R-36)).toFixed(1)} ${(cy-Math.cos(a)*(R-36)).toFixed(1)}" stroke="#7a6a50" stroke-width="${i%9===0?2:1}"/>`; }).join("");
+  return `<svg viewBox="0 0 220 200" class="kompassvg"><circle cx="${cx}" cy="${cy}" r="${R+20}" fill="#9cc56d"/><circle cx="${cx}" cy="${cy}" r="${R-24}" fill="#f6f1df" stroke="#7a6a50" stroke-width="2"/>${streger}
+    ${[["N",0],["Ø",90],["S",180],["V",270]].map(([t,g])=>{ const a=g*Math.PI/180; return `<text x="${(cx+Math.sin(a)*(R-46)).toFixed(1)}" y="${(cy-Math.cos(a)*(R-46)+4).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="800" fill="${t==="N"?"#c62828":"#2f4a2b"}">${t}</text>`; }).join("")}
+    <path d="M${cx} ${cy-22} L${cx+5} ${cy} L${cx-5} ${cy}Z" fill="#c62828"/><path d="M${cx} ${cy+22} L${cx+5} ${cy} L${cx-5} ${cy}Z" fill="#2f4a2b"/>${fl}</svg>`;
+}
+function opgaveHTML(ig){
+  const n=nodeNu(ig), o=loebOpg.o, pt=POSTTYPER[n.pt], rolle=ROLLEID[pt.rolle], m=rollePerson(ig, pt.rolle);
+  let h = `<div class="card qcard"><div class="qtopic">${pt.ikon} ${pt.navn} ${n.nr?`· Post ${n.nr}`:"· Ekstrapost"} · ${rolle.ikon} ${esc(m.navn)} (${rolle.navn})</div>
+    ${o.titel?`<b class="opgtitel">${o.titel}</b>`:""}<p class="qtext">${esc(o.spm)}</p>${o.kompas?kompasSVG(o.kompas):""}${o.media?mediaHTML({media:o.media}):""}</div>`;
+  if(loebOpg.hint) h += `<div class="card hbesked">${loebOpg.hint}</div>`;
+  if(o.art==="valg"){
+    h += `<div class="answers">${loebOpg.opts.map((x,k)=>{
+      if(loebOpg.fjernet.includes(k)) return "";
+      let cls=""; if(loebOpg.svaret){ cls = x.ok ? "correct" : k===loebOpg.valgt ? "wrong" : "dim"; }
+      return `<button class="ans ${cls}" data-a="lsvar" data-k="${k}" ${loebOpg.svaret?"disabled":""}><span class="letter">${"ABCD"[k]}</span><span>${esc(o.kompas?`Flag ${x.t}`:x.t)}</span></button>`; }).join("")}</div>`;
+  } else {
+    h += `<div class="sect" style="margin-top:4px">Jeres rækkefølge</div><div class="trinliste">${loebOpg.raekke.length ? loebOpg.raekke.map((t,k)=>{
+        let cls="valgt"; if(loebOpg.svaret) cls += o.trin[k]===t ? " ok" : " bad";
+        return `<button class="trinknap ${cls}" data-a="lfjern" data-k="${k}" ${loebOpg.svaret?"disabled":""}><span class="nr">${k+1}</span><span>${esc(t)}</span>${loebOpg.svaret?"":`<span class="fjern">✕</span>`}</button>`; }).join("") : `<p class="muted tomtrin">Tryk på tingene nedenfor i den rigtige rækkefølge.</p>`}</div>`;
+    if(!loebOpg.svaret){
+      h += `<div class="sect">${o.ekstra.length?"Vælg blandt":"Trin"}</div><div class="trinliste">${loebOpg.blandet.filter(t=>!loebOpg.raekke.includes(t) && !loebOpg.fjernet.includes(t)).map(t=>`<button class="trinknap" data-a="lvaelg" data-t="${esc(t)}"><span class="nr">＋</span><span>${esc(t)}</span></button>`).join("")}</div>
+        <button class="btn" data-a="ltjek" ${loebOpg.raekke.length===o.trin.length?"":"disabled"}>✔️ Tjek rækkefølgen</button>`;
+    }
+  }
+  if(!loebOpg.svaret) h += jokerHTML(ig, o.art==="valg" ? ["ring","lokal"] : ["ring","lokal"]);
+  else {
+    h += `<div class="fb ${loebOpg.ok?"ok":"bad"}" id="fb"><b class="head">${loebOpg.ok?"Rigtigt! ✅":"Desværre – forkert"}</b>${loebOpg.besked||""}
+      ${loebOpg.ok?"":o.art==="valg"?`<p>Det rigtige svar er: <b>${esc(o.kompas?`Flag ${o.svar[0]}`:o.svar[0])}</b></p>`:`<p>Den rigtige rækkefølge er:</p><ol class="facit">${o.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>`}<p class="forkl">💡 ${esc(o.forklaring)}</p></div>`;
+    if(!loebOpg.ok) h += jokerHTML(ig, ["kort"]);
+    h += `<button class="btn" data-a="lpostok">Videre på løbet →</button>`;
+  }
+  return h;
+}
+function jokerHTML(ig, typer){
+  if(ig.jokere<1) return `<p class="muted center psmall" style="margin-top:6px">🃏 Ingen jokere tilbage.</p>`;
+  return `<div class="jokerbar"><small>🃏 ${ig.jokere} joker${ig.jokere===1?"":"e"} · ⚜️ ${esc(rolleNavn(ig,"leder"))} (patruljeleder) bestemmer</small><div class="row">${typer.map(j=>`<button class="chip" data-a="ljoker" data-j="${j}">${JOKERE[j].ikon} ${JOKERE[j].navn}</button>`).join("")}</div></div>`;
+}
+function brugJoker(j){
+  const ig=aktivtLoeb(); if(!ig || ig.jokere<1) return;
+  // Patruljequizzen ved vidensposter
+  if(nav.screen==="pquiz" && pquiz && pquiz.loeb){
+    const q=pquiz.qs[pquiz.i];
+    if(j==="ring"){ if(q.fjernet) return; q.fjernet=shuffle(q.opts.map((o,k)=>o.ok?-1:k).filter(k=>k>=0)).slice(0,2); }
+    else if(j==="lokal"){ if(q.hint) return; q.hint=`🧑‍🌾 En lokal mener, at svaret begynder med »${q.svar[0][0]}«.`; }
+    else if(j==="kort"){ if(!pquiz.svaret || pquiz.svar[pquiz.i]) return; pquiz.svaret=false; pquiz.valgt=null; pquiz.svar[pquiz.i]=undefined; ig.fejl=Math.max(0,ig.fejl-1); ig.opgaver--; ig.energi=Math.min(LOEBNR[ig.nr].energi, ig.energi+1); }
+    ig.jokere--; save(); render(); lejrToast(`${JOKERE[j].ikon} ${JOKERE[j].navn}!`); return;
+  }
+  if(!loebOpg) return;
+  const o=loebOpg.o;
+  if(j==="ring"){
+    if(o.art==="valg"){ if(loebOpg.fjernet.length) return; loebOpg.fjernet=shuffle(loebOpg.opts.map((x,k)=>x.ok?-1:k).filter(k=>k>=0)).slice(0,2); loebOpg.hint="📞 Lederen hjælper – to forkerte svar er fjernet."; }
+    else { loebOpg.fjernet=o.ekstra.slice(); loebOpg.raekke=loebOpg.raekke.filter(t=>!o.ekstra.includes(t)); if(!loebOpg.raekke.length) loebOpg.raekke=[o.trin[0]]; loebOpg.hint=`📞 Lederen siger: »Start med: ${o.trin[0]}.«${o.ekstra.length?" De forkerte ting er fjernet.":""}`; }
+  } else if(j==="lokal"){
+    if(loebOpg.hint) return;
+    loebOpg.hint = o.art==="valg" ? (o.kompas ? `🧑‍🌾 En lokal peger: »Retningen ${o.kompas.grader}° – husk at nord er 0°, øst 90°, syd 180° og vest 270°.«` : `🧑‍🌾 En lokal mener, at svaret begynder med »${o.svar[0][0]}«.`)
+      : `🧑‍🌾 En lokal siger: »Det sidste trin er: ${o.trin[o.trin.length-1]}.«`;
+  } else if(j==="kort"){
+    if(!loebOpg.svaret || loebOpg.ok) return;
+    ig.fejl=Math.max(0,ig.fejl-1); ig.opgaver--; ig.energi=Math.min(LOEBNR[ig.nr].energi, ig.energi+1);
+    loebOpg.svaret=false; loebOpg.ok=null; loebOpg.valgt=null; loebOpg.besked=""; if(o.art!=="valg") loebOpg.raekke=[];
+    loebOpg.hint="🗺️ I kigger på kortet igen og får et nyt forsøg.";
+  }
+  ig.jokere--; save(); render();
+}
+function loebSvar(ok){
+  const ig=aktivtLoeb();
+  loebOpg.svaret=true; loebOpg.ok=ok; ig.opgaver++;
+  loebOpg.besked = "";
+  if(ok) vibrer(30); else { ig.fejl++; vibrer([60,40,60]); loebOpg.besked = `<p>❤️ −1 energi.${energi(ig,-1)}</p>`; }
+  lydEffekt(ok); save(); render();
+  const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
+}
+
+/* ---------- Gå videre: næste node ---------- */
+function loebGaa(){
+  const ig=aktivtLoeb(); if(!ig || ig.fase!=="gaa") return;
+  const nd=noder(ig);
+  if(ig.i >= nd.length-1) return;
+  loebAnim = { fra: ig.i };
+  ig.i++; ig.besked="";
+  const n=nd[ig.i];
+  if(n.t==="post"){ ig.fase="post"; loebOpg=null; }
+  else if(n.t==="kryds") ig.fase="kryds";
+  else if(n.t==="haend"){ ig.fase="haend"; ig.hsvar=null; }
+  else if(n.t==="lejr") ig.fase="lejr";
+  else if(n.t==="maal") return loebMaal();
+  save(); render();
+}
+function nodeFaerdig(besked){
+  const ig=aktivtLoeb(), n=nodeNu(ig);
+  n.ok=true; ig.fase="gaa"; ig.besked=besked||""; loebOpg=null; save();
+  go("loeb");
+}
+function startPostOpgave(){
+  const ig=aktivtLoeb(), n=nodeNu(ig), p=minLoebPatrulje(), L=LOEBNR[ig.nr];
+  if(n.pt==="videns"){
+    const ms=medlemmer(p);
+    pquiz = { p:p.id, niveau:L.niveau, loeb:true, i:0, fase:"vaelg", hvem:null, rigtige:0, joker:0, svar:[], done:false,
+      max: Math.ceil(n.spg.length/ms.length)+1, antal:{}, res:{},
+      qs: n.spg.map(id=>SPGID[id]).filter(Boolean).map(q=>({ ...q, opts: shuffle(q.svar.map((t,i)=>({t, ok:i===0}))) })) };
+    go("pquiz"); return;
+  }
+  if(n.pt==="pioner"){
+    const knob = Math.max(0, ...medlemmer(p).map(m=>m.badges.knob||0));
+    if(knob < L.niveau){
+      const ekstra = energi(ig,-1); ig.straf += 3*60000;
+      nodeFaerdig(`🪢 Ingen i patruljen har <b>Knob og reb – ${NIVEAUER[L.niveau].navn.toLowerCase()}</b>, så I kan ikke bygge ${opgNavn(n.opg).toLowerCase()}. I må gå den lange vej udenom (−1 energi, +3 min).${ekstra}`);
+      return;
+    }
+    const ms=medlemmer(p), o=OPGAVER[n.opg], raekke=shuffle(ms.map(m=>m.id));
+    bygOpg = { id:n.opg, idx:null, bundet:{}, valgt:null, fejl:0, patrulje:p.id, loeb:true, ejere:o.led.map((_,k)=>raekke[k%raekke.length]), tur:raekke[0], skift:true, fejlPr:{} };
+    go("byg"); return;
+  }
+  nyLoebOpg(ig); render(); window.scrollTo(0,0);
+}
+function loebPquizSlut(){
+  const ig=aktivtLoeb(), r=pquiz.rigtige, n=pquiz.qs.length; pquiz=null;
+  nodeFaerdig(`❓ Vidensposten: <b>${r} af ${n}</b> rigtige.`);
+}
+function loebBygSlut(){
+  const ig=aktivtLoeb(), fejl=bygOpg.fejl, navn=opgNavn(bygOpg.id);
+  ig.opgaver++; let t = `🪢 ${navn} står færdig${fejl?"":" – helt uden fejl"}!`;
+  if(fejl){ ig.fejl++; t += ` I lavede ${fejl} fejl i surringerne (−1 energi).${energi(ig,-1)}`; }
+  bygOpg=null; nodeFaerdig(t);
+}
+function loebKryds(valg){
+  const ig=aktivtLoeb(), L=LOEBNR[ig.nr], n=nodeNu(ig), nd=noder(ig);
+  ig.ruter[ig.e+":"+ig.i] = valg;
+  let t;
+  if(valg==="lang"){
+    let tab = -1; if(L.vejrEnergi && ["regn","storm"].includes(ig.vejr)) tab = -2;
+    ig.straf += 4*60000;
+    t = `🛡️ I tager den lange, sikre vej (${tab} energi, +4 min).${tab<-1?" Vejret gør turen ekstra hård.":""}${energi(ig,tab)}`;
+  } else if(n.risiko==="mose"){
+    if(n.rul < .5) t = `⚠️ I tager genvejen over mosen og slipper tørskoet igennem. Heldige jer!`;
+    else t = `⚠️ Genvejen over mosen! I synker i til knæene og må trække hinanden op (−1 energi).${energi(ig,-1)}`;
+  } else {
+    nd.splice(ig.i+1, 0, JSON.parse(JSON.stringify(n.ekstra)));
+    t = n.risiko==="post" ? "⚠️ Genvejen fører forbi en ekstra post, som I skal klare." : "⚠️ Genvejen er kort – men noget venter jer på vejen …";
+  }
+  nodeFaerdig(t);
+}
+function haendelse(n){ return HAENDELSER.find(h=>h.id===n.id); }
+function loebHaendValg(k){
+  const ig=aktivtLoeb(), h=haendelse(nodeNu(ig)), v=h.valg[k];
+  if(h.vejr) ig.vejr=h.vejr;
+  if(v.tid) ig.straf += v.tid*60000;
+  let t = `${h.ikon} ${v.besked}`;
+  if(v.energi) t += energi(ig, v.energi);
+  nodeFaerdig(t);
+}
+function loebHaendSvar(ok){
+  const ig=aktivtLoeb(), h=haendelse(nodeNu(ig));
+  if(h.vejr) ig.vejr=h.vejr;
+  let t;
+  if(ok) t = `${h.ikon} ✅ ${h.ok}`;
+  else { t = `${h.ikon} ❌ ${h.fejl.besked}`; if(h.fejl.tid) ig.straf += h.fejl.tid*60000; if(h.fejl.energi) t += energi(ig, h.fejl.energi); }
+  nodeFaerdig(t);
+}
+function haendSpg(ig){
+  // Et spørgsmål til hændelsen, valgt ud fra løbets seed og ikke brugt i løbet før
+  const n=nodeNu(ig), h=haendelse(n), L=LOEBNR[ig.nr];
+  if(n.spg == null){
+    const brugt = new Set(ig.plan.etaper.flatMap(e=>e.noder.flatMap(x=>x.spg||[])));
+    const pool = SPORGSMAL.filter(q=>q.emne===h.spm.emne && q.niveau===L.niveau && !q.type && !q.media && !brugt.has(q.id)).sort((a,b)=>a.id<b.id?-1:1);
+    n.spg = [pool[Math.floor(seedRng(ig.seed+ig.i*13+ig.e)()*pool.length)].id];
+    save();
+  }
+  return SPGID[n.spg[0]];
+}
+
+/* ---------- Mål og belønning ---------- */
+function loebStjerner(ig){
+  const L=LOEBNR[ig.nr], andel = ig.fejl / Math.max(1, ig.opgaver);
+  let s = 1;
+  if(andel <= .2) s++;
+  if(ig.energi >= Math.ceil(L.energi/2) && ig.tid + ig.straf <= L.maalTid*60000) s++;
+  return s;
+}
+function loebMaal(){
+  const ig=aktivtLoeb(), p=minLoebPatrulje(), L=LOEBNR[ig.nr], ms=medlemmer(p);
+  const s = loebStjerner(ig), tid = ig.tid + ig.straf;
+  const pp = 20*L.nr + 15*s, hver = 10*L.nr + 5*s;
+  const mat = { braende: L.nr + s, reb: Math.ceil(L.nr/2) + (s===3?1:0), rafter: L.nr + s };
+  p.point = (p.point||0) + pp; ms.forEach(m=>{ m.point += hver; }); brugMat(cur(), mat, 1);
+  p.loeb = p.loeb || {};
+  const f = p.loeb[L.nr], foerste = !f;
+  p.loeb[L.nr] = { stjerner: Math.max(s, f?f.stjerner:0), bedsteTid: Math.min(tid, f?f.bedsteTid:Infinity), gange: (f?f.gange:0)+1 };
+  // Samarbejdsmærket: bronze efter løb 3, sølv efter løb 6, guld efter løb 9
+  const nyMaerke = ({3:1, 6:2, 9:3})[L.nr];
+  let maerke = 0;
+  if(nyMaerke && (p.maerke||0) < nyMaerke){ p.maerke = nyMaerke; maerke = nyMaerke; }
+  let mester = false;
+  if(L.nr===ANTAL_LOEB && !p.mester){ p.mester = true; mester = true; }
+  p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, hver, mat, foerste, maerke, mester, rekord: !foerste && tid < f.bedsteTid };
+  p.igang = null; loebOpg = null; save();
+  go("loebmaal");
+  if(maerke) fejr(PMAERKE, maerke, null);
+  else konfetti();
+}
+function scrLoebMaal(){
+  const p=minLoebPatrulje(), r=p && p.sidsteLoeb;
+  if(!r) return scrPatrulje();
+  const L=LOEBNR[r.nr];
+  return `<div class="topbar"><span class="spacer"></span><h1>I er i mål! 🏁</h1><span class="spacer"></span></div>
+    <div class="card center"><div style="font-size:52px">${L.ikon}</div><h2 style="margin:4px 0">Løb ${L.nr}: ${L.navn}</h2>
+      <div class="stjerner3">${[1,2,3].map(k=>`<span class="${k<=r.stjerner?"on":""}">★</span>`).join("")}</div>
+      <p style="margin:6px 0 0">⏱️ Tid: <b>${mmss(r.tid)}</b>${r.rekord?" · 🏅 Ny rekord!":""} · ❌ ${r.fejl} fejl · ❤️ ${r.energi} energi tilbage</p>
+      ${r.mester?`<div class="rankup">🏆 I er nu <b>Mesterpatrulje</b>!</div>`:""}</div>
+    <div class="card"><p style="margin:0">${L.slut}</p></div>
+    <div class="card belon"><b>🎁 Belønning</b><div class="belonliste"><span>🤝 +${r.pp} patruljepoint</span><span>🪙 +${r.hver} point til hver</span>${Object.entries(r.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
+      <small>Stjerner: ★ for at komme i mål, ★ for højst 20 % fejl og ★ for at have kræfter tilbage og nå i mål på ${L.maalTid} min.</small></div>
+    ${r.nr<ANTAL_LOEB && LOEBNR[r.nr+1]?`<button class="btn gold" data-a="loebvaelg" data-n="${r.nr+1}">Næste løb: ${LOEBNR[r.nr+1].navn} →</button>`:""}
+    <button class="btn secondary" data-a="til" data-to="patrulje">Til patruljen</button>`;
+}
+
+/* ---------- Løbsskærmen ---------- */
+function scrLoeb(){
+  const p=minLoebPatrulje(), ig=loebIgang(p), L=LOEBNR[ig.nr], nd=noder(ig), n=nodeNu(ig);
+  const vejr = { sol:"☀️", regn:"🌧️", storm:"🌪️", taage:"🌫️" }[ig.vejr] || "☀️";
+  let h = `<div class="quiztop"><button class="iconbtn" data-a="loebmenu" aria-label="Menu">☰</button>
+      <div class="qinfo"><small>${L.ikon} Løb ${L.nr}: ${L.navn}${L.etaper>1?` · <b>Etape ${ig.e+1} af ${L.etaper}</b>`:""}</small><b>${hjerter(ig)}</b></div>
+      <div class="qstats"><span>⏱️ <b id="ltid">${loebTidTekst(ig)}</b></span><span>🃏 ${ig.jokere} ${vejr}</span></div></div>`;
+  // Under opgaven ved en post vises kun opgaven
+  if(ig.fase==="post" && loebOpg && loebOpg.trin==="svar") return h + opgaveHTML(ig);
+  if(ig.fase==="post"){
+    const pt=POSTTYPER[n.pt];
+    if(pt.rolle && loebOpg && loebOpg.trin==="skift"){
+      const m=rollePerson(ig, pt.rolle), r=ROLLEID[pt.rolle];
+      return h + giverTelefon(m, `${pt.ikon} ${pt.navn}${n.nr?` (post ${n.nr})`:""} er en opgave for ${r.ikon} <b>${r.navn.toLowerCase()}en</b>.`, `Jeg er ${esc(m.navn)} – klar!`, "lklar");
+    }
+  }
+  h += loebKort(L, ig);
+  const tekst = ig.besked ? `<div class="card hbesked">${ig.besked}</div>` : "";
+  if(ig.fase==="gaa"){
+    const naeste = nd[ig.i+1], postNr = nd.slice(0, ig.i+1).filter(x=>x.t==="post" && x.nr).length;
+    const fortael = ig.i===0 && !ig.besked ? (ig.e===0 ? L.intro : (L.etapeTekst||[])[ig.e] || "En ny dag på løbet begynder.") : (L.mellem[postNr % L.mellem.length]);
+    h += tekst + `<div class="card loebtekst"><p style="margin:0">${fortael}</p></div>`;
+    const knap = naeste.t==="maal" ? "🏁 Gå i mål" : naeste.t==="lejr" ? "⛺ Gå til lejrpladsen" : naeste.t==="post" ? `🥾 Gå til post ${naeste.nr||"+"}` : "🥾 Gå videre ad stien";
+    h += `<button class="btn gold" data-a="lgaa">${knap}</button>`;
+    if(!ig.mad[ig.e] && ig.energi < L.energi) h += `<button class="btn earth" data-a="lmad">🥪 Spis madpakken (+2 energi)</button>`;
+  }
+  else if(ig.fase==="post"){
+    const pt=POSTTYPER[n.pt];
+    h += tekst + `<div class="card center"><div style="font-size:42px">${pt.ikon}</div><h2 style="margin:2px 0">${pt.navn}${n.nr?` · Post ${n.nr}`:" · Ekstrapost"}</h2>
+      <p class="muted" style="margin:4px 0 0">${n.pt==="videns"?`3 spørgsmål om ${EMNE[n.emne].navn.toLowerCase()}. I vælger selv, hvem der svarer.`:n.pt==="pioner"?`Byg ${opgNavn(n.opg).toLowerCase()}. Surringerne fordeles mellem jer.`:`${ROLLEID[pt.rolle].ikon} ${esc(rolleNavn(ig,pt.rolle))} (${ROLLEID[pt.rolle].navn.toLowerCase()}) løser opgaven.`}</p></div>
+      <button class="btn gold" data-a="lstart">Start posten</button>`;
+  }
+  else if(ig.fase==="kryds"){
+    const r = { mose:"over mosen", haendelse:"gennem det ukendte", post:"forbi en ekstra post" }[n.risiko];
+    h += tekst + `<div class="card"><b>🪧 Vejkryds!</b><p style="margin:6px 0 0">Stien deler sig. ⚜️ ${esc(rolleNavn(ig,"leder"))} (patruljeleder) vælger vej.</p></div>
+      <button class="btn earth rute" data-a="lkryds" data-v="kort">⚠️ Den korte vej ${r}<small style="display:block;font-weight:600;opacity:.85">Hurtig – men risikabel</small></button>
+      <button class="btn secondary rute" data-a="lkryds" data-v="lang">🛡️ Den lange, sikre vej<small style="display:block;font-weight:600;opacity:.8">Koster 1 energi${L.vejrEnergi?" (2 i regn og storm)":""} og 4 min</small></button>`;
+  }
+  else if(ig.fase==="haend"){
+    const hd=haendelse(n), ms=medlemmer(p), navn=ms[(ig.i+ig.e) % ms.length].navn;
+    h += `<div class="card haend"><div style="font-size:42px">${hd.ikon}</div><h2 style="margin:2px 0">${hd.navn}</h2><p style="margin:4px 0 0">${hd.tekst.replace("{navn}", esc(navn))}</p></div>`;
+    if(hd.valg) h += hd.valg.map((v,k)=>`<button class="btn ${k?"secondary":"earth"}" data-a="lhaend" data-k="${k}">${v.t}</button>`).join("");
+    else {
+      const q=haendSpg(ig);
+      if(!ig.hsvar) ig.hsvar = shuffle(q.svar.map((t,k)=>({ t, ok:k===0 })));
+      h += `<div class="card qcard"><p class="qtext" style="margin:0">${esc(q.spm)}</p></div><div class="answers">${ig.hsvar.map((x,k)=>`<button class="ans" data-a="lhsvar" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span>${esc(x.t)}</span></button>`).join("")}</div>`;
+    }
+  }
+  else if(ig.fase==="lejr") h += lejrEtapeHTML(ig);
+  return h;
+}
+function lejrEtapeHTML(ig){ return ""; }
+function startEtape(){}
+function loebMenu(){
+  const ig=aktivtLoeb(), L=LOEBNR[ig.nr];
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><h2 style="margin-top:0">${L.ikon} ${L.navn}</h2>
+    <p class="muted">Løbet gemmes efter hver post, så I kan lukke appen og fortsætte senere.</p>
+    <button class="btn secondary" id="m-pause">⏸️ Hold pause – fortsæt senere</button>
+    <button class="btn earth" id="m-afbryd">🛑 Afbryd løbet</button>
+    <button class="btn" id="m-luk">Fortsæt løbet</button></div></div>`;
+  const $=s=>modalRoot.querySelector(s), luk=()=>{ modalRoot.innerHTML=""; };
+  $("#m-luk").onclick=luk;
+  $("#m-pause").onclick=()=>{ luk(); save(); go("patrulje"); };
+  $("#m-afbryd").onclick=()=>{ luk(); confirmBox(`Vil I afbryde <b>${L.navn}</b>?<br><small class="muted">Løbet starter forfra næste gang.</small>`, "Afbryd", "Fortsæt", ()=>{ minLoebPatrulje().igang=null; loebOpg=null; save(); go("patrulje"); }); };
+}
+
+/* ---------- Patruljesiden: løb og trofæer ---------- */
+function loebFortsaetHTML(p){
+  const ig=loebIgang(p); let h="";
+  if(ig){ const L=LOEBNR[ig.nr], n=noder(ig), postNr=n.slice(0,ig.i+1).filter(x=>x.t==="post"&&x.nr).length, poster=n.filter(x=>x.t==="post"&&x.nr).length;
+    h += `<div class="card fortsaet"><span class="pemb">${L.ikon}</span><div><b>Fortsæt løbet: ${L.navn}</b><small>${L.etaper>1?`Etape ${ig.e+1} af ${L.etaper} · `:""}${postNr} af ${poster} poster klaret · ⏱️ ${loebTidTekst(ig)}</small></div><button class="btn gold" data-a="loebvis">Fortsæt</button></div>`; }
+  return h;
+}
+function loebListeHTML(p, nok){
+  const ig=loebIgang(p), res=p.loeb||{}, knob=Math.max(0, ...medlemmer(p).map(m=>m.badges.knob||0));
+  let h = `<div class="sect" style="margin-top:16px">🗺️ Adventureløb</div>
+    <p class="muted psmall">Gå løbene sammen på én telefon. Hver spejder har en rolle, og telefonen går videre ved hver post. Løbene bliver længere og sværere.</p>`;
+  for(let nr=1; nr<=ANTAL_LOEB; nr++){
+    const L=LOEBNR[nr], r=res[nr], aaben = L && nok && loebAaben(p,nr);
+    if(!L){ h += `<div class="card lvlrow laast"><span class="loebnr">${nr}</span><div class="lvltxt"><b>Løb ${nr}</b><small>Kommer snart</small></div></div>`; continue; }
+    const s = r ? r.stjerner : 0;
+    h += `<div class="card lvlrow loebrk ${aaben?"":"laast"}"><span class="loebnr">${L.ikon}<small>${nr}</small></span>
+      <div class="lvltxt"><b>${L.navn}</b><small>${L.poster} poster · ${L.etaper} etape${L.etaper>1?"r":""} · ${["","Let","Mellem","Svær"][L.niveau]}${L.nr===ANTAL_LOEB?" · Mester":""}</small>
+      <small><span class="stjsm">${[1,2,3].map(k=>`<span class="${k<=s?"on":""}">★</span>`).join("")}</span>${r?` · bedste tid ${mmss(r.bedsteTid)}`:""}${L.pioner.length && knob<L.niveau?` · 🪢 kræver Knob og reb – ${NIVEAUER[L.niveau].navn.toLowerCase()}`:""}</small></div>
+      <button class="btn ${r?"secondary":""}" data-a="loebvaelg" data-n="${nr}" ${aaben && !ig?"":"disabled"}>${!aaben?"🔒":r?"Igen":"Start"}</button></div>`;
+  }
+  return h;
+}
+function trofaeHTML(p){
+  const res=p.loeb||{}, stj=Object.values(res).reduce((a,r)=>a+r.stjerner,0), klaret=Object.keys(res).length;
+  let h = `<div class="sect" style="margin-top:16px">🏆 Patruljens trofæer</div>
+    <div class="card trofae"><div class="trofaetop">${badgeHTML(PMAERKE, p.maerke||0, "sm")}<div><b>${p.mester?"🏆 Mesterpatrulje":"Samarbejdsmærket"}</b><small>${p.maerke?NIVEAUER[p.maerke].navn:"Bronze efter løb 3"} · ★ ${stj} af ${ANTAL_LOEB*3} stjerner · ${klaret} af ${ANTAL_LOEB} løb klaret</small></div></div>`;
+  if(klaret) h += `<div class="tider">${Object.entries(res).sort((a,b)=>a[0]-b[0]).map(([nr,r])=>`<div><span>${LOEBNR[nr]?LOEBNR[nr].ikon:""} ${nr}</span><b>${mmss(r.bedsteTid)}</b><small>${"★".repeat(r.stjerner)} · ${r.gange}×</small></div>`).join("")}</div>`;
+  if(p.mester) h += `<div class="mestertrofae">🏆 <b>Mesterløbet</b> er gennemført – ${esc(p.navn)} er en ægte mesterpatrulje!</div>`;
+  return h + `</div>`;
+}
+
 /* =====================================================================
    SPEJDERHYTTEN – ugens spejdermøde
    ---------------------------------------------------------------------
@@ -6246,7 +6976,7 @@ const actions = {
     if(!morseLyd) lydTone(false);
     const b=document.querySelector('[data-a="morselyd"]'); if(b) b.textContent = morseLyd?"🔊 Lyd til":"🔈 Lyd fra";
   },
-  mediaforfra(){ startMedia(quiz.qs[quiz.i]); },
+  mediaforfra(){ startMedia(nav.screen==="loeb" && loebOpg ? { media:loebOpg.o.media } : quiz.qs[quiz.i]); },
   afbryd(){ askQuit(); },
   igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   fejlstart(){ startQuiz("fejl", "alle", 0); },
@@ -6266,6 +6996,28 @@ const actions = {
     go("hytte"); lejrToast("Mødet venter på dig – du kan fortsætte senere i denne uge.");
   },
   hyttekoeb(d){ hytteKoeb(d.id); },
+  loebvaelg(d){ startLoebValg(+d.n); },
+  loebvis(){ const ig=aktivtLoeb(); if(!ig) return go("patrulje"); go(ig.fase==="roller" ? "loebroller" : "loeb"); },
+  loebbyt(d){ const ig=aktivtLoeb(), roller = ig && ig.fase==="roller" ? ig.roller : loebKlar.roller, ms=medlemmer(minLoebPatrulje());
+    const k=ms.findIndex(m=>m.id===roller[d.r]); roller[d.r]=ms[(k+1)%ms.length].id; if(ig) save(); render(); },
+  loebtilfaeldig(){ const ig=aktivtLoeb(), ms=medlemmer(minLoebPatrulje()); if(ig && ig.fase==="roller"){ ig.roller=fordelRoller(ms,true); save(); } else loebKlar.roller=fordelRoller(ms,true); render(); },
+  loebgo(){ const ig=aktivtLoeb(); if(ig && ig.fase==="roller") return startEtape(); startLoeb(); },
+  lgaa(){ loebGaa(); },
+  lmad(){ const ig=aktivtLoeb(); if(!ig || ig.mad[ig.e]) return; ig.mad[ig.e]=true; energi(ig,2); ig.besked="🥪 Patruljen sætter sig og spiser madpakkerne. Det giver ny energi (+2)."; save(); render(); },
+  lstart(){ startPostOpgave(); },
+  lklar(){ loebOpg.trin="svar"; render(); window.scrollTo(0,0); },
+  lsvar(d){ if(!loebOpg || loebOpg.svaret) return; loebOpg.valgt=+d.k; loebSvar(loebOpg.opts[+d.k].ok); },
+  lvaelg(d){ if(!loebOpg || loebOpg.svaret || loebOpg.raekke.length>=loebOpg.o.trin.length) return; loebOpg.raekke.push(d.t); render(); },
+  lfjern(d){ if(!loebOpg || loebOpg.svaret) return; loebOpg.raekke.splice(+d.k,1); render(); },
+  ltjek(){ const o=loebOpg.o; loebSvar(loebOpg.raekke.length===o.trin.length && loebOpg.raekke.every((t,k)=>t===o.trin[k])); },
+  lpostok(){ const ig=aktivtLoeb(), n=nodeNu(ig), pt=POSTTYPER[n.pt]; nodeFaerdig(`${pt.ikon} ${pt.navn}${n.nr?` (post ${n.nr})`:""}: ${loebOpg.ok?"klaret! ✅":"ikke klaret denne gang."}`); },
+  ljoker(d){ brugJoker(d.j); },
+  lkryds(d){ loebKryds(d.v); },
+  lhaend(d){ loebHaendValg(+d.k); },
+  lhsvar(d){ const ig=aktivtLoeb(); loebHaendSvar(ig.hsvar[+d.k].ok); },
+  loebmenu(){ loebMenu(); },
+  lzoom(d){ loebZoom = Math.max(.7, Math.min(2.2, loebZoom*(+d.d>0?1.3:1/1.3))); render(); },
+  loebbygok(){ loebBygSlut(); },
   moedetraen(d){ startQuiz("moedetraen", "alle", +d.k); },
   ugestart(){ startQuiz("uge", "alle", 0); },
   naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
@@ -6275,7 +7027,7 @@ const actions = {
   lejrannuller(){ lejrValg=null; render(); },
   trae(d){ traeKlik(+d.i); },
   nytjob(d){ visJobValg(d.id); },
-  bygstop(){ if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
+  bygstop(){ if(bygOpg && bygOpg.loeb){ bygOpg=null; go(aktivtLoeb()?"loeb":"patrulje"); lejrToast("Posten venter – I kan prøve igen."); return; } if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
   pny(){ pdraft={ navn:"", dyr:0, medlemmer:[cur().id] }; go("pedit"); },
   pedit(){ const p=minPatrulje(cur()); pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, medlemmer:[...p.medlemmer] }; go("pedit"); },
   pjoin(d){ const p=patruljer().find(x=>x.id===d.id); patruljer().forEach(o=>{ o.medlemmer=o.medlemmer.filter(id=>id!==cur().id); }); p.medlemmer.push(cur().id); save(); render(); lejrToast(`Velkommen i ${esc(p.navn)}! 🚩`); },
@@ -6308,10 +7060,12 @@ const actions = {
     pquiz.antal[m.id]=(pquiz.antal[m.id]||0)+1;
     const r=pquiz.res[m.id]||(pquiz.res[m.id]={r:0,n:0}); r.n++;
     if(ok){ r.r++; pquiz.rigtige++; m.point+=10; p.point=(p.point||0)+10; vibrer(30); } else vibrer([60,40,60]);
+    const ig = pquiz.loeb && aktivtLoeb();
+    if(ig){ ig.opgaver++; if(!ok){ ig.fejl++; const t=energi(ig,-1); if(t) lejrToast(t); } lydEffekt(ok); }
     save(); render(); const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
   },
   pnaeste(){ pquiz.i++; pquiz.fase="vaelg"; pquiz.svaret=false; pquiz.hvem=null; if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
-  pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ const m=pquiz.moede; pquiz=null; go(m && moede ? "moede" : "patrulje"); }); },
+  pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ const m=pquiz.moede, l=pquiz.loeb; pquiz=null; go(l && aktivtLoeb() ? "loeb" : m && moede ? "moede" : "patrulje"); }); },
   pbygstart(d){ startPbyg(d.id); },
   pbygklar(){ bygOpg.skift=false; bygOpg.valgt=null; render(); window.scrollTo(0,0); },
   pbygslut(){
