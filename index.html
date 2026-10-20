@@ -6818,8 +6818,8 @@ const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
-  { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge på pladsen." },
-  { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ." },
+  { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge. Opgrader det, så giver hvert fældet grantræ flere granstammer." },
+  { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ. Opgrader det, så giver hvert fældet løvtræ flere løvstammer." },
   { id:"braende",     navn:"Brændestabel",      ikon:"🪵", pris:20,  besk:"Tørt brænde til bålet." },
   { id:"sten",        navn:"Sten",              ikon:"🪨", pris:10,  besk:"En stor sten at sidde på." },
 
@@ -7979,9 +7979,14 @@ const JOB = {
 };
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
 // Kløvning kræver en huggeplads. Hvert andet niveau giver et brænde mere, og hvert niveau gør det 2 % hurtigere (højst 50 %).
+// Opgraderede grantræer og løvtræer på lejrpladsen giver flere stammer, når man fælder træer i skoven:
+// niveau 1-4 = 1 stamme, niveau 5 = 2 og derefter jævnt op til 10 stammer på niveau 99 (det højeste træ tæller)
+const TRAE_BYG = { faeldGran:"gran", faeldLoev:"loevtrae" };
+function stammerPrTrae(niv){ return niv<5 ? 1 : 2 + Math.floor((niv-5)*8/94); }
 function jobGiver(c, jid){
   const g = { ...JOB[jid].giver };
   if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
+  if(TRAE_BYG[jid]){ const m=Object.keys(g)[0]; g[m] = stammerPrTrae(bygNiv(c,TRAE_BYG[jid])); }
   return g;
 }
 function jobLaast(m, j){ return j.kraever && (m.badges[j.kraever[0]]||0) < j.kraever[1]; }
@@ -8108,7 +8113,8 @@ function traeKlik(i){
   if(!ledige.length){ lejrToast("Alle i patruljen er optaget. Vent til nogen bliver færdige."); return; }
   const jid = T.job;
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center"><div style="font-size:60px">${T.ikon}</div><h2 style="margin:4px 0">Hvem skal fælde ${T.best}?</h2>
-    <p class="muted" style="font-size:15px;margin:0">${T.besk} Bagefter er pladsen tom, og der skal plantes et nyt træ.</p></div>
+    <p class="muted" style="font-size:15px;margin:0">${T.besk} Bagefter er pladsen tom, og der skal plantes et nyt træ.</p>
+    <p style="font-size:15px;margin:6px 0 0"><b>Giver ${matTekst(jobGiver(c,jid))}</b>${harBygget(c,TRAE_BYG[jid])?"":` · byg og opgrader et ${T.navn.toLowerCase()} på lejrpladsen for at få flere`}</p></div>
     <div class="pvalgliste" style="margin-top:12px">${ledige.map(m=>{ const lvl=m.badges.overlevelse||0, laast=jobLaast(m,JOB[jid]);
       return `<button class="pvalg" data-hvem="${m.id}" ${laast?"disabled":""}>${hoved(m)}<span><b>${esc(m.navn)}</b><small>${laast?jobLaastTekst(m,JOB[jid]):`${tidTekst(jobTid(m,jid))}${lvl?` · ${EMNE.overlevelse.navn} i ${NIVEAUER[lvl].navn.toLowerCase()} gør det hurtigere`:""}`}</small></span></button>`; }).join("")}</div>
     </div></div>`;
