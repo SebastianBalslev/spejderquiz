@@ -87,6 +87,9 @@ input.err{border-color:var(--bad);animation:shake .4s}
 
 /* Profil */
 .profile{text-align:center;background:linear-gradient(180deg,#dfe9cf 0,var(--paper) 55%)}
+.titler{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}.titler span{background:var(--gold,#e8b84a);color:#3b2a0a;border-radius:999px;padding:3px 10px;font-weight:800;font-size:13px}
+.fugle{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px}.fugle span{position:absolute;left:-10%;font-size:20px;animation:flyv 14s linear infinite}
+@keyframes flyv{0%{transform:translate(0,0)}25%{transform:translate(32vw,-10px)}50%{transform:translate(64vw,8px)}75%{transform:translate(96vw,-6px)}100%{transform:translate(130vw,0)}}
 .rank-pill{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
 .avatar-wrap{width:min(230px,62vw);margin:8px auto 0}
 .avatar-wrap svg{width:100%;display:block}
@@ -1067,7 +1070,7 @@ Q("dyr", 1, "Hvad kalder man frøens unge, der lever i vand og har hale?",
   ["En haletudse", "En vandkalv", "En vandlarve", "En frøkilling"],
   "Haletudsen ånder med gæller og får efterhånden ben og lunger og mister halen.");
 Q("dyr", 1, "Hvad kaldes rævens hule under jorden?",
-  ["En grav", "En rede", "En sti", "En hi"],
+  ["En grav", "En rede", "En sti", "En hytte"],
   "Ræven bor i en grav, som den ofte overtager fra grævlingen eller graver selv.");
 Q("dyr", 1, "Hvilket dansk dyr soler sig på varme sten og kan smide halen, hvis det bliver fanget?",
   ["Firbenet", "Skrubtudsen", "Snogen", "Spidsmusen"],
@@ -5869,7 +5872,7 @@ const RANG = [
   { min:0,  navn:"Ny spejder",      ikon:"🌱" },
   { min:3,  navn:"Spejder",         ikon:"⛺" },
   { min:9,  navn:"Erfaren spejder", ikon:"🧭" },
-  { min:18, navn:"Patruljeleder",   ikon:"🚩" },
+  { min:18, navn:"Vildmarksspejder", ikon:"🚩" },
   { min:30, navn:"Mesterspejder",   ikon:"🏆" },
 ];
 const ANTAL_SPG = 10;
@@ -5907,6 +5910,8 @@ let state = load();
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
 function cur(){ return state.chars.find(c => c.id === state.active) || null; }
 function antal(c){ return EMNER.reduce((s,e) => s + (c.badges[e.id]||0), 0); }
+// Titler fra guldmærker
+function titler(c){ const t=[]; if((c.badges.lejrbaal||0)>=3) t.push("🔥 Lejrbålsleder"); if((c.badges.ledelse||0)>=3) t.push("⚜️ Patruljeleder"); return t; }
 function rankIdx(c){ const n=antal(c); let r=0; RANG.forEach((x,i)=>{ if(n>=x.min) r=i; }); return r; }
 
 /* ---------- Mærke-symboler (SVG, koordinater omkring 0,0) ---------- */
@@ -6169,6 +6174,7 @@ function scrProfil(){
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="vaelg" aria-label="Skift spejder">👥</button><h1>${esc(c.navn)}</h1><button class="iconbtn" data-a="rediger" aria-label="Redigér udseende">✏️</button></div>
     <div class="card profile">
       <div class="rank-pill">${RANG[r].ikon} ${RANG[r].navn}</div>
+      ${titler(c).length?`<div class="titler">${titler(c).map(t=>`<span>${t}</span>`).join("")}</div>`:""}
       <div class="avatar-wrap">${avatarSVG(c.look,c.badges,r)}</div>
       <div class="stats">
         <div><b>${fmt(c.point)}</b><span>point</span></div>
@@ -6210,7 +6216,7 @@ function scrEmne(){
     const status = done ? `<span class="status done">✅ Bestået</span>` : klar ? `<span class="status">Klar til prøven</span>` : `🔒 Kræver ${NIVEAUER[n-1].navn.toLowerCase()}`;
     h += `<div class="card lvlcard ${laast?"laast":""}">
       <div class="lvltop">${badgeHTML(e, laast?0:n, "sm"+(klar?" faded":""))}
-        <div class="lvltxt"><b>${N.navn}</b><small>${N.svaer} · mindst ${N.krav} af ${ANTAL_SPG} rigtige</small><small>${status}${best!=null?` · Bedste: ${best}/${ANTAL_SPG}`:""}</small></div></div>
+        <div class="lvltxt"><b>${N.navn}</b><small>${N.svaer} · mindst ${N.krav} af ${ANTAL_SPG} rigtige</small><small>${status}${best!=null?` · Bedste: ${best}/${ANTAL_SPG}`:""}</small>${laaserOp(e.id,n)?`<small class="laaserop">🔓 ${laaserOp(e.id,n)}</small>`:""}</div></div>
       <button class="btn ${done?"secondary":n===3?"gold":""}" data-a="proeve" data-id="${e.id}" data-n="${n}" ${laast?"disabled":""}>${done?"Tag prøven igen":laast?"Låst":`Tag ${N.navn.toLowerCase()}-prøven`}</button></div>`;
   }
   h += timerToggle();
@@ -6736,6 +6742,7 @@ function fejr(e, lvl, nyRang){
       <h2>${e.navn}</h2><div class="lvlname l${lvl}">${NIVEAUER[lvl].navn}</div>
       ${nyRang ? `<div class="rankup">⬆️ Ny rang: <b>${nyRang.ikon} ${nyRang.navn}</b></div>` : ""}
       ${nyeTing(e.id,lvl).length ? `<div class="rankup">⛺ Nu kan du bygge: <b>${nyeTing(e.id,lvl).map(b=>b.navn).join(" og ")}</b></div>` : ""}
+      ${(LAAS_OP[e.id]||{})[lvl] ? `<div class="rankup">🔓 ${LAAS_OP[e.id][lvl]}</div>` : ""}
       <button class="btn gold" id="c-ok" style="margin-top:22px">Fedt! 🎉</button></div></div>`;
   modalRoot.querySelector("#c-ok").onclick = () => { modalRoot.innerHTML=""; };
   konfetti(); vibrer([80,60,80,60,160]);
@@ -6777,8 +6784,15 @@ const BYG = [
   { id:"hytte",       navn:"Spejderhytte",      svg:"hytte",    pris:250, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
 
   { id:"baal",        navn:"Bålplads",          svg:"baal",     pris:40,  krav:["baal",1],        besk:"En sikker bålplads med sten om." },
-  { id:"koekken",     navn:"Lejrkøkken",        ikon:"🍲", pris:120, krav:["baal",2],        besk:"Gryde over gløderne – nu kan der laves mad." },
-  { id:"lejrbaal",    navn:"Lejrbålsplads",     svg:"lejrbaal", pris:250, krav:["baal",3],        besk:"Stort bål med bænke til sange og sketches." },
+  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:90,  krav:["baal",2],        besk:"Her ligger brændet tørt, også når det regner." },
+  { id:"signalbaal",  navn:"Signalbål",         ikon:"🔥", pris:200, krav:["baal",3],        besk:"Et højt bål på bakken, som kan ses langt væk." },
+
+  { id:"koekken",     navn:"Lejrkøkken",        ikon:"🍲", pris:120, krav:["koekken",2],     besk:"Gryde over gløderne – nu kan der laves mad." },
+  { id:"bagerovn",    navn:"Bagerovn",          ikon:"🧱", pris:240, krav:["koekken",3],     besk:"En ovn af ler og sten. Her bager patruljen brød og pizza." },
+
+  { id:"lejrbaal",    navn:"Lejrbålsplads",     svg:"lejrbaal", pris:250, krav:["lejrbaal",2], besk:"Stort bål med bænke til sange og sketches." },
+
+  { id:"huggeplads",  navn:"Huggeplads",        ikon:"🪓", pris:200, krav:["vaerktoej",3],   besk:"Huggeblok og savbuk. Patruljen får mere ud af hver stamme." },
 
   { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60,  krav:["knob",1],        besk:"Rafter surret sammen til et spisebord." },
   { id:"port",        navn:"Lejrport",          svg:"port",     pris:150, krav:["knob",2],        besk:"Pioneret port med kvadratsurringer." },
@@ -6789,7 +6803,7 @@ const BYG = [
   { id:"baare",       navn:"Båre",              svg:"baare",    pris:120, krav:["forstehjalp",2], besk:"Lavet af to stænger og et tæppe." },
   { id:"hjertestarter",navn:"Hjertestarter",    svg:"aed",      pris:220, krav:["forstehjalp",3], besk:"Hjertestarter i et grønt skab." },
 
-  { id:"fuglekasse",  navn:"Fuglekasse",        svg:"fuglekasse", pris:40, krav:["dyr",1],        besk:"Et hjem til musvitter." },
+  { id:"pindsvinehus",navn:"Pindsvinehus",      ikon:"🦔", pris:40,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
   { id:"hjort",       navn:"Kronhjort",         ikon:"🦌", pris:150, krav:["dyr",2],        besk:"En stolt hjort kigger forbi." },
   { id:"raev",        navn:"Ræv",               ikon:"🦊", pris:250, krav:["dyr",3],        besk:"En nysgerrig ræv bor tæt på lejren." },
 
@@ -6802,8 +6816,17 @@ const BYG = [
   { id:"kompasrose",  navn:"Kompasrose",        svg:"kompas",   pris:200, krav:["orientering",3], besk:"Stor kompasrose lagt med sten." },
 
   { id:"vejrstation", navn:"Vejrstation",       svg:"vejrstation", pris:60, krav:["vejr",1],     besk:"Termometer og regnmåler." },
-  { id:"kikkert",     navn:"Stjernekikkert",    ikon:"🔭", pris:150, krav:["vejr",2],        besk:"Find Karlsvognen og Nordstjernen." },
+  { id:"vejrhane",    navn:"Vejrhane",          ikon:"🐓", pris:120, krav:["vejr",2],        besk:"Hanen drejer, så den peger mod vinden." },
   { id:"solur",       navn:"Solur",             svg:"solur",    pris:220, krav:["vejr",3],        besk:"Viser tiden med solens skygge." },
+
+  { id:"kikkert",     navn:"Stjernekikkert",    ikon:"🔭", pris:150, krav:["stjerner",1],    besk:"Find Karlsvognen, Nordstjernen og flere stjernebilleder." },
+  { id:"stjernetaarn",navn:"Stjernetårn",       ikon:"🌠", pris:280, krav:["stjerner",3],    besk:"Et højt tårn med teleskop – her ser du hele nattehimlen." },
+
+  { id:"fuglekasse",  navn:"Fuglekasse",        svg:"fuglekasse", pris:40, krav:["fugle",1],      besk:"Et hjem til musvitter." },
+  { id:"fugletaarn",  navn:"Fugletårn",         ikon:"🦅", pris:180, krav:["fugle",2],       besk:"Et tårn ved søen, hvor I kan se fuglene uden at forstyrre dem." },
+
+  { id:"sporkasse",   navn:"Sporkasse",         ikon:"🐾", pris:50,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
+  { id:"geocache",    navn:"Geocache",          ikon:"📦", pris:50,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
 
   { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80,  krav:["overlevelse",1], besk:"Et læ af grene og granris." },
   { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
@@ -6910,7 +6933,8 @@ const PIONER = {
 // Alle ventetider ganges med denne faktor (2 = dobbelt så lang tid). Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 2;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
+const BYGTID = { braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, vejrhane:120,
+  stjernetaarn:600, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
   fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
   vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:60, flag:60, liljeskilt:180,
@@ -6965,6 +6989,8 @@ function bygIkon(b, niv){
   const indhold = b.id==="port" ? portSVG(niv) : PIONER[b.svg] + nivPynt(niv);
   return `<svg viewBox="0 0 40 40" aria-hidden="true">${indhold}</svg>`;
 }
+function aktKravOk(c,k){ return !k || (c.badges[k[0]]||0) >= k[1]; }
+function harBygget(c,id){ const f=lejrFelter(c); return Object.keys(f).some(i=>f[i]===id && !underByg(c,+i)); }
 function harKrav(c,b){ return !b.krav || (c.badges[b.krav[0]]||0) >= b.krav[1]; }
 function kravTekst(b){ return `${EMNE[b.krav[0]].navn} – ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`; }
 function erVand(i){ return VAND.has(Math.floor(i/LEJR_KOL)+","+(i%LEJR_KOL)); }
@@ -6990,7 +7016,7 @@ function scrLejr(){
       <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vand?" på søen":""}.${opg?" Bagefter skal du binde surringerne.":""}</small></div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
-  h += `<div class="lejrmap" id="lejrmap">`;
+  h += `<div class="lejrmap" id="lejrmap" style="position:relative">`;
   for(let i=0;i<LEJR_KOL*LEJR_RAEKKER;i++){
     const r=Math.floor(i/LEJR_KOL), k=i%LEJR_KOL, b=BYGID[felter[i]];
     let cls = erVand(i) ? "vand" : ((r+k)%2 ? "a" : "b");
@@ -7002,6 +7028,7 @@ function scrLejr(){
     if(niv>1) cls += " niv"+niv;
     h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":""):erVand(i)?"Sø":"Græs"}">${b?bygIkon(b,niv):""}${niv>1&&!bygger?`<span class="nivmark">${"★".repeat(niv-1)}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
+  if((c.badges.fugle||0)>=3) h += `<div class="fugle" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
   h += arbejdeHTML(c);
@@ -7108,7 +7135,7 @@ function visFeltMenu(i){
     knapper = `<p class="byggetid">⏳ Færdig om <b id="m-tid">${fmtTid(restTid(c,i))}</b></p>
       <button class="btn gold" id="m-hjaelp">💪 Hjælp patruljen: svar på et spørgsmål (−1 min)</button>`;
   } else {
-    knapper = (AKT_FOR[her.id]||[]).map(([a,t])=>`<button class="btn" data-akt="${a}">${t}</button>`).join("");
+    knapper = (AKT_FOR[her.id]||[]).map(([a,t,k])=>aktKravOk(c,k) ? `<button class="btn" data-akt="${a}">${t}</button>` : `<button class="btn" disabled>🔒 ${t.replace(/^\S+\s/,"")} · kræver ${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()}</button>`).join("");
     if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
     knapper += opgHTML(c, i);
   }
@@ -7150,6 +7177,19 @@ function hjaelpSpm(i){
     }
   });
 }
+// Det, mærkerne låser op ud over byggelisten (vises, når man får mærket)
+const LAAS_OP = {
+  stjerner:  { 1:"Orion i stjernekikkerten", 2:"Planeten Jupiter og månens faser i kikkerten" },
+  koekken:   { 1:"Bag snobrød over bålet på bålpladsen" },
+  vaerktoej: { 1:"Du må kløve brænde", 2:"Du må fælde træer", 3:"Huggepladsen giver mere brænde og flere rafter" },
+  tur:       { 1:"Rygsækstativ til teltet", 2:"Fleecetrøje, uldsokker, termoflaske og vabelplaster til teltet", 3:"Madpakken giver +3 energi på løbene" },
+  fugle:     { 3:"Fuglene kommer på besøg på din lejrplads" },
+  spor:      { 2:"Friske spor med bonuspoint på løbene", 3:"Sporjagt med ekstra bonuspoint på løbene" },
+  gps:       { 2:"Første »Kig på kortet igen« er gratis på løbene", 3:"Pandelampen lyser længere på natløbet" },
+  lejrbaal:  { 1:"Flere historier ved bålet", 3:"Titlen Lejrbålsleder – og råb og sketches ved bålet" },
+  ledelse:   { 1:"Du kan oprette en patrulje", 2:"Som patruljeleder på løbet får du en ekstra joker", 3:"Titlen Patruljeleder – og +25 % patruljepoint på løbene" },
+};
+function laaserOp(emneId, lvl){ return [...nyeTing(emneId,lvl).map(b=>b.navn), (LAAS_OP[emneId]||{})[lvl]].filter(Boolean).join(" · "); }
 function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emneId && b.krav[1]===lvl); }
 
 /* ---------- Surringsopgaven ---------- */
@@ -7255,6 +7295,11 @@ const INDBO = [
   { id:"kort",       navn:"Kort",           ikon:"🗺️", pris:15, sted:"gulv", krav:["orientering",1] },
   { id:"kompas",     navn:"Kompas",         ikon:"🧭", pris:20, sted:"gulv", krav:["orientering",2] },
   { id:"kodebog",    navn:"Kodebog",        ikon:"📓", pris:15, sted:"gulv", krav:["koder",1] },
+  { id:"rygstativ",  navn:"Rygsækstativ",   svg:"rygstativ", pris:20, sted:"gulv", krav:["tur",1] },
+  { id:"fleece",     navn:"Fleecetrøje",    ikon:"🧥", pris:15, sted:"gulv", krav:["tur",2] },
+  { id:"uldsokker",  navn:"Uldsokker",      ikon:"🧦", pris:10, sted:"gulv", krav:["tur",2] },
+  { id:"termo",      navn:"Termoflaske",    svg:"termo", pris:15, sted:"gulv", krav:["tur",2] },
+  { id:"vabelplaster",navn:"Vabelplaster",  ikon:"🩹", pris:10, sted:"gulv", krav:["tur",2] },
   { id:"guitar",     navn:"Guitar til lejrbålet", ikon:"🎸", pris:40, sted:"gulv", krav:["historie",1] },
   { id:"lanterne",   navn:"Lanterne",       svg:"lanterne", pris:15, sted:"loft" },
   { id:"vimpler",    navn:"Vimpelguirlande", svg:"vimpler", pris:15, sted:"loft" },
@@ -7272,6 +7317,8 @@ const TELTPLADS = [
 const INDBOSVG = {
   sovepose: f=>`<rect x="2" y="13" width="36" height="16" rx="8" fill="${f}"/><rect x="4" y="15" width="11" height="12" rx="5" fill="${shade(f,.35)}"/><path d="M16 21 H36" stroke="${shade(f,-.3)}" stroke-width="1.2" stroke-dasharray="2 1.5"/>`,
   underlag: ()=>`<rect x="2" y="16" width="36" height="10" rx="2" fill="#4a8fc7"/><path d="M8 16 V26 M14 16 V26 M20 16 V26 M26 16 V26 M32 16 V26" stroke="#3a75a6"/>`,
+  rygstativ: ()=>`<path d="M9 36 L13 6 M31 36 L27 6 M11 15 H29 M10 25 H30" stroke="#8b5a2b" stroke-width="2.4" stroke-linecap="round"/><rect x="14" y="9" width="12" height="18" rx="4" fill="#2e7d32"/><rect x="16" y="18" width="8" height="6" rx="2" fill="#1f5a24"/><path d="M15 9 Q20 4 25 9" fill="none" stroke="#1f5a24" stroke-width="1.6"/>`,
+  termo: ()=>`<rect x="14" y="10" width="12" height="25" rx="3" fill="#9aa3ad" stroke="#5f6670"/><rect x="15" y="6" width="10" height="5" rx="1.5" fill="#c62828"/><path d="M14 18 H26 M14 27 H26" stroke="#5f6670"/>`,
   pude: ()=>`<path d="M6 14 Q20 9 34 14 Q37 21 34 28 Q20 33 6 28 Q3 21 6 14Z" fill="#fbf6ea" stroke="#d8cfb8"/>`,
   taske: ()=>`<rect x="7" y="12" width="26" height="20" rx="3" fill="#c62828"/><path d="M15 12 V8 H25 V12" fill="none" stroke="#8a1c1c" stroke-width="2"/><path d="M20 16 V28 M14 22 H26" stroke="#fff" stroke-width="4"/>`,
   lanterne: ()=>`<path d="M20 2 V8" stroke="#555" stroke-width="1.5"/><path d="M14 8 H26 L24 12 H16Z" fill="#444"/><rect x="14" y="12" width="12" height="16" rx="2" fill="#ffe7a0" stroke="#444" stroke-width="1.5"/><circle cx="20" cy="20" r="3.5" fill="#ffb627"/><rect x="13" y="28" width="14" height="3" fill="#444"/>`,
@@ -7353,9 +7400,15 @@ function teltPlads(p){
 }
 
 /* ---------- Aktiviteter på lejrpladsen ----------
-   Hvilke aktiviteter hver bygning har: [aktivitet, knaptekst] */
+   Hvilke aktiviteter hver bygning har: [aktivitet, knaptekst, krav (valgfrit mærke)] */
 const AKT_FOR = {
-  baal:       [["baal","🔥 Sæt dig ved bålet"]],
+  baal:       [["baal","🔥 Sæt dig ved bålet"], ["koekken","🍞 Bag snobrød over bålet",["koekken",1]]],
+  bagerovn:   [["koekken","🍞 Bag brød i ovnen"]],
+  stjernetaarn:[["stjerner","🌠 Kig på nattehimlen"]],
+  pindsvinehus:[["dyr","👀 Kig efter pindsvinet"]],
+  fugletaarn: [["dyr","👀 Kig efter fugle"]],
+  sporkasse:  [["dyr","🐾 Se, hvem der har været her"]],
+  geocache:   [["dyr","📦 Find geocachen"]],
   lejrbaal:   [["baal","🔥 Sæt dig ved lejrbålet"]],
   koekken:    [["koekken","🍞 Bag snobrød"]],
   bord:       [["spis","🍽️ Spis med patruljen"]],
@@ -7382,9 +7435,26 @@ const HISTORIER = [
   ["Tørklædet", "Spejdertørklædet er ikke kun pynt. Det trekantede tørklæde kan bruges som armslynge, forbinding, solbeskyttelse – eller til at binde sammen med et andet tørklæde som et nødreb."],
   ["Liljen", "Spejderliljen stammer fra den lilje, man brugte til at markere nord på gamle kort og kompasser. Den skal minde spejderen om at holde den rigtige kurs."],
 ];
+// Flere historier ved bålet med mærket Lejrbål og sang i bronze
+const HISTORIER_LB = [
+  ["Lygtemændene", "I gamle danske sagn er lygtemænd små lys, der danser over moser og enge om natten. Den, der fulgte lyset, endte ude i mosen. Man mener, at det kan være gas fra mosen, der antændes og lyser svagt."],
+  ["Stensuppen", "Et gammelt folkeeventyr fortæller om en vandringsmand, der lovede at koge suppe på en sten. Han bad hver nabo om lidt gulerod, lidt salt og et stykke kød – og til sidst fik hele landsbyen en god suppe. Sammen kan man meget."],
+  ["Nissen på loftet", "Efter gammel dansk tro boede der en nisse på mange gårde. Fik den sin julegrød med en klat smør, passede den på dyrene. Glemte man smørret, lavede den ballade."],
+  ["Elverfolket", "I folketroen danser elverpigerne i tågen over engen, når solen er gået ned. De er smukke forfra – men hule i ryggen som et gammelt træ. Den, der danser med dem, glemmer tiden."],
+  ["De to ulve", "En fortælling siger, at der bor to ulve i alle mennesker: en vred og en venlig. De kæmper hele tiden. Hvem vinder? Den, du fodrer."],
+  ["Bålets cirkel", "Ved et lejrbål sidder alle i en rundkreds. Så kan alle se hinanden og ilden, og ingen sidder bagerst. Mange grupper slutter lejrbålet med en stille sang, mens gløderne falder sammen."],
+];
+// Råb og sketches ved lejrbålet med mærket Lejrbål og sang i guld
+const RAAB = ["»Hvem er bedst i skoven? – Det er vi! Hvem er klar til alt? – Det er vi!«", "»Én for alle – alle for én – patruljen holder sammen som sten på sten!«", "»Op med hænderne – ned med hænderne – klap for kokken!«", "»Bål og brød og blå himmel – vi er spejdere, hele vejen rundt!«"];
+const SKETCHES = ["Den usynlige bænk: alle sætter sig på en bænk, der ikke er der – og falder ned én efter én.", "Spejderen og den talende kompasnål, der altid peger mod slikposen.", "Lederen, der skal slå telt op i storm – mens patruljen hjælper alt for meget.", "Vagtskiftet om natten, hvor alle hører mystiske lyde – og det er bare et pindsvin."];
+function historier(c){ return (c.badges.lejrbaal||0) >= 1 ? HISTORIER.concat(HISTORIER_LB) : HISTORIER; }
 const DYREFAKTA = {
   fuglekasse: ["🐦", "Musvitten", ["Musvitten er en af de fugle, der oftest flytter ind i fuglekasser i Danmark.", "Et musvitpar kan fodre ungerne flere hundrede gange om dagen.", "Indgangshullet til en musvitkasse skal være omkring 3 cm – så kan større fugle ikke komme ind."]],
   hjort:      ["🦌", "Kronhjorten", ["Kronhjorten er Danmarks største vilde landpattedyr.", "Hjorten smider sit gevir hvert år og får et nyt, som vokser frem i løbet af sommeren.", "I brunsttiden om efteråret brøler hjortene så højt, at det kan høres langt væk."]],
+  pindsvinehus: ["🦔", "Pindsvinet", ["Pindsvinet går i vinterhi fra omkring oktober-november til marts-april.", "Pindsvinet er fredet i Danmark. Det spiser biller, regnorme og snegle.", "Giv aldrig et pindsvin mælk – det kan det ikke tåle. Vand er fint."]],
+  fugletaarn: ["🦅", "Fuglene ved søen", ["En kikkert med 8 ganges forstørrelse er god til fugle – den er let at holde rolig.", "Om foråret og efteråret trækker millioner af fugle hen over Danmark.", "Gå stille og hold dig skjult i tårnet, så fuglene ikke bliver forstyrret."]],
+  sporkasse:  ["🐾", "Sporkassen", ["I nat har en ræv været forbi. Dens spor ligger næsten på en lige linje.", "Pindsvinets spor har fem tæer og ligner en lille hånd.", "Rådyrets spor er to smalle klove, der tilsammen ligner et hjerte."]],
+  geocache:   ["📦", "Geocachen", ["Skriv dit navn og datoen i logbogen, og læg cachen tilbage præcis, hvor du fandt den.", "Tager du en ting fra cachen, så læg en ting af samme værdi tilbage.", "Mugglere er dem, der ikke kender til geocaching. Pas på, de ikke ser, hvor cachen ligger!"]],
   raev:       ["🦊", "Ræven", ["Ræven kan høre en mus pusle under sneen – og springe ned på den i et højt hop.", "Rævens unger kaldes hvalpe og fødes i en grav om foråret.", "Ræven bruger sin buskede hale som et varmt tæppe, når den sover."]],
 };
 const SOEDYR = [
@@ -7442,7 +7512,7 @@ function aktDel(c, a, b){
   const skov=`<path d="M0 118 l12 -30 12 30 8 -20 14 -36 14 36 8 -16 12 -28 12 28 10 -22 16 -40 16 40 8 -18 12 -30 12 30 10 -24 14 -34 14 34 8 -14 12 -30 12 30 10 -20 V240 H0Z" fill="#14231a"/>`;
   if(a==="baal" || a==="koekken"){
     const venner=patrulje(c), ret = a==="koekken" ? "snobroed" : "skum";
-    titel = a==="koekken" ? "Lejrkøkkenet" : b ? b.navn : "Bålet";
+    titel = b ? b.navn : a==="koekken" ? "Lejrkøkkenet" : "Bålet";
     scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(45,3)}<circle cx="270" cy="34" r="12" fill="#f4f1d0"/><circle cx="265" cy="30" r="12" fill="url(#nat)"/>
       ${skov}<ellipse cx="160" cy="185" rx="170" ry="70" fill="#22351f"/>
       ${figur(venner[1].look,160,104,64)}<rect x="132" y="118" width="56" height="10" rx="5" fill="#5c3a20"/>
@@ -7459,19 +7529,24 @@ function aktDel(c, a, b){
     knapper = `<button class="btn earth" data-a="braende">🪵 Læg brænde på</button>
       <button class="btn gold" id="ristknap">${ret==="skum"?"🍡 Hold nede for at riste en skumfidus":"🍞 Hold nede for at bage snobrød"}</button>`;
     if(a==="baal") knapper += `<div class="row"><button class="btn" data-a="historie">📖 Hør en historie</button><button class="btn" data-a="baalquiz">❓ Lejrbålsquiz</button></div>`;
+    if(a==="baal" && (c.badges.lejrbaal||0) >= 3) knapper += `<div class="row"><button class="btn" data-a="lraab">📣 Lav et råb</button><button class="btn" data-a="lsketch">🎭 Opfør en sketch</button></div>`;
   }
   else if(a==="stjerner"){
     titel="Stjernekikkerten";
-    const opg = STJERNEOPG[akt.trin||0];
+    const liste = stjerneOpg(c), opg = liste[akt.trin||0], har = id => liste.some(o=>o[0]===id);
     scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(70,11)}${stjernehimmel(30,29).replace(/cy="(\d+)"/g,(m,y)=>`cy="${+y+110}"`)}
       ${(akt.fundet||[]).includes("karl")?`<path d="${KARL.map((p,k)=>(k?"L":"M")+p.join(" ")).join(" ")} L${KARL[3].join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
       ${(akt.fundet||[]).includes("nord")?`<path d="M${KARL[1].join(" ")} L${POLARIS.join(" ")}" stroke="#ffe28a" stroke-width="1.2" stroke-dasharray="4 4"/>`:""}
       ${(akt.fundet||[]).includes("kass")?`<path d="M${KASS.map(p=>p.join(" ")).join(" L")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
+      ${(akt.fundet||[]).includes("orion")?`<path d="M${ORION[0].join(" ")} L${ORION[2].join(" ")} L${ORION[4].join(" ")} L${ORION[1].join(" ")} M${ORION[2].join(" ")} L${ORION[5].join(" ")} M${ORION[4].join(" ")} L${ORION[6].join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
       ${KARL.map(p=>stjerneKnap(p,"karl",2.6)).join("")}${KASS.map(p=>stjerneKnap(p,"kass",2.4)).join("")}${stjerneKnap(POLARIS,"nord",2.8)}
+      ${har("orion")?ORION.map(p=>stjerneKnap(p,"orion",2.4)).join(""):""}
+      ${har("planet")?`<g class="stjerneknap" data-a="stjerne" data-g="planet"><circle cx="${JUPITER[0]}" cy="${JUPITER[1]}" r="13" fill="transparent"/><circle cx="${JUPITER[0]}" cy="${JUPITER[1]}" r="3.6" fill="#ffe7b0"/></g>`:""}
+      ${har("tiltag")?maaneSVG(MAANER.tiltag,"tiltag",true)+maaneSVG(MAANER.aftag,"aftag",false):""}
       <path d="M0 240 V222 l14 -14 14 14 10 -10 14 -18 14 18 10 -8 12 -14 12 14 10 -10 16 -20 16 20 8 -9 12 -15 12 15 10 -12 14 -17 14 17 8 -7 12 -15 12 15 10 -10 V240Z" fill="#0a120d"/>
     </svg>`;
     knapper = opg ? `<div class="aktopg">🔭 <b>${opg[1]}</b><br><small class="muted">${opg[2]}</small></div>` :
-      `<div class="aktopg">⭐ Du har fundet alle tre! Kom tilbage en anden aften og find dem igen.</div><button class="btn" data-a="stjernerigen">🔁 Start forfra</button>`;
+      `<div class="aktopg">⭐ Du har fundet alle ${liste.length}! Kom tilbage en anden aften og find dem igen.${(c.badges.stjerner||0)<2?`<br><small class="muted">Tag mærket ${EMNE.stjerner.navn} for at finde flere på himlen.</small>`:""}</div><button class="btn" data-a="stjernerigen">🔁 Start forfra</button>`;
   }
   else if(a==="svaeve"){
     titel="Svævebanen";
@@ -7591,11 +7666,22 @@ function konfettiLille(){
 const KARL = [[97,190],[123,177],[150,180],[180,187],[215,175],[220,205],[185,215]];
 const POLARIS = [190,25];
 const KASS = [[30,70],[50,48],[72,66],[92,44],[112,60]];
-const STJERNEOPG = [
-  ["karl","Find Karlsvognen","Den ligner en vogn med fire hjul og en lang stang. Tryk på en af dens stjerner."],
-  ["nord","Find Nordstjernen","Forlæng linjen gennem de to bageste stjerner i vognkassen cirka fem gange opad."],
-  ["kass","Find Kassiopeia","Den ligner et stort W og står på den anden side af Nordstjernen."],
+const ORION = [[252,78],[290,74],[262,104],[272,100],[282,96],[254,134],[292,128]];
+const JUPITER = [118,128];
+const MAANER = { tiltag:[160,92], aftag:[40,118] };
+// Opgaverne i kikkerten. Med mærket Stjerner og nattehimmel kommer der flere til (bronze: Orion, sølv: planet og måne)
+const STJERNEOPG_ALLE = [
+  ["karl","Find Karlsvognen","Den ligner en vogn med fire hjul og en lang stang. Tryk på en af dens stjerner.",0],
+  ["nord","Find Nordstjernen","Forlæng linjen gennem de to bageste stjerner i vognkassen cirka fem gange opad.",0],
+  ["kass","Find Kassiopeia","Den ligner et stort W og står på den anden side af Nordstjernen.",0],
+  ["orion","Find Orion","Kig efter tre klare stjerner tæt sammen på en lige række – det er Orions bælte.",1],
+  ["planet","Find planeten Jupiter","Planeter blinker ikke som stjernerne. Jupiter lyser klart og roligt.",2],
+  ["tiltag","Find den tiltagende måne","Hos os i Danmark er den tiltagende måne lys i højre side – ligesom et spejlvendt C.",2],
 ];
+function stjerneOpg(c){ const l=(c && c.badges.stjerner)||0; return STJERNEOPG_ALLE.filter(o=>o[3]<=l); }
+function maaneSVG([x,y], g, lysHoejre){
+  return `<g class="stjerneknap" data-a="stjerne" data-g="${g}"><circle cx="${x}" cy="${y}" r="16" fill="transparent"/><circle cx="${x}" cy="${y}" r="10" fill="#f4f1d0"/><circle cx="${x+(lysHoejre?-6:6)}" cy="${y}" r="10" fill="#1a2440"/></g>`;
+}
 function stjerneKnap([x,y], gruppe, r){
   return `<g class="stjerneknap" data-a="stjerne" data-g="${gruppe}"><circle cx="${x}" cy="${y}" r="13" fill="transparent"/><circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${r*2.2}" fill="#fff" opacity=".12"/></g>`;
 }
@@ -7634,7 +7720,7 @@ function scrPatrulje(){
   if(!p){
     h += `<div class="card center"><div style="font-size:54px">🚩</div><h2>Du er ikke med i en patrulje endnu</h2>
       <p class="muted">I en patrulje går I adventureløb sammen på én telefon: 10 løb med poster, vejkryds og hændelser, hvor hver spejder har sin rolle – patruljeleder, kortlæser, sanitet, bålmester eller signalist.</p></div>
-      <button class="btn" data-a="pny">🚩 Opret en patrulje</button>`;
+      ${(c.badges.ledelse||0)>=1 ? `<button class="btn" data-a="pny">🚩 Opret en patrulje</button>` : `<button class="btn" disabled>🔒 Opret en patrulje</button><p class="muted psmall center" style="margin-top:-4px">Du skal have mærket <b>${EMNE.ledelse.navn}</b> i bronze for at oprette en patrulje. Du kan stadig blive medlem af en patrulje, som en anden har oprettet.</p>`}`;
     const andre = patruljer();
     if(andre.length){
       h += `<div class="sect" style="margin-top:14px">Bliv medlem af en patrulje på denne telefon</div>`;
@@ -7781,21 +7867,30 @@ function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MA
 // Materialer, de enkelte ting koster at bygge
 const BYGMAT = { bord:{rafter:4, reb:2}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:2, granris:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
-  baal:{braende:3}, koekken:{braende:4}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
+  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, signalbaal:{braende:10}, huggeplads:{rafter:2, braende:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder før et fældet træ er vokset op igen
 const JOB = {
-  faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, besk:"Giver en granstamme" },
-  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, besk:"Giver en løvstamme" },
+  faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en granstamme" },
+  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en løvstamme" },
   afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2, granris:1}, besk:"Grenene skæres af – så har I lige rafter" },
-  kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, besk:"Stammen saves og kløves til brænde" },
+  kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, kraever:["vaerktoej",1], til:"kløve brænde", besk:"Stammen saves og kløves til brænde" },
   saml:      { navn:"Saml grene og kvas", ikon:"🧺", tid:20,  fag:"baal", giver:{braende:1}, besk:"Døde grene fra skovbunden" },
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
   sno:       { navn:"Sno tovværk", ikon:"🪢", tid:90, fag:"knob", bruger:{fibre:3}, giver:{rebraa:1}, besk:"Fibrene snos til kordeler, som slås sammen til et reb" },
-  takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
+  takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], til:"takle", besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
 };
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
+// Med en huggeplads på lejren giver kløvning og afgrening mere materiale
+const HUGGEBONUS = { kloev:{braende:2}, afgren:{rafter:1} };
+function jobGiver(c, jid){
+  const g = { ...JOB[jid].giver };
+  if(HUGGEBONUS[jid] && harBygget(c,"huggeplads")) Object.entries(HUGGEBONUS[jid]).forEach(([m,n])=>{ g[m]=(g[m]||0)+n; });
+  return g;
+}
+function jobLaast(m, j){ return j.kraever && (m.badges[j.kraever[0]]||0) < j.kraever[1]; }
+function jobLaastTekst(m, j){ return `${esc(m.navn)} skal have ${EMNE[j.kraever[0]].navn} i ${NIVEAUER[j.kraever[1]].navn.toLowerCase()} for at ${j.til}.`; }
 
 function lagerEjer(c){ return minPatrulje(c) || c; }
 function lager(c){ const o=lagerEjer(c); return o.lager || (o.lager={}); }
@@ -7812,9 +7907,9 @@ function tjekArbejde(c){
   const nu=Date.now(), s=skovData(c), beskeder=[];
   arbejdere(c).forEach(m=>{
     if(m.job && m.job.slut<=nu){
-      const j=JOB[m.job.id]; brugMat(c, j.giver, 1);
+      const j=JOB[m.job.id], giver=m.job.giver || j.giver; brugMat(c, giver, 1);
       if(m.job.slot!=null) s[m.job.slot]={ vokser: m.job.slut+GENVAEKST*1000 };
-      beskeder.push(`${esc(m.navn)}: ${j.navn.toLowerCase()} – færdig! +${matTekst(j.giver)}`);
+      beskeder.push(`${esc(m.navn)}: ${j.navn.toLowerCase()} – færdig! +${matTekst(giver)}`);
       delete m.job;
     }
   });
@@ -7830,7 +7925,7 @@ function arbejdeAktivt(c){
 function arbejdeHTML(c){
   const l=lager(c), s=skovData(c), ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
   let h = `<div class="sect" style="margin-top:18px">🪓 Materialer og arbejde</div>
-    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"}</p>
+    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at kløve brænde, og i sølv for at fælde træer.${harBygget(c,"huggeplads")?" 🪓 Huggepladsen giver ekstra brænde og rafter.":""}</p>
     <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip">${matIkon(m)}<b>${l[m]||0}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>
     <div class="skov">${SKOV.map((t,i)=>{
       const x=s[i], fældes=ms.find(m=>m.job && m.job.slot===i);
@@ -7862,11 +7957,11 @@ function visJobValg(id, kunTrae){
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen ${j.trae==="gran"?"grantræer":"løvtræer"} at fælde lige nu – de vokser op igen.`;
     if(j.bruger && !harMat(c,j.bruger)) grund = `Kræver ${matTekst(j.bruger)} på lageret.`;
-    if(j.kraever && (m.badges[j.kraever[0]]||0) < j.kraever[1]) grund = `${esc(m.navn)} skal have ${EMNE[j.kraever[0]].navn} i ${NIVEAUER[j.kraever[1]].navn.toLowerCase()} for at kunne takle.`;
+    if(jobLaast(m,j)) grund = jobLaastTekst(m,j);
     const tid=jobTid(m,jid), lvl=m.badges[j.fag]||0;
     return `<button class="pvalg" data-job="${jid}" ${grund?"disabled":""}><span class="jobik">${j.ikon}</span><span><b>${j.navn}</b>
       <small>${grund || `${j.besk} · ${tidTekst(tid)}${lvl?` · hurtigere, fordi ${esc(m.navn)} har ${EMNE[j.fag].navn} i ${NIVEAUER[lvl].navn.toLowerCase()}`:""}`}</small></span>
-      ${j.giver?`<span class="jobgiv">+${Object.entries(j.giver).map(([mm,n])=>`${n}${matIkon(mm,"lille")}`).join(" ")}</span>`:""}</button>`;
+      ${j.giver?`<span class="jobgiv">+${Object.entries(jobGiver(c,jid)).map(([mm,n])=>`${n}${matIkon(mm,"lille")}`).join(" ")}</span>`:""}</button>`;
   }).join("");
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="center">${hoved(m)}<h2 style="margin:6px 0 2px">Hvad skal ${esc(m.navn)} lave?</h2></div>
     <div class="pvalgliste" style="margin-top:12px">${muligheder}</div><button class="btn secondary" id="m-luk">Luk</button></div></div>`;
@@ -7875,11 +7970,12 @@ function visJobValg(id, kunTrae){
 }
 function startJob(m, jid){
   const c=cur(), j=JOB[jid];
+  if(jobLaast(m,j)) return;
   let slot=null;
   if(j.trae){ slot=ledigtTrae(c,j.trae); if(slot<0) return; skovData(c)[slot]={ faeldes:m.id }; }
   if(j.bruger){ if(!harMat(c,j.bruger)) return; brugMat(c,j.bruger,-1); }
   const t=jobTid(m,jid)*1000;
-  m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot };
+  m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot, giver:jobGiver(c,jid) };
   save(); render(); vibrer(30);
   lejrToast(`${j.ikon} ${esc(m.navn)} går i gang: ${j.navn.toLowerCase()}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
 }
@@ -7893,14 +7989,14 @@ function traeKlik(i){
   const jid = type==="gran" ? "faeldGran" : "faeldLoev";
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="center"><div style="font-size:60px">${type==="gran"?"🌲":"🌳"}</div><h2 style="margin:4px 0">Hvem skal fælde ${type==="gran"?"grantræet":"løvtræet"}?</h2>
     <p class="muted" style="font-size:15px;margin:0">${type==="gran"?"Grantræer bliver til granstammer, som kan afgrenes til rafter.":"Løvtræer bliver til løvstammer, som kan kløves til brænde."}</p></div>
-    <div class="pvalgliste" style="margin-top:12px">${ledige.map(m=>{ const lvl=m.badges.overlevelse||0;
-      return `<button class="pvalg" data-hvem="${m.id}">${hoved(m)}<span><b>${esc(m.navn)}</b><small>${tidTekst(jobTid(m,jid))}${lvl?` · ${EMNE.overlevelse.navn} i ${NIVEAUER[lvl].navn.toLowerCase()} gør det hurtigere`:""}</small></span></button>`; }).join("")}</div>
+    <div class="pvalgliste" style="margin-top:12px">${ledige.map(m=>{ const lvl=m.badges.overlevelse||0, laast=jobLaast(m,JOB[jid]);
+      return `<button class="pvalg" data-hvem="${m.id}" ${laast?"disabled":""}>${hoved(m)}<span><b>${esc(m.navn)}</b><small>${laast?jobLaastTekst(m,JOB[jid]):`${tidTekst(jobTid(m,jid))}${lvl?` · ${EMNE.overlevelse.navn} i ${NIVEAUER[lvl].navn.toLowerCase()} gør det hurtigere`:""}`}</small></span></button>`; }).join("")}</div>
     <button class="btn secondary" id="m-luk">Luk</button></div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelectorAll("[data-hvem]").forEach(b=>b.onclick=()=>{
-    modalRoot.innerHTML=""; const m=state.chars.find(x=>x.id===b.dataset.hvem);
+    modalRoot.innerHTML=""; const m=state.chars.find(x=>x.id===b.dataset.hvem); if(jobLaast(m,JOB[jid])) return;
     const s=skovData(c); s[i]={ faeldes:m.id }; const t=jobTid(m,jid)*1000;
-    m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot:i }; save(); render(); vibrer(30);
+    m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot:i, giver:jobGiver(c,jid) }; save(); render(); vibrer(30);
     lejrToast(`🪓 ${esc(m.navn)} fælder ${type==="gran"?"grantræet":"løvtræet"}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
   });
 }
@@ -8127,6 +8223,10 @@ const HAENDELSER = [
     valg:[{ t:"Gå ud af skoven til åbent land", tid:2, besked:"Klogt! I skov er der fare for nedfaldne grene (+2 min)." }, { t:"Søg ly under de store træer", energi:-2, besked:"En gren rammer stien lige ved siden af jer. Det var farligt (−2 energi)." }] },
   { id:"torden", ikon:"⛈️", navn:"Tordenvejr", min:7, vejr:"regn", tekst:"Det lyner og tordner kun få kilometer væk.",
     valg:[{ t:"Undgå høje træer, og sæt jer sammenkrøbet i en lavning", tid:3, besked:"Rigtigt – sådan er man mest sikker i tordenvejr (+3 min)." }, { t:"Stil jer under det højeste træ", energi:-2, besked:"Høje træer tiltrækker lynet. I flytter jer hurtigt (−2 energi)." }] },
+  { id:"friskspor", ikon:"🐾", navn:"Friske spor", min:1, spor:2, tekst:"{navn} får øje på friske spor i det bløde mudder ved stien.",
+    valg:[{ t:"Stop og læs sporene sammen", tid:1, point:10, besked:"Et rådyr og dets kid er gået her for lidt siden. Sporlæsning giver bonus (+10 patruljepoint, +1 min)." }, { t:"Gå videre – vi har travlt", besked:"I skynder jer videre uden at se nærmere." }] },
+  { id:"sporjagt", ikon:"🔎", navn:"Sporjagt", min:1, spor:3, tekst:"Et spor fører væk fra stien. Kan I læse, hvem der har været her?", spm:{ emne:"spor" }, okPoint:20,
+    fejl:{ tid:2, besked:"I følger det forkerte spor et stykke (+2 min)." }, ok:"Rigtigt læst! Ægte sporfindere (+20 patruljepoint)." },
   { id:"stenskred", ikon:"🪨", navn:"Løse sten", min:9, tekst:"Stien går over en skråning med løse sten.",
     valg:[{ t:"Gå én ad gangen med afstand", tid:2, besked:"Sikkert og roligt (+2 min)." }, { t:"Løb hurtigt over alle sammen", energi:-2, besked:"Stenene skrider, og flere falder (−2 energi)." }] },
 ];
@@ -8154,7 +8254,7 @@ function rolleNavn(ig, rolle){ const m=state.chars.find(x=>x.id===ig.roller[roll
 function rollePerson(ig, rolle){ return state.chars.find(x=>x.id===ig.roller[rolle]) || medlemmer(patruljer().find(x=>x.igang===ig))[0]; }
 
 /* ---------- Plan: posterne, vejkryds og hændelser vælges ved start ud fra et seed ---------- */
-function lavPlan(L, seed){
+function lavPlan(L, seed, fordele){
   const rnd = seedRng(seed), r = n => Math.floor(rnd()*n);
   const bland = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=r(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
   const brugt = new Set(), tekster = new Set();
@@ -8198,7 +8298,7 @@ function lavPlan(L, seed){
     if(k2>=0) sidst[k2] = { t:"post", pt:"kode", del:2, spg:ord };
   }
   // Vejkryds og hændelser sættes ind mellem posterne (aldrig før første post)
-  const haendPool = bland(HAENDELSER.filter(h=>h.min<=L.nr));
+  const haendPool = bland(HAENDELSER.filter(h=>h.min<=L.nr && !h.spor));
   let hi = 0;
   const indsaet = (antal, lav) => {
     for(let k=0;k<antal;k++){
@@ -8216,6 +8316,9 @@ function lavPlan(L, seed){
   const antalH = L.haendelserPr ? Math.round(L.poster / L.haendelserPr) : 0;
   indsaet(antalH, () => ({ t:"haend", id: haendPool[hi++ % haendPool.length].id }));
   if(L.vejrskift) indsaet(1, () => ({ t:"haend", id: pick2(["regn","sol"], r) }));
+  const spor = (fordele && fordele.spor) || 0;
+  if(spor>=2) indsaet(1, () => ({ t:"haend", id:"friskspor" }));
+  if(spor>=3) indsaet(1, () => ({ t:"haend", id:"sporjagt" }));
   // Undgå to ens poster i træk: ekstraposten ved et vejkryds får en anden type end naboerne
   etaper.forEach(et => {
     // Rækkefølgen, hvis patruljen tager alle genveje: posterne og ekstraposterne
@@ -8281,12 +8384,32 @@ function scrLoebRoller(){
     <button class="btn secondary" data-a="loebtilfaeldig">🎲 Fordel tilfældigt</button>`;
   const uden = ms.filter(m=>!Object.values(roller).includes(m.id));
   if(uden.length && ms.length<=ROLLER.length) h += `<p class="muted psmall">⚠️ ${uden.map(m=>esc(m.navn)).join(" og ")} har ingen rolle endnu.</p>`;
+  const ft = fordeleTekst(ig ? (ig.fordele||{}) : loebFordele(ms, roller));
+  if(ft.length) h += `<div class="card"><b>🏅 Jeres mærker giver</b><ul class="psmall" style="margin:6px 0 0;padding-left:18px">${ft.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
   h += `<button class="btn gold" data-a="loebgo">${ig?`🥾 Start etape ${etape}`:"🥾 Start løbet"}</button>`;
   return h;
 }
+// Det, patruljens mærker giver på løbet. Regnes ud ved start.
+function loebFordele(ms, roller){
+  const max = e => Math.max(0, ...ms.map(m=>m.badges[e]||0));
+  const leder = ms.find(m=>m.id===roller.leder) || ms[0];
+  return { mad: max("tur")>=3 ? 3 : 2, kortFri: max("gps")>=2 ? 1 : 0, lys: max("gps")>=3, ekstraJoker: (leder.badges.ledelse||0)>=2 ? 1 : 0,
+    pl: max("ledelse")>=3, spor: max("spor") };
+}
+function fordeleTekst(f){
+  const t=[];
+  if(f.mad>2) t.push("🥪 Madpakken giver +3 energi (Tur og udrustning, guld)");
+  if(f.kortFri) t.push("🗺️ Første »Kig på kortet igen« er gratis (GPS, sølv)");
+  if(f.lys) t.push("🔦 Pandelampen lyser længere i mørket (GPS, guld)");
+  if(f.ekstraJoker) t.push("🃏 Patruljelederen har en ekstra joker (Ledelse, sølv)");
+  if(f.pl) t.push("⚜️ +25 % patruljepoint i mål (Ledelse, guld)");
+  if(f.spor>=2) t.push(`🐾 Sporhændelser med bonuspoint (Spor og sporing, ${f.spor>=3?"guld":"sølv"})`);
+  return t;
+}
 function startLoeb(){
   const p=minLoebPatrulje(), L=LOEBNR[loebKlar.nr], seed = (Date.now() ^ (Math.random()*1e9)) >>> 0;
-  p.igang = { nr:L.nr, seed, plan:lavPlan(L, seed), e:0, i:0, fase:"gaa", energi:L.energi, jokere:L.jokere,
+  const fordele = loebFordele(medlemmer(p), loebKlar.roller);
+  p.igang = { nr:L.nr, seed, plan:lavPlan(L, seed, fordele), fordele, bonus:0, e:0, i:0, fase:"gaa", energi:L.energi, jokere:L.jokere + fordele.ekstraJoker,
     tid:0, straf:0, etapeTid:0, etapeStraf:0, fejl:0, opgaver:0, mad:{}, roller:loebKlar.roller, ruter:{}, vejr:L.startVejr||"sol", besked:"", start:Date.now() };
   p.igang.etapeKopi = JSON.stringify(p.igang.plan.etaper[0].noder);
   loebKlar = null; loebOpg = null; loebAnim = null; save();
@@ -8402,7 +8525,7 @@ function loebKort(L, ig){
   const brik = `<g id="lbrik" style="transform:translate(${bx.toFixed(1)}px,${(by-2).toFixed(1)}px)" data-x="${pos[ig.i][0].toFixed(1)}" data-y="${(pos[ig.i][1]-2).toFixed(1)}"><circle r="15" fill="#fff" stroke="#2f4a2b" stroke-width="3"/><text y="6" text-anchor="middle" font-size="17">${dyr}</text></g>`;
   let moerke = "";
   if(L.moerkt){ const [mx,my]=pos[ig.i];
-    moerke = `<defs><radialGradient id="lys${ig.e}"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="mmask${ig.e}"><rect width="${W}" height="${H}" fill="#fff"/><circle cx="${mx}" cy="${my}" r="${L.moerkt}" fill="url(#lys${ig.e})"/></mask></defs><rect width="${W}" height="${H}" fill="#0b1324" opacity=".93" mask="url(#mmask${ig.e})"/>`; }
+    moerke = `<defs><radialGradient id="lys${ig.e}"><stop offset=".55" stop-color="#000"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="mmask${ig.e}"><rect width="${W}" height="${H}" fill="#fff"/><circle cx="${mx}" cy="${my}" r="${Math.round(L.moerkt*(ig.fordele && ig.fordele.lys ? 1.6 : 1))}" fill="url(#lys${ig.e})"/></mask></defs><rect width="${W}" height="${H}" fill="#0b1324" opacity=".93" mask="url(#mmask${ig.e})"/>`; }
   return `<div class="kortramme"><div class="kortscroll" id="kortscroll"><svg viewBox="0 0 ${W} ${H}" width="${(W*loebZoom).toFixed(0)}" class="loebkort">${bg}${sti}${gaaet}${mark}${moerke}${brik}</svg></div>
     <div class="zoom"><button class="chip" data-a="lzoom" data-d="-1" aria-label="Zoom ud">−</button><button class="chip" data-a="lzoom" data-d="1" aria-label="Zoom ind">+</button></div></div>`;
 }
@@ -8474,19 +8597,26 @@ function opgaveHTML(ig){
   }
   return h;
 }
+function madEnergi(ig){ return (ig.fordele && ig.fordele.mad) || 2; }
+function kortFri(ig){ return ig.fordele && ig.fordele.kortFri > (ig.kortBrugt||0); }
 function jokerHTML(ig, typer){
+  if(ig.jokere<1 && typer.includes("kort") && kortFri(ig)) return `<div class="jokerbar"><small>🗺️ GPS-mærket giver et gratis forsøg mere</small><div class="row"><button class="chip" data-a="ljoker" data-j="kort">${JOKERE.kort.ikon} ${JOKERE.kort.navn} (gratis)</button></div></div>`;
   if(ig.jokere<1) return `<p class="muted center psmall" style="margin-top:6px">🃏 Ingen jokere tilbage.</p>`;
-  return `<div class="jokerbar"><small>🃏 ${ig.jokere} joker${ig.jokere===1?"":"e"} · ⚜️ ${esc(rolleNavn(ig,"leder"))} (patruljeleder) bestemmer</small><div class="row">${typer.map(j=>`<button class="chip" data-a="ljoker" data-j="${j}">${JOKERE[j].ikon} ${JOKERE[j].navn}</button>`).join("")}</div></div>`;
+  return `<div class="jokerbar"><small>🃏 ${ig.jokere} joker${ig.jokere===1?"":"e"} · ⚜️ ${esc(rolleNavn(ig,"leder"))} (patruljeleder) bestemmer</small><div class="row">${typer.map(j=>`<button class="chip" data-a="ljoker" data-j="${j}">${JOKERE[j].ikon} ${JOKERE[j].navn}${j==="kort"&&kortFri(ig)?" (gratis)":""}</button>`).join("")}</div></div>`;
 }
 function brugJoker(j){
-  const ig=aktivtLoeb(); if(!ig || ig.jokere<1) return;
+  const ig=aktivtLoeb(); if(!ig) return;
+  const fri = j==="kort" && kortFri(ig);
+  if(ig.jokere<1 && !fri) return;
+  // Den gratis kortjoker (GPS i sølv) bruges før de almindelige jokere
+  const brug = () => { if(fri) ig.kortBrugt=(ig.kortBrugt||0)+1; else ig.jokere--; };
   // Patruljequizzen ved vidensposter
   if(nav.screen==="pquiz" && pquiz && pquiz.loeb){
     const q=pquiz.qs[pquiz.i];
     if(j==="ring"){ if(q.fjernet) return; q.fjernet=shuffle(q.opts.map((o,k)=>o.ok?-1:k).filter(k=>k>=0)).slice(0,2); }
     else if(j==="lokal"){ if(q.hint) return; q.hint=`🧑‍🌾 En lokal mener, at svaret begynder med »${q.svar[0][0]}«.`; }
     else if(j==="kort"){ if(!pquiz.svaret || pquiz.svar[pquiz.i]) return; pquiz.svaret=false; pquiz.valgt=null; pquiz.svar[pquiz.i]=undefined; ig.fejl=Math.max(0,ig.fejl-1); ig.opgaver--; ig.energi=Math.min(LOEBNR[ig.nr].energi, ig.energi+1); }
-    ig.jokere--; save(); render(); lejrToast(`${JOKERE[j].ikon} ${JOKERE[j].navn}!`); return;
+    brug(); save(); render(); lejrToast(`${JOKERE[j].ikon} ${JOKERE[j].navn}!`); return;
   }
   if(!loebOpg) return;
   const o=loebOpg.o;
@@ -8503,7 +8633,7 @@ function brugJoker(j){
     loebOpg.svaret=false; loebOpg.ok=null; loebOpg.valgt=null; loebOpg.besked=""; if(o.art!=="valg") loebOpg.raekke=[];
     loebOpg.hint="🗺️ I kigger på kortet igen og får et nyt forsøg.";
   }
-  ig.jokere--; save(); render();
+  brug(); save(); render();
 }
 function loebSvar(ok){
   const ig=aktivtLoeb();
@@ -8590,13 +8720,14 @@ function loebHaendValg(k){
   if(v.tid) ig.straf += v.tid*60000;
   let t = `${h.ikon} ${v.besked}`;
   if(v.energi) t += energi(ig, v.energi);
+  if(v.point) ig.bonus = (ig.bonus||0) + v.point;
   nodeFaerdig(t);
 }
 function loebHaendSvar(ok){
   const ig=aktivtLoeb(), h=haendelse(nodeNu(ig));
   if(h.vejr) ig.vejr=h.vejr;
   let t;
-  if(ok) t = `${h.ikon} ✅ ${h.ok}`;
+  if(ok){ t = `${h.ikon} ✅ ${h.ok}`; if(h.okPoint) ig.bonus = (ig.bonus||0) + h.okPoint; }
   else { t = `${h.ikon} ❌ ${h.fejl.besked}`; if(h.fejl.tid) ig.straf += h.fejl.tid*60000; if(h.fejl.energi) t += energi(ig, h.fejl.energi); }
   nodeFaerdig(t);
 }
@@ -8623,19 +8754,20 @@ function loebStjerner(ig){
 function loebMaal(){
   const ig=aktivtLoeb(), p=minLoebPatrulje(), L=LOEBNR[ig.nr], ms=medlemmer(p);
   const s = loebStjerner(ig), tid = ig.tid + ig.straf;
-  const pp = 20*L.nr + 15*s, hver = 10*L.nr + 5*s;
+  const f = ig.fordele || {}, bonus = ig.bonus || 0;
+  const pp = Math.round((20*L.nr + 15*s) * (f.pl ? 1.25 : 1)) + bonus, hver = 10*L.nr + 5*s;
   const mat = { braende: L.nr + s, reb: Math.ceil(L.nr/2) + (s===3?1:0), rafter: L.nr + s };
   p.point = (p.point||0) + pp; ms.forEach(m=>{ m.point += hver; }); brugMat(cur(), mat, 1);
   p.loeb = p.loeb || {};
-  const f = p.loeb[L.nr], foerste = !f;
-  p.loeb[L.nr] = { stjerner: Math.max(s, f?f.stjerner:0), bedsteTid: Math.min(tid, f?f.bedsteTid:Infinity), gange: (f?f.gange:0)+1 };
+  const fr = p.loeb[L.nr], foerste = !fr;
+  p.loeb[L.nr] = { stjerner: Math.max(s, fr?fr.stjerner:0), bedsteTid: Math.min(tid, fr?fr.bedsteTid:Infinity), gange: (fr?fr.gange:0)+1 };
   // Samarbejdsmærket: bronze efter løb 3, sølv efter løb 6, guld efter løb 9
   const nyMaerke = ({3:1, 6:2, 9:3})[L.nr];
   let maerke = 0;
   if(nyMaerke && (p.maerke||0) < nyMaerke){ p.maerke = nyMaerke; maerke = nyMaerke; }
   let mester = false;
   if(L.nr===ANTAL_LOEB && !p.mester){ p.mester = true; mester = true; }
-  p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, hver, mat, foerste, maerke, mester, rekord: !foerste && tid < f.bedsteTid };
+  p.sidsteLoeb = { nr:L.nr, stjerner:s, tid, fejl:ig.fejl, energi:ig.energi, pp, hver, mat, foerste, maerke, mester, rekord: !foerste && tid < fr.bedsteTid, bonus, pl: !!f.pl };
   p.igang = null; loebOpg = null; loebAnim = null; save();
   go("loebmaal");
   if(maerke) fejr(PMAERKE, maerke, null);
@@ -8651,7 +8783,7 @@ function scrLoebMaal(){
       <p style="margin:6px 0 0">⏱️ Tid: <b>${mmss(r.tid)}</b>${r.rekord?" · 🏅 Ny rekord!":""} · ❌ ${r.fejl} fejl · ❤️ ${r.energi} energi tilbage</p>
       ${r.mester?`<div class="rankup">🏆 I er nu <b>Mesterpatrulje</b>!</div>`:""}</div>
     <div class="card"><p style="margin:0">${L.slut}</p></div>
-    <div class="card belon"><b>🎁 Belønning</b><div class="belonliste"><span>🤝 +${r.pp} patruljepoint</span><span>🪙 +${r.hver} point til hver</span>${Object.entries(r.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
+    <div class="card belon"><b>🎁 Belønning</b><div class="belonliste"><span>🤝 +${r.pp} patruljepoint${r.bonus?` (heraf ${r.bonus} for spor)`:""}${r.pl?" · ⚜️ +25 %":""}</span><span>🪙 +${r.hver} point til hver</span>${Object.entries(r.mat).map(([k,n])=>`<span>${matIkon(k,"lille")} +${n} ${n===1?MAT[k]:MATFLERTAL[k]}</span>`).join("")}</div>
       <small>Stjerner: ★ for at komme i mål, ★ for højst 20 % fejl og ★ for at have kræfter tilbage og nå i mål på ${L.maalTid} min.</small></div>
     ${r.nr<ANTAL_LOEB && LOEBNR[r.nr+1]?`<button class="btn gold" data-a="loebvaelg" data-n="${r.nr+1}">Næste løb: ${LOEBNR[r.nr+1].navn} →</button>`:""}
     <button class="btn secondary" data-a="til" data-to="patrulje">Til patruljen</button>`;
@@ -8681,7 +8813,7 @@ function scrLoeb(){
     h += tekst + `<div class="card loebtekst"><p style="margin:0">${fortael}</p></div>`;
     const knap = naeste.t==="maal" ? "🏁 Gå i mål" : naeste.t==="lejr" ? "⛺ Gå til lejrpladsen" : naeste.t==="post" ? `🥾 Gå til post ${naeste.nr||"+"}` : "🥾 Gå videre ad stien";
     h += `<button class="btn gold" data-a="lgaa">${knap}</button>`;
-    if(!ig.mad[ig.e] && ig.energi < L.energi) h += `<button class="btn earth" data-a="lmad">🥪 Spis madpakken (+2 energi)</button>`;
+    if(!ig.mad[ig.e] && ig.energi < L.energi) h += `<button class="btn earth" data-a="lmad">🥪 Spis madpakken (+${madEnergi(ig)} energi)</button>`;
   }
   else if(ig.fase==="post"){
     const pt=POSTTYPER[n.pt];
@@ -9209,7 +9341,7 @@ const actions = {
   loebtilfaeldig(){ const ig=aktivtLoeb(), ms=medlemmer(minLoebPatrulje()); if(ig && ig.fase==="roller"){ ig.roller=fordelRoller(ms,true); save(); } else loebKlar.roller=fordelRoller(ms,true); render(); },
   loebgo(){ const ig=aktivtLoeb(); if(ig && ig.fase==="roller") return startEtape(); startLoeb(); },
   lgaa(){ loebGaa(); },
-  lmad(){ const ig=aktivtLoeb(); if(!ig || ig.mad[ig.e]) return; ig.mad[ig.e]=true; energi(ig,2); ig.besked="🥪 Patruljen sætter sig og spiser madpakkerne. Det giver ny energi (+2)."; save(); render(); },
+  lmad(){ const ig=aktivtLoeb(); if(!ig || ig.mad[ig.e]) return; ig.mad[ig.e]=true; const n=madEnergi(ig); energi(ig,n); ig.besked=`🥪 Patruljen sætter sig og spiser madpakkerne. Det giver ny energi (+${n}).`; save(); render(); },
   lstart(){ startPostOpgave(); },
   lklar(){ loebOpg.trin="svar"; render(); window.scrollTo(0,0); },
   lsvar(d){ if(!loebOpg || loebOpg.svaret) return; loebOpg.valgt=+d.k; loebSvar(loebOpg.opts[+d.k].ok); },
@@ -9238,7 +9370,7 @@ const actions = {
   trae(d){ traeKlik(+d.i); },
   nytjob(d){ visJobValg(d.id); },
   bygstop(){ if(bygOpg && bygOpg.loeb){ bygOpg=null; go(aktivtLoeb()?"loeb":"patrulje"); lejrToast("Posten venter – I kan prøve igen."); return; } if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
-  pny(){ pdraft={ navn:"", dyr:0, medlemmer:[cur().id] }; go("pedit"); },
+  pny(){ if((cur().badges.ledelse||0)<1) return; pdraft={ navn:"", dyr:0, medlemmer:[cur().id] }; go("pedit"); },
   pedit(){ const p=minPatrulje(cur()); pdraft={ id:p.id, navn:p.navn, dyr:p.dyr, medlemmer:[...p.medlemmer] }; go("pedit"); },
   pjoin(d){ const p=patruljer().find(x=>x.id===d.id); patruljer().forEach(o=>{ o.medlemmer=o.medlemmer.filter(id=>id!==cur().id); }); p.medlemmer.push(cur().id); save(); render(); lejrToast(`Velkommen i ${esc(p.navn)}! 🚩`); },
   pdyr(d){ pdraft.dyr=+d.k; render(); },
@@ -9301,10 +9433,12 @@ const actions = {
   },
   historie(){
     const c=cur(); c.hoert=c.hoert||[];
-    const nye=HISTORIER.filter(h=>!c.hoert.includes(h[0])), h=pick(nye.length?nye:HISTORIER), ven=pick(patrulje(c));
+    const alle=historier(c), nye=alle.filter(h=>!c.hoert.includes(h[0])), h=pick(nye.length?nye:alle), ven=pick(patrulje(c));
     let ekstra=""; if(!c.hoert.includes(h[0])){ c.hoert.push(h[0]); ekstra=" "+belon(c,"baal",5); save(); }
-    aktBesked(`<b>📖 ${esc(ven.navn)} fortæller: ${h[0]}</b><br>${h[1]}${ekstra}<br><small class="muted">Du har hørt ${c.hoert.length} af ${HISTORIER.length} historier.</small>`);
+    aktBesked(`<b>📖 ${esc(ven.navn)} fortæller: ${h[0]}</b><br>${h[1]}${ekstra}<br><small class="muted">Du har hørt ${alle.filter(x=>c.hoert.includes(x[0])).length} af ${alle.length} historier.${alle===HISTORIER?` Tag mærket ${EMNE.lejrbaal.navn} for at høre flere.`:""}</small>`);
   },
+  lraab(){ const c=cur(); aktBesked(`📣 Du leder råbet, og hele patruljen svarer: ${pick(RAAB)} ${belon(c,"lraab",4)}`); vibrer([30,30,30]); },
+  lsketch(){ const c=cur(), ven=pick(patrulje(c)); aktBesked(`🎭 Du og ${esc(ven.navn)} opfører en sketch: ${pick(SKETCHES)} Alle griner! ${belon(c,"lsketch",4)}`); konfettiLille(); },
   baalquiz(){
     const c=cur(), q=pick(SPORGSMAL.filter(x=>x.niveau<=2 && !x.type && !x.media)), opts=shuffle(q.svar.map((t,k)=>({t,ok:k===0})));
     modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="qtopic">${badgeHTML(EMNE[q.emne],c.badges[q.emne]||0,"xs")} Lejrbålsquiz · ${EMNE[q.emne].navn}</div>
@@ -9316,12 +9450,12 @@ const actions = {
     });
   },
   stjerne(d){
-    const c=cur(), opg=STJERNEOPG[akt.trin||0]; if(!opg) return;
+    const c=cur(), liste=stjerneOpg(c), opg=liste[akt.trin||0]; if(!opg) return;
     if(d.g===opg[0]){ akt.fundet=[...(akt.fundet||[]),opg[0]]; akt.trin=(akt.trin||0)+1; vibrer(30);
       akt.besked = `⭐ Flot! Du fandt ${opg[1].replace("Find ","")}. ${belon(c,"stjerner",4)}`;
-      if(nav.screen==="moede" && !STJERNEOPG[akt.trin]){ moedeAktKlaret(); return; }
+      if(nav.screen==="moede" && !liste[akt.trin]){ moedeAktKlaret(); return; }
       render(); }
-    else aktBesked(`Det er ikke den. ${opg[2]}`);
+    else aktBesked(d.g==="aftag" ? "Det er den aftagende måne – den er lys i venstre side. Prøv den anden!" : `Det er ikke den. ${opg[2]}`);
   },
   stjernerigen(){ akt.trin=0; akt.fundet=[]; akt.besked=""; render(); },
   svaevetur(){

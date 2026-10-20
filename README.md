@@ -16,7 +16,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 - **Indstillinger pr. spejder:** lyd til/fra, større tekst og oplæsning af spørgsmål og svar på dansk
 - Lejrplads, hvor man bygger telte, bål, pionerarbejde og meget mere for sine point. Mange ting kræver et bestemt mærke
 - Pionerarbejde kræver, at man selv binder surringerne (kvadrat-, diagonal- og trefodssurring), og store ting tager tid at bygge
-- Materialer og arbejde på lejrpladsen: sæt patruljens spejdere til at fælde grantræer (→ granstammer → afgrenes til rafter) og løvtræer (→ løvstammer → kløves til brænde). Lav jeres eget tovværk: saml brændenælder og bast, sno tovværk og takl det (kræver Knob og reb). Pionerarbejde koster rafter og reb, og bål koster brænde
+- Materialer og arbejde på lejrpladsen: sæt patruljens spejdere til at fælde grantræer (→ granstammer → afgrenes til rafter) og løvtræer (→ løvstammer → kløves til brænde – kløvning kræver Kniv, sav og økse i bronze, og fældning kræver sølv). Lav jeres eget tovværk: saml brændenælder og bast, sno tovværk og takl det (kræver Knob og reb). Pionerarbejde koster rafter og reb, og bål koster brænde
 - Alt på lejrpladsen kan opgraderes i 5 niveauer (Normal → Mester) – fx bliver lejrporten flottere og flottere
 - Telte kan man gå ind i og indrette
 - Aktiviteter på lejrpladsen: sæt dig ved lejrbålet (læg brænde på, rist skumfiduser, hør historier, lejrbålsquiz), bag snobrød, find stjernebilleder i stjernekikkerten, tag en tur på svævebanen, hejs flaget, sejl på søen m.m.
@@ -46,7 +46,32 @@ python3 find_lette_svar.py index.html --md rapport.md
 Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de forkerte, og afslutter med kode 0, når det rigtige svar er det længste i under 35 % af spørgsmålene.
 
 ## Ret i lejrpladsen
-Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (2 = dobbelt tid). Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER` og `DYREFAKTA`.
+Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (2 = dobbelt tid). Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, surringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
+
+## Det, mærkerne låser op
+Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni nyeste emner låser desuden dette op:
+
+| Emne | Bronze | Sølv | Guld |
+|---|---|---|---|
+| Stjerner og nattehimmel | Stjernekikkerten og Orion i kikkerten | Planeten Jupiter og den tiltagende/aftagende måne i kikkerten | Stjernetårn |
+| Friluftskøkken | Snobrød over bålet på bålpladsen | Lejrkøkken (før Bål i sølv) | Bagerovn |
+| Kniv, sav og økse | Kløve brænde (job) | Fælde træer (job) | Huggeplads: +2 brænde pr. kløvning og +1 rafte pr. afgrening |
+| Tur og udrustning | Rygsækstativ i teltet | Fleecetrøje, uldsokker, termoflaske og vabelplaster i teltet | Madpakken på løbene giver +3 energi i stedet for +2 |
+| Fugle | Fuglekasse (før Dyr i bronze) | Fugletårn | Fugle flyver hen over lejrpladsen |
+| Spor og sporing | Sporkasse | Hændelsen »Friske spor« på løbene (+10 patruljepoint) | Også »Sporjagt« på løbene (+20 patruljepoint ved rigtigt svar) |
+| GPS og geocaching | Geocache på lejrpladsen | Første »Kig på kortet igen« på et løb er gratis | Pandelampen lyser 60 % længere på løb med mørke (løb 4) |
+| Lejrbål og sang | 6 ekstra historier ved bålet | Lejrbålsplads (før Bål i guld) | Titlen Lejrbålsleder og »Lav et råb« og »Opfør en sketch« ved bålet |
+| Ledelse og ansvar | Man kan oprette en patrulje | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % patruljepoint på løbene |
+
+De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv), Brændeskur (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
+
+Ting, der allerede er bygget, bliver stående, selv om kravet er flyttet, og job, der er i gang, gør sig færdige. Ved løbene tæller det højeste mærke i patruljen, men den ekstra joker kræver, at spejderen med rollen patruljeleder selv har mærket. Fordelene vises, når rollerne fordeles, og regnes ud ved start (`loebFordele`). I koden står det i `LAAS_OP` (teksterne ved et nyt mærke), `JOB` (`kraever`), `HUGGEBONUS`, `STJERNEOPG_ALLE`, `HISTORIER_LB`, `RAAB`, `SKETCHES`, `AKT_FOR` (tredje felt er et krav) og `titler`.
+
+Tilpasninger i forhold til de første ønsker:
+- Sølv i Spor og sporing og guld i Ledelse og ansvar giver bonus til patruljens point, fordi løbene ikke har en anden pointtavle.
+- »Kig på kortet igen virker to gange« er lavet sådan, at det første kortforsøg er gratis og ikke koster en joker.
+- Geocachen er en ting på lejrpladsen med fakta om geocaching, ligesom fuglekassen.
+- Rangen »Patruljeleder« hedder nu »Vildmarksspejder«, så den ikke forveksles med titlen fra Ledelse og ansvar.
 
 ## Ret i adventureløbene
 Løbene står i listen `LOEB` i `index.html` (søg efter `ADVENTURELØB`). Hvert løb har:
