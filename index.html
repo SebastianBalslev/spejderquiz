@@ -6834,6 +6834,7 @@ const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Giver plads til 20 reb mere – og 10 mere for hvert niveau." },
+  { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
   { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge. Opgrader det, så giver hvert fældet grantræ flere granstammer." },
   { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ. Opgrader det, så giver hvert fældet løvtræ flere løvstammer." },
@@ -6947,6 +6948,10 @@ const PIONER = {
     <rect x="16" y="26" width="8" height="11" fill="#5c3a20"/><rect x="9" y="22" width="5" height="5" fill="#f6e7a8" stroke="#5c3a20"/><rect x="26" y="22" width="5" height="5" fill="#f6e7a8" stroke="#5c3a20"/>`,
   kors: `<rect x="5" y="12" width="30" height="24" rx="2" fill="#f4f1e6" stroke="#bbb"/><path d="M3 13 L20 4 L37 13Z" fill="#e8e3d0" stroke="#bbb"/>
     <rect x="17" y="16" width="6" height="16" fill="#c62828"/><rect x="12" y="21" width="16" height="6" fill="#c62828"/>`,
+  jordkoeleskab: `<path d="M2 34 Q20 14 38 34Z" fill="#7a5a3a"/><path d="M5 34 Q20 18 35 34" fill="none" stroke="#5c3f26" stroke-width="1"/>
+    <g stroke="#4f8a43" stroke-width="1.4" stroke-linecap="round"><path d="M9 27 l-1 -3 M11 25 l1 -3 M29 25 l-1 -3 M31 27 l1 -3 M20 21 l0 -3"/></g>
+    <rect x="12" y="26" width="16" height="9" rx="1.5" fill="#b07a45" stroke="#6b4626" stroke-width="1"/><path d="M12 30.5 H28 M20 26 V35" stroke="#6b4626" stroke-width=".8"/>
+    <circle cx="25" cy="30.5" r="1" fill="#3b2a1a"/><path d="M30 8 l1.2 2.4 2.6 .4 -1.9 1.8 .5 2.6 -2.4 -1.3 -2.4 1.3 .5 -2.6 -1.9 -1.8 2.6 -.4Z" fill="#bfe4f7"/>`,
   materialeskur: `<rect x="5" y="16" width="30" height="22" fill="#9a6232" stroke="#6b4626" stroke-width="1"/><path d="M5 21 H35 M5 26 H35 M5 31 H35" stroke="#7c4a22" stroke-width=".8"/>
     <path d="M2 17 L20 5 L38 17Z" fill="#5f6670" stroke="#3f454c" stroke-width="1"/><rect x="14" y="24" width="12" height="14" fill="#5c3a20"/>
     <circle cx="20" cy="19.5" r="3.6" fill="none" stroke="#efdcae" stroke-width="1.8"/><circle cx="20" cy="19.5" r="1.4" fill="none" stroke="#c9a46a" stroke-width="1"/>`,
@@ -7003,7 +7008,7 @@ const PIONER = {
 // Alle ventetider (byggeri, opgradering, job og træer, der vokser) ganges med denne faktor. Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 4;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, vejrhane:120,
+const BYGTID = { jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, vejrhane:120,
   stjernetaarn:600, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
   fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
@@ -8000,7 +8005,7 @@ function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MA
 // Materialer, de enkelte ting koster at bygge
 const BYGMAT = { bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:8}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
-  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
+  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et nyplantet træ er om at vokse op
@@ -8049,9 +8054,9 @@ function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
 // Lagerplads: rafter og brænde kan kun gemmes, hvis der er plads. Raftegården og brændeskuret giver mere plads for hvert niveau.
 const LAGER_START = 10, LAGER_BYGGET = 20, LAGER_PR_NIV = 10;
 // Hvilken bygning der giver plads til hvert materiale (stammer har ingen grænse)
-const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur", reb:"materialeskur", rebraa:"materialeskur", fibre:"materialeskur" };
+const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur", reb:"materialeskur", rebraa:"materialeskur", fibre:"materialeskur", mad:"jordkoeleskab" };
 function lagerPlads(c, m){ if(!LAGER_BYG[m]) return Infinity; const n=bygNiv(cur()||c, LAGER_BYG[m]); return LAGER_START + (n ? LAGER_BYGGET + LAGER_PR_NIV*(n-1) : 0); }
-function lagerTip(m){ return `Byg eller opgrader ${{ raftegaard:"raftegården", braendeskur:"brændeskuret", materialeskur:"materialeskuret" }[LAGER_BYG[m]]} for at få mere plads.`; }
+function lagerTip(m){ return `Byg eller opgrader ${{ raftegaard:"raftegården", braendeskur:"brændeskuret", materialeskur:"materialeskuret", jordkoeleskab:"jordkøleskabet" }[LAGER_BYG[m]]} for at få mere plads.`; }
 function lagerFuldt(c, m){ return (lager(c)[m]||0) >= lagerPlads(c,m); }
 function harMat(c, mat){ const l=lager(c); return !mat || Object.entries(mat).every(([m,n])=>(l[m]||0)>=n); }
 function manglerMat(c, mat){ const l=lager(c); return Object.fromEntries(Object.entries(mat||{}).filter(([m,n])=>(l[m]||0)<n).map(([m,n])=>[m,n-(l[m]||0)])); }
@@ -8096,7 +8101,7 @@ function arbejdeAktivt(c){
 function arbejdeHTML(c){
   const l=lager(c), s=skovData(c), ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
   let h = `<div class="sect" style="margin-top:18px">🪓 Materialer og arbejde</div>
-    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Træerne skal først plantes – tryk på en tom plads i skoven. Når et træ er fældet, vokser et nyt af samme slags op. Tryk på træet for at skifte til en anden slags. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze og en huggeplads skal til for at kløve brænde, og mærket i sølv for at fælde træer. Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde og ${lagerPlads(c,"reb")} reb – byg og opgrader raftegården, brændeskuret og materialeskuret for at få mere plads.</p>
+    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Træerne skal først plantes – tryk på en tom plads i skoven. Når et træ er fældet, vokser et nyt af samme slags op. Tryk på træet for at skifte til en anden slags. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze og en huggeplads skal til for at kløve brænde, og mærket i sølv for at fælde træer. Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde og ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad – byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
     ${signalRest(c)?`<div class="card hbesked">🔥 Signalbålet brænder – nye job går 25 % hurtigere (<b id="signaltid">${fmtTid(signalRest(c))}</b> tilbage).</div>`:""}
     <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>
     <div class="skov">${SKOV.map((_,i)=>{
