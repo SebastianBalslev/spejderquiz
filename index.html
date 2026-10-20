@@ -7632,7 +7632,7 @@ function aktDel(c, a, b){
       <text x="58" y="208" text-anchor="middle" class="navnskilt">${esc(venner[0].navn)}</text><text x="262" y="208" text-anchor="middle" class="navnskilt">${esc(venner[2].navn)}</text>
     </svg>`;
     knapper = `<button class="btn earth" data-a="braende">🪵 Læg brænde på${nav.screen==="akt"?` (${lager(c).braende||0} tilbage)`:""}</button>
-      <button class="btn gold" id="ristknap">${ret==="skum"?"🍡 Hold nede for at riste en skumfidus":"🍞 Hold nede for at bage snobrød"}</button>`;
+      <button class="btn gold" id="ristknap">${ret==="skum"?"🍡 Hold nede for at riste en skumfidus":`🍞 Hold nede for at bage snobrød${nav.screen==="akt"?` (${SNOBROED_BRAENDE} brænde → 1 mad)`:""}`}</button>`;
     if(a==="baal") knapper += `<div class="row"><button class="btn" data-a="historie">📖 Hør en historie</button><button class="btn" data-a="baalquiz">❓ Lejrbålsquiz</button></div>`;
     if(a==="baal" && (c.badges.lejrbaal||0) >= 3) knapper += `<div class="row"><button class="btn" data-a="lraab">📣 Lav et råb</button><button class="btn" data-a="lsketch">🎭 Opfør en sketch</button></div>`;
   }
@@ -7739,6 +7739,10 @@ function aktEfterRender(){
     let raf=null, t0=0;
     const start=ev=>{ ev.preventDefault();
       if(akt.ild<2){ aktBesked("Bålet er for lille. Læg brænde på først! 🪵"); return; }
+      // Snobrød på lejrpladsen koster brænde og giver mad
+      if(ret==="snobroed" && nav.screen==="akt"){ const l=lager(cur());
+        if((l.braende||0)<SNOBROED_BRAENDE){ aktBesked(`Der skal ${SNOBROED_BRAENDE} brænde til et snobrød, og du har ${l.braende||0}. Kløv mere brænde på huggepladsen. 🪵`); return; }
+        l.braende-=SNOBROED_BRAENDE; akt.snoBetalt=true; save(); }
       akt.rist=0; t0=performance.now(); document.getElementById("pind").style.display="";
       aktBesked(ret==="skum"?"Hold skumfidusen over gløderne… slip, når den er gylden!":"Drej snobrødet over gløderne… slip, når det er gyldenbrunt!");
       const fart = ret==="skum" ? 3800 : 5200;
@@ -7750,15 +7754,20 @@ function aktEfterRender(){
     knap.addEventListener("contextmenu",e=>e.preventDefault());
   }
 }
+const SNOBROED_BRAENDE = 2;
 function vurderRist(p, ret){
   const c=cur(), navn = ret==="skum" ? "Skumfidusen" : "Snobrødet";
   let t;
+  // Et spiseligt snobrød (let ristet, gyldent eller lidt mørkt) giver en portion mad
+  let mad="";
+  if(ret==="snobroed" && akt.snoBetalt){ akt.snoBetalt=false;
+    if(p>=.45 && p<1){ const før=lager(c).mad||0; brugMat(c,{mad:1},1); save(); mad = (lager(c).mad||0)>før ? " 🍞 +1 portion mad" : " (Der er ikke plads til mere mad i jordkøleskabet.)"; } }
   if(p<.45) t=`${navn} er stadig bleg. Hold den lidt længere over gløderne næste gang.`;
   else if(p<.58) t=`${navn} er let ristet. Næsten! Lidt længere, så bliver den gylden.`;
   else if(p<.8){ t=`😋 Perfekt gylden! ${belon(c, akt.a, 5)}`; c.ristet=(c.ristet||0)+1; save(); konfettiLille(); vibrer([30,30,60]); if(nav.screen==="moede") moedeAktKlaret(); }
   else if(p<1) t=`${navn} blev lidt for mørk – men den smager stadig.`;
   else t=`🔥 Øv, ${navn.toLowerCase()} brændte! Slip lidt før næste gang.`;
-  aktBesked(t);
+  aktBesked(t+mad);
   setTimeout(()=>{ if(nav.screen==="akt" && akt && akt.rist==null){ const pind=document.getElementById("pind"); if(pind) pind.style.display="none"; } }, 2200);
 }
 function konfettiLille(){
