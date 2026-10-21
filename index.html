@@ -8058,6 +8058,7 @@ function skovData(c){
     const ny={}; SKOV.forEach((t,i)=>{ const x=o.skov[i]; ny[i] = x ? { t, ...x } : { t }; });
     o.skov=ny; o.skovV=2;
   }
+  Object.keys(o.skov).forEach(i=>{ if(o.skov[i] && !TRAETYPE[o.skov[i].t]) o.skov[i].t = SKOV[i] || "gran"; });   // træsort mangler aldrig
   return o.skov;
 }
 function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
