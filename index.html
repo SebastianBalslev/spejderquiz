@@ -364,7 +364,7 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 .surbakke{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .surchip{flex:1 1 30%;min-width:96px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px solid #d9c08a;background:#f6e9c8;border-radius:16px;
   font-weight:700;font-size:13px;color:#5c3a20;box-shadow:0 3px 0 #d9c08a;touch-action:none;user-select:none;-webkit-user-select:none}
-.surchip svg{width:28px;height:28px}
+.surchip svg{width:28px;height:28px}.surchip{padding-left:4px;padding-right:4px}.surchip span{hyphens:manual;text-align:center;line-height:1.15}
 .surchip.on{background:var(--forest);color:#fff;border-color:var(--forest)}
 .surchip.on svg{stroke:#fff}
 .spoghost{position:fixed;z-index:2000;pointer-events:none;transform:translate(-50%,-120%);display:flex;flex-direction:column;align-items:center;gap:2px;background:#f6e9c8;border:2px solid #8b5a2b;border-radius:14px;padding:6px 10px;font-size:12px;font-weight:700;color:#5c3a20;box-shadow:0 8px 18px rgba(0,0,0,.3)}
@@ -596,7 +596,7 @@ Q("knob", 1, "Hvilket knob bruges klassisk til at binde to ender sammen på en f
   ["Råbåndsknob", "Pælestik", "Tømmerstik", "Ottetalsknob"],
   "Råbåndsknobet ligger fladt og trykker ikke. Det er godt til forbindinger, men ikke til reb, der skal holde noget tungt.");
 Q("knob", 1, "Hvilket knob laver en fast løkke, som ikke strammer sig sammen – fx om livet på en person?",
-  ["Pælestik", "Råbåndsknob", "Flagstik", "Dobbelt halvstik"],
+  ["Pælestik", "Råbåndsknob", "Flagknob", "Dobbelt halvstik"],
   "Pælestikket giver en fast løkke, der ikke glider sammen. Derfor bruges det ofte i redningssituationer.");
 Q("knob", 1, "Hvad bruges et almindeligt ottetalsknob mest til?",
   ["Som stopknob i enden af rebet", "Til at binde to tykke reb sammen", "Til at fortøje en båd til en pæl", "Til at lave en fast løkke om livet"],
@@ -608,16 +608,16 @@ Q("knob", 1, "Hvorfor smelter man forsigtigt enden af et kunststofreb?",
   ["Så det ikke flosser op", "Så det bliver mere smidigt", "Så det ikke kan glide i knob", "Så det tåler mere vægt"],
   "Kunststof smelter sammen, så fibrene ikke kan gå op. Naturfiberreb skal i stedet takles med tyndt garn.");
 Q("knob", 1, "Hvilket knob er klassisk til at fortøje en båd til en ring eller en pæl?",
-  ["Rundtørn med to halvstik", "Råbåndsknob med sløjfe", "Ottetalsknob om ringen", "Flagstik om pælen"],
+  ["Rundtørn med to halvstik", "Råbåndsknob med sløjfe", "Ottetalsknob om ringen", "Flagknob om pælen"],
   "Rundtørn med to halvstik holder godt og kan løses, selvom rebet står stramt.");
 Q("knob", 1, "Hvilket knob er godt til at binde to reb sammen, når de er forskellige i tykkelse?",
-  ["Flagstik", "Råbåndsknob", "Pælestik", "Halvstik"],
-  "Flagstikket (også kaldet skødestik) holder godt, selvom rebene ikke er lige tykke. Råbåndsknob kan glide op.");
+  ["Flagknob", "Råbåndsknob", "Pælestik", "Halvstik"],
+  "Flagknobet (også kaldet skødestik) holder godt, selvom rebene ikke er lige tykke. Råbåndsknob kan glide op.");
 Q("knob", 1, "Hvordan opbevarer man bedst et reb?",
   ["Tørt og pænt kvejlet op", "Vådt i en lukket plastpose", "Filtret sammen i bunden af en kasse", "Udspændt i solen hele året"],
   "Fugt kan få naturfiber til at rådne, og sollys nedbryder kunststof. Et pænt kvejlet reb filtrer heller ikke.");
 Q("knob", 1, "Hvad kaldes det at lægge et reb pænt op i ensartede ringe?",
-  ["At kvejle det", "At splejse det", "At takle det", "At surre det"],
+  ["At kvejle det", "At splejse det", "At takle det", "At besnøre det"],
   "Man kvejler et reb, så det ikke filtrer og er klar til brug næste gang.");
 Q("knob", 1, "Hvilket af disse materialer er en naturfiber, man kan lave reb af?",
   ["Hamp", "Nylon", "Polypropylen", "Polyester"],
@@ -625,17 +625,17 @@ Q("knob", 1, "Hvilket af disse materialer er en naturfiber, man kan lave reb af?
 Q("knob", 1, "Hvorfor skal man undgå at træde på et reb?",
   ["Snavs presses ind og slider fibrene", "Rebet kan blive strakt og miste længde", "Kordelerne bliver skæve og snor sig", "Rebet mister sin vandafvisende hinde"],
   "Små sandkorn inde i rebet virker som sandpapir og gør rebet svagere.");
-Q("knob", 1, "Hvad er en surring?",
-  ["En binding, der holder stænger sammen", "Et knob, der samler to reb på langs", "Et stopknob i enden af et tykt reb", "En løkke, man kan klatre op ad"],
-  "Med surringer kan spejdere bygge borde, porte, tårne og meget andet af rafter og reb.");
-Q("knob", 1, "Hvad bruger spejdere ofte surringer til på lejr?",
+Q("knob", 1, "Hvad er en besnøring?",
+  ["En binding, der holder rafter sammen", "Et knob, der samler to reb på langs", "Et stopknob i enden af et tykt reb", "En løkke, man kan klatre op ad"],
+  "Med besnøringer kan spejdere bygge borde, porte, tårne og meget andet af rafter og reb.");
+Q("knob", 1, "Hvad bruger spejdere ofte besnøringer til på lejr?",
   ["At bygge borde, porte og tårne", "At binde teltdugen fast til pløkkerne", "At samle brænde til et bundt", "At sikre kanoer til en badebro"],
   "At bygge med rafter og reb kaldes pionering – en klassisk spejderdisciplin.");
 Q("knob", 1, "Hvad kendetegner et godt knob?",
   ["Det holder og er let at løse igen", "Det strammer sig mere, jo længere tid", "Det kan ikke løses, når det er bundet", "Det er hurtigt at binde med én hånd"],
   "Et godt knob er sikkert under belastning, men kan også løses, når man er færdig.");
 Q("knob", 1, "Hvilket knob ligner tallet 8, når det er bundet?",
-  ["Ottetalsknob", "Pælestik", "Flagstik", "Råbåndsknob"],
+  ["Ottetalsknob", "Pælestik", "Flagknob", "Råbåndsknob"],
   "Ottetalsknobet har fået navn efter formen. Det bruges som stopknob.");
 Q("knob", 1, "Hvorfor er det godt at øve knob, til man kan binde dem med lukkede øjne?",
   ["Så man kan binde dem i mørke", "Så knobene bliver stærkere bagefter", "Så rebet ikke bliver slidt", "Så man bruger mindre reb"],
@@ -644,8 +644,8 @@ Q("knob", 1, "Hvorfor skal man stramme et knob godt til, når det er bundet?",
   ["Så det ikke glider op", "Så det bliver lettere at løse", "Så rebet bliver længere", "Så knobet fylder mere"],
   "Et løst knob kan ændre form og glide op, når der kommer belastning på.");
 Q("knob", 1, "Hvad hedder stikket med to omgange om en pæl, hvor tampen stikkes ind under den sidste?",
-  ["Dobbelt halvstik", "Pælestik", "Flagstik", "Ottetalsknob"],
-  "Dobbelt halvstik er hurtigt at binde og bruges bl.a. til at starte surringer.");
+  ["Dobbelt halvstik", "Pælestik", "Flagknob", "Ottetalsknob"],
+  "Dobbelt halvstik er hurtigt at binde og bruges bl.a. til at afslutte vinkel- og krydsbesnøringer.");
 Q("knob", 1, "Hvad kalder man en løkke, der strammer sig, når man trækker i den faste part?",
   ["En løbeløkke", "Et pælestik", "Et stopknob", "En kovs"],
   "En løbeløkke strammer om det, den sidder på. Pælestikkets løkke gør ikke.");
@@ -660,33 +660,33 @@ Q("knob", 1, "Hvilken del af rebet arbejder man med, når man binder et knob?",
   "Man fører tampen rundt, mens den faste part ligger stille.");
 // --- Sølv (mellem) ---
 Q("knob", 2, "Hvad kaldes et forkert bundet råbåndsknob, hvor anden halvdel krydses samme vej som den første?",
-  ["Kællingeknude", "Flagstik", "Dobbelt halvstik", "Tyveknude"],
-  "En kællingeknude glider let op eller sætter sig fast. Husk: højre over venstre – og så venstre over højre.");
+  ["Kællingeknude", "Flagknob", "Dobbelt halvstik", "Tyveknude"],
+  "En kællingeknude glider let op eller sætter sig fast. Husk: venstre over højre – og så højre over venstre.");
 Q("knob", 2, "Den sløjfe, vi bruger i snørebånd, er faktisk en udgave af hvilket knob?",
   ["Råbåndsknob", "Pælestik", "Ottetalsknob", "Tømmerstik"],
   "Snørebåndssløjfen er et råbåndsknob, hvor begge ender er lagt dobbelt som sløjfer.");
 Q("knob", 2, "Hvad kaldes det, når man vikler tyndt garn stramt om enden af et reb, så det ikke flosser?",
-  ["At takle", "At kvejle", "At splejse", "At surre"],
+  ["At takle", "At kvejle", "At splejse", "At besnøre"],
   "En takling holder enden samlet. Det er især vigtigt på reb af naturfibre, som ikke kan smeltes.");
 Q("knob", 2, "Hvad betyder det at splejse et reb?",
-  ["At flette kordelerne ind i hinanden", "At smelte to kunststofreb sammen", "At vikle tyndt garn om enden", "At binde to reb sammen med flagstik"],
+  ["At flette kordelerne ind i hinanden", "At smelte to kunststofreb sammen", "At vikle tyndt garn om enden", "At binde to reb sammen med flagknob"],
   "En splejsning er stærkere og mere glat end et knob, fordi rebet bliver flettet sammen.");
-Q("knob", 2, "Hvilken surring bruger man til at binde to stænger sammen, der krydser hinanden i en ret vinkel (90 grader)?",
-  ["Kvadratsurring", "Trefodssurring", "Diagonalsurring", "Parallelsurring"],
-  "Kvadratsurringen bruges, når stængerne krydser hinanden i ret vinkel – fx i et bord eller en port.");
-Q("knob", 2, "Hvilken surring bruger man til at binde tre stænger sammen, så de kan stå som et stativ?",
-  ["Trefodssurring", "Kvadratsurring", "Diagonalsurring", "Råbåndssurring"],
-  "Trefodssurringen bruges fx til et stativ til en gryde over bålet eller til et lille tårn.");
-Q("knob", 2, "Hvad gør man til sidst i en kvadratsurring for at stramme den ekstra godt?",
-  ["Vikler tørn på tværs mellem stængerne", "Binder et ekstra dobbelt halvstik", "Vikler rebet rundt om én stang", "Gør rebet vådt, så det krymper"],
-  "Tørnene på tværs mellem stængerne trækker alle vindingerne ekstra stramt sammen.");
-Q("knob", 2, "Hvilket knob starter og slutter man typisk en kvadratsurring med?",
-  ["Dobbelt halvstik", "Råbåndsknob", "Pælestik", "Ottetalsknob"],
-  "Dobbelt halvstik er hurtigt at binde om en stang og holder godt.");
+Q("knob", 2, "Hvilken besnøring bruger man til at binde to rafter sammen, der krydser hinanden i en ret vinkel (90 grader)?",
+  ["Vinkelbesnøring", "Ottetalsbesnøring", "Krydsbesnøring", "Sadelmagerbesnøring"],
+  "Vinkelbesnøringen bruges, når rafterne krydser hinanden i ret vinkel – fx i et bord eller en port.");
+Q("knob", 2, "Hvilken besnøring bruger man til at binde tre rafter sammen til en trebuk?",
+  ["Ottetalsbesnøring", "Vinkelbesnøring", "Krydsbesnøring", "Drejebesnøring"],
+  "Ottetalsbesnøringen bruges til trebukke, fx et stativ til en gryde over bålet. Man kan også bruge en sadelmagerbesnøring.");
+Q("knob", 2, "Hvad gør man til sidst i en vinkelbesnøring for at stramme den ekstra godt?",
+  ["Lægger strammetørn mellem rafterne", "Binder et ekstra dobbelt halvstik", "Vikler rebet rundt om én rafte", "Gør rebet vådt, så det krymper"],
+  "Strammetørnene lægges mellem rafterne og trækker alle tørnene ekstra stramt sammen.");
+Q("knob", 2, "Hvilket stik starter man en vinkelbesnøring med?",
+  ["Tømmerstik", "Råbåndsknob", "Pælestik", "Ottetalsknob"],
+  "Vinkelbesnøringen startes med et tømmerstik om den faste rafte og afsluttes med et dobbelt halvstik.");
 Q("knob", 2, "Hvilket knob strammer sig om en stamme, når man trækker, og er godt til at slæbe en stor gren?",
-  ["Tømmerstik", "Pælestik", "Ottetalsknob", "Flagstik"],
+  ["Tømmerstik", "Pælestik", "Ottetalsknob", "Flagknob"],
   "Tømmerstikket strammer om stammen under træk og er let at løse igen, når trækket stopper.");
-Q("knob", 2, "Hvorfor kan et dobbelt flagstik være bedre end et enkelt flagstik?",
+Q("knob", 2, "Hvorfor kan et dobbelt flagknob være bedre end et enkelt flagknob?",
   ["Det holder bedre på glatte reb", "Det er hurtigere at løse bagefter", "Det bruger mindre reb til bugten", "Det kan bindes uden en bugt"],
   "Den ekstra omgang giver mere friktion, så knobet ikke glider op.");
 Q("knob", 2, "Hvad kaldes den del af rebet, der ikke bevæger sig, mens man binder knobet?",
@@ -707,13 +707,13 @@ Q("knob", 2, "Hvilket knob kan bruges til at hejse en lang stang lodret op?",
 Q("knob", 2, "Hvad er forskellen på et pælestik og en løbeløkke?",
   ["Pælestikkets løkke strammer ikke", "Løbeløkken kan ikke løses igen", "Pælestikket holder kun på tynde reb", "Der er ingen forskel"],
   "Derfor bruger man pælestik, når en løkke skal sidde om en person.");
-Q("knob", 2, "Hvorfor laver man helst surringer med reb, der ikke er for glat?",
-  ["Glat reb glider og strammer dårligt", "Glat reb er for svagt til tunge rafter", "Glat reb kan ikke tåle regn", "Glat reb er for tykt til vindinger"],
-  "Reb med lidt friktion, fx sisal eller hamp, sætter sig fast og holder stængerne stramt.");
-Q("knob", 2, "Hvilken surring bruger man til at forlænge en rafte med en anden, så de ligger side om side?",
-  ["Parallelsurring", "Kvadratsurring", "Trefodssurring", "Diagonalsurring"],
-  "Ved en forlængelse laver man gerne to parallelsurringer et stykke fra hinanden.");
-Q("knob", 2, "Hvad sker der, hvis man binder flagstik med det tykke reb om det tynde?",
+Q("knob", 2, "Hvorfor laver man helst besnøringer med reb, der ikke er for glat?",
+  ["Glat reb glider og strammer dårligt", "Glat reb er for svagt til tunge rafter", "Glat reb kan ikke tåle regn", "Glat reb er for tykt til tørnene"],
+  "Reb med lidt friktion, fx sisal eller hamp, sætter sig fast og holder rafterne stramt.");
+Q("knob", 2, "Hvilken besnøring bruger man til at forlænge en rafte med en anden, så de ligger side om side?",
+  ["Parallelbesnøring", "Vinkelbesnøring", "Ottetalsbesnøring", "Krydsbesnøring"],
+  "Ved en forlængelse laver man gerne to besnøringer et stykke fra hinanden.");
+Q("knob", 2, "Hvad sker der, hvis man binder flagknob med det tykke reb om det tynde?",
   ["Knobet kan glide op", "Det tynde reb knækker", "Knobet kan ikke løses", "Det er ligegyldigt"],
   "Det tynde reb skal vikles om bugten på det tykke – ellers holder knobet dårligt.");
 Q("knob", 2, "Hvorfor bruger man ottetalsknob i stedet for en almindelig knude som stopknob?",
@@ -725,19 +725,19 @@ Q("knob", 2, "Hvad kaldes et reb, hvor mange tråde er flettet i et mønster –
 // --- Guld (svær) ---
 Q("knob", 3, "Hvorfor må man ikke bruge et råbåndsknob til at forbinde to reb, der skal bære en person?",
   ["Det kan kæntre og glide op", "Det strammer så hårdt, at det skærer", "Det kan ikke løses bagefter", "Det svækker rebet mere end andre"],
-  "Råbåndsknobet kan vælte om og glide op, især hvis rebene er forskellige. Til bærende reb bruger man fx dobbelt flagstik.");
+  "Råbåndsknobet kan vælte om og glide op, især hvis rebene er forskellige. Til bærende reb bruger man fx dobbelt flagknob.");
 Q("knob", 3, "Hvad er en kovs?",
-  ["En ring, der beskytter rebet i et øje", "Et knob, der forkorter et langt reb", "En surring, der samler to stænger", "Et værktøj, der åbner kordelerne"],
+  ["En ring, der beskytter rebet i et øje", "Et knob, der forkorter et langt reb", "En besnøring, der samler to rafter", "Et værktøj, der åbner kordelerne"],
   "Kovsen ligger inde i øjet, så rebet ikke slides, når det fx sidder i en sjækkel.");
 Q("knob", 3, "Hvilket redskab bruger man til at åbne kordelerne, når man splejser tovværk?",
   ["En splejsepind", "En sejlnål", "En takkelkniv", "En kovs"],
   "Splejsepinden er spids og glat, så man kan skille kordelerne uden at skade rebet.");
-Q("knob", 3, "Hvilken surring bruger man, når to stænger krydser hinanden skråt og har tendens til at springe fra hinanden?",
-  ["Diagonalsurring", "Kvadratsurring", "Trefodssurring", "Parallelsurring"],
-  "Diagonalsurringen trækker stængerne sammen og bruges fx i de skrå afstivninger i et tårn.");
-Q("knob", 3, "Hvilket knob begynder man typisk en diagonalsurring med?",
+Q("knob", 3, "Hvilken besnøring bruger man, når to rafter krydser hinanden skråt og har tendens til at springe fra hinanden?",
+  ["Krydsbesnøring", "Vinkelbesnøring", "Ottetalsbesnøring", "Parallelbesnøring"],
+  "Krydsbesnøringen trækker rafterne sammen og bruges fx i toppen af en A-buk og i skrå afstivninger.");
+Q("knob", 3, "Hvilket stik begynder man en krydsbesnøring med?",
   ["Tømmerstik", "Råbåndsknob", "Pælestik", "Ottetalsknob"],
-  "Tømmerstikket bindes om begge stænger og kan trække dem sammen, før vindingerne lægges.");
+  "Tømmerstikket bindes om begge rafter og trækker dem sammen, før tørnene lægges.");
 Q("knob", 3, "Hvad sker der med et rebs styrke, når man binder et knob på det?",
   ["Det bliver svagere ved knobet", "Det bliver stærkere ved knobet", "Styrken er helt uændret", "Det bliver kun svagere, når det er vådt"],
   "Skarpe bøjninger i knobet belaster fibrene ujævnt, så rebet er svagest lige ved knobet.");
@@ -748,10 +748,10 @@ Q("knob", 3, "Hvad er et kernemantelreb?",
   ["Et reb med kerne og flettet kappe", "Et slået reb med tre kordeler", "Et reb flettet af naturfibre", "Et reb med en kerne af stålwire"],
   "Klatrereb er kernemantelreb. Kernen bærer det meste af kraften, og kappen beskytter mod slid.");
 Q("knob", 3, "Hvilket knob bruger klatrere oftest til at binde sig ind i selen?",
-  ["Ottetalsløkke", "Pælestik med stopknob", "Sommerfugleknob", "Dobbelt halvstik"],
-  "Ottetalsløkken er stærk og let at kontrollere med øjnene – derfor er den standard i klatring.");
+  ["Dobbelt ottetalsknob", "Pælestik med stopknob", "Sommerfugleknob", "Dobbelt halvstik"],
+  "Det dobbelte ottetalsknob (ottetalsløkke) er stærkt og let at kontrollere med øjnene – derfor er det standard i klatring.");
 Q("knob", 3, "Hvad er en prusikknude?",
-  ["Et knob, der låser ved belastning", "Et stopknob for enden af et reb", "En surring til tre stænger", "En løkke, der strammer om en pæl"],
+  ["Et knob, der låser ved belastning", "Et stopknob for enden af et reb", "En besnøring til tre rafter", "En løkke, der strammer om en pæl"],
   "Prusikknuden kan bruges til at klatre op ad et reb eller som sikring.");
 Q("knob", 3, "Hvorfor er det farligt, hvis et nylonreb gnider hurtigt mod et andet nylonreb under belastning?",
   ["Varmen kan smelte rebet", "Rebet bliver statisk elektrisk", "Kernen kan blive våd og rådne", "Kappen kan glide af kernen"],
@@ -763,10 +763,10 @@ Q("knob", 3, "Hvor mange kordeler har et almindeligt slået reb?",
   ["3", "2", "5", "8"],
   "De fleste slåede reb har tre kordeler, der hver er snoet af mange garner.");
 Q("knob", 3, "Hvilket knob kan man binde om sig selv med én hånd – nyttigt, hvis man hænger i et reb med den anden?",
-  ["Pælestik", "Flagstik", "Råbåndsknob", "Kvadratsurring"],
+  ["Pælestik", "Flagknob", "Råbåndsknob", "Tømmerstik"],
   "Med øvelse kan pælestikket bindes med én hånd om livet. Det er en klassisk redningsteknik.");
 Q("knob", 3, "Hvilket knob giver to faste løkker og kan bruges som nødsæde ved redning?",
-  ["Dobbelt pælestik", "Sommerfugleknob", "Trompetstik", "Ottetalsløkke"],
+  ["Dobbelt pælestik", "Sommerfugleknob", "Trompetstik", "Dobbelt ottetalsknob"],
   "Det dobbelte pælestik bindes på en bugt og giver to løkker, man kan sidde i.");
 Q("knob", 3, "Hvad er en kordel?",
   ["En snoet del af et slået reb", "Den løse ende af et reb", "Et knob til at forkorte et langt reb", "En ring i et splejset øje"],
@@ -775,7 +775,7 @@ Q("knob", 3, "Hvorfor snoes garner og kordeler modsat hinanden, når man slår r
   ["Så rebet holder sammen", "Så rebet bliver blødere", "Så rebet bliver lettere", "Så rebet kan strække sig"],
   "Snoningerne modvirker hinanden, så rebet ikke selv snor sig op.");
 Q("knob", 3, "Hvilket knob kan forkorte et reb uden at skære det over?",
-  ["Trompetstik", "Flagstik", "Prusikknude", "Tømmerstik"],
+  ["Trompetstik", "Flagknob", "Prusikknude", "Tømmerstik"],
   "Trompetstikket lægger rebet i en Z-form og låser bugterne med to halvstik.");
 Q("knob", 3, "Hvad betyder et rebs brudstyrke?",
   ["Belastningen, hvor rebet knækker", "Belastningen, rebet må bruges til", "Hvor meget rebet strækker sig", "Hvor længe rebet holder"],
@@ -810,11 +810,11 @@ Q("forstehjalp", 1, "Hvad er det rigtige at gøre ved en forbrænding fra fx en 
   ["Køle med lunkent vand i 20 minutter", "Lægge isterninger direkte på huden", "Smøre fed creme på med det samme", "Køle med iskoldt vand i 2 minutter"],
   "Lunkent vand (ca. 20 grader) i lang tid stopper skaden. Is og meget koldt vand kan skade huden mere.");
 Q("forstehjalp", 1, "Hvordan fjerner man bedst en flåt?",
-  ["Med en flåttang helt inde ved huden", "Ved at smøre olie eller smør på den", "Ved at brænde den med en tændstik", "Ved at dreje den ud med fingrene"],
+  ["Med en flåttang helt inde ved huden", "Ved at smøre olie eller smør på den", "Ved at brænde den med en tændstik", "Ved at klemme hårdt på midten af den"],
   "Tag fat tæt ved huden og træk lige ud. Hold derefter øje med stedet i nogle uger.");
 Q("forstehjalp", 1, "En person er bevidstløs, men trækker vejret normalt. Hvilken stilling skal personen ligge i?",
-  ["Aflåst sideleje", "På maven med armene over hovedet", "Siddende op ad et træ", "På ryggen med en pude under hovedet"],
-  "I aflåst sideleje holdes luftvejene frie, og eventuelt opkast kan løbe ud af munden.");
+  ["Stabilt sideleje", "På maven med armene over hovedet", "Siddende op ad et træ", "På ryggen med en pude under hovedet"],
+  "I stabilt sideleje holdes luftvejene frie, og eventuelt opkast kan løbe ud af munden.");
 Q("forstehjalp", 1, "Hvad er en hjertestarter (AED)?",
   ["En maskine, der kan give hjertet stød", "En maskine, der måler puls og blodtryk", "En maskine, der giver ilt gennem en maske", "En pen med medicin mod hjertebanken"],
   "Hjertestarteren taler til dig og giver kun stød, hvis det er nødvendigt. Alle må bruge den.");
@@ -822,7 +822,7 @@ Q("forstehjalp", 1, "Hvad er det vigtigste at fortælle, når du ringer 112?",
   ["Hvor ulykken er sket", "Dit fulde navn og din alder", "Hvem der var skyld i ulykken", "Hvilket hospital du helst vil til"],
   "Alarmcentralen skal vide, hvor de skal sende hjælpen hen. Svar på spørgsmålene og læg ikke på før de siger det.");
 Q("forstehjalp", 1, "En kammerat bliver stukket af en hveps på armen. Hvad gør du?",
-  ["Køle stedet og holde øje med allergi", "Klemme giften ud med neglene", "Varme stedet med en varmepude", "Give en hovedpinepille med det samme"],
+  ["Køle stedet og holde øje med allergi", "Klemme giften ud med neglene", "Varme stedet med en varmepude", "Smøre mudder på stikket"],
   "Kulde dæmper smerte og hævelse. Får personen svært ved at trække vejret, skal du ringe 112.");
 Q("forstehjalp", 1, "Hvad gør du først ved en forstuvet ankel?",
   ["Holde ro og køle med is", "Gå videre, så den bliver varm", "Massere anklen kraftigt", "Lægge en varmepude på"],
@@ -831,7 +831,7 @@ Q("forstehjalp", 1, "Hvad bør der altid være i en førstehjælpskasse?",
   ["Plaster, forbindinger og handsker", "Tændstikker, kniv og snor", "Hovedpinepiller og sovepiller", "Sprit til at rense alle sår"],
   "Handsker beskytter både dig og den tilskadekomne mod smitte.");
 Q("forstehjalp", 1, "Hvad er psykisk førstehjælp?",
-  ["At berolige og blive hos personen", "At give en hovedpinepille mod chokket", "At lade personen være i fred", "At bede personen gå en tur alene"],
+  ["At berolige og blive hos personen", "At give en hovedpinepille mod forskrækkelsen", "At lade personen være i fred", "At bede personen gå en tur alene"],
   "Ro og omsorg hjælper meget. Fortæl hvad du gør, og at hjælpen er på vej.");
 Q("forstehjalp", 1, "Hvad skal du helst tage på, før du hjælper med et blødende sår?",
   ["Engangshandsker", "Solbriller", "Et halstørklæde", "Regntøj"],
@@ -864,7 +864,7 @@ Q("forstehjalp", 1, "En kammerat besvimer, men vågner hurtigt igen. Hvad gør d
   ["Lader personen ligge ned og hvile", "Hjælper personen op at gå med det samme", "Giver personen en kold dukkert", "Lader personen stå op og trække vejret"],
   "Lad personen ligge ned et stykke tid – evt. med benene lidt hævet – og hent en voksen.");
 Q("forstehjalp", 1, "Hvorfor skal du vaske hænder, før du renser et sår?",
-  ["For ikke at få bakterier i såret", "For at sæben kan dæmpe smerten i såret", "For at plasteret sidder bedre", "Det er kun vigtigt efter"],
+  ["For ikke at få bakterier i såret", "For at sæben kan dæmpe smerten i såret", "For at plasteret sidder bedre", "Det er kun vigtigt bagefter"],
   "Rene hænder mindsker risikoen for betændelse i såret.");
 Q("forstehjalp", 1, "En kammerat får pludselig krampe i læggen. Hvad hjælper?",
   ["Strække musklen forsigtigt", "Løbe hurtigt rundt", "Lægge benet i koldt vand", "Bøje benet så meget som muligt"],
@@ -873,7 +873,7 @@ Q("forstehjalp", 1, "En kammerat får pludselig krampe i læggen. Hvad hjælper?
 Q("forstehjalp", 2, "Hvordan er rytmen i hjerte-lunge-redning (HLR) for en voksen?",
   ["30 tryk og 2 indblæsninger", "15 tryk og 1 indblæsning", "10 tryk og 5 indblæsninger", "50 tryk og 4 indblæsninger"],
   "30:2 gentages, indtil hjælpen kommer, eller personen begynder at trække vejret normalt.");
-Q("forstehjalp", 2, "Hvor hurtigt skal man trykke under hjertemassage?",
+Q("forstehjalp", 2, "Hvor hurtigt skal man give brysttryk?",
   ["100-120 gange i minuttet", "10-20 gange i minuttet", "40-50 gange i minuttet", "200-250 gange i minuttet"],
   "Det svarer til omkring to tryk i sekundet. Takten i sangen 'Stayin' Alive' passer godt.");
 Q("forstehjalp", 2, "Hvordan skaber du frie luftveje hos en bevidstløs person?",
@@ -898,7 +898,7 @@ Q("forstehjalp", 2, "Hvad er det rigtige at gøre, hvis en person bliver bidt af
   ["Holde personen i ro og ringe efter hjælp", "Suge giften ud og spytte den ud", "Skære et lille snit og presse giften ud", "Binde et stramt bind over bidet"],
   "Ro gør, at giften spredes langsommere. Man skal aldrig suge, skære eller stramme noget om lemmet.");
 Q("forstehjalp", 2, "Hvad gør du, hvis du tror, en kammerat har brækket armen?",
-  ["Støtte armen med en armslynge", "Rette armen ud, så den heler lige", "Bede kammeraten bevæge fingrene", "Massere armen for at dæmpe smerten"],
+  ["Støtte armen med en armslynge", "Rette armen ud, så den heler lige", "Lade kammeraten cykle hjem selv", "Massere armen for at dæmpe smerten"],
   "Undgå at flytte på bruddet. En armslynge eller en støtte holder armen i ro på vejen til skadestuen.");
 Q("forstehjalp", 2, "Hvad kan et spejdertørklæde bruges til i førstehjælp?",
   ["Armslynge eller forbinding", "Kølepose mod feber", "Nakkekrave", "Pulsmåler"],
@@ -922,10 +922,10 @@ Q("forstehjalp", 2, "En spejder med sukkersyge bliver rystende og sløv, men er 
   ["Giver noget sødt", "Giver en stor portion kød og brød", "Lader spejderen sove det væk i teltet", "Giver vand uden noget i"],
   "Lavt blodsukker kan rettes hurtigt med sukker, fx juice eller druesukker.");
 Q("forstehjalp", 2, "Hvad gør du ved hjertestop, hvis du ikke kan give indblæsninger?",
-  ["Giver kun brysttryk uden pause", "Venter på ambulancen ved personen", "Lægger personen i aflåst sideleje", "Giver kun indblæsninger"],
+  ["Giver kun brysttryk uden pause", "Venter på ambulancen ved personen", "Lægger personen i stabilt sideleje", "Giver kun indblæsninger"],
   "Brysttryk alene er langt bedre end ingenting. Fortsæt, til hjælpen kommer.");
 Q("forstehjalp", 2, "Hvor kan man finde den nærmeste hjertestarter i Danmark?",
-  ["I appen Hjertestarter", "På kortet i en vejatlas", "I telefonbogen", "Hos nærmeste tankstation altid"],
+  ["I appen Hjertestarter", "I et vejatlas", "I telefonbogen", "På kommunens hjemmeside"],
   "Hjertestartere registreres i appen Hjertestarter og på hjertestarter.dk.");
 Q("forstehjalp", 2, "Hvad gør du, hvis et næseblod ikke stopper efter 20 minutter?",
   ["Søger læge", "Lægger hovedet tilbage", "Blæser næsen hårdt", "Holder pause og prøver i morgen"],
@@ -949,18 +949,18 @@ Q("forstehjalp", 2, "En bi har stukket og efterladt brodden. Hvad gør du?",
   ["Skraber brodden væk med en neglekant", "Klemmer brodden ud med to fingre", "Lader brodden sidde og falde ud af sig selv", "Smører honning på stikket"],
   "Klemmer man, kan der presses mere gift ind. Skrab den væk og køl stedet.");
 // --- Guld (svær) ---
-Q("forstehjalp", 3, "Hvor dybt skal du trykke brystkassen ned ved hjertemassage på en voksen?",
+Q("forstehjalp", 3, "Hvor dybt skal du trykke brystkassen ned ved brysttryk på en voksen?",
   ["5-6 cm", "1-2 cm", "10-12 cm", "Så lidt som muligt"],
   "Det kræver kraft. Tryk med strakte arme midt på brystet, og slip helt mellem trykkene.");
 Q("forstehjalp", 3, "Hvordan starter man genoplivning af en person, der er reddet op af vandet efter drukning?",
-  ["Med 5 indblæsninger", "Med 15 brysttryk", "Med at tømme lungerne for vand", "Med at lægge personen i sideleje"],
+  ["Med 5 indblæsninger", "Med 15 brysttryk", "Med at tømme lungerne for vand", "Med at lægge personen i stabilt sideleje"],
   "Ved drukning er manglen på ilt problemet, så man starter med 5 indblæsninger.");
 Q("forstehjalp", 3, "Hvilket nummer har Giftlinjen, som du kan ringe til, hvis nogen har spist eller drukket noget giftigt?",
   ["82 12 12 12", "112", "1813", "70 10 20 30"],
   "Giftlinjen har døgnåben rådgivning. Ved bevidstløshed eller vejrtrækningsbesvær ringer man altid 112.");
 Q("forstehjalp", 3, "Hvad er 1813?",
   ["Akuttelefonen i Region Hovedstaden", "Politiets nummer ved ikke-akutte sager", "Giftlinjens døgnåbne telefon", "Alarmnummeret for brand og redning"],
-  "I resten af landet ringer man til lægevagten. Ved livsfare ringer man altid 112.");
+  "I Region Sjælland hedder det 1818, i resten af landet ringer man til lægevagten. Ved livsfare ringer man altid 112.");
 Q("forstehjalp", 3, "Hvad er rigtigt at gøre ved forfrysninger på fx fingre eller kinder?",
   ["Varme langsomt op med kropsvarme", "Gnide huden hårdt med sne", "Holde fingrene tæt ind over bålet", "Dyppe dem i meget varmt vand"],
   "Forfrossen hud er skrøbelig. Gnidning og stærk varme kan give mere skade.");
@@ -982,11 +982,11 @@ Q("forstehjalp", 3, "Hvor længe kan hjernen cirka klare sig uden ilt, før den 
 Q("forstehjalp", 3, "En person bliver stukket af en hveps inde i munden. Hvorfor er det farligt, og hvad gør du?",
   ["Hævelsen kan lukke luftvejene", "Giften kan skade tænderne", "Stikket kan give tandpine", "Man kan miste smagssansen"],
   "Hævelse i mund og svælg kan blokere luftvejene, så det kræver hurtig hjælp.");
-Q("forstehjalp", 3, "Hvor skal hænderne placeres ved hjertemassage på en voksen?",
+Q("forstehjalp", 3, "Hvor skal hænderne placeres ved brysttryk på en voksen?",
   ["Midt på brystkassen", "Over venstre bryst", "Øverst ved halsen", "Nederst på maven"],
   "Læg hælen af den ene hånd midt på brystet og den anden hånd ovenpå.");
 Q("forstehjalp", 3, "Hvad skal du gøre, mens hjertestarteren analyserer hjerterytmen?",
-  ["Ikke røre ved personen", "Fortsætte hjertemassagen", "Give indblæsninger", "Ryste personen"],
+  ["Ikke røre ved personen", "Fortsætte brysttrykkene", "Give indblæsninger", "Ryste personen"],
   "Bevægelse kan forstyrre målingen. Når stødet er givet, fortsætter du straks HLR.");
 Q("forstehjalp", 3, "Hvornår må du stoppe med hjerte-lunge-redning?",
   ["Når hjælpen tager over", "Efter præcis 2 minutter", "Når personen bliver bleg", "Efter 100 tryk"],
@@ -998,7 +998,7 @@ Q("forstehjalp", 3, "Hvorfor skal man passe på at køle et lille barns forbræn
   ["Barnet kan blive nedkølet", "Vandet kan give nye vabler", "Barnet kan få feber bagefter", "Huden kan blive tør"],
   "Brug lunkent vand og hold resten af barnet varmt.");
 Q("forstehjalp", 3, "Hvad kan være tegn på en blodprop i hjernen?",
-  ["Skæv mund og lammelse i den ene side", "Kløe og nysen i flere dage i træk uden feber", "Ondt i maven efter maden", "Røde, hævede knæ"],
+  ["Skæv mund og lammelse i den ene side", "Kløe og nysen", "Ondt i maven efter maden", "Røde, hævede knæ"],
   "Også sløret tale og synsforstyrrelser kan være tegn. Ring 112 med det samme.");
 Q("forstehjalp", 3, "Hvorfor er det vigtigt at ringe 112 straks ved mistanke om blodprop i hjernen?",
   ["Behandling virker bedst tidligt", "Blodproppen går ellers aldrig væk", "Personen må ikke få vand", "Lægevagten lukker om natten"],
@@ -1037,7 +1037,7 @@ Q("dyr", 1, "Hvad spiser et pindsvin mest?",
   "Pindsvin er insektædere. Man må ikke give dem mælk, for det tåler de ikke.");
 Q("dyr", 1, "Hvilket af disse dyr fælder sit gevir hvert år og får et nyt?",
   ["Rådyr", "Gemse", "Vildfår", "Moskusokse"],
-  "Hjorte som rådyr har gevir, der fældes hvert år. Geder, får og køer har horn, der bliver siddende.");
+  "Hjortedyr som rådyr har gevir, der fældes hvert år. Geder, får og køer har horn, der bliver siddende.");
 Q("dyr", 1, "Hvilket af disse vilde danske dyr er størst?",
   ["Kronhjort", "Dådyr", "Vildsvin", "Grævling"],
   "Kronhjorten kan veje over 200 kg og er Danmarks største vildtlevende landpattedyr.");
@@ -1063,7 +1063,7 @@ Q("dyr", 1, "Hvilket dyr har en busket hale, klatrer i træer og gemmer nødder 
   ["Egernet", "Musen", "Mosegrisen", "Haren"],
   "Egernet graver nødder ned mange steder – og glemmer nogle, som så kan blive til nye træer.");
 Q("dyr", 1, "Hvad spiser mariehøns især?",
-  ["Bladlus", "Blade", "Honning", "Andre mariehøns' æg"],
+  ["Bladlus", "Blade", "Honning", "Myrer"],
   "En mariehøne kan spise mange bladlus på en dag, så haveejere er glade for dem.");
 Q("dyr", 1, "Hvad kaldes rådyrets unge?",
   ["Et lam", "En kalv", "En hvalp", "Et føl"],
@@ -1108,7 +1108,7 @@ Q("dyr", 2, "Hvordan finder flagermus vej og fanger insekter i mørke?",
 Q("dyr", 2, "Hvad kaldes hannen hos rådyr?",
   ["En buk", "En hjort", "En tyr", "En galt"],
   "Hannen hedder buk, hunnen hedder rå, og ungen kaldes et lam.");
-Q("dyr", 2, "Hvad bruger hjortene især deres gevir til?",
+Q("dyr", 2, "Hvad bruger hannerne hos hjortedyr især deres gevir til?",
   ["At kæmpe om hunnerne", "At grave efter rødder i jorden", "At skrabe bark af træerne for føde", "At holde varmen om vinteren"],
   "I brunsttiden måler hannerne kræfter. Geviret fældes bagefter og vokser ud igen.");
 Q("dyr", 2, "Hvorfor ser man om foråret mange tudser krydse vejene?",
@@ -1124,7 +1124,7 @@ Q("dyr", 2, "Hvad bruger skovmyrer myresyre til?",
   ["Forsvar mod fjender", "Til at bygge tuen", "Til at fordøje sukker", "Til at markere stier"],
   "Stikker du hånden ned i en myretue, kan du lugte den skarpe syre.");
 Q("dyr", 2, "Hvad kaldes stadiet mellem larve og sommerfugl?",
-  ["Puppe", "Nymfe", "Kokon-æg", "Haletudse"],
+  ["Puppe", "Nymfe", "Imago", "Haletudse"],
   "Inde i puppen omdannes larven fuldstændigt. Det kaldes fuldstændig forvandling.");
 Q("dyr", 2, "Hvordan kan man kende en hare fra en kanin?",
   ["Haren har længere ører med sorte spidser", "Kaninen er størst og har de længste bagben", "Haren graver lange gange i jorden", "Kaninen har en lang, busket hale"],
@@ -1143,7 +1143,7 @@ Q("dyr", 2, "Hvad er forskellen på en mus og en spidsmus?",
   "Spidsmus er i familie med muldvarpen og har mange små, spidse tænder.");
 Q("dyr", 2, "Hvad slags dyr er en skovflåt?",
   ["Et spindlerdyr", "Et insekt", "En orm", "En snegl"],
-  "Voksne flåter har otte ben – ligesom edderkopper.");
+  "Voksne flåter har otte ben – ligesom edderkopper, som også er spindlere.");
 Q("dyr", 2, "Hvad spiser en grævling?",
   ["Lidt af alt – især regnorme", "Kun kød fra større dyr som rådyr", "Kun græs og rødder", "Kun fisk og frøer"],
   "Grævlingen er altæder og spiser regnorme, insekter, rødder, bær og frugt.");
@@ -1154,10 +1154,10 @@ Q("dyr", 2, "Hvorfor er mange hvepse og bier gul- og sortstribede?",
   ["Farverne advarer om brodden", "Farverne holder dem varme om natten", "Farverne lokker blomsterne", "Farverne gør dem usynlige"],
   "Advarselsfarver lærer rovdyr, at dyret er farligt eller smager grimt.");
 Q("dyr", 2, "Hvad er en stålorm?",
-  ["Et firben uden ben", "En lille, giftig slange", "En regnorm med hård hud", "En ung ål på land"],
-  "Stålormen ligner en slange, men den er et benløst firben. Den kan blinke med øjnene og smide halen.");
+  ["En øgle uden ben", "En lille, giftig slange", "En regnorm med hård hud", "En ung ål på land"],
+  "Stålormen ligner en slange, men den er en benløs øgle. Den kan blinke med øjnene og smide halen.");
 Q("dyr", 2, "Hvad kalder man hunnen hos kronhjorten?",
-  ["En hind", "En rå", "En kid", "En gylte"],
+  ["En hind", "En rå", "Et kid", "En gylte"],
   "Hos krondyr hedder hannen hjort og hunnen hind. Hos rådyr hedder hunnen en rå.");
 Q("dyr", 2, "Hvad er Danmarks mindste pattedyr?",
   ["Dværgspidsmusen", "Dværgmusen", "Brunflagermusen", "Halsbåndmusen"],
@@ -1179,8 +1179,8 @@ Q("dyr", 3, "Hvornår på året er krondyrenes brunst, hvor hjortene brøler hø
   ["Om efteråret", "Om vinteren", "Om foråret", "Midt om sommeren"],
   "Brølet kan høres langt væk og skal skræmme andre hjorte og imponere hinderne.");
 Q("dyr", 3, "Hvad er særligt ved rådyrets drægtighed?",
-  ["Fosteret venter flere måneder", "Rålammet fødes om efteråret", "Hunnen får altid trillinger", "Lammene fødes midt om vinteren"],
-  "Rådyrene parrer sig om sommeren, men lammene fødes først i maj-juni året efter – på det bedste tidspunkt.");
+  ["Ægget hviler i flere måneder", "Rålammet fødes om efteråret", "Hunnen får altid trillinger", "Lammene fødes midt om vinteren"],
+  "Rådyrene parrer sig om sommeren, men det befrugtede æg hviler og sætter sig først fast i livmoderen om vinteren (kimhvile). Lammene fødes i maj-juni.");
 Q("dyr", 3, "Hvordan kendes en hugorm oftest?",
   ["Et mørkt zigzagbånd på ryggen", "To gule pletter bag hovedet", "En lang, rødbrun hale", "Små ben langs kroppen"],
   "Zigzagbåndet er typisk for hugormen. Nogle hugorme er dog helt sorte.");
@@ -1202,7 +1202,7 @@ Q("dyr", 3, "Hvad kaldes den dans, som honningbier laver for at vise andre bier 
 Q("dyr", 3, "Hvordan overvintrer de fleste danske frøer?",
   ["I dvale i mudder eller jord", "Aktive under isen hele vinteren", "Som æg, der klækker om foråret", "I dvale højt oppe i hule træer"],
   "Frøer er vekselvarme og kan ikke holde sig varme selv, så de går i dvale, når det bliver koldt.");
-Q("dyr", 3, "Hvor mange kamre har et pattedyrs hjerte?",
+Q("dyr", 3, "Hvor mange rum har et pattedyrs hjerte?",
   ["4", "2", "3", "6"],
   "To forkamre og to hjertekamre – et kredsløb til lungerne og et til kroppen.");
 Q("dyr", 3, "Hvorfor skifter lækatten (hermelinen) til hvid pels om vinteren?",
@@ -1231,15 +1231,15 @@ Q("dyr", 3, "Hvilket af disse danske krybdyr lægger æg – fx i varme kompostb
   "Snogen lægger æg, som klækkes af varmen i kompost eller møddinger. De andre føder levende unger.");
 Q("dyr", 3, "Hvad hedder Danmarks største bille, hvor hannen har store kæber, der ligner et gevir?",
   ["Eghjorten", "Næsehornsbillen", "Oldenborren", "Skovskarnbassen"],
-  "Eghjorten er meget sjælden i Danmark. Larven lever i flere år i dødt egetræ.");
+  "Eghjorten forsvandt fra Danmark i 1970'erne, men er sat ud igen i Jægersborg Dyrehave og formerer sig nu. Larven lever i flere år i dødt egetræ.");
 Q("dyr", 3, "Hvorfor kan man se en citronsommerfugl flyve allerede på en varm dag i marts?",
   ["Den overvintrer som voksen sommerfugl", "Den er netop klækket fra puppen", "Den er fløjet hertil fra Afrika", "Den lever kun i nogle få uger om foråret"],
-  "Citronsommerfuglen gemmer sig i vintersøvn som voksen og vågner, så snart solen varmer.");
+  "Citronsommerfuglen overvintrer i dvale som voksen og vågner, så snart solen varmer.");
 Q("dyr", 3, "Hvad er det hvide skum, man kalder gøgespyt, som ses på planter om foråret?",
   ["Skum, som en lille cikade-nymfe gemmer sig i", "Spyt fra gøgen, der lægger sine æg i planten", "Saft, som planten selv laver mod sygdomme", "Skum fra snegle, der kryber op ad stænglerne"],
   "Skumcikadens nymfe laver skummet af plantesaft. Det beskytter den mod fjender og udtørring.");
 Q("dyr", 3, "Hos hvilken lille fisk bygger hannen en rede og passer æggene?",
-  ["Den trepiggede hundestejle", "Den almindelige ørred", "Den europæiske ål", "Den almindelige skalle i søerne"],
+  ["Den trepiggede hundestejle", "Den almindelige ørred", "Den europæiske ål", "Den almindelige skalle"],
   "Hundestejlehannen får rød bug i yngletiden, bygger en rede af plantedele og vifter frisk vand hen over æggene.");
 Q("dyr", 3, "Hvordan kan en frø få ilt, ud over at trække vejret med lungerne?",
   ["Gennem den fugtige hud", "Gennem gæller bag øjnene", "Gennem de store trommehinder", "Gennem hulrum i knoglerne"],
@@ -1277,7 +1277,7 @@ Q("planter", 1, "Hvilket af disse træer er et nåletræ?",
   ["Rødgran", "Bøg", "Eg", "Birk"],
   "Rødgran er det klassiske juletræ i mange danske skove. Bøg, eg og birk er løvtræer.");
 Q("planter", 1, "Hvilke spiselige bær kan man plukke i skoven, især i juli og august?",
-  ["Blåbær", "Galnebær", "Kristtornbær", "Taks"],
+  ["Blåbær", "Galnebær", "Kristtornbær", "Kaprifoliebær"],
   "Blåbær vokser lavt i skovbunden. De andre bær er giftige.");
 Q("planter", 1, "Hvad har planter brug for for at kunne lave fotosyntese?",
   ["Lys, vand og CO2", "Ilt, sukker og mørke", "Kvælstof, salt og varme", "Varme, ilt og jord"],
@@ -1335,7 +1335,7 @@ Q("planter", 2, "Hvad sidder der under hatten på en Karl Johan-svamp?",
   ["Et lag af små rør", "Tynde lameller", "Små bløde pigge", "Lister som på en kantarel"],
   "Karl Johan er en rørhat. Under hatten er der et svampet lag af små rør i stedet for lameller.");
 Q("planter", 2, "Hvilken svamp er den farligste i Danmark og kan være dødelig?",
-  ["Grøn fluesvamp", "Rød fluesvamp", "Spids knoldfod", "Østershat"],
+  ["Grøn fluesvamp", "Rød fluesvamp", "Kantarel", "Østershat"],
   "Grøn fluesvamp ødelægger leveren. Selv et lille stykke kan være livsfarligt.");
 Q("planter", 2, "Hvilket træ har frø med vinger, der snurrer som små propeller, når de falder?",
   ["Ahorn", "Eg", "Hassel", "Kastanje"],
@@ -1350,7 +1350,7 @@ Q("planter", 2, "Hvordan formerer mos sig?",
   ["Med sporer", "Med frø i bær", "Med blomster og pollen", "Med løg"],
   "Mos har ingen blomster eller frø. Sporerne spredes med vinden fra små kapsler.");
 Q("planter", 2, "Hvordan kan man kende en fyr fra en gran?",
-  ["Fyrrens nåle sidder parvis", "Granens nåle sidder parvis", "Fyrren har korte, stikkende nåle", "Granens kogler peger opad"],
+  ["Fyrrens nåle sidder parvis", "Granens nåle sidder parvis", "Fyrren har korte, stikkende nåle", "Granens nåle er lange og bløde"],
   "Fyrrenåle er ofte lange og sidder parvis. Grannåle sidder en og en hele vejen rundt om kvisten.");
 Q("planter", 2, "Hvad laver mange danskere af hyldeblomster om sommeren?",
   ["Hyldeblomstsaft", "Hyldebærsuppe", "Sennep", "Rabarbersaft"],
@@ -1416,7 +1416,7 @@ Q("planter", 3, "Hvorfor regnes svampe ikke som planter?",
 Q("planter", 3, "Hvad kan et sporeaftryk hjælpe med?",
   ["At bestemme svampearten", "At se, hvor gammel svampen er", "At gøre svampen spiselig", "At få flere svampe til at vokse"],
   "Man lægger hatten på et stykke papir natten over, så sporerne drysser ned og danner et mønster.");
-Q("planter", 3, "Hvilket stedsegrønt træ er giftigt i næsten alle dele – også frøet inde i det røde bær?",
+Q("planter", 3, "Hvilket stedsegrønt træ er giftigt i næsten alle dele – også frøet inde i den røde frøkappe?",
   ["Taks", "Rødgran", "Ene", "Ædelgran"],
   "Taks er meget giftig for mennesker og mange dyr. Den bruges ofte i hække og parker.");
 Q("planter", 3, "Hvilken meget giftig plante har sorte, blanke bær, der sidder i et grønt, stjerneformet bæger?",
@@ -1460,7 +1460,7 @@ Q("planter", 3, "Hvor på en svamp dannes sporerne?",
   "Sporerne drysser ned fra undersiden af hatten.");
 Q("planter", 3, "Hvilken blomst er Danmarks nationalblomst?",
   ["Marguerit", "Kornblomst", "Valmue", "Blåklokke"],
-  "Den hvide marguerit blev valgt ved en afstemning og ses på enge og vejkanter.");
+  "Den hvide marguerit (hvid okseøje) blev valgt ved en afstemning og ses på enge og vejkanter.");
 Q("planter", 3, "Hvad kaldes processen, hvor plantens celler bruger sukker til energi?",
   ["Respiration (ånding)", "Fotosyntese", "Fordampning", "Spiring"],
   "Respirationen sker hele døgnet – også om natten, hvor der ikke er fotosyntese.");
@@ -1499,7 +1499,7 @@ Q("baal", 1, "Hvor må man tænde bål i en dansk skov?",
   ["Kun på anviste bålpladser", "Hvor som helst under store træer", "Overalt, hvis det ikke blæser", "Mellem grantræerne, hvor der er læ"],
   "I skoven må man kun lave bål på de anviste bålpladser – og aldrig, når der er afbrændingsforbud.");
 Q("baal", 1, "Hvad bør altid stå klar ved et bål?",
-  ["En spand vand", "En stor presenning", "En pose tørt sand", "En brandvarm handske"],
+  ["En spand vand", "En stor presenning", "En pose tørre blade", "En brandvarm handske"],
   "Med vand klar kan du hurtigt slukke, hvis gnister flyver, eller bålet bliver for stort.");
 Q("baal", 1, "Hvor skal du sidde ved bålet for ikke at få røgen i øjnene?",
   ["På den side, vinden kommer fra", "På den side, vinden blæser hen mod", "Lige oven over bålet", "Det er lige meget"],
@@ -1547,7 +1547,7 @@ Q("baal", 1, "Hvorfor må man aldrig gå fra et bål, der brænder?",
   ["Ilden kan sprede sig, uden at nogen ser det", "Bålet går altid ud, når ingen passer det", "Det er kun lederen, der må være ved bålet", "Røgen bliver farlig, når ingen sidder der"],
   "Der skal altid være nogen, der holder øje med bålet, indtil det er helt slukket.");
 Q("baal", 1, "Hvordan flytter du bedst et brændende stykke brænde i bålet?",
-  ["Med en lang pind eller en ildtang", "Med en handske og hurtige fingre", "Ved at sparke det på plads med støvlen", "Ved at løfte det i den kolde ende"],
+  ["Med en lang pind eller en ildtang", "Med en handske og hurtige fingre", "Ved at sparke det på plads med støvlen", "Ved at slå på det med en sko"],
   "En lang pind eller tang holder dine hænder væk fra flammerne og gløderne.");
 Q("baal", 1, "Hvorfor må man ikke brænde plastik og slik-papir af i bålet?",
   ["Det giver giftig røg", "Det får bålet til at gå ud", "Det lugter af brændt sukker", "Det gør asken for tung"],
@@ -1576,7 +1576,7 @@ Q("baal", 2, "Hvordan virker en bueildbor?",
   "Gløden lægges i en rede af tørt materiale, som man puster forsigtigt på, til den bliver til flammer.");
 Q("baal", 2, "Hvad er et ildstål (tændstål)?",
   ["En stav, der giver gnister", "En stålgryde til bålet", "En kniv til at kløve brænde", "En lighter med gas"],
-  "Ildstålet virker også, når det er vådt, og kan bruges tusindvis af gange.");
+  "Ildstålet (også kaldet tændstål eller ferrostav) virker, selv når det er vådt, og kan bruges tusindvis af gange. Det gammeldags ildstål var et stykke stål, man slog mod flint.");
 Q("baal", 2, "Hvorfor knitrer og sprutter grantræ ofte i bålet?",
   ["Harpikslommer eksploderer", "Træet er frossent indeni", "Grantræ indeholder meget salt", "Nålene brænder med små knald"],
   "Gnisterne kan flyve langt, så pas ekstra på tøj, telte og soveposer.");
@@ -1589,9 +1589,9 @@ Q("baal", 2, "Hvorfor er det farligt at tænde bål direkte på tørvejord eller
 Q("baal", 2, "Hvorfor kløver man brænde, før det tørrer?",
   ["Det tørrer hurtigere, når det er kløvet", "Det bliver tungere og varmer mere", "Barken bliver lettere at tænde bagefter", "Det kan ellers ikke stables"],
   "Når træet er kløvet, kan vandet lettere fordampe.");
-Q("baal", 2, "Hvad er en fedtpind (fjerpind)?",
+Q("baal", 2, "Hvad er en fjerpind?",
   ["En pind med tynde spåner skåret op", "En pind smurt ind i stearin eller fedt", "En pind med fjer bundet på", "En pind fra et fyrretræ"],
-  "Spånerne fanger let flammen og hjælper bålet i gang.");
+  "Spånerne fanger let flammen og hjælper bålet i gang. Nogle kalder den også en fedtpind.");
 Q("baal", 2, "Hvorfor er det smart at bygge bålet i læ for vinden?",
   ["Gnister flyver ikke så langt", "Bålet brænder længere uden ilt", "Røgen bliver hvidere", "Vinden får bålet til at slukke"],
   "Kraftig vind kan sprede gnister og gøre bålet svært at styre.");
@@ -1610,7 +1610,7 @@ Q("baal", 2, "Hvorfor må man ikke bruge gammelt trykimprægneret eller malet tr
 Q("baal", 2, "Hvilken bålform bygger man med brændestykker lagt på kryds i lag som en lille tømmerhytte?",
   ["Blokhusbål", "Pyramidebål", "Stjernebål", "Jægerbål"],
   "Et blokhusbål giver god luft mellem stykkerne og brænder ned til en stor, jævn bund af gløder.");
-Q("baal", 2, "Hvorfor trækker mange ildstålets stang tilbage i stedet for at skubbe skraberen frem?",
+Q("baal", 2, "Hvorfor trækker mange stangen på ildstålet tilbage i stedet for at skubbe skraberen frem?",
   ["Så man ikke vælter optændingen", "Så gnisterne bliver mere varme", "Så stangen ikke bliver sløv", "Så man sparer på skraberen"],
   "Når skraberen holdes stille tæt ved optændingen, og stangen trækkes væk, lander gnisterne præcist uden at ødelægge bunken.");
 Q("baal", 2, "Hvad er rigtig godt at fange gnisterne fra et ildstål i?",
@@ -1720,7 +1720,7 @@ Q("lejr", 1, "Hvor skal man IKKE slå sit telt op?",
   "Regner det om natten, løber vandet ned i lavningen – og ind i teltet.");
 Q("lejr", 1, "Hvordan skal teltpløkker sættes i jorden?",
   ["Skråt, væk fra teltet", "Lodret lige ned", "Skråt ind mod teltet", "Vandret ind i jorden"],
-  "Når pløkken hælder væk fra teltet, holder den bedre, når barduneren trækker.");
+  "Når pløkken hælder væk fra teltet, holder den bedre, når bardunen trækker.");
 Q("lejr", 1, "Hvad er barduner på et telt?",
   ["Snore, der holder teltet udspændt", "Teltstængerne i midten af teltet", "Lynlåsene i teltdøren", "Kanten, der holder teltgulvet oppe"],
   "Stramme barduner gør teltet stærkere i blæst og får regnen til at løbe af.");
@@ -1733,11 +1733,11 @@ Q("lejr", 1, "Hvad er en patrulje?",
 Q("lejr", 1, "Hvad kaldes et simpelt toilet på en lejrplads?",
   ["En latrin", "En kabys", "En shelter", "En bivuak"],
   "En latrin er ofte et hul i jorden med et sæde over – og der skal være mulighed for at vaske hænder bagefter.");
-Q("lejr", 1, "Hvorfor skal man undgå at røre ved inderdugen af et telt, når det regner?",
+Q("lejr", 1, "Hvorfor skal man undgå at røre ved teltdugen indefra, når det regner?",
   ["Vandet kan trænge igennem", "Teltdugen kan revne", "Teltet kan falde sammen", "Kondensen bliver værre"],
-  "Berøringen bryder dugens vandafvisende overflade, så vandet suges igennem.");
+  "Især på bomuldstelte og overtelte bryder berøringen dugens vandafvisende overflade, så vandet suges igennem.");
 Q("lejr", 1, "Hvad skal du altid gøre, før du går væk fra lejrpladsen?",
-  ["Fortælle en leder, hvor du går hen", "Pakke din soveposen sammen", "Tage alt dit udstyr med dig", "Lukke teltet helt med lynlås"],
+  ["Fortælle en leder, hvor du går hen", "Pakke din sovepose sammen", "Tage alt dit udstyr med dig", "Lukke teltet helt med lynlås"],
   "Så ved de voksne, hvor du er, hvis der sker noget.");
 Q("lejr", 1, "Hvad skal du gøre med dit affald på en lejr?",
   ["Sortere det og tage det med", "Grave det dybt ned bag teltet", "Brænde plastikken af i bålet", "Lægge madrester i skovbunden til dyrene"],
@@ -1795,16 +1795,16 @@ Q("lejr", 2, "Hvad er formålet med et overtelt?",
   ["Beskytte mod regn og vind", "Gøre teltet varmere om sommeren", "Holde dagslyset ude om morgenen", "Holde myg ude af teltet"],
   "Luftlaget mellem overtelt og indertelt gør, at fugt fra din ånde kan slippe ud.");
 Q("lejr", 2, "Hvorfor kan teltet være vådt indvendigt om morgenen, selvom det ikke har regnet?",
-  ["Kondens fra vores ånde", "Teltdugen er utæt", "Dug trænger op gennem gulvet", "Regnvand fra natten før"],
+  ["Kondens fra vores ånde", "Teltdugen er utæt", "Morgendug trænger op gennem gulvet", "Regnvand fra natten før"],
   "Et menneske udånder en del vand i løbet af en nat. Det sætter sig på den kolde dug.");
 Q("lejr", 2, "Hvad hjælper bedst mod kondens i teltet?",
   ["God udluftning", "At lukke teltet helt tæt", "At sove med hovedet i posen", "At tænde et lys i teltet"],
   "Når den fugtige luft kan slippe ud, sætter den sig ikke på dugen.");
 Q("lejr", 2, "Hvad er pionering?",
   ["At bygge med rafter og reb", "At gå forrest på en vandretur", "At rydde en ny lejrplads", "At finde vej med kort og kompas"],
-  "Mange spejderlejre har imponerende pionerarbejde som lejrporte, udsigtstårne og svævebaner.");
+  "Mange spejderlejre har imponerende pionerprojekter som lejrporte, udsigtstårne og svævebaner.");
 Q("lejr", 2, "Hvad er en rafte?",
-  ["En lang, tynd træstang", "En kort, tyk pløk af træ", "En flad planke til borde", "Et tyndt reb til surringer"],
+  ["En lang, tynd træstang", "En kort, tyk pløk af træ", "En flad planke til borde", "Et tyndt reb til besnøringer"],
   "Rafter er ofte af gran, fordi de er lange, lige og forholdsvis lette.");
 Q("lejr", 2, "Hvor skal en latrin placeres?",
   ["Langt fra vand og køkken", "Lige ved siden af køkkenet", "Midt i lejren, så alle kan finde den", "Ned mod søen, så den skylles ren"],
@@ -1824,10 +1824,10 @@ Q("lejr", 2, "Hvad er et tjansesystem på en lejr?",
 Q("lejr", 2, "Hvorfor sætter man teltet op med indgangen lidt skråt i forhold til vinden?",
   ["Så regn og vind ikke blæser direkte ind", "Så teltet bliver større indeni", "Så pløkkerne sidder bedre", "Så solen tørrer dugen hurtigere om morgenen"],
   "En skrå indgang i læ giver et tørrere og roligere telt.");
-Q("lejr", 2, "Hvad er et køkkenbord bygget af rafter og surringer et eksempel på?",
+Q("lejr", 2, "Hvad er et køkkenbord bygget af rafter og besnøringer et eksempel på?",
   ["Pionering", "Orientering", "Signalering", "Kortlæsning"],
   "Spejdere bygger møbler og konstruktioner af rafter og reb på lejren.");
-Q("lejr", 2, "Hvad er en lejrbanner eller lejrflag til?",
+Q("lejr", 2, "Hvad er et lejrbanner eller et lejrflag til?",
   ["At vise, hvem der bor på pladsen", "At vise vindens retning og styrke", "At holde teltet fast", "At skræmme dyr væk"],
   "Mange grupper og patruljer har deres eget flag eller banner.");
 Q("lejr", 2, "Hvorfor skal teltdugen være spændt glat ud uden folder?",
@@ -2008,7 +2008,7 @@ Q("orientering", 1, "Hvad kaldes kompassets bevægelige ring med grader?",
   ["Kompashuset", "Kompasnålen", "Grundpladen", "Sigtehullet"],
   "Man drejer kompashuset, når man indstiller en kurs.");
 Q("orientering", 1, "Hvad kaldes den lige pil på kompassets grundplade?",
-  ["Retningspilen", "Nordpilen", "Sigtepilen", "Kurspilen"],
+  ["Retningspilen", "Orienteringspilen", "Sigtepilen", "Kurspilen"],
   "Retningspilen viser den vej, man skal gå.");
 Q("orientering", 1, "Hvad er nemmest at følge, hvis du er usikker på vejen i en skov?",
   ["En sti eller vej på kortet", "Retningen af skyerne på himlen", "En fugl, der flyver", "Lyden af vinden i træerne"],
@@ -2046,7 +2046,7 @@ Q("orientering", 2, "Hvad er en kompaskurs?",
   "En kurs på 270 grader betyder, at man går mod vest.");
 Q("orientering", 2, "Hvordan holder man kompasset, når man går efter en kurs?",
   ["Vandret, med retningspilen frem", "Lodret, med nålen pegende op", "Skråt, med kompasset mod solen", "Vandret, med nålen mod dig selv"],
-  "Hold kompasset vandret, så nålen kan dreje frit, og hold den røde ende i 'garagen'.");
+  "Hold kompasset vandret, så nålen kan dreje frit, og hold den røde ende af nålen i »garagen« – orienteringspilen i kompashuset.");
 Q("orientering", 2, "Hvordan kan du finde syd med et ur med visere og solen (på den nordlige halvkugle om vinteren)?",
   ["Lille viser mod solen – syd er midt mellem den og 12", "12-tallet mod solen – syd er ved 6", "Store viser mod solen – syd er ved 3", "Lille viser mod solen – syd er ved 6"],
   "Om sommeren bruger man 1-tallet i stedet for 12-tallet på grund af sommertid.");
@@ -2092,9 +2092,9 @@ Q("orientering", 2, "Hvad gør du, hvis en sø ligger lige på din kompaskurs?",
 Q("orientering", 2, "Hvad viser et kort i målestok 1:10.000 sammenlignet med 1:50.000?",
   ["Flere detaljer på et mindre område", "Færre detaljer på et større område", "Det samme område med andre farver", "Kun de største veje"],
   "Jo mindre tallet efter kolon er, desto flere detaljer.");
-Q("orientering", 2, "Hvad viser en grøn skravering eller mørkegrøn farve på et orienteringskort?",
+Q("orientering", 2, "Hvad viser mørkegrøn farve på et orienteringskort?",
   ["Tæt skov, der er svær at løbe i", "Græsplæner og parker", "Marker med korn", "Lavt vand"],
-  "Jo mørkere grøn, desto sværere at løbe igennem.");
+  "Jo mørkere grøn, desto sværere at løbe igennem. Grønne striber betyder, at bevoksningen kun er let at komme igennem i én retning.");
 Q("orientering", 2, "Hvordan er målet markeret på et orienteringskort?",
   ["Med en dobbelt cirkel", "Med en trekant", "Med et rødt kryds", "Med en sort firkant"],
   "Starten er en trekant, posterne er cirkler, og målet er en dobbelt cirkel.");
@@ -2351,7 +2351,7 @@ Q("vejr", 3, "Hvorfor er det koldere om vinteren end om sommeren i Danmark?",
   "Faktisk er Jorden tættest på solen i begyndelsen af januar!");
 Q("vejr", 3, "Hvad er Beaufort-skalaen?",
   ["En skala for vindstyrke", "En skala for jordskælv", "En skala for regnmængde", "En skala for bølgehøjde"],
-  "Skalaen blev lavet af en britisk admiral i 1805, så sømænd kunne vurdere vinden uden instrumenter.");
+  "Skalaen blev lavet af den britiske søofficer Francis Beaufort i 1805, så sømænd kunne vurdere vinden uden instrumenter.");
 Q("vejr", 3, "Hvorfor kan det gamle vejrvarsel 'aftenrøde giver godt vejr' passe i Danmark?",
   ["Vejret kommer oftest fra vest", "Solen er varmere om aftenen", "Røde skyer indeholder ikke vand", "Luften er tørrest om aftenen"],
   "Vejret kommer oftest fra vest. Kan solen skinne rødt ind under skyerne ved solnedgang, er der klart vejr på vej.");
@@ -2361,9 +2361,9 @@ Q("vejr", 3, "Hvad er en varmfront?",
 Q("vejr", 3, "Hvad er luftfugtighed?",
   ["Mængden af vanddamp i luften", "Mængden af regn, der falder pr. dag", "Antallet af skyer på himlen", "Vandet i jorden"],
   "Den angives ofte i procent af det, luften højst kan rumme.");
-Q("vejr", 3, "Hvad kaldes det, når en stor, roterende sky når helt ned til jorden?",
-  ["En tornado (skypumpe)", "En orkan", "En kuling", "En tyfon"],
-  "I Danmark ses skypumper af og til, oftest over vand.");
+Q("vejr", 3, "Hvad kaldes en kraftig, roterende luftsøjle, der når fra en tordensky helt ned til jorden?",
+  ["En tornado", "En orkan", "En kuling", "En tyfon"],
+  "Over vand kaldes den en skypumpe. I Danmark ses skypumper af og til.");
 Q("vejr", 3, "Hvilket ord bruger DMI om vind, der er kraftigere end 'hård vind', men svagere end 'storm'?",
   ["Kuling", "Orkan", "Frisk vind", "Stiv brise"],
   "DMI's rækkefølge går fra hård vind over kuling til storm og orkan.");
@@ -2505,7 +2505,7 @@ Q("overlevelse", 2, "Hvad kan et lille spejl bruges til i en nødsituation?",
   ["At sende lysglimt", "At tænde bål om natten", "At finde nordstjernen", "At samle dug til drikkevand"],
   "Et glimt fra et signalspejl kan ses mange kilometer væk i solskin.");
 Q("overlevelse", 2, "Må man bære en dolk i byen 'bare fordi'?",
-  ["Nej, der skal være et rimeligt formål", "Ja, hvis den er under 30 cm", "Ja, hvis man er fyldt 15 år", "Ja, hvis den bæres synligt i bæltet"],
+  ["Nej, der skal være et anerkendelsesværdigt formål", "Ja, hvis den er under 30 cm", "Ja, hvis man er fyldt 15 år", "Ja, hvis den bæres synligt i bæltet"],
   "Til spejdermøder og på tur er kniven et redskab. Den skal ligge i rygsækken på vej derhen – ikke i bæltet i byen.");
 Q("overlevelse", 2, "Hvordan kan man samle drikkevand, hvis man ikke kan finde en ren kilde?",
   ["Opsamle regnvand", "Drikke fra en vandpyt på vejen", "Drikke havvand i små slurke", "Presse saft ud af græs"],
@@ -2527,7 +2527,7 @@ Q("overlevelse", 2, "Hvad kan et hjemmelavet filter af sand og trækul IKKE fjer
   "Filteret gør vandet klarere, men det er ikke nødvendigvis sikkert at drikke.");
 Q("overlevelse", 2, "Hvad er ofte det allervigtigste for at klare en svær situation i naturen?",
   ["At bevare roen", "At have det dyreste udstyr", "At kunne løbe hurtigt", "At kende alle plantearter"],
-  "Panik får os til at tage dårlige beslutninger. Spejderne siger: Stop, tænk, observer og planlæg.");
+  "Panik får os til at tage dårlige beslutninger. Spejderne siger STOP: Stands, tænk, observér og planlæg.");
 Q("overlevelse", 2, "Hvorfor skal man ikke spise store mængder sne for at få vand?",
   ["Det køler kroppen meget ned", "Sne indeholder ingen vand", "Sne indeholder for meget salt", "Sne er fuld af skadelige bakterier"],
   "Kroppen bruger meget energi på at smelte sneen. Smelt den i en gryde eller flaske først.");
@@ -2558,9 +2558,9 @@ Q("overlevelse", 2, "Hvad er tre fløjt eller tre lysglimt et signal for?",
 Q("overlevelse", 2, "Hvilken drik er bedst, når man er kold og våd?",
   ["Noget varmt og sødt", "Iskoldt vand", "Kaffe med is", "Sodavand fra køleboksen"],
   "Varme og sukker giver kroppen energi til at holde varmen.");
-Q("overlevelse", 2, "Hvorfor skal man tænke på allemandsretten, når man er i naturen?",
-  ["Den bestemmer, hvor og hvordan man må færdes", "Den giver ret til at fælde træer til bål", "Den gælder kun for jægere", "Den siger, man må bo i skoven"],
-  "I Danmark kaldes det adgangsreglerne i naturbeskyttelsesloven.");
+Q("overlevelse", 2, "Hvorfor skal man kende adgangsreglerne, når man er i naturen?",
+  ["De bestemmer, hvor og hvordan man må færdes", "De giver ret til at fælde træer til bål", "De gælder kun for jægere", "De siger, at man må bo i skoven"],
+  "Adgangsreglerne står i naturbeskyttelsesloven. Danmark har ikke en egentlig allemandsret som Sverige og Norge.");
 // --- Guld (svær) ---
 Q("overlevelse", 3, "Hvad er det internationale alpine nødsignal med fløjte eller lygte?",
   ["6 signaler i minuttet", "3 signaler i minuttet", "1 langt signal hver time", "10 signaler hurtigt efter hinanden"],
@@ -2604,7 +2604,7 @@ Q("overlevelse", 3, "Hvilke tegn viser, at du har drukket for lidt vand?",
 Q("overlevelse", 3, "Hvorfor er tøj af uld godt i en overlevelsessituation?",
   ["Den varmer, selv når den er fugtig", "Den er helt vandtæt", "Den kan ikke brænde", "Den tørrer på få minutter"],
   "Uldfibre er krøllede og holder på luft – og dermed varme – selv når de er fugtige.");
-Q("overlevelse", 3, "Hvorfor er det smart at bære et lille overlevelsessæt (fx tændstål, fløjte og folietæppe) i lommen?",
+Q("overlevelse", 3, "Hvorfor er det smart at bære et lille overlevelsessæt (fx tændstål, fløjte og redningstæppe) i lommen?",
   ["Det er altid med", "Det giver god træning", "Det er et krav i loven", "Det er let at dele"],
   "Rygsækken kan blive væk, men det, du har på kroppen, har du stadig.");
 Q("overlevelse", 3, "Hvad kaldes det, når kroppen ikke kan holde temperaturen og falder under 35 grader?",
@@ -2652,8 +2652,8 @@ Q("vand", 1, "Hvad hedder højre side af en båd, når man kigger fremad?",
   ["Styrbord", "Bagbord", "Agter", "Luv"],
   "Ordet kommer fra vikingetiden, hvor styreåren sad i højre side af skibet.");
 Q("vand", 1, "Hvad kaldes den bageste del af en båd?",
-  ["Agter", "Stævn", "Bagbord", "Køl"],
-  "Forenden kaldes stævnen eller forstavnen, og bagenden kaldes agter.");
+  ["Agterenden", "Stævn", "Bagbord", "Køl"],
+  "Forenden kaldes stævnen, og bagenden kaldes agterenden. »Agter« betyder bagude.");
 Q("vand", 1, "Hvad kaldes det redskab, man padler en kano frem med?",
   ["En pagaj", "En åre", "Et ror", "En stage"],
   "En pagaj holdes med begge hænder og er ikke fastgjort til båden – modsat en åre.");
@@ -2686,7 +2686,7 @@ Q("vand", 1, "Hvad er en forskel på en kano og en kajak?",
   "Kanoen er åben og har plads til bagage. Kajakken er lukket, og man sidder lavt.");
 Q("vand", 1, "Hvad kaldes den forreste del af en båd?",
   ["Stævnen", "Agterspejlet", "Kølen", "Rælingen"],
-  "Forrest er stævnen, og bagerst er agter.");
+  "Forrest er stævnen, og bagerst er agterenden.");
 Q("vand", 1, "Hvordan skal en redningsvest sidde?",
   ["Tæt og lukket med alle spænder", "Løst, så man kan bevæge armene frit", "Åben, så den ikke er varm", "Over den ene skulder"],
   "En løs vest kan glide op over hovedet, når man falder i vandet.");
@@ -2762,7 +2762,7 @@ Q("vand", 2, "Hvordan hjælper du sikrest en person i vandet, når du står på 
   "Huskeregel: Ræk, kast, ro – gå kun selv i vandet som sidste udvej.");
 Q("vand", 2, "Hvad kaldes det, når man øser vand ud af en båd?",
   ["At lænse", "At krydse", "At fortøje", "At kæntre"],
-  "Man lænser med en øsekar, en svamp eller en pumpe.");
+  "Man lænser med et øsekar, en svamp eller en pumpe.");
 Q("vand", 2, "Hvad betyder 'læ' på en båd?",
   ["Den side, vinden blæser hen imod", "Den side, vinden kommer fra", "Den forreste spids af båden", "Bunden af båden"],
   "Luv er den side, vinden kommer fra. Læ er modsat.");
@@ -2779,7 +2779,7 @@ Q("vand", 2, "Hvad er en havn?",
   ["Et beskyttet sted, hvor både kan ligge", "Et fyrtårn på en mole", "En smal kanal mellem to øer i havet", "Et sted midt på havet"],
   "Moler skærmer havnen mod bølgerne.");
 Q("vand", 2, "Hvad kaldes det tov, man bruger til at fortøje en båd?",
-  ["En fortøjning", "En skøde", "Et fald", "En barduner"],
+  ["En fortøjning", "Et skøde", "Et fald", "En bardun"],
   "Skøder styrer sejlene, og fald hejser dem op.");
 Q("vand", 2, "Hvad bruges et fald til på en sejlbåd?",
   ["At hejse sejlet op", "At styre båden gennem bølgerne", "At kaste ankeret", "At lænse vand ud"],
@@ -2831,7 +2831,7 @@ Q("vand", 3, "Hvad bruges VHF-radioens kanal 16 til?",
   ["Nød og anråb mellem skibe", "Vejrudsigter for sejlere", "Samtaler mellem havne", "Musik og nyheder"],
   "Kanal 16 aflyttes af kystradioen og mange skibe døgnet rundt.");
 Q("vand", 3, "Hvilket ord bruger man over radioen for at melde livsfare til søs?",
-  ["Mayday", "Pan-pan", "Sécurité", "Help-help"],
+  ["Mayday", "Pan-Pan", "Sécurité", "Help-help"],
   "Mayday kommer af det franske 'm'aidez' – 'hjælp mig'.");
 Q("vand", 3, "Hvem skal som hovedregel vige, når en motorbåd og en sejlbåd for sejl mødes?",
   ["Motorbåden", "Sejlbåden", "Den største båd", "Den langsomste båd"],
@@ -2867,7 +2867,7 @@ Q("vand", 3, "Hvorfor kan det være farligt at sejle kajak tæt på store skibe?
   ["Skibene kan ikke se dig og ikke vige", "Skibene laver mange vandmænd", "Kajakken bliver suget ind under skibet", "Skibene sejler altid langsomt"],
   "Store skibe har lang bremselængde og dårligt udsyn tæt ved stævnen.");
 Q("vand", 3, "Hvilket knob bruger man til at sætte en fortøjning fast på en pullert?",
-  ["Pælestik over pullerten", "Råbåndsknob om pullerten", "Flagstik", "Prusikknude"],
+  ["Pælestik over pullerten", "Råbåndsknob om pullerten", "Flagknob", "Prusikknude"],
   "Løkken i et pælestik kan lægges over pullerten og let tages af igen.");
 
 /* =====================================================================
@@ -2876,7 +2876,7 @@ Q("vand", 3, "Hvilket knob bruger man til at sætte en fortøjning fast på en p
 // --- Bronze (let) ---
 Q("historie", 1, "Hvem grundlagde spejderbevægelsen?",
   ["Robert Baden-Powell", "William Smith", "Winston Churchill", "Thomas Hughes"],
-  "Baden-Powell – også kaldet B.-P. – var britisk officer og startede spejderbevægelsen i 1907.");
+  "Baden-Powell – også kaldet B-P – var britisk officer og startede spejderbevægelsen i 1907.");
 Q("historie", 1, "Hvad er spejdernes motto?",
   ["Vær beredt", "Altid glad", "Hurtigst vinder", "Kun de stærke"],
   "Mottoet betyder, at en spejder altid er klar til at hjælpe og klare de udfordringer, der kommer.");
@@ -2885,7 +2885,7 @@ Q("historie", 1, "Hvad kalder man ringen, der holder spejdertørklædet samlet?"
   "Mange spejdere laver deres egen tørklædering af læder, træ eller flettet snor.");
 Q("historie", 1, "Hvilken hånd giver spejdere hinanden, når de hilser på spejdermaner?",
   ["Venstre", "Højre", "Begge hænder", "Ingen – man bukker"],
-  "Venstre hånd er tættest på hjertet, siger man – og der er en gammel historie bag.");
+  "Ifølge en gammel historie lagde krigere skjoldet, som de bar i venstre hånd, fra sig for at hilse – et tegn på tillid.");
 Q("historie", 1, "Hvilket symbol bruger spejdere over hele verden?",
   ["Liljen", "Rosen", "Ankeret", "Kronen"],
   "Liljen ses i spejdermærker i næsten alle lande og viser samhørigheden.");
@@ -2917,7 +2917,7 @@ Q("historie", 1, "Hvad kaldes de yngste spejdere i mange danske korps?",
   ["Bævere eller mikroer", "Rovere", "Seniorer", "Tropper"],
   "Navnene varierer fra korps til korps. Fx har DDS bævere, og KFUM-Spejderne har mikroer.");
 Q("historie", 1, "Hvad bærer spejdere om halsen?",
-  ["Et spejdertørklæde", "En slips", "En medalje", "En fløjte"],
+  ["Et spejdertørklæde", "Et slips", "En medalje", "En fløjte"],
   "Tørklædets farve viser ofte, hvilken gruppe man hører til.");
 Q("historie", 1, "Hvad er en spejdergruppe?",
   ["Spejderne fra samme sted eller by", "Alle spejdere i hele verden samlet", "Kun lederne i et korps", "En patrulje på fire"],
@@ -2941,8 +2941,8 @@ Q("historie", 1, "Hvad er en spejderhytte?",
   ["Et hus til spejdermøder og overnatning", "Et telt til lederne", "En hule i skoven", "Et legetårn"],
   "Mange grupper har en hytte i skoven til ture og weekender.");
 Q("historie", 1, "Hvad er en 'hike'?",
-  ["En tur, hvor patruljen klarer sig selv", "En lang nat i telt uden ledere", "En sang ved bålet", "Et mærke for bål"],
-  "På en hike går patruljen fra post til post og overnatter undervejs.");
+  ["En tur med oppakning, hvor patruljen klarer sig selv", "En lang nat i telt uden ledere", "En sang ved bålet", "Et mærke for bål"],
+  "På en hike går patruljen med oppakning og overnatter undervejs – ofte uden ledere.");
 Q("historie", 1, "Hvad kaldte spejderne ofte Robert Baden-Powell?",
   ["B-P", "Bobby", "Høvdingen", "Gamle Rob"],
   "Baden-Powell blev kendt som B-P blandt spejdere over hele verden.");
@@ -2975,7 +2975,7 @@ Q("historie", 2, "Ved hvilken by blev Baden-Powell berømt under en belejring i 
   ["Mafeking", "Kapstaden", "Kairo", "Nairobi"],
   "Under belejringen brugte han unge drenge som budbringere – det inspirerede ham senere.");
 Q("historie", 2, "Hvad er Træmærket?",
-  ["Et mærke for lederuddannelse", "Et mærke for at plante træer", "Et mærke for pionerarbejde", "Et mærke for de yngste spejdere"],
+  ["Et mærke for lederuddannelse", "Et mærke for at plante træer", "Et mærke for pionering", "Et mærke for de yngste spejdere"],
   "De første træperler kom ifølge historien fra en halskæde, Baden-Powell fik i Afrika.");
 Q("historie", 2, "Hvad er Gilwell Park?",
   ["Et spejdercenter ved London", "Baden-Powells barndomshjem", "Et lejrsted på Brownsea Island", "Verdensspejdernes hovedkontor"],
@@ -3045,7 +3045,7 @@ Q("historie", 3, "Hvor blev den 2. verdensjamboree holdt i 1924?",
   ["I Ermelunden ved København", "På Brownsea Island", "I Stockholm", "I Kandersteg"],
   "Omkring 5.000 spejdere fra mange lande slog lejr i Danmark.");
 Q("historie", 3, "Hvilket knob binder rebet rundt om liljen i Verdensspejdermærket?",
-  ["Råbåndsknob", "Pælestik", "Flagstik", "Ottetalsknob"],
+  ["Råbåndsknob", "Pælestik", "Flagknob", "Ottetalsknob"],
   "Råbåndsknobet symboliserer verdensspejderbevægelsens enhed og broderskab.");
 Q("historie", 3, "Hvilken farve har baggrunden i Verdensspejdermærket?",
   ["Lilla", "Grøn", "Mørkeblå", "Rød"],
@@ -3079,7 +3079,7 @@ Q("historie", 3, "Hvad hedder Baden-Powells bog fra 1922 til de ældste spejdere
   "Bogen handler om at 'padle sin egen kano' gennem livet.");
 Q("historie", 3, "Hvilket af disse er et af pigespejdernes (WAGGGS') verdenscentre?",
   ["Our Chalet i Schweiz", "Gilwell Park i England", "Kandersteg i Schweiz", "Brownsea Island i England"],
-  "WAGGGS har verdenscentrene Our Chalet, Pax Lodge, Sangam og Our Cabaña.");
+  "WAGGGS har verdenscentrene Our Chalet, Pax Lodge, Sangam, Our Cabaña og Kusafiri i Afrika.");
 Q("historie", 3, "Hvad betyder 'Gilwell' for spejderledere i dag?",
   ["Et kendt lederkursus", "En sang om Baden-Powell", "En medalje for mod", "En type sovepose"],
   "Gilwelluddannelsen giver Træmærket og det berømte Gilwell-tørklæde.");
@@ -3119,8 +3119,8 @@ Q("natur", 1, "Hvad er kompost?",
   ["Rester, der bliver til ny jord", "Gødning lavet af kunstige stoffer", "En type sorteret skraldespand", "Affald, der brændes i et anlæg"],
   "Regnorme, svampe og bakterier hjælper med at omdanne affaldet til muld.");
 Q("natur", 1, "Hvorfor sorterer vi affald?",
-  ["Så materialerne kan genbruges", "Så skraldespanden bliver tungere", "For at skraldemanden får mere arbejde", "Det er der ingen grund til"],
-  "Når glas, metal, papir og plast sorteres, kan det blive til nye ting.");
+  ["Så materialerne kan genanvendes", "Så skraldespanden bliver tungere", "For at skraldemanden får mere arbejde", "Det er der ingen grund til"],
+  "Når glas, metal, papir og plast sorteres, kan det genanvendes og blive til nye ting.");
 Q("natur", 1, "Hvorfor er bier vigtige for naturen og for os?",
   ["De bestøver blomsterne", "De spiser skadelige insekter", "De holder myggene væk", "De gør jorden mere frugtbar"],
   "Uden bestøvende insekter ville der være meget mindre frugt, bær og grøntsager.");
@@ -3222,7 +3222,7 @@ Q("natur", 2, "Hvad er madspild?",
   ["Mad, der kunne spises, men smides ud", "Mad, der falder på gulvet", "Mad, man ikke kan lide", "Rester, der bliver til kompost"],
   "Når vi smider mad ud, spilder vi også det vand, den energi og det arbejde, der skulle til for at lave den.");
 Q("natur", 2, "Hvad er pant på flasker og dåser godt for?",
-  ["Folk afleverer dem til genbrug", "Drikkevarerne bliver billigere", "Butikkerne tjener mere", "Det er en skat til staten"],
+  ["Folk afleverer dem til genanvendelse", "Drikkevarerne bliver billigere", "Butikkerne tjener mere", "Det er en skat til staten"],
   "Langt de fleste pantflasker og -dåser i Danmark bliver afleveret og genanvendt.");
 Q("natur", 2, "Hvorfor lader man nogle gange døde træer blive liggende i skoven?",
   ["Dødt ved er levested for mange arter", "Det er for tungt at fjerne", "Det giver brænde til næste år", "Det skræmmer vildsvin væk"],
@@ -3241,7 +3241,7 @@ Q("natur", 2, "Hvorfor er hække og levende hegn vigtige i landskabet?",
   "Hegnene fungerer som veje, dyrene kan bevæge sig langs.");
 Q("natur", 2, "Hvad er en fødekædes første led?",
   ["Planter, der laver føde af sollys", "Rovdyr, der jager mindre dyr", "Nedbrydere i jorden", "Insekter, der spiser blade"],
-  "Planterne kaldes producenter, fordi de laver energien.");
+  "Planterne kaldes producenter, fordi de omdanner solens energi til føde.");
 Q("natur", 2, "Hvorfor er sprøjtemidler et problem for bier?",
   ["Mange insekter kan dø af giften", "Bierne bliver for store til at flyve", "Blomsterne bliver blå", "Honningen bliver sød"],
   "Nogle midler skader biernes evne til at finde vej.");
@@ -3308,14 +3308,14 @@ Q("natur", 3, "Hvad er 'urørt skov'?",
   "I urørt skov får træerne lov at gro, dø og rådne.");
 Q("natur", 3, "Hvad er et CO2-aftryk?",
   ["Den mængde drivhusgas, noget udleder", "Et spor af kul på jorden", "Den mængde ilt, træerne laver om året", "En måling af luftfugtighed"],
-  "Aftrykket kan beregnes for en vare, en rejse eller en person.");
+  "Aftrykket kan beregnes for en vare, en rejse eller en person. Det kaldes også et klimaaftryk.");
 Q("natur", 3, "Hvad hedder Danmarks største nationalpark målt på areal?",
   ["Nationalpark Vadehavet", "Nationalpark Thy", "Nationalpark Mols Bjerge", "Nationalpark Skjoldungernes Land"],
   "Nationalpark Vadehavet er omkring 1.459 km² – mest hav og marsk.");
 Q("natur", 3, "Hvad er 'genopretning' af en å?",
   ["At gøre den slynget og naturlig igen", "At rette den ud som en lige kanal", "At lægge den i rør", "At fylde den op med jord"],
   "Mange åer blev rettet ud før i tiden. Slyngninger giver bedre plads til liv.");
-Q("natur", 3, "Hvad er en 'Natura 2000'-område?",
+Q("natur", 3, "Hvad er et Natura 2000-område?",
   ["Et beskyttet naturområde i EU", "En nationalpark oprettet i år 2000", "Et område med vindmøller", "En statsskov med jagt"],
   "Natura 2000 er et net af beskyttede områder i hele EU.");
 Q("natur", 3, "Hvad kaldes det, når havet bliver mere surt, fordi det optager CO2?",
@@ -3380,7 +3380,7 @@ R("knob", 1, "Vis hvordan man binder et dobbelt halvstik om en pæl. Tryk på tr
    "Før tampen hen over den faste part og rundt om pælen igen",
    "Stik tampen ind under den sidste omgang, så den ligger ved siden af den faste part",
    "Træk i begge ender, så stikket strammer om pælen"],
-  "Dobbelt halvstik bruges bl.a. til at starte og slutte surringer.");
+  "Dobbelt halvstik bruges bl.a. til at afslutte besnøringer.");
 R("knob", 2, "Vis hvordan man binder et pælestik – med historien om kaninen. Sæt trinnene i rækkefølge.",
   ["Lav en lille løkke på den faste part – det er kaninhullet",
    "Stik tampen op gennem løkken nedefra – kaninen kommer op af hullet",
@@ -3388,42 +3388,28 @@ R("knob", 2, "Vis hvordan man binder et pælestik – med historien om kaninen. 
    "Stik tampen ned gennem løkken igen – kaninen hopper tilbage i hullet",
    "Hold om tampen og løkken, og træk i den faste part for at stramme"],
   "Historien om kaninen gør det let at huske pælestikket – også når man skal binde det hurtigt.");
-R("knob", 2, "Vis hvordan man binder et flagstik mellem et tykt og et tyndt reb. Sæt trinnene i rækkefølge.",
+R("knob", 2, "Vis hvordan man binder et flagknob mellem et tykt og et tyndt reb. Sæt trinnene i rækkefølge.",
   ["Lav en bugt (en U-form) på det tykke reb",
    "Stik det tynde rebs tamp op gennem bugten nedefra",
    "Før det tynde reb rundt bag om begge parter af bugten",
    "Stik det tynde reb ind under sig selv – men ikke ind i bugten",
    "Stram ved at trække i begge reb"],
-  "Det tynde reb skal altid vikles om det tykke. Til glatte reb kan man tage en ekstra omgang: dobbelt flagstik.");
-R("knob", 2, "Vis hvordan man binder en kvadratsurring. Sæt trinnene i rækkefølge.",
-  ["Bind et dobbelt halvstik om den lodrette stang lige under tværstangen",
-   "Før rebet over tværstangen, bag om den lodrette stang og over tværstangen igen",
-   "Gentag, så der ligger 3-4 stramme omgange",
-   "Lav 2-3 tørn på tværs mellem stængerne for at stramme surringen",
-   "Afslut med et dobbelt halvstik om tværstangen"],
-  "Tørnene på tværs (mellem stængerne) er det, der gør kvadratsurringen rigtig stram.");
+  "Det tynde reb skal altid vikles om det tykke. Til glatte reb kan man tage en ekstra omgang: dobbelt flagknob.");
+R("knob", 2, "Vis hvordan man binder en vinkelbesnøring. Sæt trinnene i rækkefølge.",
+  ["Bind et tømmerstik om den faste rafte lige under tværraften", "Før rebet over tværraften, bag om den faste rafte og over tværraften igen", "Gentag, så der ligger 3-4 stramme tørn ved siden af hinanden", "Læg 3-4 strammetørn mellem rafterne", "Afslut med et dobbelt halvstik"],
+  "Strammetørnene mellem rafterne er det, der gør vinkelbesnøringen rigtig stram.");
 R("knob", 2, "Vis hvordan man binder et tømmerstik om en træstamme. Sæt trinnene i rækkefølge.",
   ["Før rebet rundt om stammen",
    "Før tampen rundt om den faste part",
    "Sno tampen 3-4 gange om sig selv",
    "Træk i den faste part, så stikket strammer om stammen"],
   "Tømmerstikket holder, så længe der trækkes, og er let at løse bagefter.");
-R("knob", 3, "Vis hvordan man binder en trefodssurring. Sæt trinnene i rækkefølge.",
-  ["Læg de tre stænger tæt ved siden af hinanden",
-   "Bind et dobbelt halvstik om den ene yderste stang",
-   "Vikl rebet ind og ud mellem stængerne 6-8 gange – ikke for stramt",
-   "Lav et par tørn på tværs mellem stængerne",
-   "Afslut med et dobbelt halvstik om den anden yderste stang",
-   "Spred benene, så stativet kan stå"],
-  "Surringen må ikke være for stram fra start, for så kan benene ikke spredes.");
-R("knob", 3, "Vis hvordan man binder en diagonalsurring. Sæt trinnene i rækkefølge.",
-  ["Bind et tømmerstik om begge stænger på den ene diagonal",
-   "Træk tømmerstikket stramt, så stængerne trækkes sammen",
-   "Vikl 3-4 omgange langs den samme diagonal",
-   "Vikl 3-4 omgange langs den modsatte diagonal",
-   "Lav et par tørn på tværs mellem stængerne",
-   "Afslut med et dobbelt halvstik"],
-  "Diagonalsurringen bruges, når stænger krydser skråt og vil springe fra hinanden.");
+R("knob", 3, "Vis hvordan man binder en ottetalsbesnøring til en trebuk. Sæt trinnene i rækkefølge.",
+  ["Læg de tre rafter ved siden af hinanden", "Start besnøringen fra midten af rebet", "Flet hver tovpart 6-8 gange om alle tre rafter, så tørnene ligger tæt og parallelt", "Læg et eller to strammetørn", "Afslut med et råbåndsknob", "Rejs trebukken ved at svinge den midterste rafte ned"],
+  "Besnøringen må ikke være helt stram: tommelfingerreglen er 1-1,5 cm slæk mellem rafterne, før trebukken rejses. Benene skal hvile på hinanden og ikke hænge i tovet. Man kan også bruge en sadelmagerbesnøring.");
+R("knob", 3, "Vis hvordan man binder en krydsbesnøring. Sæt trinnene i rækkefølge.",
+  ["Bind et tømmerstik om begge rafter på den ene diagonal", "Træk tømmerstikket stramt, så rafterne trækkes sammen", "Læg 5-6 tørn langs den samme diagonal", "Læg 5-6 tørn på tværs af de første", "Læg et par strammetørn mellem rafterne", "Afslut med et dobbelt halvstik om den ene rafte"],
+  "Krydsbesnøringen bruges, når rafter krydser skråt og vil springe fra hinanden – fx i toppen af en A-buk.");
 R("knob", 3, "Vis hvordan man binder en prusikknude på et klatrereb. Sæt trinnene i rækkefølge.",
   ["Læg prusikløkken bag om klatrerebet",
    "Før den ene ende af løkken gennem den anden ende",
@@ -3488,17 +3474,17 @@ QM("knob", 2, "Hvad er det hvide om enden af rebet på tegningen?",
   ["En takling", "En splejsning", "En kovs", "Et stopknob"],
   "En takling er tyndt garn, der er viklet stramt om enden, så rebet ikke flosser.",
   TEGNING(`<path d="M6 70 H178" stroke="#6b4a22" stroke-width="34" stroke-linecap="butt"/><path d="M6 70 H177" stroke="#d9b47a" stroke-width="28"/><path d="M8 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M20 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M32 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M44 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M56 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M68 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M80 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M92 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M104 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M116 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M128 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M140 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M152 56 l14 28" stroke="#a8793f" stroke-width="3"/><path d="M164 56 l14 28" stroke="#a8793f" stroke-width="3"/><rect x="126" y="52" width="40" height="36" rx="3" fill="#ece3cf" stroke="#7a6a50" stroke-width="1.5"/><path d="M128 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M128 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M132 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M132 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M136 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M136 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M140 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M140 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M144 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M144 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M148 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M148 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M152 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M152 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M156 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M156 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M160 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M160 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/><path d="M164 54 V86" stroke="#f4efe2" stroke-width="3.2"/><path d="M164 54 V86" stroke="#7a6a50" stroke-width="0.8" transform="translate(1.8 0)"/>`));
-QM("knob", 2, "Hvilken surring er tegnet her?",
-  ["Kvadratsurring", "Diagonalsurring", "Trefodssurring", "Parallelsurring"],
-  "Stængerne krydser hinanden i en ret vinkel, og surringen går rundt om krydset.",
+QM("knob", 2, "Hvilken besnøring er tegnet her?",
+  ["Vinkelbesnøring", "Krydsbesnøring", "Ottetalsbesnøring", "Parallelbesnøring"],
+  "Rafterne krydser hinanden i en ret vinkel, og besnøringen går rundt om krydset.",
   TEGNING(`<path d="M8 70 L192 70" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M8 70 L192 70" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/><path d="M100 6 L100 134" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M100 6 L100 134" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/>${TEGNREB("M86 50 H114 M86 56 H114 M86 84 H114 M86 90 H114 M80 56 V84 M86 58 V82 M114 58 V82 M120 56 V84")}`));
-QM("knob", 2, "Hvilken surring holder de to stænger sammen på tegningen?",
-  ["Parallelsurring", "Kvadratsurring", "Trefodssurring", "Diagonalsurring"],
-  "Ved en parallelsurring ligger stængerne side om side – fx når en rafte skal forlænges.",
+QM("knob", 2, "Hvilken besnøring holder de to rafter sammen på tegningen?",
+  ["Parallelbesnøring", "Vinkelbesnøring", "Ottetalsbesnøring", "Krydsbesnøring"],
+  "Ved en parallelbesnøring ligger rafterne side om side – fx når en rafte skal forlænges.",
   TEGNING(`<path d="M84 6 L84 134" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M84 6 L84 134" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/><path d="M116 6 L116 134" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M116 6 L116 134" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/>${TEGNREB("M70 44 H130 M70 52 H130 M70 60 H130 M70 68 H130 M70 76 H130 M100 40 V80")}`));
-QM("knob", 3, "Hvilken surring er brugt til stativet på tegningen?",
-  ["Trefodssurring", "Kvadratsurring", "Parallelsurring", "Diagonalsurring"],
-  "Tre stænger bindes sammen i toppen og spredes ud, så de står som et stativ.",
+QM("knob", 3, "Hvilken besnøring er brugt til trebukken på tegningen?",
+  ["Ottetalsbesnøring", "Vinkelbesnøring", "Parallelbesnøring", "Krydsbesnøring"],
+  "Tre rafter bindes sammen i toppen og spredes ud, så de står som en trebuk.",
   TEGNING(`<path d="M30 134 L104 24" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M30 134 L104 24" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/><path d="M170 134 L96 24" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M170 134 L96 24" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/><path d="M100 136 L100 18" stroke="#6a4520" stroke-width="19" stroke-linecap="round"/><path d="M100 136 L100 18" stroke="#b07a3a" stroke-width="16" stroke-linecap="round"/>${TEGNREB("M82 38 H118 M82 46 H118 M84 54 H116 M100 34 V58")}`));
 
 /* =====================================================================
@@ -3934,7 +3920,7 @@ Q("stjerner", 3, "Hvorfor er månen rødlig under en total måneformørkelse?",
   ["Jordens luft bøjer rødt lys ind på månen", "Månen bliver varm og gløder", "Mars spejler sig i månen", "Støv på månen bliver oplyst"],
   "Det samme lys, der gør solnedgange røde, når frem til månen.");
 Q("stjerner", 3, "Hvad hedder den nærmeste store galakse til Mælkevejen, som kan ses med det blotte øje?",
-  ["Andromedagalaksen", "Orionståget", "Plejaderne", "Den Lille Bjørn"],
+  ["Andromedagalaksen", "Orionståget", "Plejaderne", "Lille Bjørn"],
   "Den ligger ca. 2,5 millioner lysår væk.");
 Q("stjerner", 3, "Hvad er Plejaderne (Syvstjernen)?",
   ["En stjernehob", "En planet", "En komet", "En galakse"],
@@ -3943,8 +3929,8 @@ Q("stjerner", 3, "Hvad er en komet?",
   ["En klump is og støv med en hale", "En stjerne, der falder ned mod Jorden", "En lille måne, der kredser om Mars", "Et lysglimt fra en fjern galakse"],
   "Når kometen kommer tæt på solen, fordamper isen og danner halen.");
 Q("stjerner", 3, "Hvad kaldes stjernebilledet, som Nordstjernen er den yderste stjerne i?",
-  ["Den Lille Bjørn", "Store Bjørn", "Kassiopeia", "Svanen"],
-  "Den Lille Bjørn kaldes også Lille Vogn.");
+  ["Lille Bjørn", "Store Bjørn", "Kassiopeia", "Svanen"],
+  "Lille Bjørn kaldes også Den Lille Karlsvogn.");
 Q("stjerner", 3, "Hvorfor blinker stjerner, mens planeter lyser mere roligt?",
   ["Luften forstyrrer stjernernes små lyspunkter", "Planeter er altid tættere på solen", "Stjerner tænder og slukker", "Planeter har deres eget lys"],
   "Planeter ser ud som små skiver, så luftens uro udjævnes.");
@@ -4001,7 +3987,7 @@ Q("koekken", 1, "Hvad er det vigtigste at gøre, før du laver mad på lejren?",
 Q("koekken", 1, "Hvordan kan man bage en kartoffel i bålet?",
   ["I sølvpapir i gløderne", "Direkte i flammerne uden noget om", "I en gryde uden vand over flammerne", "Spiddet på en pind højt over bålet"],
   "Efter 30-45 minutter i gløderne er en mellemstor kartoffel som regel bagt.");
-Q("koekken", 1, "Hvad kan man lave over bålet i en snobrødspande eller på en rist?",
+Q("koekken", 1, "Hvad kan man lave over bålet på en bålpande eller en rist?",
   ["Pandekager", "Is", "Koldskål", "Smoothie"],
   "Pandekager over bål er en klassiker på mange spejderlejre.");
 Q("koekken", 1, "Hvorfor er det vigtigt at vaske op efter hvert måltid på lejr?",
@@ -4064,7 +4050,7 @@ R("koekken", 1, "Opvask på tur – sæt trinnene i rækkefølge?",
 // --- Sølv (mellem) ---
 Q("koekken", 2, "Hvorfor må man aldrig bruge et gasblus inde i et lukket telt?",
   ["Brandfare og kulilteforgiftning", "Gassen kan fryse i kulden", "Det giver for meget kondens", "Flammen kan gå ud i blæsten"],
-  "Kulilte kan ikke ses eller lugtes. Brug altid blus udenfor eller i en godt ventileret fortelt-åbning.");
+  "Kulilte kan ikke ses eller lugtes. Brug altid blus udenfor – aldrig inde i teltet eller forteltet.");
 Q("koekken", 2, "Hvilket brændsel bruger en Trangia-spritbrænder?",
   ["Rødsprit", "Lampeolie", "Gaspatroner", "Tørsprit"],
   "Rødsprit brænder rent og stille. Opbevar det i en tæt flaske, der er tydeligt mærket.");
@@ -4250,7 +4236,7 @@ Q("vaerktoej", 1, "Hvad kaldes den skarpe kant på en kniv eller en økse?",
   "Æggen er den skarpe kant. Ryggen er den modsatte, butte side af klingen.");
 Q("vaerktoej", 1, "Hvad kalder mange spejdere en kniv med fast klinge, som bæres i en skede?",
   ["En dolk", "En foldekniv", "En lommekniv", "En brødkniv"],
-  "Spejdere kalder ofte deres faste kniv med skede for en dolk. En foldekniv har en klinge, der kan klappes ind i skaftet.");
+  "I almindeligt dansk er en dolk en tveægget stikkniv, men spejdere bruger ordet om deres faste kniv med skede. En foldekniv har en klinge, der kan klappes ind i skaftet.");
 Q("vaerktoej", 1, "Hvad er et knivbevis i mange spejdergrupper?",
   ["Et bevis på, at man har lært at bruge kniv sikkert", "Et kort fra politiet, der giver lov til at købe kniv", "En kvittering, man får, når man køber en ny kniv", "Et mærke, der viser, hvor mange knive man ejer"],
   "Mange grupper har et internt knivbevis. Man får det, når man har vist, at man kan bruge, bære og passe på en kniv.");
@@ -4423,7 +4409,7 @@ Q("vaerktoej", 3, "Hvorfor skal bladet på en buesav være godt strammet?",
   "Et slapt blad bugter sig i snittet, saver skævt og kan knække. Et stramt blad går lige og jævnt igennem.");
 Q("vaerktoej", 3, "Savtænder er ofte bøjet skiftevis lidt ud til hver side. Hvad er formålet?",
   ["Snittet bliver bredere end bladet, så det ikke sidder fast", "Tænderne bliver stærkere og kan ikke brække af", "Saven kan skære lige godt begge veje, både frem og tilbage", "Bladet bliver lettere at folde ind i skaftet"],
-  "Når tænderne er bøjet ud (udlagt), bliver savsnittet bredere end selve bladet. Så klemmer træet ikke så let om saven.");
+  "Når tænderne er bøjet ud (udlagt eller skrænket), bliver savsnittet bredere end selve bladet. Så klemmer træet ikke så let om saven.");
 Q("vaerktoej", 3, "Hvorfor bør man ikke slå to økser mod hinanden, fx for at bruge den ene som kile?",
   ["Det hærdede stål kan skalle af og sende splinter ud", "Økserne bliver magnetiske og tiltrækker søm og skruer bagefter", "Skafterne kan blive ved med at vibrere bagefter", "Det giver gnister, der kan tænde skovbund"],
   "Hærdet stål mod hærdet stål kan give skår og små metalsplinter, der flyver ud. Brug en kile og en mukkert i stedet.");
@@ -4463,7 +4449,7 @@ Q("tur", 1, "Hvad er smart at have ved hånden om natten i teltet?",
   ["En pandelampe", "Et fyrfadslys", "En lille gaslampe", "En lysstav"],
   "Levende lys i teltet er brandfarligt. En pandelampe giver frie hænder.");
 Q("tur", 1, "Hvad hedder den lille taske, man har toiletting i på en lejr?",
-  ["Toilettaske", "Drybag", "Mavebælte", "Skuldertaske"],
+  ["Toilettaske", "Vandtæt pakpose", "Mavebælte", "Skuldertaske"],
   "Tandbørste, tandpasta og sæbe samlet ét sted.");
 Q("tur", 1, "Hvorfor tager man en drikkedunk med på lejr?",
   ["Så man altid har vand ved hånden", "For at holde maden kold", "For at banke pløkker i", "For at måle mængder i madlavningen"],
@@ -4475,7 +4461,7 @@ Q("tur", 1, "Du mærker, at du er ved at få en vabel på en vandretur. Hvad er 
   ["Stoppe og sætte vabelplaster på", "Prikke hul på den og trække huden af", "Gå videre og vente til pausen", "Løsne snørebåndene og gå hurtigere"],
   "Jo før man stopper, desto mindre bliver vablen. Tape eller vabelplaster mindsker gnidningen.");
 Q("tur", 1, "Hvad kaldes det yderste lag i lag-på-lag, som skal holde regn og vind ude?",
-  ["Skallaget", "Isolationslaget", "Mellemlaget", "Inderlaget"],
+  ["Skallaget", "Bundlaget", "Mellemlaget", "Inderlaget"],
   "Skallaget er fx en regnjakke eller vindjakke. Det beskytter de varme lag indenunder mod vind og vand.");
 Q("tur", 1, "Hvilket materiale er bedst til det inderste lag tæt på huden på en kold tur?",
   ["Uld", "Bomuld", "Denim", "Viskose"],
@@ -4537,7 +4523,7 @@ Q("tur", 2, "Hvorfor er bomuld et dårligt valg til tøj på en kold og våd tur
   "Uld og syntetiske materialer varmer langt bedre, også når de er fugtige.");
 Q("tur", 2, "Hvad betyder lag-på-lag-princippet?",
   ["Flere tynde lag tøj", "Én meget tyk jakke", "To par sokker i hver sko", "Sove i to soveposer"],
-  "Typisk et inderlag, der transporterer fugt, et varmt mellemlag og en skal mod vind og regn.");
+  "Typisk et inderlag, der transporterer fugt, et varmt mellemlag og et skallag mod vind og regn.");
 R("tur", 2, "Hvordan pakker du en rygsæk til en hike – fra bunden og op?",
   ["Soveposen nederst i bunden", "Tunge ting som mad og gryder i midten tæt på ryggen", "Lettere tøj rundt om og ovenpå", "Regntøj og snacks øverst eller i toplåget"],
   "Det lette, store (soveposen) i bunden, det tunge tæt på ryggen, og det, du skal bruge undervejs, øverst.");
@@ -4573,7 +4559,7 @@ Q("tur", 2, "Hvorfor er det smart at have en kortere alternativ rute med i turpl
   "En plan B gør det let at korte turen af, hvis noget går anderledes end ventet.");
 Q("tur", 2, "Hvordan kan en patrulje bedst spare vægt på en hike?",
   ["Dele fælles udstyr som telt og gryder", "Alle tager deres egen gryde med", "Pakke ekstra dåsemad til nødstilfælde", "Tage alt vandet med hjemmefra"],
-  "Når fælles ting som telt, trangia og mad fordeles, skal ingen bære dobbelt.");
+  "Når fælles ting som telt, Trangia og mad fordeles, skal ingen bære dobbelt.");
 Q("tur", 2, "Hvad er fordelen ved vandrestøvler, der går op over anklen?",
   ["De støtter anklen på ujævnt terræn", "De er lettere end almindelige sko", "De tørrer hurtigere, når de er våde", "De holder altid vandet helt ude"],
   "Høje støvler giver anklen støtte, så man ikke så let vrider om på sten og rødder.");
@@ -4671,9 +4657,9 @@ Q("tur", 3, "Hvad skal den forreste i gruppen gøre ved et vejkryds?",
 Q("tur", 3, "Hvorfor lægger man ofte turens hårdeste stykke tidligt på dagen?",
   ["Man har flest kræfter og mest dagslys", "Det er altid koldest om eftermiddagen", "Stierne er tørrest tidligt om morgenen", "Man må kun gå op ad bakke om morgenen"],
   "Tidligt på dagen er alle friske, og der er god tid, hvis noget tager længere tid end planlagt.");
-Q("tur", 3, "Hvorfor bør skaltøj være lidt rummeligt?",
+Q("tur", 3, "Hvorfor bør skallaget være lidt rummeligt?",
   ["Der skal være plads til lagene indenunder", "Det bliver mere vandtæt, når det er stort", "Så vinden kan blæse sveden væk fra kroppen", "Så det ikke krymper i regnvejr"],
-  "Strammer skaltøjet, presses mellemlaget sammen, og luften, der isolerer, forsvinder.");
+  "Strammer skallaget, presses mellemlaget sammen, og luften, der isolerer, forsvinder.");
 Q("tur", 3, "Hvad betyder det, at syntetisk undertøj er 'hydrofobt'?",
   ["Fibrene suger næsten ikke vand", "Det beskytter mod solens stråler", "Det dræber bakterier i sveden", "Det kan tåle meget høj varme"],
   "Hydrofob betyder 'vandskyende'. Fibrene suger ikke sveden, men leder den ud, hvor den kan fordampe.");
@@ -4817,7 +4803,7 @@ Q("fugle", 2, "Hvilken sort-hvid fugl med langt orangerødt næb og røde ben pi
   "Strandskaden bruger det kraftige næb til at åbne muslinger og finde orme i sandet.");
 Q("fugle", 2, "Hvilken havand plukker bløde dun af sit bryst for at fore reden?",
   ["Edderfuglen", "Gråanden", "Knopsvanen", "Grågåsen"],
-  "Ederdun er så gode til at isolere, at de er blevet brugt i dyner i århundreder.");
+  "Edderdun er så gode til at isolere, at de er blevet brugt i dyner i århundreder.");
 Q("fugle", 2, "Hvilken sort fugl ses ofte sidde på en sten med vingerne spredt ud for at tørre dem?",
   ["Skarven", "Blishønen", "Gråkragen", "Alliken"],
   "Skarvens fjer bliver våde, når den dykker efter fisk, så den skal tørre dem bagefter.");
@@ -4926,7 +4912,7 @@ Q("spor", 1, "Hvorfor kan man normalt ikke se kløer i et kattespor?",
 Q("spor", 1, "Hvor mange tæer kan man normalt se i et rævespor?",
   ["4", "3", "5", "2"],
   "I rævens spor ses fire tæer foran den store trædepude, ofte med små kloaftryk.");
-Q("spor", 1, "Rådyr og hjorte træder på to hårde tåspidser. Hvad kaldes de?",
+Q("spor", 1, "Hjortedyr som rådyr og kronhjorte træder på to hårde tåspidser. Hvad kaldes de?",
   ["Klove", "Hove", "Poter", "Trædesåler"],
   "Hjortedyr har klove. Sporet ligner to dråber eller et hjerte, der peger i gangretningen.");
 Q("spor", 1, "Hvor mange tæer peger fremad i sporet fra de fleste fugle, fx en krage?",
@@ -4976,7 +4962,7 @@ Q("spor", 1, "Hvad kaldes den store, bløde pude under en ræves pote?",
   "Trædepuden ses som et stort aftryk bag tæerne i sporet.");
 Q("spor", 1, "Hvordan ser harens ekskrementer typisk ud?",
   ["Runde kugler af plantefibre", "Lange pølser med hår i", "Sorte, blanke stykker med insektrester", "Små hvide klatter"],
-  "Hareskidt er runde, lidt flade kugler af pressede plantedele.");
+  "Harens ekskrementer er runde, lidt flade kugler af pressede plantedele.");
 Q("spor", 1, "Hvad kan man især lære ved at kigge på et dyrs ekskrementer?",
   ["Hvad dyret har spist", "Hvor gammelt dyret er", "Hvor hurtigt dyret løber", "Hvilken farve pels dyret har"],
   "Man kan fx finde frugtkerner, hår, knogler eller insektrester – og så ved man, hvad dyret har ædt.");
@@ -5259,7 +5245,7 @@ Q("gps", 2, "Hvilken UTM-zone ligger det meste af Danmark i?",
   "Danske kort og GPS'er bruger normalt UTM zone 32 for hele landet undtagen Bornholm.");
 Q("gps", 2, "Hvilken UTM-zone ligger Bornholm i?",
   ["Zone 33", "Zone 32", "Zone 34", "Zone 30"],
-  "Bornholm ligger så langt mod øst, at øen hører til UTM zone 33.");
+  "Bornholm ligger øst for 12° Ø, hvor UTM zone 33 begynder. Det gør den østligste del af Sjælland og Lolland-Falster faktisk også, men i Danmark bruger man zone 32 for hele landet undtagen Bornholm.");
 Q("gps", 2, "Hvilket land har bygget og driver GPS-systemet?",
   ["USA", "Rusland", "Kina", "Frankrig"],
   "GPS er amerikansk. Rusland har GLONASS, Kina har BeiDou, og EU har Galileo.");
@@ -5456,9 +5442,9 @@ R("lejrbaal", 1, "Sæt trinnene i rækkefølge, når patruljen laver en sketch t
   ["Find en idé", "Fordel rollerne", "Øv sketchen", "Opfør den ved lejrbålet"],
   "Først idéen, så rollerne og så øvning – det er meget lettere at optræde, når man har prøvet det før.");
 // --- Sølv (mellem) ---
-Q("lejrbaal", 2, "Hvad er en lejrbål-aften med sange og sketches?",
-  ["Et lejrbålsprogram", "En patruljeweekend", "Et natløb", "En vagtrunde"],
-  "Lejrbålet er en gammel tradition med sange, råb og sketches.");
+Q("lejrbaal", 2, "Hvad kalder spejdere en aften, hvor man samles om bålet med sange, råb og sketches?",
+  ["Et lejrbål", "En patruljeweekend", "Et natløb", "En vagtrunde"],
+  "Lejrbålet er en gammel spejdertradition med sange, råb og sketches.");
 Q("lejrbaal", 2, "I hvilket år skrev Holger Drachmann 'Midsommervisen'?",
   ["1885", "1849", "1920", "1814"],
   "'Midsommervisen' er fra 1885. Den blev skrevet til Drachmanns skuespil 'Der var engang'.");
@@ -5548,8 +5534,8 @@ Q("lejrbaal", 3, "Hvem oversatte 'Auld Lang Syne' til den danske 'Skuld gammel v
   ["Jeppe Aakjær", "Johannes V. Jensen", "Holger Drachmann", "Benny Andersen"],
   "Jeppe Aakjær lavede den danske version på jysk. Den synges ofte ved afslutninger, fx på lejre.");
 Q("lejrbaal", 3, "Hvordan står man traditionelt, når man synger 'Skuld gammel venskab rejn' til afsked?",
-  ["I en rundkreds med krydsede arme", "På række med front mod bålet og lederne", "To og to med ryggen mod hinanden", "Spredt med en lygte i hånden"],
-  "Man tager hinanden i hænderne med armene krydset, så rundkredsen bliver en lukket kæde af venskab.");
+  ["I en rundkreds, hånd i hånd", "På række med front mod bålet og lederne", "To og to med ryggen mod hinanden", "Spredt med en lygte i hånden"],
+  "Mange krydser armene og tager hinanden i hænderne, så rundkredsen bliver en lukket kæde. I den skotske tradition krydser man først armene i sidste vers.");
 Q("lejrbaal", 3, "Hvad betyder 'Kumbaya' i den kendte bålsang af samme navn?",
   ["Kom herover", "God nat", "Lad os synge", "Bålet brænder"],
   "'Kumbaya' kommer af 'Come by here' (kom herover). Sangen er en afroamerikansk spiritual fra sydstaterne i USA.");
@@ -5645,7 +5631,7 @@ Q("ledelse", 1, "En spejder kommer til skade på en patruljetur. Hvem skal have 
 Q("ledelse", 1, "Patruljelederen er syg på mødedagen. Hvem tager typisk over?",
   ["Patruljeassistenten", "Den nyeste spejder", "Gruppens kasserer", "En af forældrene til spejderne"],
   "Patruljeassistenten hjælper patruljelederen og kan træde til, når patruljelederen ikke er der.");
-Q("ledelse", 1, "Hvad er en god måde at lære andre at binde en ny knude på?",
+Q("ledelse", 1, "Hvad er en god måde at lære andre at binde et nyt knob på?",
   ["Forklare, vise og lade dem prøve", "Tegne knuden på en tavle", "Binde den hurtigt én gang, mens de kigger på", "Give dem en bog om knob"],
   "Man lærer bedst ved at høre, se og selv prøve – og få hjælp undervejs.");
 Q("ledelse", 1, "Hvad betyder det at være en god kammerat i patruljen?",
@@ -5688,7 +5674,7 @@ Q("ledelse", 1, "Hvad kan du gøre, hvis du er uenig med din patruljeleder?",
   ["Sige det roligt og forklare hvorfor", "Gøre det stik modsatte", "Blive væk fra møderne", "Tale dårligt om lederen bag hendes ryg"],
   "Det er helt i orden at være uenig. Det vigtige er at sige det på en ordentlig måde.");
 // --- Sølv (mellem) ---
-Q("ledelse", 2, "Hvad er en spejder-lov?",
+Q("ledelse", 2, "Hvad er en spejderlov?",
   ["Regler for, hvordan en spejder bør være", "Loven om fri teltning i statens skove", "En regel for knob", "En sang ved bålet"],
   "Spejderloven handler fx om at være hjælpsom, ærlig og passe på naturen.");
 Q("ledelse", 2, "Hvad er en gruppeleder?",
@@ -5850,7 +5836,7 @@ Q("ledelse", 3, "Patruljen er træt og sulten midt på en hike, og stemningen er
 
 const ANTAL_SPG_MIN = 10;
 const EMNER_ALLE = [
-  { id:"knob",        navn:"Knob og reb",                 farve:"#c4934f", besk:"Knob, stik, surringer og alt om reb og tovværk." },
+  { id:"knob",        navn:"Knob og reb",                 farve:"#c4934f", besk:"Knob, stik, besnøringer og alt om reb og tovværk." },
   { id:"forstehjalp", navn:"Førstehjælp",                 farve:"#b3261e", besk:"Hjælp andre, når uheldet er ude – fra plaster til hjerte-lunge-redning." },
   { id:"dyr",         navn:"Dyr",                         farve:"#7a4b2a", besk:"Pattedyr, krybdyr, padder og insekter i den danske natur." },
   { id:"planter",     navn:"Planter og svampe",           farve:"#5e8c3a", besk:"Træer, blomster, bær og svampe – og hvad du skal holde dig fra." },
@@ -6857,13 +6843,13 @@ const BYG = [
 
   { id:"huggeplads",  navn:"Huggeplads",        ikon:"🪓", pris:60,  krav:["vaerktoej",1], en:true, besk:"Huggeblok og savbuk. Her kløves brænde – højere niveau giver mere brænde og hurtigere kløvning." },
 
-  { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60,  krav:["knob",1],        besk:"Rafter surret sammen til et spisebord." },
-  { id:"port",        navn:"Lejrport",          svg:"port",     pris:150, krav:["knob",2],        besk:"Pioneret port med kvadratsurringer." },
-  { id:"taarn",       navn:"Udsigtstårn",       svg:"taarn",    pris:300, krav:["knob",3],        besk:"Højt tårn bygget med diagonal- og kvadratsurringer." },
+  { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60,  krav:["knob",1],        besk:"Rafter besnøret sammen til et spisebord." },
+  { id:"port",        navn:"Lejrport",          svg:"port",     pris:150, krav:["knob",2],        besk:"Pioneret port med vinkelbesnøringer." },
+  { id:"taarn",       navn:"Udsigtstårn",       svg:"taarn",    pris:300, krav:["knob",3],        besk:"Højt tårn bygget med kryds- og vinkelbesnøringer." },
   { id:"svaevebane",  navn:"Svævebane",         svg:"svaeve",   pris:400, krav:["knob",3],        besk:"Sus hen over pladsen! Kræver stærke knob." },
 
   { id:"forstehjalp", navn:"Førstehjælpsstation", svg:"kors",   pris:60,  krav:["forstehjalp",1], besk:"Plaster og forbindinger klar." },
-  { id:"baare",       navn:"Båre",              svg:"baare",    pris:120, krav:["forstehjalp",2], besk:"Lavet af to stænger og et tæppe." },
+  { id:"baare",       navn:"Båre",              svg:"baare",    pris:120, krav:["forstehjalp",2], besk:"Lavet af to rafter og et tæppe." },
   { id:"hjertestarter",navn:"Hjertestarter",    svg:"aed",      pris:220, krav:["forstehjalp",3], besk:"Hjertestarter i et grønt skab." },
 
   { id:"pindsvinehus",navn:"Pindsvinehus",      ikon:"🦔", pris:40,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
@@ -6898,7 +6884,7 @@ const BYG = [
 
   { id:"kano",        navn:"Kano",              ikon:"🛶", pris:80,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
   { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
-  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, krav:["vand",3], vand:true, besk:"Stammer surret sammen til en flåde, der kan bære hele patruljen ud på søen." },
+  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, krav:["vand",3], vand:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
   { id:"liljeskilt",  navn:"Liljeskilt",        svg:"lilje",    pris:120, krav:["historie",2],    besk:"Spejderliljen skåret i træ." },
@@ -7022,16 +7008,16 @@ const BYGTID = { rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaar
 for(const k in BYGTID) BYGTID[k] *= TIDSFAKTOR;
 const TELT_IDS = ["telt","patruljetelt","jamboree"];
 
-/* ---------- Surringsopgaver til pionerarbejde ----------
+/* ---------- Besnøringsopgaver til pionering (de interne id'er kvadrat/diagonal/trefod er bevaret, så gemte spil virker) ----------
    poles: stænger [x1,y1,x2,y2], led: knudepunkter [x,y,type], pynt: tegnes når alt er bundet.
-   type: "kvadrat" (ret vinkel), "diagonal" (skråt kryds), "trefod" (tre stænger mødes) */
+   type: "kvadrat" (ret vinkel), "diagonal" (skråt kryds), "trefod" (tre rafter mødes i en trebuk) */
 const SURRINGER = {
-  kvadrat:  { navn:"Kvadratsurring",  ikon:`<path d="M12 3 V21 M3 12 H21" stroke-width="3"/>`,
-              hint:"Stængerne krydser hinanden i ret vinkel (90°). Det kræver en kvadratsurring." },
-  diagonal: { navn:"Diagonalsurring", ikon:`<path d="M5 4 L19 20 M19 4 L5 20" stroke-width="3"/>`,
-              hint:"Stængerne krydser hinanden skråt. Så bruger man en diagonalsurring, der trækker dem sammen." },
-  trefod:   { navn:"Trefodssurring",  ikon:`<path d="M12 4 L4 21 M12 4 L20 21 M12 4 V21" stroke-width="3"/>`,
-              hint:"Her mødes tre stænger i toppen. Det er en trefodssurring." },
+  kvadrat:  { navn:"Vinkelbesnøring",  ikon:`<path d="M12 3 V21 M3 12 H21" stroke-width="3"/>`,
+              hint:"Rafterne krydser hinanden i ret vinkel (90°). Det kræver en vinkelbesnøring." },
+  diagonal: { navn:"Krydsbesnøring", ikon:`<path d="M5 4 L19 20 M19 4 L5 20" stroke-width="3"/>`,
+              hint:"Rafterne krydser hinanden skråt. Så bruger man en krydsbesnøring, der trækker dem sammen." },
+  trefod:   { navn:"Ottetalsbesnøring",  ikon:`<path d="M12 4 L4 21 M12 4 L20 21 M12 4 V21" stroke-width="3"/>`,
+              hint:"Her mødes tre rafter i toppen af en trebuk. Det er en ottetalsbesnøring." },
 };
 const OPGAVER = {
   bord: { poles:[[40,80,40,188],[160,80,160,188],[18,80,182,80],[28,145,172,145],[40,100,160,135],[40,135,160,100]],
@@ -7059,7 +7045,7 @@ const OPGAVER = {
 
 let lejrValg = null;   // { type:"ny", id } eller { type:"flyt", idx }
 let lejrNy = null;     // felt der lige er bygget (til animation)
-let bygOpg = null;     // igangværende surringsopgave
+let bygOpg = null;     // igangværende besnøringsopgave
 let lejrUr = null;     // opdaterer byggetider på skærmen
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
@@ -7100,7 +7086,7 @@ function scrLejr(){
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":"Flyt"}: ${valgt.navn}</b>
-      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vand?" på søen":""}.${opg?" Bagefter skal du binde surringerne.":""}</small></div>
+      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vand?" på søen":""}.${opg?" Bagefter skal du binde besnøringerne.":""}</small></div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   h += `<div class="lejrmap" id="lejrmap" style="position:relative">`;
@@ -7120,7 +7106,7 @@ function scrLejr(){
   lejrNy = null;
   h += arbejdeHTML(c);
   h += `<div class="sect" style="margin-top:18px">Byggeliste</div>
-    <p class="muted" style="margin:-4px 0 12px;font-size:14px">Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde surringerne. Store ting tager tid at bygge.</p>
+    <p class="muted" style="margin:-4px 0 12px;font-size:14px">Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne. Store ting tager tid at bygge.</p>
     <div class="shop">`;
   for(const b of BYG){
     const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
@@ -7304,15 +7290,15 @@ const LAAS_OP = {
 function laaserOp(emneId, lvl){ return [...nyeTing(emneId,lvl).map(b=>b.navn), (LAAS_OP[emneId]||{})[lvl]].filter(Boolean).join(" · "); }
 function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emneId && b.krav[1]===lvl); }
 
-/* ---------- Surringsopgaven ---------- */
+/* ---------- Besnøringsopgaven ---------- */
 function scrByg(){
   const b=BYGID[bygOpg.id] || { id:bygOpg.id, navn:opgNavn(bygOpg.id) }, o=OPGAVER[bygOpg.id], n=o.led.length, done=Object.keys(bygOpg.bundet).length, faerdig=done===n;
   const pat=bygOpg.patrulje, turC=pat && state.chars.find(x=>x.id===bygOpg.tur);
   if(pat && bygOpg.skift && !faerdig){
     const mine=o.led.filter((_,k)=>bygOpg.ejere[k]===turC.id && !bygOpg.bundet[k]).length;
     return `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>Patruljen bygger: ${b.navn}</h1><span class="spacer"></span></div>
-      <div class="bygstatus card"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>
-      ${giverTelefon(turC, `${esc(turC.navn)} skal binde ${mine} surring${mine===1?"":"er"} på ${b.navn.toLowerCase()}.`, `Jeg er ${esc(turC.navn)} – klar!`, "pbygklar")}`;
+      <div class="bygstatus card"><b>🪢 ${done} af ${n} besnøringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>
+      ${giverTelefon(turC, `${esc(turC.navn)} skal binde ${mine} besnøring${mine===1?"":"er"} på ${b.navn.toLowerCase()}.`, `Jeg er ${esc(turC.navn)} – klar!`, "pbygklar")}`;
   }
   let svg = `<svg viewBox="-10 -10 220 215" class="bygsvg" id="bygsvg">${o.bund||""}`;
   if(faerdig) svg += o.pynt||"";
@@ -7326,24 +7312,24 @@ function scrByg(){
   svg += `</svg>`;
   bygOpg.nyt=null; bygOpg.forkert=null;
   let h = `<div class="topbar"><button class="iconbtn" data-a="bygstop" aria-label="Stop">✕</button><h1>${bygOpg.loeb?"Pionerposten":pat?"Patruljen bygger":bygOpg.moede?"Ugens aktivitet":"Byg"}: ${b.navn}</h1><span class="spacer"></span></div>
-    ${pat&&!faerdig?`<div class="turchip">${hoved(turC,"lille")} <b>${esc(turC.navn)}s tur</b> – bind dine surringer. De andres står med forbogstav.</div>`:""}
-    <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} surringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
+    ${pat&&!faerdig?`<div class="turchip">${hoved(turC,"lille")} <b>${esc(turC.navn)}s tur</b> – bind dine besnøringer. De andres står med forbogstav.</div>`:""}
+    <div class="card bygkort"><div class="bygstatus"><b>🪢 ${done} af ${n} besnøringer bundet</b><div class="bar"><i style="width:${done/n*100}%"></i></div></div>${svg}</div>`;
   if(!faerdig){
-    h += `<p class="center" style="margin:4px 0 10px"><b>Træk den rigtige surring hen på hvert <span class="qmark">?</span></b><br><small class="muted">Du kan også trykke på en surring og så på knudepunktet.</small></p>
-      <div class="surbakke">${Object.entries(SURRINGER).map(([id,s])=>`<button class="surchip ${bygOpg.valgt===id?"on":""}" data-sur="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5a2b" stroke-linecap="round">${s.ikon}</svg>${s.navn}</button>`).join("")}</div>`;
+    h += `<p class="center" style="margin:4px 0 10px"><b>Træk den rigtige besnøring hen på hvert <span class="qmark">?</span></b><br><small class="muted">Du kan også trykke på en besnøring og så på knudepunktet.</small></p>
+      <div class="surbakke">${Object.entries(SURRINGER).map(([id,s])=>`<button class="surchip ${bygOpg.valgt===id?"on":""}" data-sur="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5a2b" stroke-linecap="round">${s.ikon}</svg><span>${s.navn.replace("besnøring","&shy;besnøring")}</span></button>`).join("")}</div>`;
   } else {
     const tid=BYGTID[b.id];
-    if(bygOpg.moede) return h + `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+    if(bygOpg.moede) return h + `<div class="card center"><div class="resmsg">Alle besnøringer er bundet! 🎉</div>
       <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`} ${b.navn} står klar i hyttens have.</p></div>
       <button class="btn gold" data-a="moedebygok">Videre med mødet →</button>`;
-    if(bygOpg.loeb) return h + `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+    if(bygOpg.loeb) return h + `<div class="card center"><div class="resmsg">Alle besnøringer er bundet! 🎉</div>
       <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs.`} ${b.navn} holder, og patruljen kan komme videre.</p></div>
       <button class="btn gold" data-a="loebbygok">Videre på løbet →</button>`;
     if(pat){ const pr=PPROJ.find(x=>x.id===b.id), pp=patruljer().find(x=>x.id===pat), forste=!(pp.projekter||{})[b.id];
-      return h + `<div class="card center"><div class="resmsg">Patruljen har bundet alle surringer! 🎉</div>
+      return h + `<div class="card center"><div class="resmsg">Patruljen har bundet alle besnøringer! 🎉</div>
         <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Ingen fejl – flot samarbejde!":`I lavede ${bygOpg.fejl} fejl undervejs, men I hjalp hinanden i mål.`}${forste?` Alle i patruljen får <b>+${pr.point} point</b>.`:""}</p></div>
         <button class="btn gold" data-a="pbygslut">🏆 Færdiggør projektet</button>`; }
-    h += `<div class="card center"><div class="resmsg">Alle surringer er bundet! 🎉</div>
+    h += `<div class="card center"><div class="resmsg">Alle besnøringer er bundet! 🎉</div>
       <p class="muted" style="margin:6px 0 0">${bygOpg.fejl===0?"Perfekt – ingen fejl!":`Du lavede ${bygOpg.fejl} fejl undervejs, men nu sidder det hele.`}${tid?` Patruljen skal bruge <b>${tidTekst(tid)}</b> på at bygge resten.`:""}</p></div>
       <button class="btn gold" data-a="bygstart">🏗️ Start byggeriet (🪙 ${b.pris})</button>`;
   }
@@ -7356,7 +7342,7 @@ function bindLed(k,type){
   if(o.led[k][2]===type){ bygOpg.bundet[k]=true; bygOpg.nyt=k; bygOpg.valgt=null; vibrer(30); render(); if(bygOpg.patrulje) pbygTurFaerdig(); }
   else { bygOpg.fejl++; bygOpg.forkert=k; vibrer([60,40,60]); render(); lejrToast(`Ikke en ${SURRINGER[type].navn.toLowerCase()}. ${SURRINGER[o.led[k][2]].hint}`); }
 }
-// Træk-og-slip af surringer
+// Træk-og-slip af besnøringer
 let traek=null;
 app.addEventListener("pointerdown", ev=>{
   const chip=ev.target.closest(".surchip"); if(!chip || nav.screen!=="byg") return;
@@ -7382,7 +7368,7 @@ window.addEventListener("pointercancel", ()=>{ if(traek){ traek.g.remove(); trae
 app.addEventListener("click", ev=>{
   if(nav.screen!=="byg" || !bygOpg) return;
   const led=ev.target.closest("[data-led]");
-  if(led){ if(bygOpg.valgt) bindLed(+led.dataset.led, bygOpg.valgt); else lejrToast("Vælg først en surring nedenfor – eller træk den herop."); }
+  if(led){ if(bygOpg.valgt) bindLed(+led.dataset.led, bygOpg.valgt); else lejrToast("Vælg først en besnøring nedenfor – eller træk den herop."); }
 });
 
 /* ---------- Indret dit telt ---------- */
@@ -8365,7 +8351,7 @@ const ROLLER = [
   { id:"signal",  navn:"Signalist",     ikon:"🚩", opg:"signal- og kodeposter" },
 ];
 const ROLLEID = Object.fromEntries(ROLLER.map(r=>[r.id,r]));
-// rolle:null = hele patruljen (man vælger selv, hvem der svarer, eller surringerne fordeles)
+// rolle:null = hele patruljen (man vælger selv, hvem der svarer, eller besnøringerne fordeles)
 const POSTTYPER = {
   videns:       { navn:"Vidensposten",       ikon:"❓", rolle:null },
   pioner:       { navn:"Pionerposten",       ikon:"🪢", rolle:null },
@@ -8461,7 +8447,7 @@ const FH_SCEN = [
   { niveau:2, titel:"Forstuvet ankel", tekst:"En spejder vrider om på foden. Brug RICE-princippet.", trin:["Ro – stop med at gå på foden","Is – køl anklen","Kompression – læg en støttebandage","Elevation – løft benet op"], forklaring:"RICE: Rest, Ice, Compression, Elevation." },
   { niveau:2, titel:"Kraftig blødning", tekst:"En spejder skærer sig dybt på en kniv. Brug førstehjælpens fire hovedpunkter.", trin:["Stands ulykken – læg kniven væk","Giv livreddende førstehjælp – tryk på såret","Tilkald hjælp – ring 112","Giv almindelig førstehjælp – hold personen varm og rolig"], forklaring:"Først sikkerhed, så det livreddende, så hjælp og til sidst almindelig førstehjælp." },
   { niveau:2, titel:"Brækket arm", tekst:"En spejder falder ned fra en sten og har ondt i armen.", trin:["Lad personen holde armen i ro","Støt armen i en armslynge af tørklædet","Køl det ømme sted","Få personen til lægevagten eller skadestuen"], forklaring:"Armslyngen holder armen i ro, til en læge har set på den." },
-  { niveau:2, titel:"Bevidstløs i skoven", tekst:"I finder en person, der ligger stille. Personen trækker vejret normalt.", trin:["Sørg for, at stedet er sikkert","Tjek, om personen reagerer","Skab frie luftveje","Tjek vejrtrækningen i 10 sekunder","Læg personen i aflåst sideleje"], forklaring:"Aflåst sideleje holder luftvejene frie hos en bevidstløs, der trækker vejret." },
+  { niveau:2, titel:"Bevidstløs i skoven", tekst:"I finder en person, der ligger stille. Personen trækker vejret normalt.", trin:["Sørg for, at stedet er sikkert","Tjek, om personen reagerer","Skab frie luftveje","Tjek vejrtrækningen i 10 sekunder","Læg personen i stabilt sideleje"], forklaring:"Stabilt sideleje holder luftvejene frie hos en bevidstløs, der trækker vejret." },
   { niveau:3, titel:"Hjertestop", tekst:"En mand falder om ved søen og trækker ikke vejret normalt.", trin:["Sørg for, at stedet er sikkert","Tjek reaktion og vejrtrækning","Ring 112 og få hentet en hjertestarter","Giv 30 brysttryk","Giv 2 indblæsninger","Brug hjertestarteren, når den kommer"], forklaring:"Hurtig hjerte-lunge-redning og hjertestarter redder liv." },
   { niveau:3, titel:"Kvælning", tekst:"En spejder får mad galt i halsen og kan hverken tale eller hoste.", trin:["Spørg: »Er du ved at blive kvalt?«","Giv 5 slag mellem skulderbladene","Giv 5 tryk på maven","Gentag og ring 112, hvis det ikke hjælper"], forklaring:"Skiftevis 5 rygslag og 5 tryk på maven." },
   { niveau:3, titel:"Nedkølet efter kæntring", tekst:"En spejder er faldet i den kolde sø og ryster over hele kroppen.", trin:["Få personen op af vandet og i læ","Skift det våde tøj ud med tørt","Pak personen ind i sovepose og tæpper","Giv en varm, sød drik"], forklaring:"Tørt tøj og isolering først – en varm drik giver energi, når personen er vågen." },
@@ -8471,7 +8457,7 @@ const FH_SCEN = [
 const BAAL_OPG = [
   { niveau:1, titel:"Bål til snobrød", tekst:"Byg et bål, der giver gode gløder til snobrød.", trin:["Birkebark og tørt græs","Tynde, tørre kviste","Grene så tykke som en finger","Kløvet brænde"], ekstra:["Våde blade","En plastikpose"], forklaring:"Start småt og tørt, og byg langsomt op." },
   { niveau:1, titel:"Sluk bålet", tekst:"Patruljen er færdig ved bålet. Sluk det helt.", trin:["Hæld vand på gløderne","Rør rundt i asken","Hæld mere vand på","Mærk efter, at alt er koldt"], ekstra:["Dæk det med tørre blade","Lad det brænde ud af sig selv"], forklaring:"Vand, rør rundt og mere vand – til der ikke er varme tilbage." },
-  { niveau:2, titel:"Bål med ildstål", tekst:"Tænd bålet uden tændstikker – kun med ildstål.", trin:["Skær en fedtpind med tynde spåner","Slå gnister ned i birkebarken","Pust forsigtigt på gløden","Læg tynde kviste på","Byg op med tykkere brænde"], ekstra:["Hæld sprit på","Brug grønne, friske grene"], forklaring:"Gnisterne skal lande i noget, der fænger let." },
+  { niveau:2, titel:"Bål med ildstål", tekst:"Tænd bålet uden tændstikker – kun med ildstål.", trin:["Skær en fjerpind med tynde spåner","Slå gnister ned i birkebarken","Pust forsigtigt på gløden","Læg tynde kviste på","Byg op med tykkere brænde"], ekstra:["Hæld sprit på","Brug grønne, friske grene"], forklaring:"Gnisterne skal lande i noget, der fænger let." },
   { niveau:2, titel:"Et sikkert bålsted", tekst:"Gør bålstedet klar, før I tænder op.", trin:["Find en anvist bålplads","Fjern tørre blade og grene omkring","Stil en spand vand klar","Tænd et lille bål"], ekstra:["Byg bålet under et grantræ","Tænd bålet tæt på teltene"], forklaring:"Et sikkert bålsted er ryddet og har vand ved hånden." },
   { niveau:3, titel:"Madbål til Dutch oven", tekst:"Lav et bål, I kan bage brød på i en Dutch oven.", trin:["Tænd op med tørt optænding","Lad bålet brænde ned til gløder","Stil gryden i gløderne","Læg gløder på låget"], ekstra:["Stil gryden i de høje flammer","Hæld vand på gløderne"], forklaring:"Gløder giver jævn varme – flammer brænder brødet." },
   { niveau:3, titel:"Bål i regnvejr", regn:true, tekst:"Det regner, og alt i skovbunden er vådt. Få gang i bålet alligevel.", trin:["Saml birkebark og døde grangrene under træerne","Kløv brænde, så det tørre inderste kommer frem","Byg et lille pyramidebål i læ","Læg langsomt tykkere brænde på"], ekstra:["Brug de våde grene fra jorden","Byg bålet stort fra starten"], forklaring:"Birkebark brænder selv fugtig, og inde i kløvet brænde er træet tørt." },
@@ -8972,7 +8958,7 @@ function loebPquizSlut(){
 function loebBygSlut(){
   const ig=aktivtLoeb(), fejl=bygOpg.fejl, navn=opgNavn(bygOpg.id);
   ig.opgaver++; let t = `🪢 ${navn} står færdig${fejl?"":" – helt uden fejl"}!`;
-  if(fejl){ ig.fejl++; t += ` I lavede ${fejl} fejl i surringerne (−1 energi).${energi(ig,-1)}`; }
+  if(fejl){ ig.fejl++; t += ` I lavede ${fejl} fejl i besnøringerne (−1 energi).${energi(ig,-1)}`; }
   bygOpg=null; nodeFaerdig(t);
 }
 function loebKryds(valg){
@@ -9098,7 +9084,7 @@ function scrLoeb(){
   else if(ig.fase==="post"){
     const pt=POSTTYPER[n.pt];
     h += tekst + `<div class="card center"><div style="font-size:42px">${pt.ikon}</div><h2 style="margin:2px 0">${pt.navn}${n.nr?` · Post ${n.nr}`:" · Ekstrapost"}</h2>
-      <p class="muted" style="margin:4px 0 0">${n.pt==="videns"?`3 spørgsmål om ${EMNE[n.emne].navn.toLowerCase()}. I vælger selv, hvem der svarer.`:n.pt==="pioner"?`Byg ${opgNavn(n.opg).toLowerCase()}. Surringerne fordeles mellem jer.`:`${ROLLEID[pt.rolle].ikon} ${esc(rolleNavn(ig,pt.rolle))} (${ROLLEID[pt.rolle].navn.toLowerCase()}) løser opgaven.`}</p></div>
+      <p class="muted" style="margin:4px 0 0">${n.pt==="videns"?`3 spørgsmål om ${EMNE[n.emne].navn.toLowerCase()}. I vælger selv, hvem der svarer.`:n.pt==="pioner"?`Byg ${opgNavn(n.opg).toLowerCase()}. Besnøringerne fordeles mellem jer.`:`${ROLLEID[pt.rolle].ikon} ${esc(rolleNavn(ig,pt.rolle))} (${ROLLEID[pt.rolle].navn.toLowerCase()}) løser opgaven.`}</p></div>
       <button class="btn gold" data-a="lstart">Start posten</button>`;
   }
   else if(ig.fase==="kryds"){
@@ -9202,12 +9188,12 @@ const ARSTIDER = { foraar:["🌱","Forår"], sommer:["☀️","Sommer"], efteraa
 // Ugens aktivitet. type: surring (OPGAVER), stjerner/baal/koekken (aktiviteter fra lejrpladsen),
 // eller en lille quiz med 3 opgaver: raekke, morse, semafor, billede (evt. emner:[…]) og kode.
 const MOEDE_AKT = [
-  { id:"baare",     aarstid:"foraar",   type:"surring", opg:"baare", navn:"Byg en båre", tekst:"Patruljen øver førstehjælp i skoven. Bind surringerne på en båre af rafter, så I kan bære en tilskadekommen." },
+  { id:"baare",     aarstid:"foraar",   type:"surring", opg:"baare", navn:"Byg en båre", tekst:"Patruljen øver førstehjælp i skoven. Bind besnøringerne på en båre af rafter, så I kan bære en tilskadekommen." },
   { id:"knobtrin",  aarstid:"foraar",   type:"raekke",  navn:"Knob til forårslejren", tekst:"Lederen viser knob, og nu skal du selv vise, hvordan de bindes – trin for trin." },
   { id:"fuglespor", aarstid:"foraar",   type:"billede", emner:["dyr"], navn:"Hvem bor i skoven?", tekst:"Foråret er fuld af liv. Kend dyrene og sporene på tegningerne." },
   { id:"blade",     aarstid:"foraar",   type:"billede", emner:["planter"], navn:"Kend træer og svampe", tekst:"Patruljen går tur i skoven ved hytten. Hvilke træer og svampe er tegnet?" },
   { id:"bord",      aarstid:"sommer",   type:"surring", opg:"bord", navn:"Pionerbord til sommerlejren", tekst:"Sommerlejren nærmer sig. Byg patruljens pionerbord, så I har et sted at spise." },
-  { id:"port",      aarstid:"sommer",   type:"surring", opg:"port", navn:"Lejrport til sommerlejren", tekst:"En rigtig lejr har en flot indgang. Bind surringerne på lejrporten." },
+  { id:"port",      aarstid:"sommer",   type:"surring", opg:"port", navn:"Lejrport til sommerlejren", tekst:"En rigtig lejr har en flot indgang. Bind besnøringerne på lejrporten." },
   { id:"semafor",   aarstid:"sommer",   type:"semafor", navn:"Signaler over søen", tekst:"Patruljerne står på hver sin side af søen og sender beskeder med semaforflag." },
   { id:"snobroed",  aarstid:"sommer",   type:"koekken", navn:"Snobrød over bålet", tekst:"Lyse sommeraftner er perfekte til snobrød. Bag et gyldenbrunt snobrød over gløderne." },
   { id:"natloeb",   aarstid:"efteraar", type:"morse",   navn:"Natløb med morselampe", tekst:"Det bliver tidligt mørkt. På natløbet blinker posterne beskeder i morse – kan du læse dem?" },
@@ -9711,7 +9697,7 @@ const actions = {
     const c=cur(), o=bygOpg, b=BYGID[o.id];
     if(lejrFelter(c)[o.idx] || lejrPoint(c)<b.pris || !harMat(c,BYGMAT[b.id])){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
     placer(c,o.idx,b); lejrNy=o.idx; go("lejr"); vibrer([40,30,80]);
-    lejrToast(`🏗️ Surringerne holder! Patruljen bygger ${b.navn} – færdig om ${tidTekst(BYGTID[b.id]||0)}.`);
+    lejrToast(`🏗️ Besnøringerne holder! Patruljen bygger ${b.navn} – færdig om ${tidTekst(BYGTID[b.id]||0)}.`);
   },
   vaelgindbo(d){ vaelgIndbo(d.id); },
   tplads(d){ teltPlads(+d.p); },
