@@ -7279,7 +7279,7 @@ function halverTid(obj, k){ const nu=Date.now(); if(obj[k] > nu) obj[k] = nu + M
 const LAAS_OP = {
   stjerner:  { 1:"Orion i stjernekikkerten", 2:"Planeten Jupiter og månens faser i kikkerten" },
   koekken:   { 1:"Bag snobrød over bålet på bålpladsen" },
-  vaerktoej: { 1:"Du må kløve brænde på en huggeplads", 2:"Du må fælde træer", 3:"Kløvning går 25 % hurtigere" },
+  vaerktoej: { 1:"Du må fælde grantræer (til rafter) og kløve brænde på en huggeplads", 2:"Du må fælde løvtræer", 3:"Kløvning går 25 % hurtigere" },
   tur:       { 1:"Rygsækstativ til teltet", 2:"Fleecetrøje, uldsokker, termoflaske og vabelplaster til teltet", 3:"Madpakken giver +3 energi på løbene" },
   fugle:     { 3:"Fuglene kommer på besøg på din lejrplads" },
   spor:      { 2:"Friske spor med bonuspoint på løbene", 3:"Sporjagt med ekstra bonuspoint på løbene" },
@@ -8014,8 +8014,8 @@ const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et nyplantet træ er om at vok
 const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flertal:"grantræer", job:"faeldGran", besk:"Bliver til granstammer, som kan afgrenes til rafter." },
                    loev:{ navn:"Løvtræ",  ikon:"🌳", best:"løvtræet",  flertal:"løvtræer",  job:"faeldLoev", besk:"Bliver til løvstammer, som kan kløves til brænde." } };
 const JOB = {
-  faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en granstamme" },
-  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde træer", besk:"Giver en løvstamme" },
+  faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",1], til:"fælde grantræer", besk:"Giver en granstamme" },
+  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde løvtræer", besk:"Giver en løvstamme" },
   afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2}, besk:"Grenene skæres af – så har I lige rafter" },
   kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, kraever:["vaerktoej",1], til:"kløve brænde", bygning:"huggeplads", besk:"Stammen saves og kløves til brænde" },
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
@@ -8113,7 +8113,7 @@ function arbejdeAktivt(c){
 function arbejdeHTML(c){
   const l=lager(c), s=skovData(c), ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
   let h = `<div class="sect" style="margin-top:18px">🪓 Materialer og arbejde</div>
-    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Træerne skal først plantes – tryk på en tom plads i skoven. Når et træ er fældet, vokser et nyt af samme slags op. Tryk på træet for at skifte til en anden slags. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze og en huggeplads skal til for at kløve brænde, og mærket i sølv for at fælde træer. Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde og ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad – byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
+    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Træerne skal først plantes – tryk på en tom plads i skoven. Når et træ er fældet, vokser et nyt af samme slags op. Tryk på træet for at skifte til en anden slags. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer (til rafter) og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer. Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde og ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad – byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
     ${signalRest(c)?`<div class="card hbesked">🔥 Signalbålet brænder – nye job går 25 % hurtigere (<b id="signaltid">${fmtTid(signalRest(c))}</b> tilbage).</div>`:""}
     <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>
     <div class="skov">${SKOV.map((_,i)=>{
