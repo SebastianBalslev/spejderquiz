@@ -6834,6 +6834,7 @@ const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Giver plads til 20 reb mere – og 10 mere for hvert niveau." },
+  { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
   { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge. Opgrader det, så giver hvert fældet grantræ flere granstammer." },
@@ -6948,6 +6949,10 @@ const PIONER = {
     <rect x="16" y="26" width="8" height="11" fill="#5c3a20"/><rect x="9" y="22" width="5" height="5" fill="#f6e7a8" stroke="#5c3a20"/><rect x="26" y="22" width="5" height="5" fill="#f6e7a8" stroke="#5c3a20"/>`,
   kors: `<rect x="5" y="12" width="30" height="24" rx="2" fill="#f4f1e6" stroke="#bbb"/><path d="M3 13 L20 4 L37 13Z" fill="#e8e3d0" stroke="#bbb"/>
     <rect x="17" y="16" width="6" height="16" fill="#c62828"/><rect x="12" y="21" width="16" height="6" fill="#c62828"/>`,
+  rebmaskine: `<path d="M6 38 L10 14 M14 38 L10 14 M26 38 L30 14 M34 38 L30 14" stroke="${TRAE}" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="10" cy="15" r="6" fill="#c49a63" stroke="#6b4626" stroke-width="1.2"/><path d="M10 9 V21 M4 15 H16" stroke="#6b4626" stroke-width="1"/><path d="M10 15 L3 8" stroke="#444" stroke-width="1.6" stroke-linecap="round"/><circle cx="3" cy="8" r="1.6" fill="#c62828"/>
+    <rect x="27" y="11" width="6" height="8" rx="1" fill="#9aa3ad" stroke="#5f6670" stroke-width=".8"/>
+    <path d="M14 15 C18 12 20 18 24 15 S28 13 27 15" fill="none" stroke="#efdcae" stroke-width="2.4" stroke-linecap="round"/><path d="M14 15 C18 12 20 18 24 15" fill="none" stroke="#c9a46a" stroke-width="1" stroke-dasharray="1.5 1.5"/>`,
   jordkoeleskab: `<path d="M2 34 Q20 14 38 34Z" fill="#7a5a3a"/><path d="M5 34 Q20 18 35 34" fill="none" stroke="#5c3f26" stroke-width="1"/>
     <g stroke="#4f8a43" stroke-width="1.4" stroke-linecap="round"><path d="M9 27 l-1 -3 M11 25 l1 -3 M29 25 l-1 -3 M31 27 l1 -3 M20 21 l0 -3"/></g>
     <rect x="12" y="26" width="16" height="9" rx="1.5" fill="#b07a45" stroke="#6b4626" stroke-width="1"/><path d="M12 30.5 H28 M20 26 V35" stroke="#6b4626" stroke-width=".8"/>
@@ -7008,7 +7013,7 @@ const PIONER = {
 // Alle ventetider (byggeri, opgradering, job og træer, der vokser) ganges med denne faktor. Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 4;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, vejrhane:120,
+const BYGTID = { rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, vejrhane:120,
   stjernetaarn:600, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
   fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
@@ -7214,6 +7219,8 @@ function lejrCelle(i){
   lejrToast(erVand(i) ? "Det er søen. Her kan du sætte kano, badebro og sejlbåd." : "Vælg noget fra byggelisten nedenfor, og tryk så her.");
 }
 
+// Bygninger med et job, man kan starte direkte fra bygningen
+const BYG_JOB = { koekken:"madlav", bagerovn:"bag", rebmaskine:"sno" };
 function visFeltMenu(i){
   const c=cur(), her=BYGID[c.lejr[i]], bygger=underByg(c,i), indbo=indboVaerdi(c,i);
   const luk=()=>{ modalRoot.innerHTML=""; };
@@ -7230,9 +7237,9 @@ function visFeltMenu(i){
     knapper += rest ? `<p class="byggetid">🔥 Signalbålet brænder i <b id="m-signal">${fmtTid(rest)}</b> endnu. Alle nye job går 25 % hurtigere.</p>`
       : `<button class="btn gold" id="m-signal-taend" ${(lager(c).braende||0)<SIGNAL_BRAENDE?"disabled":""}>🔥 Tænd signalbålet (${SIGNAL_BRAENDE} brænde)</button><small class="muted">Det brænder i ${tidTekst(signalTid(c))}. Imens går alle nye job 25 % hurtigere.${(lager(c).braende||0)<SIGNAL_BRAENDE?` Du har kun ${lager(c).braende||0} brænde.`:""}</small>`;
   }
-  if(!bygger && (her.id==="koekken" || her.id==="bagerovn")){
-    const jid = her.id==="koekken" ? "madlav" : "bag", ledig = arbejdere(c).find(m=>!m.job);
-    knapper += `<button class="btn" id="m-mad" ${ledig?"":"disabled"}>${JOB[jid].ikon} ${JOB[jid].navn} (${matTekst(JOB[jid].bruger)} → ${matTekst(jobGiver(c,jid))})</button>${ledig?"":`<small class="muted">Alle i patruljen er optaget.</small>`}`;
+  if(!bygger && BYG_JOB[her.id]){
+    const jid = BYG_JOB[her.id], ledig = arbejdere(c).find(m=>!m.job);
+    knapper += `<button class="btn" id="m-mad" ${ledig?"":"disabled"}>${JOB[jid].ikon} ${JOB[jid].navn} (${matTekst(jobBruger(c,jid))} → ${matTekst(jobGiver(c,jid))})</button>${ledig?"":`<small class="muted">Alle i patruljen er optaget.</small>`}`;
   }
   if(!bygger) knapper += opgHTML(c, i);
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
@@ -7246,7 +7253,7 @@ function visFeltMenu(i){
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
   if($("#m-signal-taend")) $("#m-signal-taend").onclick=()=>{ if((lager(c).braende||0)<SIGNAL_BRAENDE) return; luk(); brugMat(c,{braende:SIGNAL_BRAENDE},-1); c.signal=Date.now()+signalTid(c)*1000; save(); render(); vibrer([40,30,80]);
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
-  if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, her.id==="koekken"?"madlav":"bag"); };
+  if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
   $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
@@ -7928,7 +7935,7 @@ function scrPquiz(){
     return h;
   }
   if(pquiz.fase==="skift") return h + giverTelefon(hvem, `${esc(hvem.navn)} skal svare på et spørgsmål om ${e.navn.toLowerCase()}.`, `Jeg er ${esc(hvem.navn)} – klar!`, "pklar");
-  h += `<div class="card qcard"><div class="qtopic">${hoved(hvem,"lille")} ${esc(hvem.navn)} svarer · ${e.navn}</div><p class="qtext">${esc(q.spm)}</p></div>${q.hint?`<div class="card hbesked">${q.hint}</div>`:""}
+  h += `<div class="card qcard"><div class="qtopic">${pquiz.loeb||pquiz.moede ? `${badgeHTML(e, cur().badges[e.id]||0, "xs")} ${e.navn}` : `${hoved(hvem,"lille")} ${esc(hvem.navn)} svarer · ${e.navn}`}</div><p class="qtext">${esc(q.spm)}</p></div>${q.hint?`<div class="card hbesked">${q.hint}</div>`:""}
     <div class="answers">${q.opts.map((o,k)=>{
       if(q.fjernet && q.fjernet.includes(k)) return "";
       let cls=""; if(pquiz.svaret){ cls = o.ok ? "correct" : k===pquiz.valgt ? "wrong" : "dim"; }
@@ -7940,7 +7947,7 @@ function scrPquiz(){
   } else {
     const ok=pquiz.svar[pquiz.i];
     if(lg && !ok) h += jokerHTML(lg, ["kort"]);
-    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?(pquiz.loeb?`Rigtigt! ✅ <span class="plus">+10 point</span>`:`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 point</span>`):"Desværre – forkert"}</b>
+    h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok?(pquiz.loeb||pquiz.moede?`Rigtigt! ✅ <span class="plus">+10 point</span>`:`Rigtigt, ${esc(hvem.navn)}! ✅ <span class="plus">+10 point</span>`):"Desværre – forkert"}</b>
       ${ok?"":`<p>Det rigtige svar er: <b>${esc(q.svar[0])}</b></p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
       <button class="btn" data-a="pnaeste">${pquiz.i+1>=pquiz.qs.length?"Se patruljens resultat 🏁":"Næste spørgsmål →"}</button>`;
   }
@@ -8014,7 +8021,7 @@ function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MA
 // Materialer, de enkelte ting koster at bygge
 const BYGMAT = { bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:8}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
-  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
+  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, rebmaskine:{rafter:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et nyplantet træ er om at vokse op
@@ -8042,8 +8049,16 @@ function jobGiver(c, jid){
   if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
   // Højere niveau på lejrkøkkenet og bagerovnen giver mere mad: +1 for hvert 5. niveau
   if(jid==="madlav" || jid==="bag") g.mad += Math.floor((bygNiv(c, JOB[jid].bygning)-1)/5);
+  // Rebslåningsmaskinen: +1 utaklet reb for hvert 5. niveau
+  if(jid==="sno") g.rebraa += Math.floor(bygNiv(c,"rebmaskine")/5);
   if(TRAE_BYG[jid]){ const m=Object.keys(g)[0]; g[m] = stammerPrTrae(bygNiv(c,TRAE_BYG[jid])); }
   return g;
+}
+// Hvad et job bruger: med en rebslåningsmaskine skal der kun 2 fibre til at sno et reb
+function jobBruger(c, jid){
+  const b = { ...(JOB[jid].bruger||{}) };
+  if(jid==="sno" && harBygget(c,"rebmaskine")) b.fibre = 2;
+  return b;
 }
 function jobLaast(m, j){ return j.kraever && (m.badges[j.kraever[0]]||0) < j.kraever[1]; }
 function jobLaastTekst(m, j){ return `${esc(m.navn)} skal have ${EMNE[j.kraever[0]].navn} i ${NIVEAUER[j.kraever[1]].navn.toLowerCase()} for at ${j.til}.`; }
@@ -8079,6 +8094,7 @@ function signalRest(c){ const s=(c.signal||0)-Date.now(); return s>0 ? s : 0; }
 function jobTid(m, j){
   const l=m.badges[JOB[j].fag]||0; let t=JOB[j].tid*(1-0.2*l);
   if(signalRest(cur())) t *= .75;
+  if(j==="sno" && harBygget(cur(),"rebmaskine")) t *= .6;
   if(j==="kloev"){ t *= 1 - Math.min(.5, (bygNiv(cur(),"huggeplads")-1)*0.02); if((m.badges.vaerktoej||0)>=3) t *= .75; }
   return Math.round(t);
 }
@@ -8142,7 +8158,7 @@ function visJobValg(id, kunTrae, kunJob){
   const muligheder = Object.entries(JOB).filter(([jid,j])=>(!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Plant nogle i skoven.`;
-    if(j.bruger && !harMat(c,j.bruger)) grund = `Kræver ${matTekst(j.bruger)} på lageret.`;
+    if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
     if(jobLaast(m,j)) grund = jobLaastTekst(m,j);
     if(j.bygning && !harBygget(c,j.bygning)) grund = `Kræver en ${BYGID[j.bygning].navn.toLowerCase()} på lejrpladsen.`;
     const fuld = Object.keys(j.giver||{}).find(mm=>lagerFuldt(c,mm));
@@ -8162,7 +8178,7 @@ function startJob(m, jid){
   if(jobLaast(m,j) || (j.bygning && !harBygget(c,j.bygning))) return;
   let slot=null;
   if(j.trae){ slot=ledigtTrae(c,j.trae); if(slot<0) return; skovData(c)[slot].faeldes=m.id; }
-  if(j.bruger){ if(!harMat(c,j.bruger)) return; brugMat(c,j.bruger,-1); }
+  if(j.bruger){ const br=jobBruger(c,jid); if(!harMat(c,br)) return; brugMat(c,br,-1); }
   const t=jobTid(m,jid)*1000;
   m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot, giver:jobGiver(c,jid) };
   save(); render(); vibrer(30);
@@ -9413,7 +9429,7 @@ function moedePatruljeSlut(){
 }
 function startMoedePquiz(){
   const p=minPatrulje(cur()), ms=medlemmer(p);
-  pquiz = { p:p.id, niveau:1, moede:true, i:0, fase:"vaelg", hvem:null, rigtige:0, joker:0, svar:[], done:false,
+  pquiz = { p:p.id, niveau:1, moede:true, i:0, fase:"svar", hvem:cur().id, svaret:false, rigtige:0, joker:0, svar:[], done:false,
     max: Math.ceil(3/ms.length)+1, antal:{}, res:{},
     qs: patruljeSpg(moede.uge).map(q=>({ ...q, opts: shuffle(q.svar.map((t,i)=>({t, ok:i===0}))) })) };
   go("pquiz");
@@ -9493,7 +9509,7 @@ function scrMoede(){
   else if(t==="patrulje"){
     const p=minPatrulje(c);
     h += `<div class="card center"><div style="font-size:48px">${PDYR[p.dyr][0]}</div><h2>Patruljetid</h2>
-      <p class="muted">${esc(p.navn)} svarer på 3 spørgsmål på skift. Vælg, hvem der skal svare.</p></div>
+      <p class="muted">${esc(p.navn)} svarer på 3 spørgsmål sammen.</p></div>
       <button class="btn gold" data-a="moedepatrulje">Start patruljetid</button>`;
   }
   else if(t==="afslut"){
@@ -9680,7 +9696,7 @@ const actions = {
     if(ig){ ig.opgaver++; if(!ok){ ig.fejl++; const t=energi(ig,-1); if(t) lejrToast(t); } lydEffekt(ok); }
     save(); render(); const fb=document.getElementById("fb"); if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}),60);
   },
-  pnaeste(){ pquiz.i++; pquiz.svaret=false; if(!pquiz.loeb){ pquiz.fase="vaelg"; pquiz.hvem=null; } if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
+  pnaeste(){ pquiz.i++; pquiz.svaret=false; if(!pquiz.loeb && !pquiz.moede){ pquiz.fase="vaelg"; pquiz.hvem=null; } if(pquiz.i>=pquiz.qs.length) return pAfslut(); render(); window.scrollTo(0,0); },
   pafbryd(){ if(modalRoot.innerHTML) return; confirmBox("Vil I stoppe patruljequizzen?<br><small class='muted'>Point I har fået, beholder I.</small>", "Stop", "Fortsæt", ()=>{ const m=pquiz.moede, l=pquiz.loeb; pquiz=null; go(l && aktivtLoeb() ? "loeb" : m && moede ? "moede" : "patrulje"); }); },
   pbygstart(d){ startPbyg(d.id); },
   pbygklar(){ bygOpg.skift=false; bygOpg.valgt=null; render(); window.scrollTo(0,0); },
