@@ -506,6 +506,9 @@ div.prk+div.prk{border-top:1px solid var(--line)}
 @keyframes nivregnbue{0%,100%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(230,57,70,.85)}25%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(242,201,76,.9)}50%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(42,157,143,.85)}75%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(142,68,173,.85)}}
 .nivtal{position:absolute;top:2px;left:2px;z-index:2;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:rgba(42,42,31,.82);color:#fff;font-size:9.5px;font-weight:800;line-height:15px;text-align:center;font-variant-numeric:tabular-nums}
 .nivtal.t2{color:#f1c08f}.nivtal.t3{color:#e5e9ee}.nivtal.t4,.nivtal.t5,.nivtal.t6,.nivtal.t7,.nivtal.t8{color:#f4cb4e}.nivtal.t9{background:#a8790c;color:#fff}.nivtal.t10{background:linear-gradient(90deg,#e63946,#f2c94c,#2a9d8f,#8e44ad);color:#fff}
+.nivtabel{width:100%;border-collapse:collapse;font-size:15px;margin:4px 0 12px}.nivtabel th{text-align:left;font-size:13px;color:var(--muted);padding:4px 8px;border-bottom:2px solid var(--line)}
+.nivtabel td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}.nivtabel td:first-child{width:56px;text-align:center;font-variant-numeric:tabular-nums}
+.nivtabel td small{color:var(--muted)}.nivtabel .op{color:var(--forest);font-weight:700}.nivtabel tr.naaet td{color:var(--muted)}.nivtabel tr.nu td{background:#f6ead0;font-weight:700}.nivtabel tr.nu td:first-child b::after{content:" ← dig";font-size:11px;color:var(--forest)}
 .opgniv{margin:12px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
 .opgniv .nivstort{display:inline-grid;place-items:center;min-width:44px;height:44px;padding:0 8px;border-radius:22px;background:var(--forest);color:#fff;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
 .opgniv .nivbar{width:70%;height:6px;border-radius:3px;background:var(--paper2);overflow:hidden;margin:4px 0}.opgniv .nivbar i{display:block;height:100%;background:linear-gradient(90deg,#cd8a4a,#dfe4e9,#f4cb4e)}.opgniv small{color:var(--muted)}
@@ -6820,7 +6823,7 @@ const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Giver plads til 20 reb mere – og 10 mere for hvert niveau." },
-  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
+  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
@@ -7232,6 +7235,7 @@ function visFeltMenu(i){
     const jid = BYG_JOB[her.id], ledig = arbejdere(c).find(m=>!m.job);
     knapper += `<button class="btn" id="m-mad" ${ledig?"":"disabled"}>${JOB[jid].ikon} ${JOB[jid].navn} (${matTekst(jobBruger(c,jid))} → ${matTekst(jobGiver(c,jid))})</button>${ledig?"":`<small class="muted">Alle i patruljen er optaget.</small>`}`;
   }
+  if(!bygger && harNivEffekt(her)) knapper += `<button class="btn secondary" id="m-nivoversigt">📈 Se, hvad hvert niveau giver</button>`;
   if(!bygger) knapper += opgHTML(c, i);
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
   knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
@@ -7242,6 +7246,7 @@ function visFeltMenu(i){
   $("#m-luk").onclick=luk;
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
+  if($("#m-nivoversigt")) $("#m-nivoversigt").onclick=()=>visNivOversigt(i);
   if($("#m-signal-taend")) $("#m-signal-taend").onclick=()=>{ if((lager(c).braende||0)<SIGNAL_BRAENDE) return; luk(); brugMat(c,{braende:SIGNAL_BRAENDE},-1); c.signal=Date.now()+signalTid(c)*1000; save(); render(); vibrer([40,30,80]);
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
   if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
@@ -8305,6 +8310,46 @@ function opgKost(c, b, ny){
   // Afgreningsstationen kræver flere materialer i de første niveauer (pointprisen er normal): dobbelt til niveau 2, og tillægget aftager jævnt til 0 ved niveau 11
   const ekstra = DYR_START[b.id] && ny<=10 ? 1 + (11-ny)/9 : 1;
   return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, k==="mad" ? n : Math.ceil(n*ekstra)])), tid, kravNiv };
+}
+// Hvad en bygning giver på et bestemt niveau (tom streng = ingen fordel ud over udseendet)
+function nivEffekt(b, L){
+  const t=[];
+  if(LAGER_BYG && Object.values(LAGER_BYG).includes(b.id)){
+    const mats=Object.keys(LAGER_BYG).filter(m=>LAGER_BYG[m]===b.id).map(m=>MATFLERTAL[m]);
+    t.push(`Plads til ${LAGER_START+LAGER_BYGGET+LAGER_PR_NIV*(L-1)} ${mats.length>1 ? "af hver: "+mats.join(", ") : mats[0]}`);
+  }
+  if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
+  if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
+  if(b.id==="loevtrae") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"løvstamme":"løvstammer"} pr. fældet løvtræ`);
+  if(b.id==="afgrening") t.push(`${JOB.afgren.giver.rafter+1+AFGREN_NIV.filter(x=>L>=x).length} rafter pr. granstamme`);
+  if(b.id==="koekken") t.push(`${JOB.madlav.giver.mad+Math.floor((L-1)/5)} portioner mad pr. måltid`);
+  if(b.id==="bagerovn") t.push(`${JOB.bag.giver.mad+Math.floor((L-1)/5)} portioner mad pr. bagning`);
+  if(b.id==="rebmaskine") t.push(`${JOB.sno.giver.rebraa+Math.floor(L/5)} utaklede reb pr. snoning`);
+  if(b.id==="signalbaal") t.push(`Brænder i ${30+3*(L-1)} min`);
+  if(AKT_FOR[b.id]){ const n=L-1; t.push(`+${Math.min(n,4)+Math.floor(n/10)} point pr. aktivitet`); }
+  return t.join(" · ");
+}
+function harNivEffekt(b){ return !!nivEffekt(b, MAKSNIV) && nivEffekt(b,1)!==nivEffekt(b,MAKSNIV); }
+// Tabel over de niveauer, hvor bygningen giver noget nyt eller skifter udseende
+function visNivOversigt(i){
+  const c=cur(), b=BYGID[c.lejr[i]], nu=lejrNiv(c,i);
+  const niv=new Set([1, ...TRIN_NIV.filter(x=>x>1)]);
+  for(let L=2; L<=MAKSNIV; L++) if(nivEffekt(b,L)!==nivEffekt(b,L-1)) niv.add(L);
+  let liste=[...niv].sort((a,x)=>a-x);
+  // Bliver listen for lang (fordelen stiger på hvert niveau), vises udvalgte niveauer
+  if(liste.length>24) liste=liste.filter(L=>L<=5 || L%5===0 || L===MAKSNIV || TRIN_NIV.includes(L));
+  if(!liste.includes(nu)) liste=[...liste, nu].sort((a,x)=>a-x);   // dit eget niveau vises altid
+  let forrige="";
+  const rk=liste.map(L=>{ const trin=TRIN_NIV.includes(L) && L>1, eff=nivEffekt(b,L), op=forrige && eff!==forrige; forrige=eff;
+    return `<tr class="${L===nu?"nu":L<nu?"naaet":""}"><td><b>${L}</b></td><td>${op?`<span class="op">⬆️ ${eff}</span>`:eff||"–"}${trin?`<br><small>✨ Nyt udseende: ${nivNavn(L)}</small>`:""}</td></tr>`; }).join("");
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+    <div class="center"><div class="bigik" style="width:64px;height:64px">${bygIkon(b,nu)}</div><h2 style="margin:4px 0 2px">${b.navn}</h2><p class="muted psmall" style="margin:0 0 8px">Det giver hvert niveau. Du er på niveau ${nu}.</p></div>
+    <table class="nivtabel"><thead><tr><th>Niveau</th><th>Det får du</th></tr></thead><tbody>${rk}</tbody></table>
+    <button class="btn secondary" id="m-tilbage">← Tilbage</button></div></div>`;
+  const tilbage=()=>visFeltMenu(i);
+  modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
+  modalRoot.querySelector("#m-tilbage").onclick=tilbage;
+  const r=modalRoot.querySelector("tr.nu"); if(r) r.scrollIntoView({block:"center"});
 }
 function opgHTML(c, i){
   const b=BYGID[c.lejr[i]], n=lejrNiv(c,i);

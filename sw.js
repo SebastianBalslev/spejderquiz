@@ -1,6 +1,6 @@
 // Service worker: gemmer appen, så den virker uden internet.
 // Skift versionsnummeret, når index.html ændres, så telefonerne henter den nye udgave.
-const CACHE = "spejderquiz-v37";
+const CACHE = "spejderquiz-v38";
 const FILER = ["./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"];
 
