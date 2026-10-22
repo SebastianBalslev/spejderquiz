@@ -330,6 +330,10 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .arktop{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 8px;background:inherit}.arktop b{font-size:19px;color:var(--forest)}.arktop .lukx{position:static;float:none;margin:0}
 @keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .byggebar{position:sticky;top:0;z-index:30}
+.katvalg{display:flex;gap:6px;overflow-x:auto;margin:0 -12px 4px;padding:2px 12px 8px;scrollbar-width:none;position:sticky;top:52px;z-index:2;background:inherit}.katvalg::-webkit-scrollbar{display:none}
+.katvalg button{flex:none;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 12px;font-weight:700;font-size:14px;white-space:nowrap}
+.katvalg button.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
 body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
@@ -7078,6 +7082,7 @@ let lejrValg = null;   // { type:"ny", id } eller { type:"flyt", idx }
 let lejrNy = null;     // felt der lige er bygget (til animation)
 let bygOpg = null;     // igangværende besnøringsopgave
 let lejrUr = null;     // opdaterer byggetider på skærmen
+let lejrKat = "alle";  // valgt kategori i byggelisten
 let lejrArk = null;    // åbent panel på lejrpladsen: "byg", "patrulje", "lager" eller null
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
@@ -7150,11 +7155,31 @@ function scrLejr(){
   }
   return h;
 }
+// Kategorier i byggelisten. Ting, der ikke står her, kommer under »Andet«.
+const BYGKAT = [
+  { id:"lejr", ikon:"⛺", navn:"Lejrliv", ting:["telt","patruljetelt","hytte","latrin","shelter","traehytte","vandstation","jamboree","patruljehjoerne","aktivitetsplads","flag","liljeskilt"] },
+  { id:"baal", ikon:"🔥", navn:"Bål og mad", ting:["baal","baalbaenke","signalbaal","lejrbaal","koekken","bagerovn"] },
+  { id:"vaerksted", ikon:"🪓", navn:"Værksted og lager", ting:["raftegaard","materialeskur","braendeskur","jordkoeleskab","afgrening","rebmaskine","huggeplads","braende"] },
+  { id:"natur", ikon:"🌲", navn:"Træer og natur", ting:["gran","loevtrae","kongeeg","blaabaer","svampe","sten","blomster","pindsvinehus","insekthotel","bistade","fuglekasse","fugletaarn","hjort","raev","sporkasse"] },
+  { id:"pioner", ikon:"🪢", navn:"Pionering", ting:["bord","port","taarn","svaevebane"] },
+  { id:"orient", ikon:"🧭", navn:"Orientering og vejr", ting:["opost","vejviser","kompasrose","geocache","vejrstation","vejrhane","solur","kikkert","stjernetaarn"] },
+  { id:"signal", ikon:"📡", navn:"Signaler", ting:["morselampe","semaforpost","radiomast"] },
+  { id:"hjaelp", ikon:"⛑️", navn:"Førstehjælp", ting:["forstehjalp","baare","hjertestarter"] },
+  { id:"vand", ikon:"🛶", navn:"Vand", ting:["kano","badebro","sejlbaad"] }
+];
+function bygKategorier(){
+  const med=new Set(BYGKAT.flatMap(k=>k.ting)), andet=BYG.filter(b=>!med.has(b.id)).map(b=>b.id);
+  return andet.length ? [...BYGKAT, { id:"andet", ikon:"✨", navn:"Andet", ting:andet }] : BYGKAT;
+}
 function byggelisteHTML(c){
-  const ledig=lejrPoint(c);
+  const ledig=lejrPoint(c), kats=bygKategorier();
+  if(!kats.some(k=>k.id===lejrKat)) lejrKat="alle";
   let h = `${merTekst("Vælg en ting, og tryk på et felt.", `Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.`)}
-    <div class="shop">`;
-  for(const b of BYG){
+    <div class="katvalg" role="tablist">${[{id:"alle",ikon:"📋",navn:"Alle"},...kats].map(k=>`<button role="tab" aria-selected="${lejrKat===k.id}" class="${lejrKat===k.id?"on":""}" data-a="bygkat" data-v="${k.id}">${k.ikon} ${k.navn}</button>`).join("")}</div>`;
+  for(const k of kats){
+    if(lejrKat!=="alle" && lejrKat!==k.id) continue;
+    h += `<h3 class="kathead">${k.ikon} ${k.navn}</h3><div class="shop">`;
+  for(const b of k.ting.map(id=>BYGID[id]).filter(Boolean)){
     const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
     const kravHTML = b.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[b.krav[0]], ok?b.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[b.krav[1]].navn}</span>` : `<span class="krav ok">Alle kan bygge</span>`;
     h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgbyg" data-id="${b.id}">
@@ -7162,7 +7187,9 @@ function byggelisteHTML(c){
       ${BYGMAT[b.id]?`<span class="matkrav ${harMat(c,BYGMAT[b.id])?"":"mangler"}">${Object.entries(BYGMAT[b.id]).map(([m,n])=>`${matIkon(m,"lille")}${n}`).join(" ")}</span>`:""}
       ${tid||OPGAVER[b.id]?`<span class="meta">${OPGAVER[b.id]?"🪢 ":""}${tid?"⏳ "+tidTekst(tid):""}</span>`:""}</button>`;
   }
-  return h + `</div>`;
+    h += `</div>`;
+  }
+  return h;
 }
 
 function startLejrUr(){
@@ -9783,6 +9810,7 @@ const actions = {
   },
   jobrek(d){ const m=state.chars.find(x=>x.id===d.id); if(!m || !m.job || m.job.rek) return;
     visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
+  bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrark(d){ lejrArk = d.v && lejrArk!==d.v ? d.v : null; if(lejrArk) lejrValg=null; render(); },
   braende(){
     if(akt.ild>=3){ aktBesked("Bålet brænder godt nu. Pas på – et for stort bål er farligt! 🔥"); return; }
