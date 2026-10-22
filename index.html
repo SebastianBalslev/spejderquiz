@@ -8293,6 +8293,7 @@ function nivPynt(n){
   return s;
 }
 function lejrNiv(c,i){ return (c.lejrNiv||{})[i] || 1; }
+const DYR_START = { afgrening:true };   // bygninger, der er dyrere at opgradere i de første 10 niveauer
 function opgKost(c, b, ny){
   const p = Math.round(b.pris*0.5*(ny-1)) + 10*(ny-1);
   const base = BYGMAT[b.id], m = {};
@@ -8301,7 +8302,9 @@ function opgKost(c, b, ny){
   if(ny>5) m.mad = ny-5;   // fra niveau 6 skal patruljen også have mad med til arbejdet
   const tid = Math.round(((BYGTID[b.id] || 60*TIDSFAKTOR) * 0.4 + 30*TIDSFAKTOR) * Math.pow(ny-1, 1.25));
   const kravNiv = b.krav && ny>=4 ? 3 : 0;
-  return { p, m, tid, kravNiv };
+  // Afgreningsstationen er dyrere i de første niveauer: dobbelt pris til niveau 2, og tillægget aftager jævnt til 0 ved niveau 11
+  const ekstra = DYR_START[b.id] && ny<=10 ? 1 + (11-ny)/9 : 1;
+  return { p: Math.ceil(p*ekstra), m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, k==="mad" ? n : Math.ceil(n*ekstra)])), tid, kravNiv };
 }
 function opgHTML(c, i){
   const b=BYGID[c.lejr[i]], n=lejrNiv(c,i);
