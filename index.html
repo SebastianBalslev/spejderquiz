@@ -318,6 +318,21 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 .byggebar .bik{width:44px;height:44px;display:grid;place-items:center;font-size:30px;flex:none}
 .byggebar .bik svg{width:100%;height:100%}
 .byggebar .btn{width:auto;min-height:44px;margin:0;padding:8px 14px;font-size:15px}
+.lejrtop{display:flex;flex-direction:column;align-items:center;gap:6px;margin:2px 0 8px}.lejrtop h1{font-size:22px;margin:4px 0 0;text-align:center}
+.lejrtop .lejrinfo{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}.lejrtop .chip{padding:5px 10px;font-size:14px;display:inline-flex;align-items:center;gap:3px}.lejrtop .chip .matik{width:20px;height:20px}
+body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px))}
+.lejrbund{position:fixed;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom, 0px));z-index:55;display:flex;justify-content:center;gap:8px;padding:8px max(10px, env(safe-area-inset-left, 0px));pointer-events:none}
+.lejrbund button{pointer-events:auto;flex:1;max-width:170px;min-height:58px;border:none;border-radius:16px;background:var(--forest);color:#fff;font-weight:800;font-size:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 #1f3320,0 6px 16px rgba(0,0,0,.18);position:relative;line-height:1}
+.lejrbund button span{font-size:12px;line-height:1.1;text-align:center}.lejrbund button.on{background:#c98a1c;box-shadow:0 4px 0 #8a5c0e,0 6px 16px rgba(0,0,0,.18)}
+.lejrbund .prik{position:absolute;top:6px;right:10px;width:10px;height:10px;border-radius:50%;background:#f4cb4e;border:2px solid #fff}
+.arkbag{position:fixed;inset:0;z-index:53;background:rgba(30,30,20,.35)}
+.ark{position:fixed;left:0;right:0;bottom:calc(140px + env(safe-area-inset-bottom, 0px));z-index:54;margin:0 auto;max-width:520px;max-height:calc(100dvh - 210px);overflow-y:auto;overscroll-behavior:contain;background:var(--bg,#f5ecd8);border-radius:20px 20px 0 0;padding:0 12px 14px;box-shadow:0 -8px 24px rgba(0,0,0,.2);animation:arkind .2s ease-out}
+.arktop{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 8px;background:inherit}.arktop b{font-size:19px;color:var(--forest)}.arktop .lukx{position:static;float:none;margin:0}
+@keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.byggebar{position:sticky;top:0;z-index:30}
+body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
+.celle .okse{position:absolute;top:2px;right:2px;font-size:14px;z-index:3;animation:hug .6s ease-in-out infinite}
+.celle.voks .emo{font-size:clamp(16px,6vw,26px)}
 .lejrmap{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:8px;border-radius:22px;background:#5f8a3a;box-shadow:inset 0 0 0 4px #4f7a2f,0 8px 20px rgba(60,40,10,.15)}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:9px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:#86b25a}.celle.b{background:#8fbb62}
@@ -6092,7 +6107,7 @@ let quiz = null;    // igangværende quiz
 
 function go(screen, params, push){
   stopTimer();
-  if(screen!=="lejr") lejrValg=null;
+  if(screen!=="lejr"){ lejrValg=null; lejrArk=null; }
   if(screen!=="telt") teltValg=null;
   if(screen!=="byg") bygOpg=null;
   if(screen!=="akt" && screen!=="moede") akt=null;
@@ -6133,6 +6148,7 @@ function render(){
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
                traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
+  document.body.classList.toggle("lejrskaerm", s==="lejr");
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
   if(s==="loeb" && loebOpg && loebOpg.trin==="svar" && loebOpg.o.media && !loebOpg.svaret) startMedia({ media:loebOpg.o.media });
@@ -6828,8 +6844,8 @@ const BYG = [
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
-  { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Giver læ og skygge. Opgrader det, så giver hvert fældet grantræ flere granstammer." },
-  { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Et stort, grønt bøgetræ. Opgrader det, så giver hvert fældet løvtræ flere løvstammer." },
+  { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15,  besk:"Fæld det, så får du granstammer til rafter. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
+  { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15,  besk:"Fæld det, så får du løvstammer til brænde. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
   { id:"braende",     navn:"Brændestabel",      ikon:"🪵", pris:20,  besk:"Tørt brænde til bålet." },
   { id:"sten",        navn:"Sten",              ikon:"🪨", pris:10,  besk:"En stor sten at sidde på." },
 
@@ -6904,7 +6920,7 @@ const BYG = [
   { id:"bistade",     navn:"Bistade",           svg:"bistade",  pris:200, krav:["natur",3],       besk:"Bierne bestøver blomsterne." },
 ];
 const BYGID = Object.fromEntries(BYG.map(b => [b.id, b]));
-const LEJR_KOL = 6, LEJR_RAEKKER = 9;
+const LEJR_KOL = 6, LEJR_RAEKKER = 12;
 // Søen nederst til højre (række, kolonne)
 const VAND = new Set(["6,3","6,4","6,5","7,2","7,3","7,4","7,5","8,1","8,2","8,3","8,4","8,5","5,4","5,5"]);
 
@@ -7060,6 +7076,7 @@ let lejrValg = null;   // { type:"ny", id } eller { type:"flyt", idx }
 let lejrNy = null;     // felt der lige er bygget (til animation)
 let bygOpg = null;     // igangværende besnøringsopgave
 let lejrUr = null;     // opdaterer byggetider på skærmen
+let lejrArk = null;    // åbent panel på lejrpladsen: "byg", "patrulje", "lager" eller null
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
 // Bygningerne skifter udseende på nye niveauer (trin 1-8, se nivTrin). Ting tegnet med emoji får pynten i en SVG omkring emojien.
@@ -7094,8 +7111,9 @@ function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
   fuldfoerByg(c); tjekArbejde(c);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : BYGID[felter[lejrValg.idx]]);
-  let h = `<div class="topbar"><span class="spacer"></span><h1>${esc(c.navn)}s lejrplads</h1><span class="spacer"></span></div>
-    <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b> point at bygge for</span><span class="chip">🏗️ ${antalByg} bygget</span></div>`;
+  const l=lager(c);
+  let h = `<div class="lejrtop"><h1>${esc(c.navn)}s lejrplads</h1>
+    <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b></span><span class="chip">${matIkon("rafter","lille")} ${l.rafter||0}</span><span class="chip">${matIkon("braende","lille")} ${l.braende||0}</span><span class="chip">${matIkon("reb","lille")} ${l.reb||0}</span><span class="chip">${matIkon("mad","lille")} ${l.mad||0}</span></div></div>`;
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":"Flyt"}: ${valgt.navn}</b>
@@ -7112,14 +7130,27 @@ function scrLejr(){
     const bygger = b && underByg(c,i), niv = b ? lejrNiv(c,i) : 1;
     if(bygger) cls += " bygger";
     if(niv>1) cls += " niv"+nivTrin(niv);
-    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":""):erVand(i)?"Sø":"Græs"}">${b?bygIkon(b,niv):""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    const voks = b && !bygger && traeType(b.id) && traeVokser(c,i), faeld = b && !bygger && traeType(b.id) && traeFaeldes(c,i);
+    if(voks) cls += " voks";
+    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):erVand(i)?"Sø":"Græs"}">${b?(voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)):""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   if((c.badges.fugle||0)>=3) h += `<div class="fugle" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
-  h += arbejdeHTML(c);
-  h += `<div class="sect" style="margin-top:18px">Byggeliste</div>
-    <p class="muted" style="margin:-4px 0 12px;font-size:14px">Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne. Store ting tager tid at bygge.</p>
+  // Knapper i bunden og panelerne, de åbner
+  h += `<div class="lejrbund"><button class="${lejrArk==="byg"?"on":""}" data-a="lejrark" data-v="byg">🏗️<span>Byg</span></button>
+    <button class="${lejrArk==="patrulje"?"on":""}" data-a="lejrark" data-v="patrulje">👥<span>Patrulje og opgaver</span>${arbejdere(c).some(m=>!m.job)?`<i class="prik"></i>`:""}</button>
+    <button class="${lejrArk==="lager"?"on":""}" data-a="lejrark" data-v="lager">📦<span>Lager</span></button></div>`;
+  if(lejrArk){
+    const titel={ byg:"🏗️ Byg", patrulje:"👥 Patrulje og opgaver", lager:"📦 Lager" }[lejrArk];
+    let ind = lejrArk==="patrulje" ? arbejdeHTML(c) : lejrArk==="lager" ? lagerHTML(c) : byggelisteHTML(c);
+    h += `<div class="arkbag" data-a="lejrark" data-v=""></div><div class="ark" role="dialog" aria-label="${titel}"><div class="arktop"><b>${titel}</b><button class="lukx" data-a="lejrark" data-v="" aria-label="Luk">✕</button></div>${ind}</div>`;
+  }
+  return h;
+}
+function byggelisteHTML(c){
+  const ledig=lejrPoint(c);
+  let h = `<p class="muted" style="margin:0 0 12px;font-size:14px">Brug dine point på at bygge. Vælg en ting, og tryk så på et felt på lejrpladsen. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.</p>
     <div class="shop">`;
   for(const b of BYG){
     const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
@@ -7144,7 +7175,7 @@ function startLejrUr(){
       if(rest<=0){ arbFaerdig=true; return; }
       const t=document.querySelector(`[data-jobtid="${m.id}"]`), b=document.querySelector(`[data-jobbar="${m.id}"]`);
       if(t) t.textContent=fmtTid(rest); if(b) b.style.width=((1-rest/(m.job.slut-m.job.start))*100)+"%"; });
-    Object.entries(skovData(c)).forEach(([i,x])=>{ if(!x.vokser) return; const el=document.querySelector(`[data-voks="${i}"]`);
+    Object.entries(traeData(c)).forEach(([i,x])=>{ if(!x || !x.vokser) return; const el=document.querySelector(`[data-voks="${i}"]`);
       if(x.vokser<=nu) arbFaerdig=true; else if(el) el.textContent=fmtTid(x.vokser-nu); });
     if(arbFaerdig){ render(); vibrer(40); return; }
     const st=document.getElementById("signaltid"); if(st){ const r=signalRest(c); if(r<=0){ render(); return; } st.textContent=fmtTid(r); }
@@ -7174,6 +7205,7 @@ function vaelgByg(id){
   if(!harMat(c,BYGMAT[b.id])){ const m=manglerMat(c,BYGMAT[b.id]);
     lejrToast(`Du mangler ${matTekst(m)} til ${b.navn}. ${m.reb?"Saml plantefibre, sno tovværk og takl det.":m.rafter?"Sæt nogen til at fælde grantræer og afgrene dem.":"Sæt nogen til at fælde løvtræer og kløve brænde."}`); return; }
   lejrValg = (lejrValg && lejrValg.id===id) ? null : { type:"ny", id };
+  if(lejrValg) lejrArk = null;
   render();
   if(lejrValg){ const t=document.getElementById("toast"); if(t) t.hidden=true; lejrScrollKort(); }
 }
@@ -7190,7 +7222,7 @@ function flytFelt(c,fra,til){
   f[til]=f[fra]; delete f[fra];
   if(c.lejrTid[fra]){ c.lejrTid[til]=c.lejrTid[fra]; delete c.lejrTid[fra]; }
   if(c.telte[fra]){ c.telte[til]=c.telte[fra]; delete c.telte[fra]; }
-  ["lejrNiv","lejrOpg","lejrInv","lejrRek"].forEach(k=>{ if(c[k] && c[k][fra]!=null){ c[k][til]=c[k][fra]; delete c[k][fra]; } });
+  ["lejrNiv","lejrOpg","lejrInv","lejrRek","traer"].forEach(k=>{ if(c[k] && c[k][fra]!=null){ c[k][til]=c[k][fra]; delete c[k][fra]; } });
 }
 function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.ting||{}).reduce((s,id)=>s+(INDBOID[id]?INDBOID[id].pris:0),0) : 0; }
 
@@ -7231,6 +7263,12 @@ function visFeltMenu(i){
     knapper = (AKT_FOR[her.id]||[]).map(([a,t,k])=>aktKravOk(c,k) ? `<button class="btn" data-akt="${a}">${t}</button>` : `<button class="btn" disabled>🔒 ${t.replace(/^\S+\s/,"")} · kræver ${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()}</button>`).join("");
     if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
   }
+  if(!bygger && traeType(her.id)){
+    const v=traeVokser(c,i), f=traeFaeldes(c,i);
+    if(v) knapper += `<p class="byggetid">🌱 Træet vokser op igen. Klar om <b id="m-voks">${fmtTid(v.vokser-Date.now())}</b></p>${v.rek?`<p class="muted psmall">📺 Tiden er allerede halveret med en reklame.</p>`:`<button class="btn gold" id="m-voksrek">📺 Se en reklame og halver tiden</button>`}`;
+    else if(f) knapper += `<p class="byggetid">🪓 ${esc(f.navn)} er i gang med at fælde træet.</p>`;
+    else knapper += `<button class="btn" id="m-faeld">🪓 Fæld træet (giver ${matTekst(jobGiver(c,TRAETYPE[traeType(her.id)].job,i))})</button>`;
+  }
   if(!bygger && her.id==="signalbaal"){
     const rest=signalRest(c);
     knapper += rest ? `<p class="byggetid">🔥 Signalbålet brænder i <b id="m-signal">${fmtTid(rest)}</b> endnu. Alle nye job går 25 % hurtigere.</p>`
@@ -7252,10 +7290,13 @@ function visFeltMenu(i){
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
   if($("#m-nivoversigt")) $("#m-nivoversigt").onclick=()=>visNivOversigt(i);
+  if($("#m-faeld")) $("#m-faeld").onclick=()=>visFaeld(i);
+  if($("#m-voksrek")) $("#m-voksrek").onclick=()=>visReklame(()=>{ const x=traeVokser(c,i); if(!x) return; x.rek=true; halverTid(x,"vokser"); save(); render(); lejrToast("⏩ Tiden er halveret!"); });
+  if($("#m-voks")){ const ur=setInterval(()=>{ const el=$("#m-voks"); if(!el){ clearInterval(ur); return; } const v=traeVokser(c,i); if(!v){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(v.vokser-Date.now()); },1000); }
   if($("#m-signal-taend")) $("#m-signal-taend").onclick=()=>{ if((lager(c).braende||0)<SIGNAL_BRAENDE) return; luk(); brugMat(c,{braende:SIGNAL_BRAENDE},-1); c.signal=Date.now()+signalTid(c)*1000; save(); render(); vibrer([40,30,80]);
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
   if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
-  $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
+  $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-rek")) $("#m-rek").onclick=()=>visReklame(()=>{ c.lejrRek=c.lejrRek||{}; c.lejrRek[i]=true; halverTid(c.lejrTid,i); save(); render(); lejrToast("⏩ Tiden er halveret!"); });
@@ -8024,8 +8065,7 @@ const BYGMAT = { bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
   baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
-const SKOV = ["gran","gran","loev","gran","loev","gran","loev","gran"];
-const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et nyplantet træ er om at vokse op
+const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et fældet træ er om at gro op igen
 const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flertal:"grantræer", job:"faeldGran", besk:"Bliver til granstammer, som kan afgrenes til rafter." },
                    loev:{ navn:"Løvtræ",  ikon:"🌳", best:"løvtræet",  flertal:"løvtræer",  job:"faeldLoev", besk:"Bliver til løvstammer, som kan kløves til brænde." } };
 const JOB = {
@@ -8042,15 +8082,15 @@ const JOB = {
 };
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
 // Kløvning kræver en huggeplads. Hvert andet niveau giver et brænde mere, og hvert niveau gør det 2 % hurtigere (højst 50 %).
-// Opgraderede grantræer og løvtræer på lejrpladsen giver flere stammer, når man fælder træer i skoven:
-// +1 stamme på niveau 5, 10, 20, 40, 52, 64, 75, 87 og 99 – fra 1 op til 10 stammer (det højeste træ tæller)
+// Hvert træ på lejrpladsen har sit eget niveau. Et højere træ giver flere stammer, når det bliver fældet:
+// +1 stamme på niveau 5, 10, 20, 40, 52, 64, 75, 87 og 99 – fra 1 op til 10 stammer
 const TRAE_BYG = { faeldGran:"gran", faeldLoev:"loevtrae" };
 const TRAE_NIV = [5, 10, 20, 40, 52, 64, 75, 87, 99];   // +1 stamme på hvert af disse niveauer
 function stammerPrTrae(niv){ return 1 + TRAE_NIV.filter(x=>niv>=x).length; }
 const AFGREN_NIV = [5, 10, 20, 40, 60, 80, 99];
 // Point for at facilitere en aktivitet: 100 point + 10 pr. niveau over 1 på aktivitetspladsen
 function jobPoint(c, jid){ return JOB[jid].point ? 100 + 10*(Math.max(1,bygNiv(c,"aktivitetsplads"))-1) : 0; }
-function jobGiver(c, jid){
+function jobGiver(c, jid, felt){
   const g = { ...JOB[jid].giver };
   if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
   // Højere niveau på lejrkøkkenet og bagerovnen giver mere mad: +1 for hvert 5. niveau
@@ -8059,7 +8099,8 @@ function jobGiver(c, jid){
   if(jid==="afgren"){ const n=bygNiv(c,"afgrening"); if(n) g.rafter += 1 + AFGREN_NIV.filter(x=>n>=x).length; }
   // Rebslåningsmaskinen: +1 utaklet reb for hvert 5. niveau
   if(jid==="sno") g.rebraa += Math.floor(bygNiv(c,"rebmaskine")/5);
-  if(TRAE_BYG[jid]){ const m=Object.keys(g)[0]; g[m] = stammerPrTrae(bygNiv(c,TRAE_BYG[jid])); }
+  // Stammer pr. træ afhænger kun af det træ, der fældes
+  if(TRAE_BYG[jid]){ const m=Object.keys(g)[0], f = felt!=null ? felt : ledigtTrae(c, JOB[jid].trae); g[m] = stammerPrTrae(f>=0 ? lejrNiv(c,f) : 1); }
   return g;
 }
 // Hvad et job bruger: med en rebslåningsmaskine skal der kun 2 fibre til at sno et reb
@@ -8073,15 +8114,17 @@ function jobLaastTekst(m, j){ return `${esc(m.navn)} skal have ${EMNE[j.kraever[
 
 function lagerEjer(c){ return minPatrulje(c) || c; }
 function lager(c){ const o=lagerEjer(c); return o.lager || (o.lager={}); }
-function skovData(c){
-  const o=lagerEjer(c);
-  if(!o.skov){ o.skov={}; o.skovV=2; }
-  if(o.skovV!==2){   // gamle gemte spil: alle pladser havde et træ af typen i SKOV
-    const ny={}; SKOV.forEach((t,i)=>{ const x=o.skov[i]; ny[i] = x ? { t, ...x } : { t }; });
-    o.skov=ny; o.skovV=2;
-  }
-  Object.keys(o.skov).forEach(i=>{ if(o.skov[i] && !TRAETYPE[o.skov[i].t]) o.skov[i].t = SKOV[i] || "gran"; });   // træsort mangler aldrig
-  return o.skov;
+// Træer på lejrpladsen: Grantræ og Løvtræ er bygninger, der fældes på lejrpladsen og selv vokser op igen.
+// Hvert træs niveau gælder kun for det træ. traer[felt] = { vokser, rek } mens træet vokser op.
+function traeType(id){ return id==="gran" ? "gran" : id==="loevtrae" ? "loev" : null; }
+function traeData(c){ return c.traer || (c.traer={}); }
+function traeVokser(c,i){ const x=traeData(c)[i]; return x && x.vokser>Date.now() ? x : null; }
+function traeFaeldes(c,i){ return arbejdere(c).find(m=>m.job && m.job.felt===i); }
+function kanFaeldes(c,i){ return !!traeType(lejrFelter(c)[i]) && !underByg(c,i) && !traeVokser(c,i) && !traeFaeldes(c,i); }
+// Et voksent træ af slagsen, der kan fældes – det med det højeste niveau først (-1 = intet)
+function ledigtTrae(c, type){
+  const f=lejrFelter(c), ids=Object.keys(f).map(Number).filter(i=>traeType(f[i])===type && kanFaeldes(c,i));
+  ids.sort((a,b)=>lejrNiv(c,b)-lejrNiv(c,a)); return ids.length ? ids[0] : -1;
 }
 function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
 // Lagerplads: rafter og brænde kan kun gemmes, hvis der er plads. Raftegården og brændeskuret giver mere plads for hvert niveau.
@@ -8108,44 +8151,35 @@ function jobTid(m, j){
   if(j==="kloev"){ t *= 1 - Math.min(.5, (bygNiv(cur(),"huggeplads")-1)*0.02); if((m.badges.vaerktoej||0)>=3) t *= .75; }
   return Math.round(t);
 }
-function ledigtTrae(c, type){ const s=skovData(c); return SKOV.findIndex((_,i)=>s[i] && s[i].t===type && !s[i].vokser && !s[i].faeldes); }
 
 // Færdiggør job og lad træer vokse op igen. Returnerer beskeder.
 function tjekArbejde(c){
-  const nu=Date.now(), s=skovData(c), beskeder=[];
+  const nu=Date.now(), tr=traeData(c), beskeder=[];
   // Job, der ikke findes mere (fx »Saml grene og kvas« i gamle gemte spil), afsluttes med det samme med det, de ville have givet
   arbejdere(c).forEach(m=>{ if(m.job && !JOB[m.job.id]){ brugMat(c, m.job.giver || { braende:1 }, 1); delete m.job; } });
   arbejdere(c).forEach(m=>{
     if(m.job && m.job.slut<=nu){
       const j=JOB[m.job.id], giver=m.job.giver || j.giver||{}; brugMat(c, giver, 1);
       if(m.job.point) c.point = (c.point||0) + m.job.point;
-      // Et nyt træ af samme slags vokser automatisk op, når det gamle er fældet
-      if(m.job.slot!=null){ const x=s[m.job.slot]; s[m.job.slot] = { t: x ? x.t : SKOV[m.job.slot], vokser: m.job.slut + GENVAEKST*1000 }; }
+      // Træet vokser automatisk op igen på samme felt, når det er fældet
+      if(m.job.felt!=null && traeType(lejrFelter(c)[m.job.felt])) tr[m.job.felt] = { vokser: m.job.slut + GENVAEKST*1000 };
       beskeder.push(`${esc(m.navn)}: ${j.navn.toLowerCase()} – færdig! +${m.job.point ? m.job.point+" point" : matTekst(giver)}`);
       delete m.job;
     }
   });
-  Object.keys(s).forEach(i=>{ if(s[i].vokser && s[i].vokser<=nu){ delete s[i].vokser; delete s[i].rek; }
-    else if(s[i].faeldes && !arbejdere(c).some(m=>m.job && m.job.slot===+i)) delete s[i].faeldes; });
+  Object.keys(tr).forEach(i=>{ if(!tr[i] || !(tr[i].vokser>nu) || !traeType(lejrFelter(c)[i])) delete tr[i]; });
   if(beskeder.length) save();
   return beskeder;
 }
 function arbejdeAktivt(c){
-  return arbejdere(c).some(m=>m.job) || Object.values(skovData(c)).some(x=>x.vokser);
+  return arbejdere(c).some(m=>m.job) || Object.keys(traeData(c)).some(i=>traeVokser(c,+i));
 }
 
+// Panelet »Patrulje og opgaver«: hvem laver hvad
 function arbejdeHTML(c){
-  const l=lager(c), s=skovData(c), ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
-  let h = `<div class="sect" style="margin-top:18px">🪓 Materialer og arbejde</div>
-    <p class="muted psmall">${p?`Du styrer hele ${esc(p.navn)}. Sæt spejderne til at fælde træer i skoven, afgrene granstammer til rafter og kløve brænde.`:"Fæld træer i skoven, afgren granstammer til rafter og kløv brænde. Med en patrulje har du flere hænder!"} Træerne skal først plantes – tryk på en tom plads i skoven. Når et træ er fældet, vokser et nyt af samme slags op. Tryk på træet for at skifte til en anden slags. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer (til rafter) og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer. Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde og ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad – byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
+  const ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
+  let h = `<p class="muted psmall" style="margin-top:0">Sæt spejderne i ${p?esc(p.navn):"patruljen"} til at fælde træer på lejrpladsen, afgrene granstammer til rafter, kløve brænde, lave reb og mad og meget mere. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer.</p>
     ${signalRest(c)?`<div class="card hbesked">🔥 Signalbålet brænder – nye job går 25 % hurtigere (<b id="signaltid">${fmtTid(signalRest(c))}</b> tilbage).</div>`:""}
-    <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>
-    <div class="skov">${SKOV.map((_,i)=>{
-      const x=s[i], fældes=ms.find(m=>m.job && m.job.slot===i);
-      if(!x) return `<button class="trae tom" data-a="trae" data-i="${i}" aria-label="Tom plads – plant et træ"><span class="emo">🕳️</span><span class="plant">Plant</span></button>`;
-      if(x.vokser) return `<button class="trae stub" data-a="trae" data-i="${i}" aria-label="${TRAETYPE[x.t].navn}, der vokser"><span class="emo">🌱</span><span class="tid" data-voks="${i}">${fmtTid(x.vokser-nu)}</span></button>`;
-      return `<button class="trae ${fældes?"faeldes":""}" data-a="trae" data-i="${i}" aria-label="${TRAETYPE[x.t].navn}"><span class="emo">${TRAETYPE[x.t].ikon}</span>${fældes?`<span class="okse">🪓</span>`:""}</button>`;
-    }).join("")}</div>
     <div class="arbejdere">`;
   ms.forEach(m=>{
     const j=m.job && JOB[m.job.id];
@@ -8162,13 +8196,19 @@ function arbejdeHTML(c){
   return h;
 }
 
+// Panelet »Lager«
+function lagerHTML(c){
+  const l=lager(c);
+  return `<p class="muted psmall" style="margin-top:0">Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde, ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad. Byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
+    <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>`;
+}
 function visJobValg(id, kunTrae, kunJob){
   const c=cur(), m=state.chars.find(x=>x.id===id); if(!m) return;
   if(m.job){ lejrToast(`${esc(m.navn)} er allerede i gang med et job.`); return; }
   const l=lager(c);
   const muligheder = Object.entries(JOB).filter(([jid,j])=>(!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
-    if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Plant nogle i skoven.`;
+    if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Byg et ${TRAETYPE[j.trae].navn.toLowerCase()} på lejrpladsen, eller vent, til det er vokset op.`;
     if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
     if(jobLaast(m,j)) grund = jobLaastTekst(m,j);
     if(j.bygning && !harBygget(c,j.bygning)) grund = `Kræver en ${BYGID[j.bygning].navn.toLowerCase()} på lejrpladsen.`;
@@ -8184,76 +8224,32 @@ function visJobValg(id, kunTrae, kunJob){
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{ modalRoot.innerHTML=""; startJob(m, b.dataset.job); });
 }
-function startJob(m, jid){
+function startJob(m, jid, startFelt){
   const c=cur(), j=JOB[jid];
   if(jobLaast(m,j) || (j.bygning && !harBygget(c,j.bygning))) return;
-  let slot=null;
-  if(j.trae){ slot=ledigtTrae(c,j.trae); if(slot<0) return; skovData(c)[slot].faeldes=m.id; }
+  let felt=null;
+  if(j.trae){ felt = startFelt!=null ? startFelt : ledigtTrae(c,j.trae); if(felt<0 || !kanFaeldes(c,felt)) return; }
   if(j.bruger){ const br=jobBruger(c,jid); if(!harMat(c,br)) return; brugMat(c,br,-1); }
   const t=jobTid(m,jid)*1000;
-  m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot, giver:jobGiver(c,jid), point:jobPoint(c,jid) };
+  m.job={ id:jid, start:Date.now(), slut:Date.now()+t, felt, giver:jobGiver(c,jid,felt), point:jobPoint(c,jid) };
   save(); render(); vibrer(30);
   lejrToast(`${j.ikon} ${esc(m.navn)} går i gang: ${j.navn.toLowerCase()}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
 }
-function traeKlik(i){
-  const c=cur(), s=skovData(c)[i];
-  if(!s) return visPlant(i);
-  const type=s.t, T=TRAETYPE[type];
-  if(s.vokser) return visVokser(i);
-  const fældes=arbejdere(c).find(m=>m.job && m.job.slot===i);
-  if(fældes){ lejrToast(`🪓 ${esc(fældes.navn)} er i gang med at fælde træet.`); return; }
-  const ledige=arbejdere(c).filter(m=>!m.job);
-  const jid = T.job;
+// Vælg, hvem der skal fælde træet på felt i
+function visFaeld(i){
+  const c=cur(), type=traeType(c.lejr[i]), T=TRAETYPE[type], jid=T.job, ledige=arbejdere(c).filter(m=>!m.job);
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center"><div style="font-size:60px">${T.ikon}</div><h2 style="margin:4px 0">Hvem skal fælde ${T.best}?</h2>
-    <p class="muted" style="font-size:15px;margin:0">${T.besk} Bagefter vokser der automatisk et nyt ${T.navn.toLowerCase()} op.</p>
-    <p style="font-size:15px;margin:6px 0 0"><b>Giver ${matTekst(jobGiver(c,jid))}</b>${harBygget(c,TRAE_BYG[jid])?"":` · byg og opgrader et ${T.navn.toLowerCase()} på lejrpladsen for at få flere`}</p></div>
-    ${skiftTraeKnap(type)}
+    <p class="muted" style="font-size:15px;margin:0">${T.besk} Bagefter vokser træet automatisk op igen på samme plads.</p>
+    <p style="font-size:15px;margin:6px 0 0"><b>Giver ${matTekst(jobGiver(c,jid,i))}</b> (niveau ${lejrNiv(c,i)})</p></div>
     ${ledige.length?"":`<p class="muted psmall center">Alle i patruljen er optaget. Vent til nogen bliver færdige.</p>`}
     <div class="pvalgliste" style="margin-top:12px">${ledige.map(m=>{ const lvl=m.badges.overlevelse||0, laast=jobLaast(m,JOB[jid]);
       return `<button class="pvalg" data-hvem="${m.id}" ${laast?"disabled":""}>${hoved(m)}<span><b>${esc(m.navn)}</b><small>${laast?jobLaastTekst(m,JOB[jid]):`${tidTekst(jobTid(m,jid))}${lvl?` · ${EMNE.overlevelse.navn} i ${NIVEAUER[lvl].navn.toLowerCase()} gør det hurtigere`:""}`}</small></span></button>`; }).join("")}</div>
     </div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
-  bindSkiftTrae(i);
   modalRoot.querySelectorAll("[data-hvem]").forEach(b=>b.onclick=()=>{
-    modalRoot.innerHTML=""; const m=state.chars.find(x=>x.id===b.dataset.hvem); if(jobLaast(m,JOB[jid])) return;
-    const s=skovData(c); if(!s[i] || s[i].vokser) return; s[i].faeldes=m.id; const t=jobTid(m,jid)*1000;
-    m.job={ id:jid, start:Date.now(), slut:Date.now()+t, slot:i, giver:jobGiver(c,jid) }; save(); render(); vibrer(30);
-    lejrToast(`🪓 ${esc(m.navn)} fælder ${T.best}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
+    modalRoot.innerHTML=""; const m=state.chars.find(x=>x.id===b.dataset.hvem); if(!m || jobLaast(m,JOB[jid])) return;
+    startJob(m, jid, i);
   });
-}
-// Plant et træ på en tom plads i skoven
-function visPlant(i){
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center"><div style="font-size:54px">🌱</div><h2 style="margin:4px 0">Hvad vil du plante?</h2>
-    <p class="muted" style="font-size:15px;margin:0">Træet er ${tidTekst(GENVAEKST)} om at vokse op. Så kan det fældes.</p></div>
-    <div class="pvalgliste" style="margin-top:12px">${Object.entries(TRAETYPE).map(([t,T])=>`<button class="pvalg" data-plant="${t}"><span class="jobik">${T.ikon}</span><span><b>${T.navn}</b><small>${T.besk}</small></span></button>`).join("")}</div></div></div>`;
-  modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
-  modalRoot.querySelectorAll("[data-plant]").forEach(b=>b.onclick=()=>{
-    const c=cur(), s=skovData(c); if(s[i]) return; modalRoot.innerHTML="";
-    s[i]={ t:b.dataset.plant, vokser:Date.now()+GENVAEKST*1000 }; save(); render(); vibrer(30);
-    lejrToast(`🌱 Et ${TRAETYPE[b.dataset.plant].navn.toLowerCase()} er plantet. Det er vokset op om ${tidTekst(GENVAEKST)}.`);
-  });
-}
-// Skift træsort på en plads: det gamle træ fjernes, og det nye plantes forfra
-function skiftTraeKnap(t){ const ny=t==="gran"?"loev":"gran"; return `<button class="btn secondary" id="m-skift" data-ny="${ny}" style="flex-direction:column;gap:2px">🔄 Skift til ${TRAETYPE[ny].navn.toLowerCase()} ${TRAETYPE[ny].ikon}<small style="display:block;font-weight:600;opacity:.8">Det nye træ plantes forfra og er ${tidTekst(GENVAEKST)} om at vokse op</small></button>`; }
-function bindSkiftTrae(i){
-  const k=modalRoot.querySelector("#m-skift"); if(!k) return;
-  k.onclick=()=>{ const c=cur(), s=skovData(c); if(arbejdere(c).some(m=>m.job && m.job.slot===i)) return;
-    const ny=k.dataset.ny; s[i]={ t:ny, vokser:Date.now()+GENVAEKST*1000 }; modalRoot.innerHTML=""; save(); render(); vibrer(30);
-    lejrToast(`🌱 Her vokser nu et ${TRAETYPE[ny].navn.toLowerCase()} op. Det er klar om ${tidTekst(GENVAEKST)}.`); };
-}
-// Et træ, der vokser: vis tiden, og se evt. en reklame for at halvere den
-function visVokser(i){
-  const c=cur(), s=skovData(c)[i], T=TRAETYPE[s.t];
-  modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div style="font-size:54px">🌱</div><h2 style="margin:4px 0">${T.navn}, der vokser</h2>
-    <p class="byggetid">⏳ Vokset op om <b id="m-tid">${fmtTid(s.vokser-Date.now())}</b></p>
-    ${s.rek?`<p class="muted psmall">📺 Tiden er allerede halveret med en reklame.</p>`:`<button class="btn gold" id="m-rek">📺 Se en reklame og halver tiden</button>`}
-    ${skiftTraeKnap(s.t)}</div></div>`;
-  const luk=()=>{ modalRoot.innerHTML=""; };
-  bindSkiftTrae(i);
-  modalRoot.querySelector("#m-luk").onclick=luk;
-  const rek=modalRoot.querySelector("#m-rek");
-  if(rek) rek.onclick=()=>visReklame(()=>{ const x=skovData(cur())[i]; if(!x || !x.vokser) return; x.rek=true; halverTid(x,"vokser"); save(); render(); lejrToast("⏩ Tiden er halveret!"); });
-  const ur=setInterval(()=>{ const el=modalRoot.querySelector("#m-tid"); if(!el){ clearInterval(ur); return; } const ms=s.vokser-Date.now(); if(ms<=0){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(ms); },1000);
 }
 
 /* ---------- Opgradering af alt på lejrpladsen ---------- */
@@ -9704,7 +9700,6 @@ const actions = {
   vaelgbyg(d){ vaelgByg(d.id); },
   celle(d){ lejrCelle(+d.i); },
   lejrannuller(){ lejrValg=null; render(); },
-  trae(d){ traeKlik(+d.i); },
   nytjob(d){ visJobValg(d.id); },
   bygstop(){ if(bygOpg && bygOpg.loeb){ bygOpg=null; go(aktivtLoeb()?"loeb":"patrulje"); lejrToast("Posten venter – I kan prøve igen."); return; } if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
   pny(){ const navne=shuffle(STANDARDNAVNE.slice()).slice(0,PATRULJE_STR);
@@ -9783,6 +9778,7 @@ const actions = {
   },
   jobrek(d){ const m=state.chars.find(x=>x.id===d.id); if(!m || !m.job || m.job.rek) return;
     visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
+  lejrark(d){ lejrArk = d.v && lejrArk!==d.v ? d.v : null; if(lejrArk) lejrValg=null; render(); },
   braende(){
     if(akt.ild>=3){ aktBesked("Bålet brænder godt nu. Pas på – et for stort bål er farligt! 🔥"); return; }
     if(nav.screen==="akt"){ const l=lager(cur());
