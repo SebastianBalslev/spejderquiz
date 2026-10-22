@@ -333,6 +333,8 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .katvalg{display:flex;gap:6px;overflow-x:auto;margin:0 -12px 4px;padding:2px 12px 8px;scrollbar-width:none;position:sticky;top:52px;z-index:2;background:inherit}.katvalg::-webkit-scrollbar{display:none}
 .katvalg button{flex:none;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 12px;font-weight:700;font-size:14px;white-space:nowrap}
 .katvalg button.on{background:var(--forest);border-color:var(--forest);color:#fff}
+.shop .item.bygget{background:#e6efd9;border-color:#9cc08a}.shop .item.bygget .ik{opacity:.85}
+.byggetmaerke{display:inline-block;margin-top:4px;background:var(--forest);color:#fff;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:800}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -7172,7 +7174,7 @@ function bygKategorier(){
   return andet.length ? [...BYGKAT, { id:"andet", ikon:"✨", navn:"Andet", ting:andet }] : BYGKAT;
 }
 function byggelisteHTML(c){
-  const ledig=lejrPoint(c), kats=bygKategorier();
+  const ledig=lejrPoint(c), kats=bygKategorier(), bygget=new Set(Object.values(lejrFelter(c)));
   if(!kats.some(k=>k.id===lejrKat)) lejrKat="alle";
   let h = `${merTekst("Vælg en ting, og tryk på et felt.", `Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.`)}
     <div class="katvalg" role="tablist">${[{id:"alle",ikon:"📋",navn:"Alle"},...kats].map(k=>`<button role="tab" aria-selected="${lejrKat===k.id}" class="${lejrKat===k.id?"on":""}" data-a="bygkat" data-v="${k.id}">${k.ikon} ${k.navn}</button>`).join("")}</div>`;
@@ -7181,6 +7183,11 @@ function byggelisteHTML(c){
     h += `<h3 class="kathead">${k.ikon} ${k.navn}</h3><div class="shop">`;
   for(const b of k.ting.map(id=>BYGID[id]).filter(Boolean)){
     const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
+    // Ting, man kun kan have én af, viser, at de allerede står på lejrpladsen
+    if(b.en && bygget.has(b.id)){
+      h += `<button class="item bygget" data-a="vaelgbyg" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget</span><span class="meta">Kun én pr. lejr</span></button>`;
+      continue;
+    }
     const kravHTML = b.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[b.krav[0]], ok?b.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[b.krav[1]].navn}</span>` : `<span class="krav ok">Alle kan bygge</span>`;
     h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgbyg" data-id="${b.id}">
       <span class="ik">${bygIkon(b)}</span><b>${b.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${b.pris}</span>
