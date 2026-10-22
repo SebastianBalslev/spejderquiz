@@ -8239,7 +8239,6 @@ function startJob(m, jid, startFelt){
   const t=jobTid(m,jid)*1000;
   m.job={ id:jid, start:Date.now(), slut:Date.now()+t, felt, giver:jobGiver(c,jid,felt), point:jobPoint(c,jid) };
   save(); render(); vibrer(30);
-  lejrToast(`${j.ikon} ${esc(m.navn)} går i gang: ${j.navn.toLowerCase()}. Færdig om ${tidTekst(Math.round(t/1000))}.`);
 }
 // Vælg, hvem der skal fælde træet på felt i
 function visFaeld(i){
