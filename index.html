@@ -6820,7 +6820,7 @@ const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Giver plads til 20 reb mere – og 10 mere for hvert niveau." },
-  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10 og 20." },
+  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
   { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
@@ -8035,13 +8035,14 @@ for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
 // niveau 1-4 = 1 stamme, niveau 5 = 2 og derefter jævnt op til 10 stammer på niveau 99 (det højeste træ tæller)
 const TRAE_BYG = { faeldGran:"gran", faeldLoev:"loevtrae" };
 function stammerPrTrae(niv){ return niv<5 ? 1 : 2 + Math.floor((niv-5)*8/94); }
+const AFGREN_NIV = [5, 10, 20, 40, 60, 80, 99];
 function jobGiver(c, jid){
   const g = { ...JOB[jid].giver };
   if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
   // Højere niveau på lejrkøkkenet og bagerovnen giver mere mad: +1 for hvert 5. niveau
   if(jid==="madlav" || jid==="bag") g.mad += Math.floor((bygNiv(c, JOB[jid].bygning)-1)/5);
-  // Afgreningsstationen: +1 rafte, når den er bygget, og +1 mere på niveau 5, 10 og 20
-  if(jid==="afgren"){ const n=bygNiv(c,"afgrening"); if(n) g.rafter += 1 + [5,10,20].filter(x=>n>=x).length; }
+  // Afgreningsstationen: +1 rafte, når den er bygget, og +1 mere på hvert af niveauerne i AFGREN_NIV
+  if(jid==="afgren"){ const n=bygNiv(c,"afgrening"); if(n) g.rafter += 1 + AFGREN_NIV.filter(x=>n>=x).length; }
   // Rebslåningsmaskinen: +1 utaklet reb for hvert 5. niveau
   if(jid==="sno") g.rebraa += Math.floor(bygNiv(c,"rebmaskine")/5);
   if(TRAE_BYG[jid]){ const m=Object.keys(g)[0]; g[m] = stammerPrTrae(bygNiv(c,TRAE_BYG[jid])); }
