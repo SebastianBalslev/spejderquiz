@@ -330,6 +330,8 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .arktop{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 8px;background:inherit}.arktop b{font-size:19px;color:var(--forest)}.arktop .lukx{position:static;float:none;margin:0}
 @keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .byggebar{position:sticky;top:0;z-index:30}
+.mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
+.mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
 body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle .okse{position:absolute;top:2px;right:2px;font-size:14px;z-index:3;animation:hug .6s ease-in-out infinite}
 .celle.voks .emo{font-size:clamp(16px,6vw,26px)}
@@ -7150,7 +7152,7 @@ function scrLejr(){
 }
 function byggelisteHTML(c){
   const ledig=lejrPoint(c);
-  let h = `<p class="muted" style="margin:0 0 12px;font-size:14px">Brug dine point på at bygge. Vælg en ting, og tryk så på et felt på lejrpladsen. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.</p>
+  let h = `${merTekst("Vælg en ting, og tryk på et felt.", `Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.`)}
     <div class="shop">`;
   for(const b of BYG){
     const ok=harKrav(c,b), raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
@@ -8178,7 +8180,7 @@ function arbejdeAktivt(c){
 // Panelet »Patrulje og opgaver«: hvem laver hvad
 function arbejdeHTML(c){
   const ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
-  let h = `<p class="muted psmall" style="margin-top:0">Sæt spejderne i ${p?esc(p.navn):"patruljen"} til at fælde træer på lejrpladsen, afgrene granstammer til rafter, kløve brænde, lave reb og mad og meget mere. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer.</p>
+  let h = `${merTekst("Giv spejderne i "+(p?esc(p.navn):"patruljen")+" et job.", `De kan fælde træer på lejrpladsen, afgrene granstammer til rafter, kløve brænde, lave reb og mad og meget mere. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer.`)}
     ${signalRest(c)?`<div class="card hbesked">🔥 Signalbålet brænder – nye job går 25 % hurtigere (<b id="signaltid">${fmtTid(signalRest(c))}</b> tilbage).</div>`:""}
     <div class="arbejdere">`;
   ms.forEach(m=>{
@@ -8196,10 +8198,14 @@ function arbejdeHTML(c){
   return h;
 }
 
+// Kort hjælpetekst i panelerne – resten vises, når man trykker »Læs mere«
+function merTekst(kort, mere){
+  return `<details class="mertekst"><summary><span>${kort}</span> <u>Læs mere</u></summary><p>${mere}</p></details>`;
+}
 // Panelet »Lager«
 function lagerHTML(c){
   const l=lager(c);
-  return `<p class="muted psmall" style="margin-top:0">Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde, ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad. Byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.</p>
+  return `${merTekst("Det har patruljen på lager.", `Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde, ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad. Byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.`)}
     <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>`;
 }
 function visJobValg(id, kunTrae, kunJob){
