@@ -8037,9 +8037,10 @@ const JOB = {
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
 // Kløvning kræver en huggeplads. Hvert andet niveau giver et brænde mere, og hvert niveau gør det 2 % hurtigere (højst 50 %).
 // Opgraderede grantræer og løvtræer på lejrpladsen giver flere stammer, når man fælder træer i skoven:
-// niveau 1-4 = 1 stamme, niveau 5 = 2 og derefter jævnt op til 10 stammer på niveau 99 (det højeste træ tæller)
+// +1 stamme på niveau 5, 10, 20, 40, 52, 64, 75, 87 og 99 – fra 1 op til 10 stammer (det højeste træ tæller)
 const TRAE_BYG = { faeldGran:"gran", faeldLoev:"loevtrae" };
-function stammerPrTrae(niv){ return niv<5 ? 1 : 2 + Math.floor((niv-5)*8/94); }
+const TRAE_NIV = [5, 10, 20, 40, 52, 64, 75, 87, 99];   // +1 stamme på hvert af disse niveauer
+function stammerPrTrae(niv){ return 1 + TRAE_NIV.filter(x=>niv>=x).length; }
 const AFGREN_NIV = [5, 10, 20, 40, 60, 80, 99];
 function jobGiver(c, jid){
   const g = { ...JOB[jid].giver };
