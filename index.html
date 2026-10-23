@@ -6301,7 +6301,7 @@ function scrMaerker(){
       <div class="gruppebar"><i style="width:${Math.round(har/maks*100)}%"></i></div>
       <div class="grid">${es.map(e=>{ const l=c.badges[e.id]||0, aab=emneAaben(c,e.id);
         // Et emne, man kan begynde på, viser bronzemærket svagt og »Klar til bronze« (ikke »Låst«)
-        return `<button class="bcell ${aab?"":"emnelaas"}" data-a="emne" data-id="${e.id}">${!l && aab ? badgeHTML(e,1,"faded") : badgeHTML(e,l)}<b>${e.navn}</b><small class="${l?"l"+l:aab?"klar":"l0"}">${l?NIVEAUER[l].navn:aab?"Klar til bronze":emneLaasTekst(e.id)}</small></button>`; }).join("")}</div>`;
+        return `<button class="bcell ${aab?"":"emnelaas"}" data-a="emne" data-id="${e.id}">${!l && aab ? badgeHTML(e,1,"faded") : badgeHTML(e,l)}<b>${e.navn}</b><small class="${l?"l"+l:aab?"klar":"l0"}">${l?NIVEAUER[l].navn:aab?"Tag mærket":emneLaasTekst(e.id)}</small></button>`; }).join("")}</div>`;
   }).join("");
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>

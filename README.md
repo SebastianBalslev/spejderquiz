@@ -11,7 +11,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
   - **Færdigheder:** Knob og reb, Førstehjælp, Orientering og kompas, GPS og geocaching, Vand og sejlads, Koder og signaler (med blinkende morselampe og semafor)
   - **Spejderliv:** Spejderhistorie og traditioner, Lejrbål og sang, Ledelse og ansvar
 
-  Mærkesiden viser fremgangen i hver gruppe. Emner, man kan begynde på, står med »Klar til bronze« og et svagt bronzemærke, fx »Natur: 8 af 21 mærker«. Et emne vises først, når det har mindst 10 spørgsmål på hvert niveau (`ANTAL_SPG_MIN`)
+  Mærkesiden viser fremgangen i hver gruppe. Emner, man kan begynde på, står med »Tag mærket« og et svagt bronzemærke, fx »Natur: 8 af 21 mærker«. Et emne vises først, når det har mindst 10 spørgsmål på hvert niveau (`ANTAL_SPG_MIN`)
 - 1.664 spørgsmål med forklaringer – mindst 25 pr. emne og niveau. Heraf opgaver, hvor man skal vise, hvordan knob og besnøringer bindes, og billedspørgsmål med tegninger af dyr, dyrespor, blade, svampe, knob og surringer
 - Den samme morse- eller semaforopgave kommer aldrig to gange i samme prøve
 - **Én spiller – én patrulje:** når man starter, opretter man en patrulje på 5 spejdere og vælger patruljeleder (det er en selv) og patruljeassistent. Under »Redigér patruljen« kan man ændre navn og udseende på alle i patruljen. Mærkerne er fælles – når man tager et mærke, får hele patruljen det – og patruljen deler lejrpladsen. Patruljelederen har valgfrit udseende og ranger efter antal mærker (af 66): Ny spejder (0), Spejder (3), Erfaren spejder (12), Vildmarksspejder (28) og Mesterspejder (50). Guld i Lejrbål og sang og Ledelse og ansvar giver titlerne Lejrbålsleder og Patruljeleder
