@@ -70,6 +70,14 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - **Sæt** (`LEJR_SAET`): Tømmerlejren, Rebslageriet, Bålhygge, Lejrkøkkenet, Patruljelejren, Pionerpladsen, Sikker lejr, Orientering, Vejr og himmel, Dyr og fugle, Vild natur og Søen.
 - **Lejrinspektion** (`INSPEKTION`, afstande i felter, også på skrå): latrinen mindst 3 felter fra køkken og sø · bålet mindst 2 felter fra telte · en førstehjælpsstation · rent vand (en vandstation, eller køkkenet højst 2 felter fra søen) · brændeskuret højst 2 felter fra et bål · en flagstang · lejrporten i kanten af pladsen.
 
+### Oprydning i bygningerne
+Nogle bygninger er fjernet eller lagt sammen (`GAMMEL`, `FJERNET` og `FLET`). Gemte spil ryddes op én gang (`migrerLejr`, styret af `lejrV`), og spilleren får én samlet besked:
+- **Fjernet:** Brændestabel og Sten (point og materialer gives tilbage).
+- **Svampe og blåbær** er ikke bygninger mere. De vokser vildt på tomme græsfelter (`VILD`): kantareller med Planter og svampe i bronze, blåbær med sølv – et nyt fund hver 2. time, højst 3 ad gangen. Tryk for at plukke dem til mad (1 og 2 portioner).
+- **Kronhjorten og ræven** er ikke bygninger mere, men kommer på besøg og går hen over lejrpladsen, når der står mindst 3 naturbygninger (`NATUR_BYG`): hjorten med Dyr i sølv, ræven med Dyr i guld. Tryk på dyret for en fakta.
+- **Lagt sammen** (den nye bygning får det højeste niveau af de gamle, resten gives tilbage): Orienteringspost → Vejviser · Vejrhane → trin på Vejrstationen (Vejr i sølv) · Båre og Hjertestarter → trin på Førstehjælpsstationen (Førstehjælp i sølv/guld) · Liljeskilt → pynt på Lejrporten (Spejderhistorie i sølv) · Morselampe og Semaforpost → den nye Signalpost (morse med Koder og signaler i bronze, semafor med sølv) · Stjernetårn → de høje trin på Stjernekikkerten (Stjerner i guld). Trinnene vises på bygningernes ikoner (`bygEkstra`).
+- Besnøringsopgaven »Båre« findes stadig på løbene og til møderne – den er bare ikke en bygning mere.
+
 ## Ret i lejrpladsen
 Tingene, man kan bygge, står i listen `BYG` i `index.html`. Hver ting har en pris og evt. et krav, fx `krav:["knob",2]` = Knob og reb i sølv. Alle ventetider styres af `TIDSFAKTOR` (4 = fire gange grundtiden). Lagerpladsen styres af `LAGER_START`, `LAGER_BYGGET` og `LAGER_PR_NIV`, træerne af `TRAETYPE` og `GENVAEKST`, nedrivning af `RIV_ANDEL`, det højeste niveau af `MAKSNIV`, og reklamerne af `REKLAME_SEK` og `REKLAMER`. Byggetider står i `BYGTID`, materialepriser i `BYGMAT`, arbejdsopgaverne i `JOB`, besnøringsopgaverne i `OPGAVER` tingene til teltet i `INDBO` og aktiviteterne i `AKT_FOR`, `HISTORIER`, `HISTORIER_LB` og `DYREFAKTA`.
 
@@ -78,7 +86,7 @@ Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni n
 
 | Emne | Bronze | Sølv | Guld |
 |---|---|---|---|
-| Stjerner og nattehimmel | Stjernekikkerten og Orion i kikkerten | Planeten Jupiter og den tiltagende/aftagende måne i kikkerten | Stjernetårn |
+| Stjerner og nattehimmel | Stjernekikkerten og Orion i kikkerten | Planeten Jupiter og den tiltagende/aftagende måne i kikkerten | Stjernekikkerten bliver til et stjernetårn |
 | Friluftskøkken | Snobrød over bålet på bålpladsen | Lejrkøkken (før Bål i sølv) | Bagerovn |
 | Kniv, sav og økse | Fælde grantræer (rafter), huggeplads og kløve brænde (job) | Fælde løvtræer (job) | Afgreningsstation og kløvning 25 % hurtigere |
 | Tur og udrustning | Rygsækstativ i teltet | Fleecetrøje, uldsokker, termoflaske og vabelplaster i teltet | Madpakken på løbene giver +3 energi i stedet for +2 |
@@ -88,7 +96,7 @@ Mange mærker giver adgang til ting på lejrpladsen (se `krav` i `BYG`). De ni n
 | Lejrbål og sang | 6 ekstra historier ved bålet | Lejrbålsplads (før Bål i guld) | Titlen Lejrbålsleder og »Lav et råb« og »Opfør en sketch« ved bålet |
 | Ledelse og ansvar | Patruljehjørne | Patruljelederen på et løb giver en ekstra joker | Titlen Patruljeleder og +25 % point på løbene |
 
-De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv), Bålbænke (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
+De pladser, der blev ledige under de gamle emner, har fået nye ting: Pindsvinehus (Dyr, bronze), Vejrhane (Vejr, sølv – nu et trin på vejrstationen), Bålbænke (Bål, sølv) og Signalbål (Bål, guld). Stjernekikkerten kræver nu Stjerner og nattehimmel i bronze i stedet for Vejr i sølv.
 
 Ting, der allerede er bygget, bliver stående, selv om kravet er flyttet, og job, der er i gang, gør sig færdige. Ved løbene tæller det højeste mærke i patruljen, men den ekstra joker kræver, at spejderen med rollen patruljeleder selv har mærket. Fordelene vises, når rollerne fordeles, og regnes ud ved start (`loebFordele`). I koden står det i `LAAS_OP` (teksterne ved et nyt mærke), `JOB` (`kraever` og `bygning`), `jobGiver`, `STJERNEOPG_ALLE`, `HISTORIER_LB`, `RAAB`, `SKETCHES`, `AKT_FOR` (tredje felt er et krav) og `titler`.
 
