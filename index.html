@@ -6876,17 +6876,17 @@ function konfetti(){
    ===================================================================== */
 const BYG = [
   { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
-  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, lejrniv:1, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Giver plads til 20 rafter mere – og 10 mere for hvert niveau." },
-  { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:1, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Giver plads til 20 reb mere – og 10 mere for hvert niveau." },
+  { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, lejrniv:5, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Hvert niveau giver mere plads til rafter – hvor meget afhænger af lejrens trin." },
+  { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
-  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
-  { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
-  { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:1, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Giver plads til 20 portioner mad mere – og 10 mere for hvert niveau." },
-  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40, lejrniv:1,  en:true,                besk:"Her ligger brændet tørt. Giver plads til 20 brænde mere – og 10 mere for hvert niveau." },
+  { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, lejrniv:10, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
+  { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, lejrniv:7, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
+  { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:5, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Hvert niveau giver mere plads til portioner mad – hvor meget afhænger af lejrens trin." },
+  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40, lejrniv:5,  en:true,                besk:"Her ligger brændet tørt. Hvert niveau giver mere plads til brænde – hvor meget afhænger af lejrens trin." },
   { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15, lejrniv:1,  besk:"Fæld det, så får du granstammer til rafter. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
   { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15, lejrniv:1,  besk:"Fæld det, så får du løvstammer til brænde. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
 
-  { id:"latrin",      navn:"Latrin",            svg:"latrin",   pris:30, lejrniv:1,  krav:["lejr",1],        besk:"Et godt stykke fra køkken og sø." },
+  { id:"latrin",      navn:"Latrin",            svg:"latrin",   pris:30, lejrniv:5,  krav:["lejr",1],        besk:"Et godt stykke fra køkken og sø." },
   { id:"patruljetelt",navn:"Patruljetelt",      ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
   { id:"hytte",       navn:"Spejderhytte",      svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
 
@@ -6901,52 +6901,52 @@ const BYG = [
 
   { id:"huggeplads",  navn:"Huggeplads",        ikon:"🪓", pris:60, lejrniv:1,  krav:["vaerktoej",1], en:true, besk:"Huggeblok og savbuk. Her kløves brænde – højere niveau giver mere brænde og hurtigere kløvning." },
 
-  { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60, lejrniv:5,  krav:["knob",1],        besk:"Rafter besnøret sammen til et spisebord." },
+  { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60, lejrniv:7,  krav:["knob",1],        besk:"Rafter besnøret sammen til et spisebord." },
   { id:"port",        navn:"Lejrport",          svg:"port",     pris:150, lejrniv:10, krav:["knob",2],        besk:"Pioneret port med vinkelbesnøringer. Med Spejderhistorie i sølv får den et liljeskilt." },
   { id:"taarn",       navn:"Udsigtstårn",       svg:"taarn",    pris:300, lejrniv:22, krav:["knob",3],        besk:"Højt tårn bygget med kryds- og vinkelbesnøringer." },
   { id:"svaevebane",  navn:"Svævebane",         svg:"svaeve",   pris:400, lejrniv:30, krav:["knob",3],        besk:"Sus hen over pladsen! Kræver stærke knob." },
 
   { id:"forstehjalp", navn:"Førstehjælpsstation", svg:"kors",   pris:60, lejrniv:6,  krav:["forstehjalp",1], besk:"Plaster og forbindinger klar. Med Førstehjælp i sølv får stationen en båre, og i guld en hjertestarter." },
 
-  { id:"pindsvinehus",navn:"Pindsvinehus",      ikon:"🦔", pris:40, lejrniv:1,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
+  { id:"pindsvinehus",navn:"Pindsvinehus",      ikon:"🦔", pris:40, lejrniv:10,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
 
   { id:"kongeeg",     navn:"Kæmpeeg",           svg:"eg",       pris:220, lejrniv:26, krav:["planter",3],     besk:"Et ældgammelt egetræ med agern." },
 
-  { id:"vejviser",    navn:"Vejviser",          svg:"vejviser", pris:90, lejrniv:8,  krav:["orientering",2], besk:"Viser vej til sø, bål og telt – med en orienteringspost, I kan finde med kort og kompas." },
+  { id:"vejviser",    navn:"Vejviser",          svg:"vejviser", pris:90, lejrniv:12,  krav:["orientering",2], besk:"Viser vej til sø, bål og telt – med en orienteringspost, I kan finde med kort og kompas." },
   { id:"kompasrose",  navn:"Kompasrose",        svg:"kompas",   pris:200, lejrniv:18, krav:["orientering",3], besk:"Stor kompasrose lagt med sten." },
 
-  { id:"vejrstation", navn:"Vejrstation",       svg:"vejrstation", pris:60, lejrniv:8, krav:["vejr",1],     besk:"Termometer og regnmåler. Med Vejr i sølv får den en vejrhane, der peger mod vinden." },
+  { id:"vejrstation", navn:"Vejrstation",       svg:"vejrstation", pris:60, lejrniv:12, krav:["vejr",1],     besk:"Termometer og regnmåler. Med Vejr i sølv får den en vejrhane, der peger mod vinden." },
   { id:"solur",       navn:"Solur",             svg:"solur",    pris:220, lejrniv:25, krav:["vejr",3],        besk:"Viser tiden med solens skygge." },
 
-  { id:"kikkert",     navn:"Stjernekikkert",    ikon:"🔭", pris:150, lejrniv:17, krav:["stjerner",1],    besk:"Find Karlsvognen, Nordstjernen og flere stjernebilleder. Med Stjerner i guld bliver den til et stjernetårn." },
+  { id:"kikkert",     navn:"Stjernekikkert",    ikon:"🔭", pris:150, lejrniv:16, krav:["stjerner",1],    besk:"Find Karlsvognen, Nordstjernen og flere stjernebilleder. Med Stjerner i guld bliver den til et stjernetårn." },
 
-  { id:"fuglekasse",  navn:"Fuglekasse",        svg:"fuglekasse", pris:40, lejrniv:1, krav:["fugle",1],      besk:"Et hjem til musvitter." },
+  { id:"fuglekasse",  navn:"Fuglekasse",        svg:"fuglekasse", pris:40, lejrniv:10, krav:["fugle",1],      besk:"Et hjem til musvitter." },
   { id:"fugletaarn",  navn:"Fugletårn",         ikon:"🦅", pris:180, lejrniv:14, krav:["fugle",2],       besk:"Et tårn ved søen, hvor I kan se fuglene uden at forstyrre dem." },
 
-  { id:"sporkasse",   navn:"Sporkasse",         ikon:"🐾", pris:50, lejrniv:8,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
-  { id:"patruljehjoerne", navn:"Patruljehjørne", ikon:"🚩", pris:60, lejrniv:5, krav:["ledelse",1], besk:"Patruljens eget hjørne med flag, opslagstavle og bænk." },
-  { id:"geocache",    navn:"Geocache",          ikon:"📦", pris:50, lejrniv:8,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
+  { id:"sporkasse",   navn:"Sporkasse",         ikon:"🐾", pris:50, lejrniv:14,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
+  { id:"patruljehjoerne", navn:"Patruljehjørne", ikon:"🚩", pris:60, lejrniv:8, krav:["ledelse",1], besk:"Patruljens eget hjørne med flag, opslagstavle og bænk." },
+  { id:"geocache",    navn:"Geocache",          ikon:"📦", pris:50, lejrniv:14,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
 
-  { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80, lejrniv:8,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
-  { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, lejrniv:15, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
-  { id:"traehytte",   navn:"Træhytte",          svg:"traehytte", pris:280, lejrniv:35, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
+  { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80, lejrniv:10,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
+  { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, lejrniv:16, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
+  { id:"traehytte",   navn:"Træhytte",          svg:"traehytte", pris:280, lejrniv:36, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
 
-  { id:"kano",        navn:"Kano",              ikon:"🛶", pris:80, lejrniv:8,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
-  { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, lejrniv:15, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
-  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, lejrniv:40, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
+  { id:"kano",        navn:"Kano",              ikon:"🛶", pris:80, lejrniv:10,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
+  { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, lejrniv:16, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
+  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, lejrniv:42, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50, lejrniv:6,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
   { id:"jamboree",    navn:"Jamboree-telt",     ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
 
-  { id:"signalpost",  navn:"Signalpost",        svg:"signalpost", pris:60, lejrniv:8, krav:["koder",1],      besk:"Morselampe og semaforflag på én post. Morse kræver Koder og signaler i bronze, semafor kræver sølv." },
-  { id:"radiomast",   navn:"Signalmast",        svg:"radiomast", pris:240, lejrniv:38, krav:["koder",3],      besk:"Høj mast med antenne – nu kan I kalde hele verden." },
+  { id:"signalpost",  navn:"Signalpost",        svg:"signalpost", pris:60, lejrniv:12, krav:["koder",1],      besk:"Morselampe og semaforflag på én post. Morse kræver Koder og signaler i bronze, semafor kræver sølv." },
+  { id:"radiomast",   navn:"Signalmast",        svg:"radiomast", pris:240, lejrniv:40, krav:["koder",3],      besk:"Høj mast med antenne – nu kan I kalde hele verden." },
 
-  { id:"blomster",    navn:"Blomsterbed",       ikon:"🌼", pris:30, lejrniv:1,  krav:["natur",1],       besk:"Vilde blomster til bierne." },
+  { id:"blomster",    navn:"Blomsterbed",       ikon:"🌼", pris:30, lejrniv:10,  krav:["natur",1],       besk:"Vilde blomster til bierne." },
   { id:"insekthotel", navn:"Insekthotel",       svg:"insekt",   pris:80, lejrniv:14,  krav:["natur",2],       besk:"Huller og rør til vilde bier." },
-  { id:"totempael",   navn:"Totempæl",          svg:"totem",    pris:70,  lejrniv:7,  krav:["dyr",1], en:true,      besk:"Udskårne dyr på en høj pæl. Hvert trin får et nyt dyr – og hver dag et spørgsmål om dyr." },
+  { id:"totempael",   navn:"Totempæl",          svg:"totem",    pris:70,  lejrniv:8,  krav:["dyr",1], en:true,      besk:"Udskårne dyr på en høj pæl. Hvert trin får et nyt dyr – og hver dag et spørgsmål om dyr." },
   { id:"spisetelt",   navn:"Spisetelt",         svg:"spisetelt", pris:150, lejrniv:12, krav:["koekken",1], en:true,  besk:"Et stort telt med langborde, hvor hele lejren spiser sammen." },
   { id:"lejrbutik",   navn:"Lejrbutik",         svg:"butik",    pris:250, lejrniv:32, krav:["ledelse",1], en:true,  besk:"Sælg de materialer, I har for mange af, for point. Hver dag er der et tilbud." },
-  { id:"lejrradio",   navn:"Lejrradio",         svg:"radio",    pris:300, lejrniv:36, krav:["koder",2], en:true,    besk:"Radio til JOTA – Jamboree On The Air. Tal med spejdere fra andre lande, og saml QSL-kort." },
+  { id:"lejrradio",   navn:"Lejrradio",         svg:"radio",    pris:300, lejrniv:38, krav:["koder",2], en:true,    besk:"Radio til JOTA – Jamboree On The Air. Tal med spejdere fra andre lande, og saml QSL-kort." },
   { id:"ridderborg",  navn:"Ridderborg",        svg:"borg",     pris:500, lejrniv:45, krav:["knob",3], en:true,     besk:"Et stort pionerprojekt, der bygges i tre etaper: borgmur, tårn og vindebro." },
   { id:"vandrutsjebane", navn:"Vandrutsjebane", svg:"rutsj",    pris:600, lejrniv:50, krav:["vand",2], en:true, vedSoe:true, besk:"En pioneret rutsjebane ned i søen. Står på land lige ved søen – og badevagten skal tjekke den hver dag." },
   { id:"storscene",   navn:"Storscene",         svg:"scene",    pris:700, lejrniv:55, krav:["lejrbaal",3], en:true, besk:"En scene med tæppe og lys, hvor patruljen opfører lejrshow." },
@@ -7454,7 +7454,7 @@ const LAAS_OP = {
   planter:   { 1:"Svampe vokser vildt på lejrpladsen – pluk dem til mad", 2:"Blåbærbuske vokser vildt på lejrpladsen – pluk bærrene til mad" },
   dyr:       { 2:"Kronhjorten kigger forbi lejren, når der står mindst 3 naturbygninger", 3:"Ræven kigger også forbi" },
   koekken:   { 1:"Bag snobrød over bålet på bålpladsen" },
-  vaerktoej: { 1:"Du må fælde grantræer (til rafter) og kløve brænde på en huggeplads", 2:"Du må fælde løvtræer", 3:"Kløvning går 25 % hurtigere" },
+  vaerktoej: { 1:"Du må fælde grantræer og løvtræer og kløve brænde på en huggeplads", 3:"Kløvning går 25 % hurtigere" },
   tur:       { 1:"Rygsækstativ til teltet", 2:"Fleecetrøje, uldsokker, termoflaske og vabelplaster til teltet", 3:"Madpakken giver +3 energi på løbene" },
   fugle:     { 3:"Fuglene kommer på besøg på din lejrplads" },
   spor:      { 2:"Friske spor med bonuspoint på løbene", 3:"Sporjagt med ekstra bonuspoint på løbene" },
@@ -8207,7 +8207,7 @@ const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flert
 const FLAADE_POINT = 1500, FLAADE_ANTAL = 5;
 const JOB = {
   faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",1], til:"fælde grantræer", besk:"Giver en granstamme" },
-  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde løvtræer", besk:"Giver en løvstamme" },
+  faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",1], til:"fælde løvtræer", besk:"Giver en løvstamme" },
   afgren:    { navn:"Afgren en granstamme", ikon:"🔪", tid:60, fag:"overlevelse", bruger:{granstamme:1}, giver:{rafter:2}, besk:"Grenene skæres af – så har I lige rafter" },
   kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, kraever:["vaerktoej",1], til:"kløve brænde", bygning:"huggeplads", besk:"Stammen saves og kløves til brænde" },
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
@@ -8266,10 +8266,11 @@ function ledigtTrae(c, type){
 }
 function arbejdere(c){ const p=minPatrulje(c); return p ? medlemmer(p) : [c]; }
 // Lagerplads: rafter og brænde kan kun gemmes, hvis der er plads. Raftegården og brændeskuret giver mere plads for hvert niveau.
-const LAGER_START = 10, LAGER_BYGGET = 20, LAGER_PR_NIV = 10;
+// Lagerplads pr. materiale = trinnets grund + lagerbygningens niveau × trinnets prNiv (se LEJR_TRIN)
 // Hvilken bygning der giver plads til hvert materiale (stammer har ingen grænse)
-const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur", reb:"materialeskur", rebraa:"materialeskur", fibre:"materialeskur", mad:"jordkoeleskab" };
-function lagerPlads(c, m){ if(!LAGER_BYG[m]) return Infinity; const n=bygNiv(cur()||c, LAGER_BYG[m]); return LAGER_START + (n ? LAGER_BYGGET + LAGER_PR_NIV*(n-1) : 0); }
+const LAGER_BYG = { rafter:"raftegaard", braende:"braendeskur", reb:"materialeskur", rebraa:"materialeskur", fibre:"materialeskur", mad:"jordkoeleskab" };   // stammer har ingen grænse
+function lagerKap(t, niv){ return t.grund + (niv||0)*t.prNiv; }
+function lagerPlads(c, m){ if(!LAGER_BYG[m]) return Infinity; const k=cur()||c; return lagerKap(lejrTrin(k.lejrNivMax||1), bygNiv(k, LAGER_BYG[m])); }
 function lagerTip(m){ return `Byg eller opgrader ${{ raftegaard:"raftegården", braendeskur:"brændeskuret", materialeskur:"materialeskuret", jordkoeleskab:"jordkøleskabet" }[LAGER_BYG[m]]} for at få mere plads.`; }
 function lagerFuldt(c, m){ return (lager(c)[m]||0) >= lagerPlads(c,m); }
 function harMat(c, mat){ const l=lager(c); return !mat || Object.entries(mat).every(([m,n])=>(l[m]||0)>=n); }
@@ -8317,7 +8318,7 @@ function arbejdeAktivt(c){
 // Panelet »Patrulje og opgaver«: hvem laver hvad
 function arbejdeHTML(c){
   const ms=arbejdere(c), p=minPatrulje(c), nu=Date.now();
-  let h = `${merTekst("Giv spejderne i "+(p?esc(p.navn):"patruljen")+" et job.", `De kan fælde træer på lejrpladsen, afgrene granstammer til rafter, kløve brænde, lave reb og mad og meget mere. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde grantræer og – sammen med en huggeplads – for at kløve brænde. Mærket i sølv skal til for at fælde løvtræer.`)}
+  let h = `${merTekst("Giv spejderne i "+(p?esc(p.navn):"patruljen")+" et job.", `De kan fælde træer på lejrpladsen, afgrene granstammer til rafter, kløve brænde, lave reb og mad og meget mere. Mærket <b>${EMNE.vaerktoej.navn}</b> i bronze skal til for at fælde træer og – sammen med en huggeplads – for at kløve brænde.`)}
     ${signalRest(c)?`<div class="card hbesked">🔥 Signalbålet brænder – nye job går 25 % hurtigere (<b id="signaltid">${fmtTid(signalRest(c))}</b> tilbage).</div>`:""}
     <div class="arbejdere">`;
   ms.forEach(m=>{
@@ -8466,14 +8467,17 @@ function opgKost(c, b, ny){
   const kravNiv = b.krav && ny>=4 ? 3 : 0;
   // Afgreningsstationen kræver flere materialer i de første niveauer (pointprisen er normal): dobbelt til niveau 2, og tillægget aftager jævnt til 0 ved niveau 11
   const ekstra = DYR_START[b.id] && ny<=10 ? 1 + (11-ny)/9 : 1;
-  return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, k==="mad" ? n : Math.ceil(n*ekstra)])), tid, kravNiv };
+  // Ingen opgradering må kræve mere, end lageret kan rumme i det trin, hvor niveauet bliver muligt (højst 80 % af en fuldt udbygget lagerbygning)
+  const tr=LEJR_TRIN.find(t=>t.maxByg>=ny) || LEJR_TRIN[LEJR_TRIN.length-1], loft=Math.floor(lagerKap(tr, tr.maxByg)*0.8);
+  return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, Math.min(loft, k==="mad" ? n : Math.ceil(n*ekstra))])), tid, kravNiv };
 }
 // Hvad en bygning giver på et bestemt niveau (tom streng = ingen fordel ud over udseendet)
 function nivEffekt(b, L){
   const t=[];
   if(LAGER_BYG && Object.values(LAGER_BYG).includes(b.id)){
     const mats=Object.keys(LAGER_BYG).filter(m=>LAGER_BYG[m]===b.id).map(m=>MATFLERTAL[m]);
-    t.push(`Plads til ${LAGER_START+LAGER_BYGGET+LAGER_PR_NIV*(L-1)} ${mats.length>1 ? "af hver: "+mats.join(", ") : mats[0]}`);
+    const tr=lejrTrin((cur()||{}).lejrNivMax||1);
+    t.push(`Plads til ${lagerKap(tr,L)} ${mats.length>1 ? "af hver: "+mats.join(", ") : mats[0]} i ${tr.navn.toLowerCase()}en`);
   }
   if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
   if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
@@ -8514,6 +8518,8 @@ function opgHTML(c, i){
   const nt=naesteTrinNiv(n), tt=trinTekst(b,nivTrin(n));
   let h = `<div class="opgniv"><span class="nivstort">${n}</span><b>Niveau ${n} af ${MAKSNIV}: ${nivNavn(n)}</b><div class="nivbar"><i style="width:${n/MAKSNIV*100}%"></i></div>${tt?`<small>${tt}</small>`:""}${nt?`<small>✨ Skifter udseende på niveau ${nt}: ${nivNavn(nt)}</small>`:""}</div>`;
   if(n>=MAKSNIV) return h + `<p class="muted psmall" style="margin:4px 0 10px">🏆 ${b.navn} er på højeste niveau.</p>`;
+  const tr=lejrTrin(c.lejrNivMax||1), nt2=naesteTrin(c.lejrNivMax||1);
+  if(n>=tr.maxByg) return h + `<p class="muted psmall" style="margin:4px 0 10px">🔒 På en ${tr.navn.toLowerCase()} kan bygningerne højst komme op på niveau ${tr.maxByg}.${nt2?` Når lejrpladsen bliver en ${nt2.navn.toLowerCase()} (niveau ${nt2.niv}), kan de komme op på niveau ${nt2.maxByg}.`:""}</p>`;
   const k=opgKost(c,b,n+1), mangler=[];
   if(lejrPoint(c)<k.p) mangler.push(`${k.p-lejrPoint(c)} point`);
   if(!harMat(c,k.m)) mangler.push(matTekst(manglerMat(c,k.m)) + (manglerMat(c,k.m).mad ? " (lav mad i lejrkøkkenet eller bag brød i bagerovnen)" : ""));
@@ -8526,7 +8532,7 @@ function opgHTML(c, i){
 }
 function opgrader(c, i){
   const b=BYGID[c.lejr[i]], n=lejrNiv(c,i), k=opgKost(c,b,n+1);
-  if(n>=MAKSNIV || lejrPoint(c)<k.p || !harMat(c,k.m)) return;
+  if(n>=MAKSNIV || n>=lejrTrin(c.lejrNivMax||1).maxByg || lejrPoint(c)<k.p || !harMat(c,k.m)) return;
   c.brugt=(c.brugt||0)+k.p; brugMat(c,k.m,-1);
   const inv = c.lejrInv[i] || (c.lejrInv[i]={ p:b.pris, m:{ ...(BYGMAT[b.id]||{}) } });
   inv.p += k.p; Object.entries(k.m).forEach(([mm,x])=>{ inv.m[mm]=(inv.m[mm]||0)+x; });
