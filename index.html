@@ -372,6 +372,7 @@ button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 .guide{text-align:left}.guideliste{padding-left:4px;list-style:none;margin:6px 0;display:flex;flex-direction:column;gap:4px;font-size:14.5px}.guideliste li.ok{opacity:.6}.guideliste li.nu{font-weight:800}
 .guidenu{background:#fff7d6;border-radius:14px;padding:10px 12px;margin:10px 0}.guidenu p{margin:6px 0;font-size:15px}.guidenu .mangler{color:#b3261e}
 .lageradv{display:block;color:#b3261e;font-weight:700;font-size:12.5px}
+.bcell small.klar{color:#2e7d32;font-weight:800}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -6299,14 +6300,15 @@ function scrMaerker(){
     return `<div class="gruppe"><span style="font-size:22px">${g.ikon}</span><b>${g.navn}: <span>${har} af ${maks} mærker</span></b></div>
       <div class="gruppebar"><i style="width:${Math.round(har/maks*100)}%"></i></div>
       <div class="grid">${es.map(e=>{ const l=c.badges[e.id]||0, aab=emneAaben(c,e.id);
-        return `<button class="bcell ${aab?"":"emnelaas"}" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:aab?"Låst":emneLaasTekst(e.id)}</small></button>`; }).join("")}</div>`;
+        // Et emne, man kan begynde på, viser bronzemærket svagt og »Klar til bronze« (ikke »Låst«)
+        return `<button class="bcell ${aab?"":"emnelaas"}" data-a="emne" data-id="${e.id}">${!l && aab ? badgeHTML(e,1,"faded") : badgeHTML(e,l)}<b>${e.navn}</b><small class="${l?"l"+l:aab?"klar":"l0"}">${l?NIVEAUER[l].navn:aab?"Klar til bronze":emneLaasTekst(e.id)}</small></button>`; }).join("")}</div>`;
   }).join("");
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
     <p class="muted center" style="font-size:14px;margin-bottom:0">Tryk på et mærke for at tage prøven. Bronze, sølv og guld tæller hver som ét mærke.</p>
     ${gruppeHTML}
     <div class="sect" style="margin-top:22px">Særlige mærker</div>
-    <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button>${Object.keys(SAERMAERKER).map(id=>`<button class="bcell" data-a="saermaerke" data-id="${id}">${saerBadgeHTML(id,harSaerMaerke(c,id))}<b>${SAERMAERKER[id].navn}</b><small class="${harSaerMaerke(c,id)?"l3":"l0"}">${harSaerMaerke(c,id)?"Taget":"Låst"}</small></button>`).join("")}</div>
+    <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button>${Object.keys(SAERMAERKER).map(id=>`<button class="bcell" data-a="saermaerke" data-id="${id}">${saerBadgeHTML(id,harSaerMaerke(c,id))}<b>${SAERMAERKER[id].navn}</b><small class="${harSaerMaerke(c,id)?"l3":"l0"}">${harSaerMaerke(c,id)?"Taget":"Ikke taget endnu"}</small></button>`).join("")}</div>
     <p class="muted center" style="font-size:14px">Fremmødemærket får du for at komme til spejdermøder i hytten: bronze for ${MOEDE_KRAV[1]}, sølv for ${MOEDE_KRAV[2]} og guld for ${MOEDE_KRAV[3]} møder.</p>`;
 }
 
@@ -7078,7 +7080,7 @@ const PIONER = {
 // Alle ventetider (byggeri, opgradering, job og træer, der vokser) ganges med denne faktor. Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 4;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { aktivitetsplads:300, afgrening:180, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:240, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
+const BYGTID = { aktivitetsplads:300, afgrening:180, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:120, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, fuglekasse:60, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
   vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:9000, flag:60, jamboree:600, insekthotel:180, bistade:300, signalpost:90, radiomast:300,
   totempael:120, spisetelt:300, lejrbutik:450, lejrradio:450, ridderborg:900, vandrutsjebane:900, storscene:900, flagalle:600, jportal:1800, fyrtaarn:1800 };
@@ -7414,14 +7416,13 @@ function visFeltMenu(i){
   if(!bygger && harNivEffekt(her)) knapper += `<button class="btn secondary" id="m-nivoversigt">📈 Se, hvad hvert niveau giver</button>`;
   if(!bygger) knapper += opgHTML(c, i);
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
-  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn secondary" id="m-pak">🚚 Pak ned</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
+  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
     <small class="muted">${rivTekst(inv)}</small>`;
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
     <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?(c.lejrOpg[i]?`Patruljen opgraderer til niveau ${c.lejrOpg[i]}.`:"Patruljen er i gang med at bygge."):her.besk}</p>${knapper}</div></div>`;
   const $=s=>modalRoot.querySelector(s);
   $("#m-luk").onclick=luk;
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
-  $("#m-pak").onclick=()=>{ const brud=nyeBrud(c,null,i); if(brud.length){ lejrToast(brudTekst(brud)); return; } luk(); pakNed(c,i); save(); render(); lejrToast(`🚚 ${her.navn} er pakket i materielvognen. Stil den ud igen under Byg.`); };
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
   if($("#m-nivoversigt")) $("#m-nivoversigt").onclick=()=>visNivOversigt(i);
   if($("#m-faeld")) $("#m-faeld").onclick=()=>visFaeld(i);
