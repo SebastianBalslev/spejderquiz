@@ -7379,8 +7379,8 @@ function lejrCelle(i){
   if(her) return visFeltMenu(i);
   if(lejrValg) return;
   if(plukVild(c,i)) return;
-  // Et tomt felt åbner Byg-panelet – på søen med kategorien Vand
-  lejrArk = "byg"; if(erVand(i)) lejrKat = "vand";
+  // Et tomt felt åbner Byg-panelet – på søen med kategorien Vand, på land med »Alle«
+  lejrArk = "byg"; lejrKat = erVand(i) ? "vand" : "alle";
   render();
 }
 
