@@ -9020,8 +9020,8 @@ function stav(navn){ return [...navn.toUpperCase()].filter(t=>STAVE[t]).map(t=>S
 
 /* ---------- Totempælen: hvert trin (niveau) får et nyt udskåret dyr ---------- */
 const TOTEMDYR = ["🦅","🐻","🦉","🐺","🦊","🐸","🦌","🐢"];
-/* ---------- Lejrbålets program i rigtig rækkefølge ---------- */
-const LB_PROGRAM = ["Tænd bålet og byd velkommen","Fælles åbningssang","Råb og fællessange med fagter","Patruljernes sketches","En stille historie ved gløderne","Aftensang","Sluk bålet med vand"];
+/* ---------- Planlæg lejrbålet: dagens rækkefølge-opgave (R) fra Lejrbål og sang ---------- */
+function lbOpg(){ return dagVaelg(SPORGSMAL.filter(q=>q.emne==="lejrbaal" && q.type==="raekke").sort((a,b)=>a.id<b.id?-1:1), "lbp"); }
 /* ---------- Signalposten og fyrtårnet ---------- */
 const SIGNALORD = ["KANO","TELT","BÅL","SPOR","KNOB","LEJR","SØEN","HYTTE","KURS","SKOV","FLAG","GRYDE","RAFT","LOGBOG"];
 const NATORD = ["OK","SOS","FYR","SKIB","HAVN","KURS","STOP","LYS"];
@@ -9038,6 +9038,7 @@ const PROJEKT = {
   jportal:    { navn:"Jamboree-portalen", etaper:["jportal_1","jportal_2","jportal_3"], point:50 },
 };
 function projektTrin(c, id){ return (c.projekt||{})[id]||0; }
+const PROJEKT_PPOINT = 15;   // patruljepoint for en etape bygget sammen med patruljen
 
 // Pinde og pynt fra en besnøringsopgave tegnet lille (til projekterne)
 function opgSkitse(o, faerdig){
@@ -9077,13 +9078,13 @@ const AKT_NY = {
            <div class="aktvalg">${valg.map(v=>`<button class="btn secondary" data-a="fsvar" data-v="${v}">${v} gryder</button>`).join("")}</div>` };
   },
   lbprogram(c, b, defs){
-    const rr = akt.rr || (akt.rr = { valgt:[], blandet: shuffle([...LB_PROGRAM.keys()]), tjekket:false }), rest=rr.blandet.filter(t=>!rr.valgt.includes(t));
+    const q=lbOpg(), P=q.trin, rr = akt.rr || (akt.rr = { valgt:[], blandet: shuffle([...P.keys()]), tjekket:false }), rest=rr.blandet.filter(t=>!rr.valgt.includes(t));
     return { titel:"Planlæg lejrbålet", scene:`<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(45,5)}<ellipse cx="160" cy="215" rx="190" ry="50" fill="#22351f"/>
       <text x="160" y="190" font-size="70" text-anchor="middle">🔥</text><rect x="196" y="70" width="96" height="104" rx="6" fill="#f3e3c3" stroke="#8b5a2b" stroke-width="3"/>
       <text x="244" y="92" text-anchor="middle" font-size="13" font-weight="800" fill="#5c3a20">PROGRAM</text>${rr.valgt.map((t,k)=>`<rect x="206" y="${100+k*10}" width="${50+((t*13)%30)}" height="5" rx="2" fill="${rr.tjekket?(t===k?"#2e7d32":"#c62828"):"#8b5a2b"}"/>`).join("")}</svg>`,
-      knapper: `<div class="raekke"><div class="sect" style="margin:0 0 6px">Lejrbålets program</div><ol class="valgt">${rr.valgt.length?"":`<li class="tomtrin">Tryk på punkterne i den rækkefølge, de skal ske ved lejrbålet.</li>`}
-        ${rr.valgt.map((t,pos)=>`<li><button class="trinknap valgt ${rr.tjekket?(t===pos?"ok":"bad"):""}" data-a="lbfjern" data-pos="${pos}" ${rr.tjekket?"disabled":""}><span class="nr">${pos+1}</span><span>${esc(LB_PROGRAM[t])}</span></button></li>`).join("")}</ol>
-        ${!rr.tjekket && rest.length ? `<div class="trinliste">${rest.map(t=>`<button class="trinknap" data-a="lbvaelg" data-t="${t}"><span class="nr">?</span><span>${esc(LB_PROGRAM[t])}</span></button>`).join("")}</div>` : ""}
+      knapper: `<div class="raekke"><div class="aktopg">📜 ${esc(q.spm)}</div><ol class="valgt">${rr.valgt.length?"":`<li class="tomtrin">Tryk på punkterne i den rigtige rækkefølge.</li>`}
+        ${rr.valgt.map((t,pos)=>`<li><button class="trinknap valgt ${rr.tjekket?(t===pos?"ok":"bad"):""}" data-a="lbfjern" data-pos="${pos}" ${rr.tjekket?"disabled":""}><span class="nr">${pos+1}</span><span>${esc(P[t])}</span></button></li>`).join("")}</ol>
+        ${!rr.tjekket && rest.length ? `<div class="trinliste">${rest.map(t=>`<button class="trinknap" data-a="lbvaelg" data-t="${t}"><span class="nr">?</span><span>${esc(P[t])}</span></button>`).join("")}</div>` : ""}
         ${!rr.tjekket && !rest.length ? `<button class="btn gold" data-a="lbtjek">✔️ Tjek programmet</button>` : ""}${rr.tjekket?`<button class="btn" data-a="lbigen">🔄 Planlæg igen</button>`:""}</div>` };
   },
   signal(c, b, defs){
@@ -9140,7 +9141,9 @@ const AKT_NY = {
         <text x="${58+k*102}" y="${k<n?52:52}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#2f4a2b">${k+1}. ${OPGAVER[e].navn}</text>`).join("")}</svg>`,
       knapper: faerdig ? `<div class="aktopg">🎉 ${P.navn} står færdig – alle ${P.etaper.length} etaper er bundet!</div>${dagForsoegt(c,b.id)?"":`<button class="btn gold" data-a="turnering">${b.id==="ridderborg"?"🛡️ Ridderturnering – knobquiz":"🌍 Velkomst ved portalen – spejderquiz"}</button>`}`
         : iDag ? `<div class="aktopg">🪢 Patruljen har bygget dagens etape. Næste etape (${n+1} af ${P.etaper.length}) venter i morgen.</div>`
-        : `<div class="aktopg">🪢 ${P.navn} bygges i ${P.etaper.length} etaper – én om dagen. Bind vinkel-, kryds- og ottetalsbesnøringerne rigtigt.</div><button class="btn gold" data-a="projektbyg">🪢 Byg etape ${n+1} af ${P.etaper.length}: ${OPGAVER[P.etaper[n]].navn}</button>` };
+        : `<div class="aktopg">🪢 ${P.navn} bygges i ${P.etaper.length} etaper – én om dagen. Bind vinkel-, kryds- og ottetalsbesnøringerne rigtigt. Etape ${n+1}: <b>${OPGAVER[P.etaper[n]].navn}</b>.</div>
+           <div class="aktvalg"><button class="btn gold" data-a="projektbyg">🪢 Byg alene</button>${harPatruljetid(c)?`<button class="btn" data-a="projektbyg" data-p="1">👥 Byg med patruljen</button>`:""}</div>
+           ${harPatruljetid(c)?`<p class="muted center psmall">Med patruljen deles besnøringerne ud, så hver spejder binder sine – det giver også ${PROJEKT_PPOINT} patruljepoint.</p>`:""}` };
   },
   badevagt(c, b, defs){
     const ok=!!dagens(c).badevagt;
@@ -10694,9 +10697,9 @@ const actions = {
     render(); },
   lbvaelg(d){ if(!akt.rr || akt.rr.tjekket) return; akt.rr.valgt.push(+d.t); render(); },
   lbfjern(d){ if(!akt.rr || akt.rr.tjekket) return; akt.rr.valgt.splice(+d.pos,1); render(); },
-  lbtjek(){ const c=cur(), rr=akt.rr; if(!rr) return; rr.tjekket=true; const rigtige=rr.valgt.filter((t,k)=>t===k).length;
-    if(rigtige===LB_PROGRAM.length){ vibrer(30); konfettiLille(); akt.besked=`🔥 Et perfekt lejrbålsprogram! ${dagBelon(c,"lejrbaal",20)}`; }
-    else { vibrer([60,40,60]); akt.besked=`${rigtige} af ${LB_PROGRAM.length} står rigtigt. Den gode rækkefølge er: ${LB_PROGRAM.map((t,k)=>`${k+1}. ${t}`).join(" · ")}`; }
+  lbtjek(){ const c=cur(), rr=akt.rr, q=lbOpg(), P=q.trin; if(!rr) return; rr.tjekket=true; const rigtige=rr.valgt.filter((t,k)=>t===k).length;
+    if(rigtige===P.length){ vibrer(30); konfettiLille(); akt.besked=`🔥 Perfekt planlagt! ${dagBelon(c,"lejrbaal",20)}<br><small>💡 ${esc(q.forklaring)}</small>`; }
+    else { vibrer([60,40,60]); akt.besked=`${rigtige} af ${P.length} står rigtigt. Den gode rækkefølge er: ${P.map((t,k)=>`${k+1}. ${t}`).join(" · ")}<br><small>💡 ${esc(q.forklaring)}</small>`; }
     render(); },
   lbigen(){ akt.rr=null; akt.besked=""; render(); },
   sigsvar(d){ const c=cur(); if(dagForsoegt(c,"signalpost")) return; const s=akt.sig, ord=signalOrd(s.trin);
@@ -10718,11 +10721,16 @@ const actions = {
       akt.besked=`📮 Rigtigt – det var ${land.flag} <b>${land.navn}</b>! ${ny?"I får et nyt QSL-kort til samlingen.":"Endnu et QSL-kort fra dem."} ${dagBelon(c,"lejrradio",20)}`; }
     else { vibrer([60,40,60]); akt.besked=`❌ Det var ${land.flag} <b>${land.navn}</b>, der kaldte (${stav(land.navn).join(" – ")}).`; }
     render(); },
-  projektbyg(){ const c=cur(), i=nav.params.i, id=c.lejr[i], P=PROJEKT[id]; if(!P || dagHentet(c,id)) return; const n=projektTrin(c,id); if(n>=P.etaper.length) return;
-    bygOpg={ id:P.etaper[n], idx:null, bundet:{}, valgt:null, fejl:0, projekt:{ byg:id, i } }; go("byg"); },
+  projektbyg(d){ const c=cur(), i=nav.params.i, id=c.lejr[i], P=PROJEKT[id]; if(!P || dagHentet(c,id)) return; const n=projektTrin(c,id); if(n>=P.etaper.length) return;
+    const o=OPGAVER[P.etaper[n]], p=minPatrulje(c);
+    bygOpg={ id:P.etaper[n], idx:null, bundet:{}, valgt:null, fejl:0, projekt:{ byg:id, i } };
+    // Med patruljen: besnøringerne fordeles på skift mellem spejderne, som i »Byg sammen«
+    if(d.p && p && harPatruljetid(c)){ const ms=medlemmer(p); Object.assign(bygOpg, { patrulje:p.id, ejere:o.led.map((_,k)=>ms[k%ms.length].id), tur:ms[0].id, skift:false, fejlPr:{} }); }
+    go("byg"); },
   projektok(){ const c=cur(), pr=bygOpg && bygOpg.projekt; if(!pr) return; const P=PROJEKT[pr.byg];
-    c.projekt=c.projekt||{}; c.projekt[pr.byg]=Math.min(P.etaper.length, (c.projekt[pr.byg]||0)+1); const n=c.projekt[pr.byg], fejl=bygOpg.fejl; bygOpg=null;
-    const bel=dagBelon(c, pr.byg, P.point);
+    c.projekt=c.projekt||{}; c.projekt[pr.byg]=Math.min(P.etaper.length, (c.projekt[pr.byg]||0)+1); const n=c.projekt[pr.byg], fejl=bygOpg.fejl, sammen=!!bygOpg.patrulje; bygOpg=null;
+    let bel=dagBelon(c, pr.byg, P.point);
+    if(sammen){ const p=minPatrulje(c); if(p){ p.point=(p.point||0)+PROJEKT_PPOINT; save(); bel += ` · 🤝 <b class="plus">+${PROJEKT_PPOINT} patruljepoint</b>`; } }
     akt={ a:"projekt", ild:2, besked: n>=P.etaper.length ? `🎉 ${P.navn} står færdig! Alle ${P.etaper.length} etaper holder. ${bel}` : `🪢 Etape ${n} af ${P.etaper.length} holder${fejl?"":" – uden fejl"}! ${bel}` };
     go("akt",{ i:pr.i, a:"projekt" }); if(n>=P.etaper.length) konfetti(); else konfettiLille(); },
   turnering(){ const c=cur(), id=c.lejr[nav.params.i]; if(dagForsoegt(c,id)) return; const q=emneSpg(c, id==="ridderborg"?"knob":"historie");

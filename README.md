@@ -98,20 +98,20 @@ Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens større
 
 ### Nye bygninger og aktiviteter
 Aktiviteterne står i `AKT_NY` (scene og knapper) og i `AKT_FOR` (knappen på bygningen). De genbruger spørgsmålene og mekanikkerne fra resten af spillet, og hver bygning giver højst én belønning om dagen (`dagBelon`; højere niveau giver lidt flere point, som ved de andre aktiviteter). Dagens spørgsmål, land og ord er de samme hele dagen (`dagTal`).
-- **Totempæl** (niv 7, Dyr bronze): »Dagens dyr« – ét spørgsmål fra Dyr. Hvert trin (udseende-niveau) får et nyt udskåret dyr på tegningen (`TOTEMDYR`).
+- **Totempæl** (niv 8, Dyr bronze): »Dagens dyr« – ét spørgsmål fra Dyr. Hvert trin (udseende-niveau) får et nyt udskåret dyr på tegningen (`TOTEMDYR`).
 - **Spisetelt** (niv 12, Friluftskøkken bronze): »Fællesspisning« – regn ud, hvor mange gryder der skal til X spejdere. Bruger 3 portioner mad fra lageret (`FS_MAD`).
-- **Lejrbålspladsen**: »Planlæg lejrbålet« – sæt programmet i rækkefølge (`LB_PROGRAM`).
+- **Lejrbålspladsen**: »Planlæg lejrbålet« – dagens rækkefølge-opgave fra Lejrbål og sang (`R(...)`-spørgsmålene, `lbOpg`).
 - **Signalpost**: dagens besked i morse – og med Koder og signaler i sølv også en i semafor (`SIGNALORD`).
 - **Udsigtstårn**: »Pejling fra tårnet« – krydspejling til kirken og masten, vælg det rigtige sted på kortet (`pejlOpg`).
 - **Lejrbutik** (niv 32, Ledelse bronze): sælg overskydende materialer for point (`BUTIK_PRIS`) med et dagligt tilbud til dobbelt pris – højst 150 point om dagen (`BUTIK_LOFT`).
-- **Lejrradio** (niv 36, Koder sølv): »JOTA« – et land kalder via stavealfabetet (`STAVE`), gæt landet og saml QSL-kort (`qsl`).
-- **Ridderborg** (niv 45, Knob guld) og **Jamboree-portal** (niv 75, Knob guld): store pionerprojekter i tre etaper med vinkel-, kryds- og ottetalsbesnøringer – én etape om dagen (`PROJEKT`, `OPGAVER.ridderborg_1` osv., gemt i `projekt`). Når de er færdige, er der en daglig quiz.
-- **Vandrutsjebane** (niv 50, Vand sølv, står på land lige ved søen – `vedSoe`): »Badevagt« – et sikkerhedsspørgsmål om Vand og sejlads, før den må bruges den dag.
+- **Lejrradio** (niv 38, Koder sølv): »JOTA« – et land kalder via stavealfabetet (`STAVE`), gæt landet og saml QSL-kort (`qsl`).
+- **Ridderborg** (niv 45, Knob guld) og **Jamboree-portal** (niv 75, Knob guld): store pionerprojekter i tre etaper med vinkel-, kryds- og ottetalsbesnøringer – én etape om dagen (`PROJEKT`, `OPGAVER.ridderborg_1` osv., gemt i `projekt`). En etape kan bygges alene eller med patruljen, hvor besnøringerne fordeles på skift mellem spejderne og giver 15 patruljepoint (`PROJEKT_PPOINT`). Når projektet er færdigt, er der en daglig quiz.
+- **Vandrutsjebane** (niv 50, Vand sølv, står på land lige ved søen eller åen – `vedSoe`): »Badevagt« – et sikkerhedsspørgsmål om Vand og sejlads, før den må bruges den dag.
 - **Storscene** (niv 55, Lejrbål guld): »Lejrshow« – sæt en sketch, en sang og et råb sammen; giver patruljepoint.
 - **Jamboree-telt** (niv 60, 600 point): dagligt besøg fra et nyt land med et spørgsmål om landet eller dets spejdertraditioner. Rigtigt svar = landets flag (`flag`).
 - **Flagallé** (niv 65, Historie guld): viser de indsamlede flag.
 - **Fyrtårn** (niv 90, Koder guld, ved søen): »Natsignaler« – send dagens ord i morse til skibet på søen. Fyret er tændt fra kl. 17 til 7.
-- **Lande** (`LANDE`, 32 lande): navn, flag og et spørgsmål med det rigtige svar først og en forklaring. Bruges af jamboreen, flagalléen og lejrradioen. Milepælen til Verdensjamboree kræver alle landes flag i flagalléen.
+- **Lande** (`LANDE`, 32 lande): navn, flag og et spørgsmål med det rigtige svar først og en forklaring. Bruges af jamboreen, flagalléen og lejrradioen. Milepælen til Verdensjamboree kræver en komplet flagallé med alle landes flag.
 
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
