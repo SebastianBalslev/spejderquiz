@@ -8718,7 +8718,7 @@ function opgrader(c, i){
    ===================================================================== */
 const LEJR_MAKS = 100, LEJR_XP_BREDDE = 50, LEJR_XP_SAET = 150, LEJR_XP_MAERKE = [0, 30, 60, 100];
 // XP til hvert niveau: ankerpunkter med geometrisk interpolation imellem (afrundet til nærmeste 10)
-const LEJR_XP_ANKER = { 1:0, 2:100, 3:200, 4:300, 5:400, 10:1600, 20:6400, 30:14400, 45:23000, 60:33000, 100:67000 };
+const LEJR_XP_ANKER = { 1:0, 2:100, 3:200, 4:300, 5:400, 10:1400, 20:6400, 30:14400, 45:23000, 60:33000, 100:67000 };
 function lejrXPKrav(n){
   n=Math.max(1, Math.min(LEJR_MAKS, n));
   if(LEJR_XP_ANKER[n]!=null) return LEJR_XP_ANKER[n];

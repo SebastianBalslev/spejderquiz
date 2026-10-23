@@ -64,7 +64,7 @@ Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de
 Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen (trin-ikon, titel, niveau og XP-bjælke). Tryk på skiltet for at se XP-fordelingen, milepælen med ✅/❌, placeringsreglerne og hvad næste niveau låser op. Patruljesiden viser lejrniveauet ved hvert medlem.
 
 - **Lejr-XP** regnes hver gang ud fra pladsen og mærkerne (`lejrXP`): hver færdig bygning (også i materielvognen) giver (pris + pointprisen for alle dens opgraderinger) / 10, hver forskellig slags bygning giver 50 XP (`LEJR_XP_BREDDE`), hvert komplet sæt i `LEJR_SAET` giver 150 XP (`LEJR_XP_SAET`), og hvert emne giver 30 / 60 / 100 XP for bronze / sølv / guld (`LEJR_XP_MAERKE`).
-- **XP-krav** (`LEJR_XP_ANKER`, `lejrXPKrav`): niveau 2-4 = 100, 200, 300 · 5 = 400 · 10 = 1.600 · 20 = 6.400 · 30 = 14.400 · 45 = 23.000 · 60 = 33.000 · 100 = 67.000, med geometrisk interpolation mellem ankrene, afrundet til nærmeste 10.
+- **XP-krav** (`LEJR_XP_ANKER`, `lejrXPKrav`): niveau 2-4 = 100, 200, 300 · 5 = 400 · 10 = 1.400 · 20 = 6.400 · 30 = 14.400 · 45 = 23.000 · 60 = 33.000 · 100 = 67.000, med geometrisk interpolation mellem ankrene, afrundet til nærmeste 10.
 - **Milepæle** (`LEJR_MILEPAEL`): man rykker kun ind i et nyt trin, når trinnets milepæl er klaret. Ellers stopper niveauet på trinnets sidste niveau, og XP gemmes op. Skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
   - Patruljelejr (5): telt, bålplads, huggeplads, grantræ, løvtræ
   - Tropslejr (10): patruljetelt, lejrkøkken, raftegård, bålplads niveau 3
