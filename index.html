@@ -8625,11 +8625,13 @@ function opgKost(c, b, ny){
   else { m.rafter = ny-1; if(ny>=3) m.reb = ny-2; }
   if(ny>5) m.mad = ny-5;   // fra niveau 6 skal patruljen også have mad med til arbejdet
   const tid = Math.round(((BYGTID[b.id] || 60*TIDSFAKTOR) * 0.4 + 30*TIDSFAKTOR) * Math.pow(ny-1, 1.25));
-  const kravNiv = b.krav && ny>=4 ? 3 : 0;
   // Afgreningsstationen kræver flere materialer i de første niveauer (pointprisen er normal): dobbelt til niveau 2, og tillægget aftager jævnt til 0 ved niveau 11
   const ekstra = DYR_START[b.id] && ny<=10 ? 1 + (11-ny)/9 : 1;
   // Ingen opgradering må kræve mere, end lageret kan rumme i det trin, hvor niveauet bliver muligt (højst 80 % af en fuldt udbygget lagerbygning)
   const tr=LEJR_TRIN.find(t=>t.maxByg>=ny) || LEJR_TRIN[LEJR_TRIN.length-1], loft=Math.floor(lagerKap(tr, tr.maxByg)*0.8);
+  // Fra niveau 4 kræver opgraderingen et bedre mærke i bygningens emne – men aldrig mere, end det trin, hvor niveauet bliver muligt, tillader
+  // (Patruljelejr: sølv, fra Tropslejr: guld)
+  const kravNiv = b.krav && ny>=4 ? Math.max(b.krav[1], tr.medalje) : 0;
   return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, Math.min(loft, k==="mad" ? n : Math.ceil(n*ekstra))])), tid, kravNiv };
 }
 // Hvad en bygning giver på et bestemt niveau (tom streng = ingen fordel ud over udseendet)
@@ -8685,7 +8687,7 @@ function opgHTML(c, i){
   if(lejrPoint(c)<k.p) mangler.push(`${k.p-lejrPoint(c)} point`);
   if(!harMat(c,k.m)) mangler.push(matTekst(manglerMat(c,k.m)) + (manglerMat(c,k.m).mad ? " (lav mad i lejrkøkkenet eller bag brød i bagerovnen)" : ""));
   Object.entries(k.m).forEach(([mm,x])=>{ if(x>lagerPlads(c,mm)) mangler.push(`plads til ${x} ${MATFLERTAL[mm]} på lageret`); });
-  if(k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv) mangler.push(`${EMNE[b.krav[0]].navn} i guld`);
+  if(k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv) mangler.push(`${EMNE[b.krav[0]].navn} i ${NIVEAUER[k.kravNiv].navn.toLowerCase()}`);
   h += `<button class="btn gold" id="m-opg" ${mangler.length?"disabled":""}>⬆️ Opgrader til niveau ${n+1}: ${nivNavn(n+1)}</button>
     <div class="opgkost">🪙 ${k.p} · ${Object.entries(k.m).filter(([,x])=>x>0).map(([mm,x])=>`${matIkon(mm,"lille")}${x}`).join(" ")} · ⏳ ${tidTekst(k.tid)}${nivTrin(n+1)>nivTrin(n) && trinTekst(b,nivTrin(n+1))?`<br><small>✨ ${trinTekst(b,nivTrin(n+1))}</small>`:""}</div>
     ${mangler.length?`<small class="mangler">Du mangler: ${mangler.join(", ")}</small>`:`<small class="muted">${AKT_FOR[b.id]?"Højere niveau giver flere point ved aktiviteten.":"Højere niveau gør din lejrplads flottere."}</small>`}`;
@@ -8693,7 +8695,7 @@ function opgHTML(c, i){
 }
 function opgrader(c, i){
   const b=BYGID[c.lejr[i]], n=lejrNiv(c,i), k=opgKost(c,b,n+1);
-  if(n>=MAKSNIV || n>=lejrTrin(c.lejrNivMax||1).maxByg || lejrPoint(c)<k.p || !harMat(c,k.m)) return;
+  if(n>=MAKSNIV || n>=lejrTrin(c.lejrNivMax||1).maxByg || lejrPoint(c)<k.p || !harMat(c,k.m) || (k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv)) return;
   c.brugt=(c.brugt||0)+k.p; brugMat(c,k.m,-1);
   const inv = c.lejrInv[i] || (c.lejrInv[i]={ p:b.pris, m:{ ...(BYGMAT[b.id]||{}) } });
   inv.p += k.p; Object.entries(k.m).forEach(([mm,x])=>{ inv.m[mm]=(inv.m[mm]||0)+x; });
