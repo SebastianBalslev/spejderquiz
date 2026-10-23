@@ -8532,34 +8532,36 @@ function opgrader(c, i){
 /* =====================================================================
    LEJRNIVEAU – ét samlet niveau (1-100) for hele lejrpladsen
    ---------------------------------------------------------------------
-   Lejr-XP regnes hver gang ud fra det, der står på pladsen (lejrXP):
-   - bygninger: (pris + alle opgraderingers pointpris) / 10 for hver færdig ting
+   Lejr-XP regnes hver gang ud fra pladsen og mærkerne (lejrXP):
+   - bygninger: (pris + alle opgraderingers pointpris) / 10 for hver færdig ting (også i materielvognen)
    - bredde: LEJR_XP_BREDDE pr. forskellig slags bygning
    - sæt: LEJR_XP_SAET pr. komplet sæt i LEJR_SAET
-   - lejrinspektion: +5 % pr. opfyldt regel i INSPEKTION (højst +30 %)
-   Niveauet kan ikke komme forbi et trin i LEJR_TRIN, før trinnets milepæl er
-   klaret. Det højeste niveau gemmes i c.lejrNivMax, så det aldrig falder.
+   - mærker: LEJR_XP_MAERKE pr. emne (bronze 30, sølv 60, guld 100)
+   Man rykker kun ind i et nyt trin, når trinnets milepæl (LEJR_MILEPAEL) er klaret – ellers
+   stopper niveauet på trinnets sidste niveau, og XP gemmes op. Det højeste niveau gemmes i
+   c.lejrNivMax, så det aldrig falder.
    ===================================================================== */
-const LEJR_MAKS = 100, LEJR_XP_BREDDE = 50, LEJR_XP_SAET = 150, INSP_PCT = 5, INSP_MAKS = 30;
-function lejrXPKrav(n){ return n<=1 ? 0 : Math.round(100*Math.pow(n,1.45)/10)*10; }
+const LEJR_MAKS = 100, LEJR_XP_BREDDE = 50, LEJR_XP_SAET = 150, LEJR_XP_MAERKE = [0, 30, 60, 100];
+// XP til hvert niveau: ankerpunkter med geometrisk interpolation imellem (afrundet til nærmeste 10)
+const LEJR_XP_ANKER = { 1:0, 2:100, 3:200, 4:300, 5:400, 10:1600, 20:6400, 30:14400, 45:23000, 60:33000, 100:67000 };
+function lejrXPKrav(n){
+  n=Math.max(1, Math.min(LEJR_MAKS, n));
+  if(LEJR_XP_ANKER[n]!=null) return LEJR_XP_ANKER[n];
+  const a=Object.keys(LEJR_XP_ANKER).map(Number).sort((x,y)=>x-y), lo=a.filter(x=>x<n).pop(), hi=a.find(x=>x>n);
+  const v=LEJR_XP_ANKER[lo]*Math.pow(LEJR_XP_ANKER[hi]/LEJR_XP_ANKER[lo], (n-lo)/(hi-lo));
+  return Math.round(v/10)*10;
+}
 // Trinnene styrer pladsens størrelse (r × k), antal vandfelter, højeste bygningsniveau (maxByg), højeste medalje,
 // lagerplads (grund + lagerbygningens niveau × prNiv) og milepælen for at komme ind i trinnet (mil).
 const LEJR_TRIN = [
   { niv:1,   ikon:"⛺", navn:"Teltplads",       r:3,  k:3, vand:1,  maxByg:3,  medalje:1, grund:10,  prNiv:0, tema:"Et telt, et bål og et par træer – lejren er begyndt." },
-  { niv:5,   ikon:"🚩", navn:"Patruljelejr",    r:4,  k:4, vand:3,  maxByg:5,  medalje:2, grund:12,  prNiv:2, tema:"Patruljen har fået sit eget hjørne med telt, køkken og flag.",
-    mil:[{byg:"telt",niv:2},{byg:"baal"},{byg:"latrin"}] },
-  { niv:10,  ikon:"🏕️", navn:"Tropslejr",       r:6,  k:6, vand:6,  maxByg:10, medalje:3, grund:20,  prNiv:3, tema:"Lejrport, kano og bålbænke – nu kan hele troppen bo her.",
-    mil:[{byg:"patruljetelt",niv:3},{byg:"koekken"},{byg:"forstehjalp"},{byg:"flag"},{regler:3}] },
-  { niv:20,  ikon:"🛡️", navn:"Divisionslejr",   r:8,  k:6, vand:8,  maxByg:20, medalje:3, grund:40,  prNiv:4, tema:"Hytte, tårn og bagerovn – en lejr for mange patruljer.",
-    mil:[{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt",navn:"Spisetelt"},{regler:5}] },
-  { niv:30,  ikon:"⚜️", navn:"Korpslejr",       r:10, k:6, vand:10, maxByg:35, medalje:3, grund:80,  prNiv:5, tema:"Svævebane, lejrbutik og tømmerflåde – en lejr for hele korpset.",
-    mil:[{byg:"hytte",niv:5},{byg:"taarn",niv:5},{saet:3},{regler:"alle"}] },
-  { niv:45,  ikon:"🇩🇰", navn:"Landslejr",       r:12, k:6, vand:12, maxByg:50, medalje:3, grund:120, prNiv:6, tema:"Ridderborg, vandrutsjebane og storscene – spejdere fra hele landet.",
-    mil:[{byg:"svaevebane",niv:10},{byg:"radiomast",niv:10},{byg:"lejrbutik",navn:"Lejrbutik"},{saet:5},{maerker:2,antal:10}] },
-  { niv:60,  ikon:"🎪", navn:"Jamboree",        r:14, k:6, vand:14, maxByg:75, medalje:3, grund:160, prNiv:7, tema:"Jamboree-telt, flagallé og portal – en fest for spejdere fra mange lande.",
-    mil:[{byg:"ridderborg",niv:5,navn:"Ridderborg"},{byg:"storscene",navn:"Storscene"},{saet:"alle"},{emne:"historie",lvl:3},{maerker:3,antal:10}] },
-  { niv:100, ikon:"🌍", navn:"Verdensjamboree", r:16, k:6, vand:16, maxByg:99, medalje:3, grund:200, prNiv:7, tema:"Hele verden er på besøg på jeres lejrplads.",
-    mil:[{byg:"jamboree",niv:25},{lande:"alle"},{maerker:3,antal:"alle"}] },
+  { niv:5,   ikon:"🚩", navn:"Patruljelejr",    r:4,  k:4, vand:3,  maxByg:5,  medalje:2, grund:12,  prNiv:2, tema:"Patruljen har fået sit eget hjørne med telt, køkken og flag.", },
+  { niv:10,  ikon:"🏕️", navn:"Tropslejr",       r:6,  k:6, vand:6,  maxByg:10, medalje:3, grund:20,  prNiv:3, tema:"Lejrport, kano og bålbænke – nu kan hele troppen bo her.", },
+  { niv:20,  ikon:"🛡️", navn:"Divisionslejr",   r:8,  k:6, vand:8,  maxByg:20, medalje:3, grund:40,  prNiv:4, tema:"Hytte, tårn og bagerovn – en lejr for mange patruljer.", },
+  { niv:30,  ikon:"⚜️", navn:"Korpslejr",       r:10, k:6, vand:10, maxByg:35, medalje:3, grund:80,  prNiv:5, tema:"Svævebane, lejrbutik og tømmerflåde – en lejr for hele korpset.", },
+  { niv:45,  ikon:"🇩🇰", navn:"Landslejr",       r:12, k:6, vand:12, maxByg:50, medalje:3, grund:120, prNiv:6, tema:"Ridderborg, vandrutsjebane og storscene – spejdere fra hele landet.", },
+  { niv:60,  ikon:"🎪", navn:"Jamboree",        r:14, k:6, vand:14, maxByg:75, medalje:3, grund:160, prNiv:7, tema:"Jamboree-telt, flagallé og portal – en fest for spejdere fra mange lande.", },
+  { niv:100, ikon:"🌍", navn:"Verdensjamboree", r:16, k:6, vand:16, maxByg:99, medalje:3, grund:200, prNiv:7, tema:"Hele verden er på besøg på jeres lejrplads.", },
 ];
 /* ---------- Pladsen ----------
    Et felt gemmes som (række, kolonne) i ét tal: række × FELT_KOL + kolonne. Pladsen er højst FELT_KOL bred,
@@ -8581,6 +8583,16 @@ function vandSaet(str){
 function iPladsen(i, c){ const s=lejrStr(c||cur()); return feltR(i)<s.r && feltK(i)<s.k; }
 function lejrAlleFelter(c){ const s=lejrStr(c||cur()), r=[]; for(let a=0;a<s.r;a++) for(let b=0;b<s.k;b++) r.push(felt(a,b)); return r; }
 
+// Milepælen for at rykke ind i hvert trin (nøglen er trinnets første niveau)
+const LEJR_MILEPAEL = {
+  5:   [{byg:"telt"},{byg:"baal"},{byg:"huggeplads"},{byg:"gran"},{byg:"loevtrae"}],
+  10:  [{byg:"patruljetelt"},{byg:"koekken"},{byg:"latrin"},{byg:"flag"},{byg:"forstehjalp"},{byg:"raftegaard"},{byg:"baal",niv:3}],
+  20:  [{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt"},{byg:"baalbaenke"},{byg:"vandstation"},{byg:"kano"}],
+  30:  [{byg:"hytte",niv:10},{byg:"taarn",niv:10},{byg:"bagerovn"},{byg:"kongeeg"},{maerker:2,antal:10}],
+  45:  [{byg:"svaevebane",niv:20},{byg:"radiomast",niv:20},{byg:"lejrbutik"},{byg:"lejrradio"},{byg:"sejlbaad"},{maerker:2,antal:15},{maerker:3,antal:5}],
+  60:  [{byg:"ridderborg",niv:25},{byg:"storscene",niv:10},{byg:"vandrutsjebane"},{maerker:3,antal:10},{emne:"historie",lvl:3}],
+  100: [{byg:"jamboree",niv:50},{lande:"alle"},{byg:"jportal"},{byg:"fyrtaarn"},{maerker:3,antal:"alle"}],
+};
 // Sæt af bygninger, der hører sammen. Et komplet sæt giver LEJR_XP_SAET XP.
 const LEJR_SAET = [
   { id:"toemmer",  ikon:"🪵", navn:"Tømmerlejren",   ting:["gran","loevtrae","huggeplads","afgrening","raftegaard"] },
@@ -8626,36 +8638,30 @@ function saetKomplet(c, s){ return s.ting.every(id=>bygFelter(c,id).length>0); }
 // Alle XP og hvor de kommer fra
 function lejrXP(c){
   const f=lejrFelter(c); let byg=0; const ids=new Set();
-  Object.keys(f).map(Number).forEach(i=>{
-    const b=BYGID[f[i]]; if(!b || (underByg(c,i) && !c.lejrOpg[i])) return;
-    let p=b.pris; for(let n=2; n<=lejrNiv(c,i); n++) p += opgKost(c,b,n).p;
-    byg += p/10; ids.add(b.id);
-  });
+  const tael=(b,niv)=>{ let p=b.pris; for(let n=2; n<=niv; n++) p += opgKost(c,b,n).p; byg += p/10; ids.add(b.id); };
+  Object.keys(f).map(Number).forEach(i=>{ const b=BYGID[f[i]]; if(!b || (underByg(c,i) && !c.lejrOpg[i])) return; tael(b, lejrNiv(c,i)); });
+  vogn(c).forEach(v=>{ const b=BYGID[v.id]; if(b && !(v.rest && !v.opg)) tael(b, v.niv); });
   byg = Math.round(byg);
   const bredde = ids.size*LEJR_XP_BREDDE;
   const saet = LEJR_SAET.filter(s=>saetKomplet(c,s));
-  const regler = INSPEKTION.filter(r=>r.ok(c));
-  const pct = Math.min(INSP_MAKS, regler.length*INSP_PCT);
-  const grund = byg + bredde + saet.length*LEJR_XP_SAET;
-  return { byg, bredde, arter:ids.size, saet, saetXP:saet.length*LEJR_XP_SAET, regler, pct, grund, total: Math.round(grund*(1+pct/100)) };
+  const maerker = EMNER.reduce((n,e)=>n+LEJR_XP_MAERKE[c.badges[e.id]||0], 0);
+  return { byg, bredde, arter:ids.size, saet, saetXP:saet.length*LEJR_XP_SAET, maerker, total: byg + bredde + saet.length*LEJR_XP_SAET + maerker };
 }
 // Status for ét punkt i en milepæl: { tekst, ok, nu, krav }
 function milPunkt(c, p, xp){
   if(p.byg){ const b=BYGID[p.byg], navn=b?b.navn:p.navn, niv=p.niv||1, nu=b?bygNiv(c,p.byg):0;
     return { tekst: niv>1 ? `${navn} på niveau ${niv}` : navn, ok: nu>=niv, nu: nu ? `niveau ${nu}` : "ikke bygget", krav: niv>1 ? `niveau ${niv}` : "bygget" }; }
-  if(p.regler){ const k=p.regler==="alle"?INSPEKTION.length:p.regler, nu=xp.regler.length;
-    return { tekst: p.regler==="alle" ? "Alle regler i lejrinspektionen" : `${k} regler i lejrinspektionen`, ok:nu>=k, nu:`${nu} af ${INSPEKTION.length}`, krav:`${k}` }; }
   if(p.saet){ const k=p.saet==="alle"?LEJR_SAET.length:p.saet, nu=xp.saet.length;
     return { tekst: p.saet==="alle" ? "Alle sæt komplette" : `${k} komplette sæt`, ok:nu>=k, nu:`${nu} sæt`, krav:`${k} sæt` }; }
   if(p.maerker){ const k=p.antal==="alle"?EMNER.length:p.antal, nu=EMNER.filter(e=>(c.badges[e.id]||0)>=p.maerker).length, n=NIVEAUER[p.maerker].navn.toLowerCase();
-    return { tekst: p.antal==="alle" ? `Alle mærker i ${n}` : `${k} mærker i ${n}`, ok:nu>=k, nu:`${nu}`, krav:`${k}` }; }
+    return { tekst: p.antal==="alle" ? `Alle ${EMNER.length} mærker i ${n}` : `${k} mærker i ${n}${p.maerker<3?" eller bedre":""}`, ok:nu>=k, nu:`${nu} mærker`, krav:`${k}` }; }
   if(p.emne){ const nu=c.badges[p.emne]||0;
     return { tekst:`${EMNE[p.emne].navn} i ${NIVEAUER[p.lvl].navn.toLowerCase()}`, ok:nu>=p.lvl, nu: nu?NIVEAUER[nu].navn.toLowerCase():"intet mærke", krav:NIVEAUER[p.lvl].navn.toLowerCase() }; }
   if(p.lande){ const alle=typeof LANDE!=="undefined"?LANDE.length:30, nu=Object.keys(c.flag||{}).length;
-    return { tekst:"Alle landes flag i flagalléen", ok: nu>=alle && bygFelter(c,"flagalle").length>0, nu:`${nu} flag`, krav:`${alle} flag` }; }
+    return { tekst:"Flagalléen komplet – alle landes flag", ok: nu>=alle && bygFelter(c,"flagalle").length>0, nu:`${nu} flag${bygFelter(c,"flagalle").length?"":", ingen flagallé"}`, krav:`flagallé med ${alle} flag` }; }
   return { tekst:"?", ok:false, nu:"", krav:"" };
 }
-function milepael(c, trin, xp){ return (trin.mil||[]).map(p=>milPunkt(c,p,xp||lejrXP(c))); }
+function milepael(c, trin, xp){ return (LEJR_MILEPAEL[trin.niv]||[]).map(p=>milPunkt(c,p,xp||lejrXP(c))); }
 // Niveauet ud fra XP og milepæle (uden det gemte maksimum)
 function lejrNivBeregn(c, xp){
   xp = xp || lejrXP(c); let n=1;
@@ -8726,13 +8732,11 @@ function visLejrSkilt(){
     <table class="xptab"><tr><td>🏗️ Bygninger og opgraderinger</td><td>${fmt(xp.byg)}</td></tr>
       <tr><td>🌈 ${xp.arter} forskellige slags × ${LEJR_XP_BREDDE}</td><td>${fmt(xp.bredde)}</td></tr>
       <tr><td>🧩 ${xp.saet.length} af ${LEJR_SAET.length} sæt × ${LEJR_XP_SAET}</td><td>${fmt(xp.saetXP)}</td></tr>
-      <tr><td>📋 Lejrinspektion +${xp.pct} %</td><td>${fmt(xp.total-xp.grund)}</td></tr></table>
+      <tr><td>🏅 Mærker (bronze 30, sølv 60, guld 100)</td><td>${fmt(xp.maerker)}</td></tr></table>
     ${n<LEJR_MAKS?`<p class="muted psmall">Niveau ${n+1} kræver ${fmt(lejrXPKrav(n+1))} XP${xp.total<lejrXPKrav(n+1)?` – ${fmt(lejrXPKrav(n+1)-xp.total)} mere`:""}.</p>`:""}
-    <h3>📋 Lejrinspektion (${xp.regler.length} af ${INSPEKTION.length})</h3>
-    <ul class="insp">${INSPEKTION.map(r=>{ const ok=xp.regler.includes(r); return `<li class="${ok?"ok":""}">${ok?"✅":"❌"} <b>${r.navn}</b>${ok?"":`<small>${r.tip}</small>`}</li>`; }).join("")}</ul>
     ${nt?`<h3>${nt.ikon} Milepæl til ${nt.navn} (niveau ${nt.niv})</h3>
       <ul class="insp">${mil.map(p=>`<li class="${p.ok?"ok":""}">${p.ok?"✅":"❌"} <b>${p.tekst}</b><small>Nu: ${p.nu}${p.ok?"":` · kræver ${p.krav}`}</small></li>`).join("")}</ul>
-      ${mil.every(p=>p.ok)?"":`<p class="muted psmall">Uden milepælen kan lejrpladsen ikke komme forbi niveau ${nt.niv-1}, selv med nok XP.</p>`}`:""}
+      ${mil.every(p=>p.ok)?"":`<p class="muted psmall">Uden milepælen stopper lejrpladsen på niveau ${nt.niv-1}, og XP gemmes op, til den er klaret.</p>`}`:""}
     <h3>🧩 Sæt</h3>
     <ul class="insp saet">${LEJR_SAET.map(s=>{ const har=s.ting.filter(id=>bygFelter(c,id).length>0).length, ok=har===s.ting.length;
       return `<li class="${ok?"ok":""}">${ok?"✅":s.ikon} <b>${s.navn}</b> <small>${har}/${s.ting.length}: ${s.ting.map(id=>{ const b=BYGID[id]; return b ? (bygFelter(c,id).length?`<s>${b.navn}</s>`:b.navn) : id; }).join(", ")}</small></li>`; }).join("")}</ul>
@@ -8744,7 +8748,7 @@ function visLejrSkilt(){
 /* ---------- Oprydning: gamle bygninger, der er fjernet eller lagt sammen ----------
    Kører én gang pr. spejder (c.lejrV). Fjernede ting giver point og materialer tilbage,
    og en sammenlagt bygning får det højeste niveau af de gamle. */
-const LEJR_V = 4;
+const LEJR_V = 5;
 const GAMMEL = { braende:["Brændestabel",20,{braende:4}], sten:["Sten",10], svampe:["Svampe",20], blaabaer:["Blåbærbusk",60], hjort:["Kronhjort",150], raev:["Ræv",250],
   opost:["Orienteringspost",40], vejrhane:["Vejrhane",120], baare:["Båre",120,{rafter:2,reb:1}], hjertestarter:["Hjertestarter",220], liljeskilt:["Liljeskilt",120],
   morselampe:["Morselampe",50], semaforpost:["Semaforpost",120,{rafter:1,reb:1}], stjernetaarn:["Stjernetårn",280,{rafter:8,reb:3}] };
@@ -8790,6 +8794,7 @@ function migrerLejr(c){
   if(fra<2) migrerOprydning(c);
   if(fra<3) migrerRaekker(c);
   if(fra<4) migrerTilTrin(c);
+  if(fra<5){ delete c.lejrNivMax; c.lejrPakTjek=true; }   // ny XP og nye milepæle: niveauet regnes forfra
 }
 // Version 4: pladsen følger nu trinnene og vokser nedad fra øverste venstre hjørne (søen er flyttet op til højre).
 // Bygningerne får den (række, kolonne), de havde på skærmen før, og niveauet regnes forfra. Det, der ikke kan stå, pakkes i materielvognen.

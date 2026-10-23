@@ -63,12 +63,18 @@ Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de
 ## Lejrniveau (1-100)
 Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen (trin-ikon, titel, niveau og XP-bjælke). Tryk på skiltet for at se XP-fordelingen, lejrinspektionen med tips, næste milepæl og hvad næste niveau låser op. Patruljesiden viser lejrniveauet ved hvert medlem.
 
-- **Lejr-XP** regnes hver gang ud fra pladsen (`lejrXP`): hver færdig bygning giver (pris + pointprisen for alle dens opgraderinger) / 10, hver forskellig slags bygning giver 50 XP (`LEJR_XP_BREDDE`), og hvert komplet sæt i `LEJR_SAET` giver 150 XP (`LEJR_XP_SAET`). Lejrinspektionen (`INSPEKTION`) giver +5 % pr. opfyldt regel, højst +30 %.
-- **Niveau n** kræver `round(100 × n^1.45 / 10) × 10` XP (`lejrXPKrav`) – niveau 2 = 270 XP, niveau 10 = 2.820 XP, niveau 100 = 79.430 XP.
-- **Trin** (`LEJR_TRIN`): Teltplads (1), Patruljelejr (5), Troppelejr (10), Divisionslejr (20), Korpslejr (30), Landslejr (45), Jamboree (60) og Verdensjamboree (100). Hvert trin har et ikon, et tema og en milepæl (`mil`). Mangler milepælen, kan XP ikke løfte niveauet forbi trinnet, og skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
-- Det højeste niveau gemmes i `lejrNivMax`, så niveauet aldrig falder. Et nyt trin fejres med den nye titel og listen over det nye. Eksisterende spejdere starter på det niveau, deres plads svarer til (milepælene tjekkes), og får én samlet besked.
-- **Sæt** (`LEJR_SAET`, 14 sæt – kun med bygninger, der låses op før Jamboree-trinnet, så milepælen »alle sæt« kan nås): Tømmerlejren, Rebslageriet, Bålhygge, Lejrkøkkenet, Patruljelejren, Pionerpladsen, Sikker lejr, Orientering, Vejr og himmel, Dyr og fugle, Vild natur, Søen, Lejrfest (totempæl, spisetelt, storscene) og Signalcentralen (signalpost, lejrradio, signalmast).
-- **Lejrinspektion** (`INSPEKTION`, afstande i felter, også på skrå): latrinen mindst 3 felter fra køkken og sø · bålet mindst 2 felter fra telte · en førstehjælpsstation · rent vand (en vandstation, eller køkkenet højst 2 felter fra søen) · brændeskuret højst 2 felter fra et bål · en flagstang · lejrporten i kanten af pladsen.
+- **Lejr-XP** regnes hver gang ud fra pladsen og mærkerne (`lejrXP`): hver færdig bygning (også i materielvognen) giver (pris + pointprisen for alle dens opgraderinger) / 10, hver forskellig slags bygning giver 50 XP (`LEJR_XP_BREDDE`), hvert komplet sæt i `LEJR_SAET` giver 150 XP (`LEJR_XP_SAET`), og hvert emne giver 30 / 60 / 100 XP for bronze / sølv / guld (`LEJR_XP_MAERKE`).
+- **XP-krav** (`LEJR_XP_ANKER`, `lejrXPKrav`): niveau 2-4 = 100, 200, 300 · 5 = 400 · 10 = 1.600 · 20 = 6.400 · 30 = 14.400 · 45 = 23.000 · 60 = 33.000 · 100 = 67.000, med geometrisk interpolation mellem ankrene, afrundet til nærmeste 10.
+- **Milepæle** (`LEJR_MILEPAEL`): man rykker kun ind i et nyt trin, når trinnets milepæl er klaret. Ellers stopper niveauet på trinnets sidste niveau, og XP gemmes op. Skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
+  - Patruljelejr (5): telt, bålplads, huggeplads, grantræ, løvtræ
+  - Tropslejr (10): patruljetelt, lejrkøkken, latrin, flagstang, førstehjælpsstation, raftegård, bålplads niveau 3
+  - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, bålbænke, vandstation, kano
+  - Korpslejr (30): spejderhytte niveau 10, udsigtstårn niveau 10, bagerovn, kæmpeeg, 10 mærker i sølv eller bedre
+  - Landslejr (45): svævebane niveau 20, signalmast niveau 20, lejrbutik, lejrradio, tømmerflåde, 15 mærker i sølv eller bedre og 5 i guld
+  - Jamboree (60): ridderborg niveau 25, storscene niveau 10, vandrutsjebane, 10 guldmærker inkl. Spejderhistorie
+  - Verdensjamboree (100): jamboree-telt niveau 50, flagalléen komplet, jamboree-portal, fyrtårn, alle 22 mærker i guld
+- Det højeste niveau gemmes i `lejrNivMax`, så niveauet aldrig falder. Et nyt trin fejres med den nye titel og listen over det nye. Gemte spil får niveauet regnet forfra med de nye regler og én samlet besked (version 5).
+- **Sæt** (`LEJR_SAET`, 14 sæt): Tømmerlejren, Rebslageriet, Bålhygge, Lejrkøkkenet, Patruljelejren, Pionerpladsen, Sikker lejr, Orientering, Vejr og himmel, Dyr og fugle, Vild natur, Søen, Lejrfest (totempæl, spisetelt, storscene) og Signalcentralen (signalpost, lejrradio, signalmast).
 
 ### Trin og plads
 Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens størrelse (`r` × `k`), antal vandfelter (`vand`), det højeste bygningsniveau (`maxByg`), den højeste medalje (`medalje`) og lagerpladsen (`grund` + lagerbygningens niveau × `prNiv`):
