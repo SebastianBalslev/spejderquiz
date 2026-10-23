@@ -8237,7 +8237,7 @@ function arbejdeHTML(c){
     h += `<div class="arb">${hoved(m)}<div class="arbinfo"><b>${esc(m.navn)}</b>`;
     if(j){
       const total=m.job.slut-m.job.start, rest=Math.max(0,m.job.slut-nu);
-      h += `<small>${j.ikon} ${j.navn}</small><div class="bar"><i data-jobbar="${m.id}" style="width:${(1-rest/total)*100}%"></i></div></div><span class="jobtid" data-jobtid="${m.id}">${fmtTid(rest)}</span>${m.job.rek?"":`<button class="chip rekchip" data-a="jobrek" data-id="${m.id}" aria-label="Se en reklame og halver tiden">📺 ½</button>`}`;
+      h += `<small>${j.ikon} ${j.navn}</small><div class="bar"><i data-jobbar="${m.id}" style="width:${(1-rest/total)*100}%"></i></div></div><span class="jobtid" data-jobtid="${m.id}">${fmtTid(rest)}</span>${m.job.rek||j.hold?"":`<button class="chip rekchip" data-a="jobrek" data-id="${m.id}" aria-label="Se en reklame og halver tiden">📺 ½</button>`}`;
     } else {
       h += `<small>Ledig – klar til et job</small></div><button class="btn" data-a="nytjob" data-id="${m.id}">Giv job</button>`;
     }
@@ -9881,9 +9881,8 @@ const actions = {
     modalRoot.querySelector("#m-emne").onclick=()=>{ modalRoot.innerHTML=""; go("emne",{id:e.id}); };
   },
   jobrek(d){ const m=state.chars.find(x=>x.id===d.id); if(!m || !m.job || m.job.rek) return;
-    // Et job for hele patruljen (tømmerflåden) halveres for alle på én gang
-    const alle = JOB[m.job.id] && JOB[m.job.id].hold ? arbejdere(cur()).filter(x=>x.job && x.job.id===m.job.id) : [m];
-    visReklame(()=>{ alle.forEach(x=>{ x.job.rek=true; halverTid(x.job,"slut"); }); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
+    if(JOB[m.job.id] && JOB[m.job.id].hold) return;   // turen på tømmerflåden varer altid 24 timer
+    visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
   bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrark(d){ lejrArk = d.v && lejrArk!==d.v ? d.v : null; if(lejrArk) lejrValg=null; render(); },
   braende(){
