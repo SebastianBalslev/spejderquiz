@@ -363,6 +363,8 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .celle.udvidet{animation:udvid .7s cubic-bezier(.2,1.4,.4,1) both;animation-delay:.35s}@keyframes udvid{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
 .vogn{background:#efe2c4;border-radius:14px;padding:10px;margin-bottom:12px}
 .celle.forbudt{box-shadow:inset 0 0 0 3px #c62828;background:#e9b3a8 !important}
+.bcell.emnelaas{opacity:.7}.bcell.emnelaas small{color:#7a4b12;font-weight:700}.lejrlaaskort{background:#f1e2c3;color:#7a4b12;font-weight:700}
+.lvlrow .lejrlaas{color:#7a4b12;font-weight:800;font-size:12px;white-space:nowrap}.nytliste{text-align:left;font-size:15px;display:flex;flex-direction:column;gap:4px}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -6289,8 +6291,8 @@ function scrMaerker(){
     const har = es.reduce((n,e)=>n+(c.badges[e.id]||0),0), maks = es.length*3;
     return `<div class="gruppe"><span style="font-size:22px">${g.ikon}</span><b>${g.navn}: <span>${har} af ${maks} mærker</span></b></div>
       <div class="gruppebar"><i style="width:${Math.round(har/maks*100)}%"></i></div>
-      <div class="grid">${es.map(e=>{ const l=c.badges[e.id]||0;
-        return `<button class="bcell" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:"Låst"}</small></button>`; }).join("")}</div>`;
+      <div class="grid">${es.map(e=>{ const l=c.badges[e.id]||0, aab=emneAaben(c,e.id);
+        return `<button class="bcell ${aab?"":"emnelaas"}" data-a="emne" data-id="${e.id}">${badgeHTML(e,l)}<b>${e.navn}</b><small class="l${l}">${l?NIVEAUER[l].navn:aab?"Låst":emneLaasTekst(e.id)}</small></button>`; }).join("")}</div>`;
   }).join("");
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
@@ -6305,9 +6307,11 @@ function scrEmne(){
   const c=cur(), e=EMNE[nav.params.id], l=c.badges[e.id]||0;
   let h = `<div class="topbar"><button class="iconbtn" data-a="til" data-to="maerker" aria-label="Tilbage">←</button><h1>${e.navn}</h1><span class="spacer"></span></div>
     <div class="card emnehead">${badgeHTML(e,l,"lg")}<p>${e.besk}</p></div>`;
+  const aab=emneAaben(c,e.id), maks=maksMedalje(c);
+  if(!aab) h += `<div class="card lejrlaaskort">${emneLaasTekst(e.id)} (lejrniveau ${EMNE_TRIN[e.id]}). Byg din lejrplads op for at tage prøverne – du kan stadig øve emnet.</div>`;
   for(let n=1;n<=3;n++){
-    const done=l>=n, klar=l===n-1, laast=l<n-1, N=NIVEAUER[n], best=c.best[e.id+n];
-    const status = done ? `<span class="status done">✅ Bestået</span>` : klar ? `<span class="status">Klar til prøven</span>` : `🔒 Kræver ${NIVEAUER[n-1].navn.toLowerCase()}`;
+    const done=l>=n, laastLejr=!done && (!aab || n>maks), klar=l===n-1 && !laastLejr, laast=l<n-1 || laastLejr, N=NIVEAUER[n], best=c.best[e.id+n];
+    const status = done ? `<span class="status done">✅ Bestået</span>` : laastLejr ? (aab ? medaljeLaasTekst(n) : emneLaasTekst(e.id)) : klar ? `<span class="status">Klar til prøven</span>` : `🔒 Kræver ${NIVEAUER[n-1].navn.toLowerCase()}`;
     h += `<div class="card lvlcard ${laast?"laast":""}">
       <div class="lvltop">${badgeHTML(e, laast?0:n, "sm"+(klar?" faded":""))}
         <div class="lvltxt"><b>${N.navn}</b><small>${N.svaer} · mindst ${N.krav} af ${ANTAL_SPG} rigtige</small><small>${status}${best!=null?` · Bedste: ${best}/${ANTAL_SPG}`:""}</small>${laaserOp(e.id,n)?`<small class="laaserop">🔓 ${laaserOp(e.id,n)}</small>`:""}</div></div>
@@ -6327,7 +6331,7 @@ function scrTraening(){
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Fri træning</h1><span class="spacer"></span></div>
     ${fejl ? fejlKort(cur()) : ""}
     <div class="card"><p style="margin-top:0">Øv dig uden pres – træning tæller ikke til mærkerne, men du får stadig point.</p>
-      <div class="sect">Emne</div><div class="chips">${chip("emne","alle","🌍 Alle emner")}${EMNER.map(e=>chip("emne",e.id,e.navn)).join("")}</div>
+      <div class="sect">Emne</div><div class="chips">${chip("emne","alle","🌍 Alle åbne emner")}${EMNER.map(e=>emneAaben(cur(),e.id) ? chip("emne",e.id,e.navn) : `<button class="chip" disabled title="${emneLaasTekst(e.id)}">🔒 ${e.navn}</button>`).join("")}</div>
       <div class="sect" style="margin-top:16px">Sværhedsgrad</div><div class="chips">${chip("niveau",0,"Blandet")}${chip("niveau",1,"Let")}${chip("niveau",2,"Mellem")}${chip("niveau",3,"Svær")}</div>
     </div>
     ${timerToggle()}
@@ -6540,18 +6544,20 @@ function seedRng(seed){   // mulberry32 – samme seed giver altid samme rækkef
 function ugensSpg(u){
   const rnd = seedRng(u.aar * 100 + u.uge);
   const bland = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-  const emner = bland(EMNER.map(e => e.id)).slice(0, ANTAL_SPG);
-  const niv = bland([1,1,1,2,2,2,2,3,3,3]);
+  // Kun de emner, lejrpladsen har låst op. Er der færre end 10, tages nogle emner to gange (med forskellige spørgsmål).
+  const aabne = bland(EMNER.map(e => e.id)).filter(id => emneAaben(cur(), id));
+  const emner = Array.from({length:ANTAL_SPG}, (_,i) => aabne[i % Math.max(1,aabne.length)]);
+  const niv = bland([1,1,1,2,2,2,2,3,3,3]), brugt = new Set();
   return emner.map((e,i) => {
-    const pool = SPORGSMAL.filter(q => q.emne===e && q.niveau===niv[i]).sort((a,b) => a.id < b.id ? -1 : 1);
-    return pool[Math.floor(rnd() * pool.length)];
-  });
+    const pool = SPORGSMAL.filter(q => q.emne===e && q.niveau===niv[i] && !brugt.has(q.id)).sort((a,b) => a.id < b.id ? -1 : 1);
+    const q = pool[Math.floor(rnd() * pool.length)]; if(q) brugt.add(q.id); return q;
+  }).filter(Boolean);
 }
 function ugeBedst(c, u){ return (c.uge || {})[u.key]; }
 function ugeKort(c){
   const u = isoUge(new Date()), b = ugeBedst(c, u);
   return `<div class="card ugekort"><div class="ugetop"><span class="ugenr"><small>Uge</small>${u.uge}</span>
-      <div><b>🗓️ Ugens udfordring</b><small>10 spørgsmål fra forskellige emner – de samme for alle spejdere hele ugen.</small></div></div>
+      <div><b>🗓️ Ugens udfordring</b><small>10 spørgsmål fra forskellige emner – de samme for alle spejdere hele ugen.${EMNER.some(e=>!emneAaben(c,e.id))?` Kun de emner, din lejrplads har låst op (🔒 ${EMNER.filter(e=>!emneAaben(c,e.id)).length} er låst).`:""}</small></div></div>
     <div class="ugebest">${b ? `Dit bedste resultat i uge ${u.uge}: <b>${b.r}/${b.n}</b>${b.r===b.n?" 🏆":""}` : "Du har ikke prøvet ugens udfordring endnu."}</div>
     <button class="btn ${b?"secondary":"gold"}" data-a="ugestart">${b ? "Prøv igen" : "Tag ugens udfordring"}</button></div>`;
 }
@@ -6559,8 +6565,8 @@ function ugeKort(c){
 function startQuiz(mode, emne, niveau){
   const c = cur();
   const fast = { uge:1, moede:1, moedeakt:1, moedetraen:1 }[mode];   // faste spørgsmål ud fra ugen
-  const pool = mode==="fejl" ? fejlSpg(c) : fast ? SPORGSMAL
-    : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau));
+  const pool = (mode==="fejl" ? fejlSpg(c) : fast ? SPORGSMAL
+    : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau))).filter(q => mode==="test" || emneAaben(c,q.emne));
   if(!pool.length) return;
   const ugen = mode==="moede" ? moede.uge : mode==="moedetraen" ? isoUge(new Date(Date.now() - niveau*7*864e5)) : isoUge(new Date());
   let valgte = mode==="moedeakt" ? moede.aktSpg : fast ? ugensSpg(ugen) : vaelgSpg(pool, ANTAL_SPG, c);
@@ -8595,6 +8601,31 @@ function vandSaet(str){
 function iPladsen(i, c){ const s=lejrStr(c||cur()); return feltR(i)<s.r && feltK(i)<s.k; }
 function lejrAlleFelter(c){ const s=lejrStr(c||cur()), r=[]; for(let a=0;a<s.r;a++) for(let b=0;b<s.k;b++) r.push(felt(a,b)); return r; }
 
+/* ---------- Mærker og løb, som lejrniveauet låser op ----------
+   EMNE_TRIN: det lejrniveau, et emne åbner på. Højeste medalje følger trinnets medalje.
+   LOEB_NIV: det lejrniveau, et adventureløb kræver (og det forrige løb skal stadig være gennemført).
+   Det er patruljelederens (eller den aktive spejders) lejrniveau, der tæller. Optjente mærker beholdes. */
+const EMNE_TRIN = { lejr:1, baal:1, vaerktoej:1, knob:1, forstehjalp:1, planter:1,
+  koekken:5, ledelse:5, dyr:5, fugle:5, natur:5, historie:5, tur:5,
+  orientering:10, vejr:10, koder:10, spor:10, gps:10, vand:10, overlevelse:10, lejrbaal:10, stjerner:10 };
+const LOEB_NIV = { 1:5, 2:8, 3:10, 4:14, 5:17, 6:20, 7:25, 8:30, 9:45, 10:60 };
+function lederNiv(c){ c=c||cur(); if(!c) return 1; const p=minPatrulje(c), l=p && state.chars.find(x=>x.id===p.leder); return (l||c).lejrNivMax || 1; }
+function emneAaben(c, id){ return lederNiv(c) >= (EMNE_TRIN[id]||1); }
+function maksMedalje(c){ return lejrTrin(lederNiv(c)).medalje; }
+function emneLaasTekst(id){ const n=EMNE_TRIN[id]||1; return `🔒 Låses op i ${lejrTrin(n).navn}`; }
+function medaljeLaasTekst(n){ const t=LEJR_TRIN.find(x=>x.medalje>=n); return `🔒 ${NIVEAUER[n].navn} låses op i ${t.navn} (lejrniveau ${t.niv})`; }
+function aabneSpg(c){ return SPORGSMAL.filter(q=>emneAaben(c,q.emne)); }
+// Det nye i et trin: plads, bygninger, mærker og løb (til skiltet og fejringen)
+function trinNytListe(fra, til){
+  const a=lejrTrin(fra), b=lejrTrin(til), ud=[];
+  if(a.r!==b.r || a.k!==b.k) ud.push(`↕️ Pladsen vokser til ${b.r} × ${b.k} felter`);
+  if(b.maxByg>a.maxByg) ud.push(`⬆️ Bygninger kan komme op på niveau ${b.maxByg}`);
+  if(b.medalje>a.medalje) ud.push(`🏅 Mærker i ${NIVEAUER[b.medalje].navn.toLowerCase()}`);
+  const emner=EMNER.filter(e=>(EMNE_TRIN[e.id]||1)>fra && (EMNE_TRIN[e.id]||1)<=til); if(emner.length) ud.push(`📚 Nye emner: ${emner.map(e=>e.navn).join(", ")}`);
+  const loeb=Object.keys(LOEB_NIV).filter(nr=>LOEB_NIV[nr]>fra && LOEB_NIV[nr]<=til && LOEBNR[nr]); if(loeb.length) ud.push(`🗺️ Adventureløb: ${loeb.map(nr=>LOEBNR[nr].navn).join(", ")}`);
+  const byg=laasesOpMellem(fra,til); if(byg.length) ud.push(`⛺ Nye bygninger: ${byg.map(x=>x.navn).join(", ")}`);
+  return ud;
+}
 // Milepælen for at rykke ind i hvert trin (nøglen er trinnets første niveau)
 const LEJR_MILEPAEL = {
   5:   [{byg:"telt"},{byg:"baal"},{byg:"huggeplads"},{byg:"gran"},{byg:"loevtrae"}],
@@ -8736,8 +8767,7 @@ function fejrLejrTrin(c, fra, til, t){
       <div class="ctitle">NY LEJR!</div><div class="lejrtrinstor">${t.ikon}</div>
       <h2>${t.navn}</h2><div class="lvlname l3">Lejrniveau ${til}</div>
       <p style="margin:8px 0 0">${t.tema}</p>
-      ${nyt.length?`<div class="rankup">⛺ Nu kan du bygge: <b>${nyt.map(b=>b.navn).join(", ")}</b></div>`:""}
-      ${lejrNyePladser(fra,til)?`<div class="rankup">↕️ Lejrpladsen er vokset til ${t.r} × ${t.k} felter</div>`:""}
+      <div class="rankup nytliste">${trinNytListe(fra,til).map(x=>`<div>${x}</div>`).join("")}</div>
       <button class="btn gold" id="c-ok" style="margin-top:22px">Fedt! 🎉</button></div></div>`;
   modalRoot.querySelector("#c-ok").onclick = () => { modalRoot.innerHTML=""; };
   konfetti(); vibrer([80,60,80,60,160]);
@@ -8772,6 +8802,7 @@ function visLejrSkilt(){
     <h3>🧩 Sæt</h3>
     <ul class="insp saet">${LEJR_SAET.map(s=>{ const har=s.ting.filter(id=>bygFelter(c,id).length>0).length, ok=har===s.ting.length;
       return `<li class="${ok?"ok":""}">${ok?"✅":s.ikon} <b>${s.navn}</b> <small>${har}/${s.ting.length}: ${s.ting.map(id=>{ const b=BYGID[id]; return b ? (bygFelter(c,id).length?`<s>${b.navn}</s>`:b.navn) : id; }).join(", ")}</small></li>`; }).join("")}</ul>
+    ${nt?`<h3>🔓 ${nt.navn} (niveau ${nt.niv}) låser op</h3><ul class="insp">${trinNytListe(nt.niv-1, nt.niv).map(x=>`<li>${x}</li>`).join("")}</ul>`:""}
     ${n<LEJR_MAKS?`<h3>🔓 Niveau ${n+1} låser op</h3><p class="psmall">${nyt.length?nyt.map(b=>`${bygIkon(b).includes("<svg")?"":b.ikon+" "}${b.navn}`).join(", "):"Ingen nye bygninger – men mere XP til næste niveau."}${lejrNyePladser(n,n+1)?` · Pladsen vokser til ${lejrTrin(n+1).r} × ${lejrTrin(n+1).k} felter.`:""}</p>`:""}
     </div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
@@ -9401,7 +9432,7 @@ let loebOpg = null;    // opgaven ved den post, patruljen står ved lige nu (gem
 let loebUr = null, loebSidst = 0, loebZoom = 1, loebAnim = null;
 const SPGID = {}; SPORGSMAL.forEach(q => { SPGID[q.id] = q; });
 
-function loebAaben(p, nr){ const res=p.loeb||{}; return nr===1 || !!res[nr-1] || (p.maerke||0)*3 >= nr-1; }
+function loebAaben(p, nr){ const res=p.loeb||{}; return lederNiv() >= (LOEB_NIV[nr]||1) && (nr===1 || !!res[nr-1] || (p.maerke||0)*3 >= nr-1); }
 function loebIgang(p){ return p && p.igang && LOEBNR[p.igang.nr] ? p.igang : null; }
 function minLoebPatrulje(){ return minPatrulje(cur()); }
 function aktivtLoeb(){ return loebIgang(minLoebPatrulje()); }
@@ -9414,7 +9445,8 @@ function lavPlan(L, seed, fordele){
   const bland = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=r(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
   const brugt = new Set(), tekster = new Set();
   const tag = (pool, n) => { const ud=[]; for(const q of bland(pool)){ if(brugt.has(q.id)) continue; const t=q.media&&q.media.tekst; if(t && tekster.has(t)) continue; brugt.add(q.id); if(t) tekster.add(t); ud.push(q.id); if(ud.length===n) break; } return ud; };
-  const paaNiv = (f, n) => { let ids = tag(SPORGSMAL.filter(q=>q.niveau===L.niveau && f(q)), n); if(ids.length<n) ids = ids.concat(tag(SPORGSMAL.filter(q=>q.niveau<L.niveau && f(q)), n-ids.length)); return ids; };
+  const ABNE = aabneSpg(cur());   // låste emner kommer ikke på vidensposterne
+  const paaNiv = (f, n) => { let ids = tag(ABNE.filter(q=>q.niveau===L.niveau && f(q)), n); if(ids.length<n) ids = ids.concat(tag(ABNE.filter(q=>q.niveau<L.niveau && f(q)), n-ids.length)); if(ids.length<n) ids = ids.concat(tag(SPORGSMAL.filter(q=>q.niveau<=L.niveau && f(q)), n-ids.length)); return ids; };
   // Posttyper: bland typerne igen og igen, så alle bruges, og ingen to ens poster kommer i træk
   const typer = [];
   while(typer.length < L.poster){
@@ -9423,7 +9455,7 @@ function lavPlan(L, seed, fordele){
     typer.push(...runde);
   }
   typer.length = L.poster;
-  const emner = bland(EMNER.map(e=>e.id).filter(e=>e!=="koder")); let ei = 0;
+  const emner = bland(EMNER.map(e=>e.id).filter(e=>e!=="koder" && emneAaben(cur(),e))); let ei = 0;   // kun emner, lejrpladsen har låst op
   const fh = bland(FH_SCEN.filter(s=>s.niveau===L.niveau)).concat(bland(FH_SCEN.filter(s=>s.niveau!==L.niveau)));
   const baal = bland(BAAL_OPG.filter(s=>s.niveau===L.niveau && (!s.regn || L.regnbaal))).concat(bland(BAAL_OPG.filter(s=>s.niveau!==L.niveau && !s.regn)));
   let fi=0, bi=0, pi=0;
@@ -9524,7 +9556,7 @@ function fordelRoller(ms, tilfaeldig){
   return ud;
 }
 function startLoebValg(nr){
-  const p=minLoebPatrulje(); if(!p || loebIgang(p)) return;
+  const p=minLoebPatrulje(); if(!p || loebIgang(p) || !loebAaben(p,nr)) return;
   loebKlar = { nr, roller: fordelRoller(medlemmer(p), true) };
   go("loebroller");
 }
@@ -10054,7 +10086,7 @@ function loebListeHTML(p, nok){
     const s = r ? r.stjerner : 0;
     h += `<div class="card lvlrow loebrk ${aaben?"":"laast"}"><span class="loebnr">${L.ikon}<small>${nr}</small></span>
       <div class="lvltxt"><b>${L.navn}</b><small>${L.poster} poster · ${L.etaper} etape${L.etaper>1?"r":""} · ${["","Let","Mellem","Svær"][L.niveau]}${L.nr===ANTAL_LOEB?" · Mester":""}</small>
-      <small><span class="stjsm">${[1,2,3].map(k=>`<span class="${k<=s?"on":""}">★</span>`).join("")}</span>${r?` · bedste tid ${mmss(r.bedsteTid)}`:""}${L.pioner.length && knob<L.niveau?` · 🪢 kræver Knob og reb – ${NIVEAUER[L.niveau].navn.toLowerCase()}`:""}</small></div>
+      <small><span class="stjsm">${[1,2,3].map(k=>`<span class="${k<=s?"on":""}">★</span>`).join("")}</span>${r?` · bedste tid ${mmss(r.bedsteTid)}`:""}${L.pioner.length && knob<L.niveau?` · 🪢 kræver Knob og reb – ${NIVEAUER[L.niveau].navn.toLowerCase()}`:""}${lederNiv()<(LOEB_NIV[nr]||1)?`<br><b class="lejrlaas">🔒 Lejrniveau ${LOEB_NIV[nr]}</b>`:""}</small></div>
       <button class="btn ${r?"secondary":""}" data-a="loebvaelg" data-n="${nr}" ${aaben && !ig?"":"disabled"}>${!aaben?"🔒":r?"Igen":"Start"}</button></div>`;
   }
   return h;
@@ -10188,15 +10220,17 @@ function aktSpg(a, u){
     : a.type==="kode" ? SPORGSMAL.filter(q=>q.emne==="koder" && !q.media && q.niveau<=2)
     : a.type==="billede" ? SPORGSMAL.filter(q=>q.media && q.media.type==="billede" && (!a.emner || a.emner.includes(q.emne)))
     : SPORGSMAL.filter(q=>q.media && q.media.type===a.type);
+  let aab = pool.filter(q=>emneAaben(cur(),q.emne));
+  if(!aab.length) aab = aabneSpg(cur()).filter(q=>!q.type && !q.media);   // aktivitetens emne er låst: almindelige spørgsmål fra de åbne emner
   const valgte=[], tekster=new Set();
-  for(const q of ugeBland(rnd, pool)){
+  for(const q of ugeBland(rnd, aab)){
     const t = q.media && q.media.tekst; if(t && tekster.has(t)) continue;
     if(t) tekster.add(t); valgte.push(q); if(valgte.length===3) break;
   }
   return valgte;
 }
 function ugensHistorie(u){ return ugeValg(ugeRng(u,3), HISTORIER); }
-function patruljeSpg(u){ return ugeBland(ugeRng(u,4), SPORGSMAL.filter(q=>q.niveau<=2 && !q.type && !q.media)).slice(0,3); }
+function patruljeSpg(u){ return ugeBland(ugeRng(u,4), aabneSpg(cur()).filter(q=>q.niveau<=2 && !q.type && !q.media)).slice(0,3); }
 function harPatruljetid(c){ const p=minPatrulje(c); return !!p && medlemmer(p).length>=2; }
 
 // Streak: tjek om uger er sprunget over. Sygemeldinger redder streaken automatisk.
@@ -10489,7 +10523,7 @@ const actions = {
   },
   rediger(){ const c=cur(); draft={ id:c.id, navn:c.navn, look:{...c.look}, badges:c.badges, rank:rankIdx(c), retur:"indst" }; go("editor"); },
   emne(d){ go("emne",{id:d.id}); },
-  proeve(d){ startQuiz("test", d.id, +d.n); },
+  proeve(d){ const c=cur(), l=c.badges[d.id]||0; if(+d.n>l && (!emneAaben(c,d.id) || +d.n>maksMedalje(c))) return; startQuiz("test", d.id, +d.n); },
   traening(d){ go("traening",{ emne:d.id||"alle", niveau:0 }); },
   tvalg(d){ nav.params[d.k] = d.k==="niveau" ? +d.v : d.v; try{ history.replaceState(nav,""); }catch(e){} render(); },
   tstart(){ startQuiz("train", nav.params.emne, nav.params.niveau); },
@@ -10735,7 +10769,7 @@ const actions = {
   lraab(){ const c=cur(); aktBesked(`📣 Du leder råbet, og hele patruljen svarer: ${pick(RAAB)} ${belon(c,"lraab",4)}`); vibrer([30,30,30]); },
   lsketch(){ const c=cur(), ven=pick(patrulje(c)); aktBesked(`🎭 Du og ${esc(ven.navn)} opfører en sketch: ${pick(SKETCHES)} Alle griner! ${belon(c,"lsketch",4)}`); konfettiLille(); },
   baalquiz(){
-    const c=cur(), q=pick(SPORGSMAL.filter(x=>x.niveau<=2 && !x.type && !x.media)), opts=shuffle(q.svar.map((t,k)=>({t,ok:k===0})));
+    const c=cur(), q=pick(aabneSpg(c).filter(x=>x.niveau<=2 && !x.type && !x.media)), opts=shuffle(q.svar.map((t,k)=>({t,ok:k===0})));
     modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><div class="qtopic">${badgeHTML(EMNE[q.emne],c.badges[q.emne]||0,"xs")} Lejrbålsquiz · ${EMNE[q.emne].navn}</div>
       <p class="qtext" style="text-align:left;font-size:19px">${esc(q.spm)}</p><div id="m-svar">${opts.map((o,k)=>`<button class="ans" data-k="${k}"><span class="letter">${"ABCD"[k]}</span><span>${esc(o.t)}</span></button>`).join("")}</div></div></div>`;
     modalRoot.querySelectorAll("#m-svar .ans").forEach(btn=>btn.onclick=()=>{

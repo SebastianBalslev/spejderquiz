@@ -140,6 +140,14 @@ Feltet `lejrniv` i `BYG` er det lejrniveau, en ting kræver – sammen med mærk
 - Landslejr 45: ridderborg · 50: vandrutsjebane · 55: storscene
 - Jamboree 60: jamboree-telt (600 point) · 65: flagallé · 75: jamboree-portal · 90: fyrtårn
 
+### Mærker og adventureløb låses op af lejrniveauet
+Det er patruljelederens (eller den aktive spejders) lejrniveau, der tæller (`lederNiv`). Mærker, man allerede har, beholdes.
+- **Emner** (`EMNE_TRIN`): Teltplads: Lejrliv, Bål, Kniv, sav og økse, Knob og reb, Førstehjælp, Planter og svampe. Patruljelejr: + Friluftskøkken, Ledelse og ansvar, Dyr, Fugle, Natur og miljø, Spejderhistorie, Tur og udrustning. Tropslejr: + Orientering, Vejr, Koder og signaler, Spor og sporing, GPS og geocaching, Vand og sejlads, Overlevelse, Lejrbål og sang, Stjerner.
+- **Højeste mærke** følger trinnets `medalje`: bronze på Teltpladsen, sølv i Patruljelejren og guld fra Tropslejren.
+- Låste emner står som »🔒 Låses op i Patruljelejr« på mærkesiden og i træningen. Ugens udfordring, spejdermødet, patruljetiden, lejrbålsquizzen og vidensposterne på løbene tager kun spørgsmål fra de åbne emner – så længe der er færre end 10 åbne emner, tager ugens udfordring nogle emner to gange med forskellige spørgsmål.
+- **Adventureløb** (`LOEB_NIV`): løb 1 kræver lejrniveau 5, løb 2 → 8, 3 → 10, 4 → 14, 5 → 17, 6 → 20, 7 → 25, 8 → 30, 9 → 45 og 10 → 60, og det forrige løb skal stadig være gennemført. Låste løb står med »🔒 Lejrniveau 14« på patruljesiden.
+- Skiltet og fejringen af et nyt trin viser alt nyt: pladsen, bygningsniveau, medalje, emner, løb og bygninger (`trinNytListe`).
+
 ### Oprydning i bygningerne
 Nogle bygninger er fjernet eller lagt sammen (`GAMMEL`, `FJERNET` og `FLET`). Gemte spil ryddes op én gang (`migrerLejr`, styret af `lejrV`), og spilleren får én samlet besked:
 - **Fjernet:** Brændestabel og Sten (point og materialer gives tilbage).
