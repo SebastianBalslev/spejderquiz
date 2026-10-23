@@ -73,7 +73,7 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
   - Landslejr (45): svævebane niveau 20, signalmast niveau 20, lejrbutik, lejrradio, tømmerflåde, 15 mærker i sølv eller bedre og 5 i guld
   - Jamboree (60): ridderborg niveau 25, storscene niveau 10, vandrutsjebane, 10 guldmærker inkl. Spejderhistorie
   - Verdensjamboree (100): jamboree-telt niveau 50, flagalléen komplet, jamboree-portal, fyrtårn, alle 22 mærker i guld
-- Det højeste niveau gemmes i `lejrNivMax`, så niveauet aldrig falder. Et nyt trin fejres med den nye titel og listen over det nye. Gemte spil får niveauet regnet forfra med de nye regler og én samlet besked (version 5).
+- Det højeste niveau gemmes i `lejrNivMax`, så niveauet aldrig falder. Et trin, man har nået, tjekkes ikke igen – river man fx teltet ned eller skifter det ud med et patruljetelt, kan man stadig stige videre. Et nyt trin fejres med den nye titel og listen over det nye. Gemte spil får niveauet regnet forfra med de nye regler og én samlet besked (version 5).
 - **Sæt** (`LEJR_SAET`, 14 sæt): Tømmerlejren, Rebslageriet, Bålhygge, Lejrkøkkenet, Patruljelejren, Pionerpladsen, Sikker lejr, Orientering, Vejr og himmel, Dyr og fugle, Vild natur, Søen, Lejrfest (totempæl, spisetelt, storscene) og Signalcentralen (signalpost, lejrradio, signalmast).
 
 ### Guide, byggeliste og job

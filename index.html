@@ -8910,7 +8910,9 @@ function milepael(c, trin, xp){ return (LEJR_MILEPAEL[trin.niv]||[]).map(p=>milP
 function lejrNivBeregn(c, xp){
   xp = xp || lejrXP(c); let n=1;
   while(n<LEJR_MAKS && xp.total>=lejrXPKrav(n+1)) n++;
-  for(const t of LEJR_TRIN){ if(t.niv<=1 || t.niv>n) continue; if(!milepael(c,t,xp).every(p=>p.ok)){ n=t.niv-1; break; } }
+  // Et trin, man allerede har nået (lejrNivMax), tjekkes ikke igen – ellers kunne man sidde fast, hvis man fx har skiftet teltet ud med et patruljetelt
+  const naaet=c.lejrNivMax||1;
+  for(const t of LEJR_TRIN){ if(t.niv<=1 || t.niv>n || t.niv<=naaet) continue; if(!milepael(c,t,xp).every(p=>p.ok)){ n=t.niv-1; break; } }
   return n;
 }
 function lejrNiveau(c){ return Math.max(c.lejrNivMax||1, lejrNivBeregn(c)); }
