@@ -128,7 +128,7 @@ Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - e) Huggepladsen må ikke være nabo til telte.
 - f) Telte må ikke være nabo til vand.
 
-Når man bygger, flytter eller stiller noget ud, er de forbudte felter røde, og et tryk på et rødt felt viser reglen og en kort spejderforklaring (`nyeBrud`, `brudTekst`). Man kan ikke bygge, flytte eller rive ned, hvis det bryder en regel (fx en bålplads, som et køkken står ved). Man kan ikke selv pakke ting ned – men bygninger fra gamle spil, der ikke kan stå på pladsen eller bryder en regel, pakkes automatisk i **materielvognen** (`tilpasLejr`) og kan stilles ud igen under Byg.
+Når man bygger, flytter eller stiller noget ud, står bygningens regler i bjælken øverst, fx »📏 Må ikke stå ved siden af telte, hytter, træer eller brændeskuret – heller ikke på skrå« (`regelLinjer`), og de forbudte felter er røde, og et tryk på et rødt felt viser reglen og en kort spejderforklaring (`nyeBrud`, `brudTekst`). Man kan ikke bygge, flytte eller rive ned, hvis det bryder en regel (fx en bålplads, som et køkken står ved). Man kan ikke selv pakke ting ned – men bygninger fra gamle spil, der ikke kan stå på pladsen eller bryder en regel, pakkes automatisk i **materielvognen** (`tilpasLejr`) og kan stilles ud igen under Byg.
 
 ### Økonomi
 - Bygningerne kan højst opgraderes til trinnets `maxByg` (3 på Teltpladsen, 5 i Patruljelejren, 10 i Tropslejren osv.).

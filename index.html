@@ -373,6 +373,7 @@ button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 .guidenu{background:#fff7d6;border-radius:14px;padding:10px 12px;margin:10px 0}.guidenu p{margin:6px 0;font-size:15px}.guidenu .mangler{color:#b3261e}
 .lageradv{display:block;color:#b3261e;font-weight:700;font-size:12.5px}
 .bcell small.klar{color:#2e7d32;font-weight:800}
+.byggebar .regeltekst{display:block;color:#8a3b12;font-weight:700;margin-top:3px}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -7193,7 +7194,7 @@ function scrLejr(){
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":lejrValg.type==="vogn"?"Stil ud":"Flyt"}: ${valgt.navn}</b>
-      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}. Røde felter bryder en placeringsregel – tryk på dem for at se hvorfor.${opg?" Bagefter skal du binde besnøringerne.":""}</small></div>
+      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}. ${opg?" Bagefter skal du binde besnøringerne.":""}</small>${regelLinjer(valgt.id).map(t=>`<small class="regeltekst">📏 ${t}</small>`).join("")}</div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
@@ -8852,6 +8853,22 @@ function nyeBrud(c, id, i, fra){
   if(fra!=null) delete kort[fra]; if(id) kort[i]=id; else delete kort[i];
   const set=new Map(); regelBrudKort(c,kort).filter(x=>!for_.has(x.n)).forEach(x=>set.set(x.r.id,x.r));
   return [...set.values()];
+}
+// Korte tekster om, hvor en bygning må stå (vises, mens man placerer eller flytter den)
+const REGEL_GRUPPER = [[TELTE,"telte"],[HYTTER,"hytter"],[TRAEER,"træer"],[BAAL_IDS,"bål"],[["koekken"],"lejrkøkkenet"],[["latrin"],"latrinen"],[["braendeskur"],"brændeskuret"],[["huggeplads"],"huggepladsen"],[["VAND"],"vandet"]];
+function regelNavne(ids){ const navne=[]; REGEL_GRUPPER.forEach(([g,n])=>{ if(g.some(x=>ids.includes(x)) && !navne.includes(n)) navne.push(n); }); return navne; }
+function ogListe(l){ return l.length<2 ? l.join("") : l.slice(0,-1).join(", ")+" eller "+l[l.length-1]; }
+function regelLinjer(id){
+  const ikke=[], skal=[];
+  INSPEKTION.forEach(r=>{
+    if(r.type==="ikke"){ if(r.a.includes(id)) ikke.push(...regelNavne(r.b)); else if(r.b.includes(id)) ikke.push(...regelNavne(r.a)); }
+    else if(r.a.includes(id)) skal.push(...r.b.map(x=>"en "+BYGID[x].navn.toLowerCase()));
+  });
+  const ud=[], ik=[...new Set(ikke)];
+  if(ik.length) ud.push(`Må ikke stå ved siden af ${ogListe(ik)} – heller ikke på skrå.`);
+  if(skal.length) ud.push(`Skal stå ved siden af ${ogListe([...new Set(skal)])}.`);
+  if(ud.length) ud.push("Røde felter bryder en regel – tryk på dem for at se hvorfor.");
+  return ud;
 }
 function brudTekst(liste){ const r=liste[0]; return `🚫 <b>${r.navn}.</b> ${r.forkl}`; }
 function saetKomplet(c, s){ return s.ting.every(id=>bygFelter(c,id).length>0); }
