@@ -6293,9 +6293,12 @@ const MGRUPPER = [
 function scrMaerker(){
   const c=cur(); const cnt=[0,0,0,0];
   EMNER.forEach(e=>{ const l=c.badges[e.id]||0; for(let i=1;i<=l;i++) cnt[i]++; });
+  const skjul = !!indst(c).skjulLaasteMaerker, antalLaaste = EMNER.filter(e=>!emneAaben(c,e.id) && !c.badges[e.id]).length;
   const iGrp = new Set(MGRUPPER.flatMap(g=>g.emner)), grupper = MGRUPPER.concat([{ navn:"Andre", ikon:"🏅", emner:EMNER.map(e=>e.id).filter(id=>!iGrp.has(id)) }]);
   const gruppeHTML = grupper.map(g=>{
-    const es = g.emner.map(id=>EMNE[id]).filter(e=>e && EMNER.includes(e)); if(!es.length) return "";
+    const alle = g.emner.map(id=>EMNE[id]).filter(e=>e && EMNER.includes(e));
+    // Med »skjul« vises kun de emner, man kan tage (eller allerede har et mærke i)
+    const es = skjul ? alle.filter(e=>emneAaben(c,e.id) || c.badges[e.id]) : alle; if(!es.length) return "";
     const har = es.reduce((n,e)=>n+(c.badges[e.id]||0),0), maks = es.length*3;
     return `<div class="gruppe"><span style="font-size:22px">${g.ikon}</span><b>${g.navn}: <span>${har} af ${maks} mærker</span></b></div>
       <div class="gruppebar"><i style="width:${Math.round(har/maks*100)}%"></i></div>
@@ -6306,6 +6309,7 @@ function scrMaerker(){
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
     <p class="muted center" style="font-size:14px;margin-bottom:0">Tryk på et mærke for at tage prøven. Bronze, sølv og guld tæller hver som ét mærke.</p>
+    ${antalLaaste || skjul ? `<button class="btn secondary" data-a="skjulmaerker" style="margin-top:10px">${skjul?`🔒 Vis også de mærker, du ikke kan tage endnu (${antalLaaste})`:"🙈 Skjul de mærker, du ikke kan tage endnu"}</button>` : ""}
     ${gruppeHTML}
     <div class="sect" style="margin-top:22px">Særlige mærker</div>
     <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button>${Object.keys(SAERMAERKER).map(id=>`<button class="bcell" data-a="saermaerke" data-id="${id}">${saerBadgeHTML(id,harSaerMaerke(c,id))}<b>${SAERMAERKER[id].navn}</b><small class="${harSaerMaerke(c,id)?"l3":"l0"}">${harSaerMaerke(c,id)?"Taget":"Ikke taget endnu"}</small></button>`).join("")}</div>
@@ -10842,6 +10846,7 @@ const actions = {
   vislaaste(){ lejrVisLaaste=!lejrVisLaaste; render(); },
   bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrskilt(){ visLejrSkilt(); },
+  skjulmaerker(){ const c=cur(); c.indst={ ...(c.indst||{}), skjulLaasteMaerker:!indst(c).skjulLaasteMaerker }; save(); render(); },
   guide(){ visGuide(); },
   matinfo(d){ visMatInfo(d.m); },
   vognvaelg(d){ const k=+d.k; lejrValg = lejrValg && lejrValg.type==="vogn" && lejrValg.k===k ? null : { type:"vogn", k }; if(lejrValg) lejrArk=null; render(); },
