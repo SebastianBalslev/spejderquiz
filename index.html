@@ -365,6 +365,8 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .celle.forbudt{box-shadow:inset 0 0 0 3px #c62828;background:#e9b3a8 !important}
 .bcell.emnelaas{opacity:.7}.bcell.emnelaas small{color:#7a4b12;font-weight:700}.lejrlaaskort{background:#f1e2c3;color:#7a4b12;font-weight:700}
 .lvlrow .lejrlaas{color:#7a4b12;font-weight:800;font-size:12px;white-space:nowrap}.nytliste{text-align:left;font-size:15px;display:flex;flex-direction:column;gap:4px}
+button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
+.matinfo .matik{width:56px;height:56px}.matinfo h3{margin:14px 0 6px;font-size:16px;color:var(--forest)}.matinfo ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}.matinfo p{font-size:15px}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -8346,11 +8348,47 @@ function arbejdeHTML(c){
 function merTekst(kort, mere){
   return `<details class="mertekst"><summary><span>${kort}</span> <u>Læs mere</u></summary><p>${mere}</p></details>`;
 }
+// Sådan skaffer man hvert materiale (vises, når man trykker på det på lageret). Tallene hentes fra JOB, så de altid passer.
+function matSkaf(c, m){
+  const J=JOB, v=EMNE.vaerktoej.navn, kn=EMNE.knob.navn;
+  return {
+    granstamme: { hvordan:[`Byg et <b>grantræ</b> på lejrpladsen (kræver intet mærke).`, `Giv en spejder jobbet »${J.faeldGran.navn}« – det kræver ${v} i bronze. Du kan også trykke direkte på træet.`, `Træet gror selv op igen, og et træ på højere niveau giver flere stammer.`],
+      bruges:`Afgrenes til rafter.` },
+    loevstamme: { hvordan:[`Byg et <b>løvtræ</b> på lejrpladsen (kræver intet mærke).`, `Giv en spejder jobbet »${J.faeldLoev.navn}« – det kræver ${v} i bronze. Du kan også trykke direkte på træet.`, `Træet gror selv op igen, og et træ på højere niveau giver flere stammer.`],
+      bruges:`Kløves til brænde på huggepladsen.` },
+    rafter: { hvordan:[`Skaf en granstamme (fæld et grantræ).`, `Giv en spejder jobbet »${J.afgren.navn}«: ${matTekst(J.afgren.bruger)} → ${matTekst(J.afgren.giver)}.`, `En <b>afgreningsstation</b> giver flere rafter pr. stamme.`],
+      bruges:`De fleste bygninger og opgraderinger.` },
+    braende: { hvordan:[`Skaf en løvstamme (fæld et løvtræ).`, `Byg en <b>huggeplads</b>, og giv en spejder jobbet »${J.kloev.navn}«: ${matTekst(J.kloev.bruger)} → ${matTekst(J.kloev.giver)}. Det kræver ${v} i bronze.`, `Højere niveau på huggepladsen giver mere brænde og går hurtigere.`],
+      bruges:`Bålpladsen, madlavning, snobrød, signalbålet og nogle bygninger.` },
+    fibre: { hvordan:[`Giv en spejder jobbet »${J.fibre.navn}« – det kræver intet: ${matTekst(J.fibre.giver)}.`],
+      bruges:`Snos til tovværk (utaklede reb).` },
+    rebraa: { hvordan:[`Saml plantefibre (»${J.fibre.navn}«).`, `Giv en spejder jobbet »${J.sno.navn}«: ${matTekst(J.sno.bruger)} → ${matTekst(J.sno.giver)}.`, `En <b>rebslåningsmaskine</b> gør det hurtigere og giver mere reb.`],
+      bruges:`Takles til taklede reb.` },
+    reb: { hvordan:[`Sno tovværk, så du har utaklede reb.`, `Giv en spejder jobbet »${J.takle.navn}«: ${matTekst(J.takle.bruger)} → ${matTekst(J.takle.giver)}. Det kræver ${kn} i bronze.`],
+      bruges:`Pionering og mange bygninger og opgraderinger.` },
+    mad: { hvordan:[`Byg et <b>lejrkøkken</b> (ved en bålplads), og giv en spejder jobbet »${J.madlav.navn}«: ${matTekst(J.madlav.bruger)} → ${matTekst(J.madlav.giver)}.`,
+        `Byg en <b>bagerovn</b>, og giv en spejder jobbet »${J.bag.navn}«: ${matTekst(J.bag.bruger)} → ${matTekst(J.bag.giver)}.`,
+        `Bag snobrød over bålpladsen: ${SNOBROED_BRAENDE} brænde → 1 portion mad.`, `Pluk vilde kantareller og blåbær, der vokser på tomme græsfelter (kræver ${EMNE.planter.navn}).`],
+      bruges:`Fællesspisning i spiseteltet, tømmerflåden og opgraderinger fra niveau 6.` },
+  }[m];
+}
+function visMatInfo(m){
+  const c=cur(), l=lager(c), x=matSkaf(c,m), byg=LAGER_BYG[m] && BYGID[LAGER_BYG[m]];
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal matinfo"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+    <div class="center">${matIkon(m)}<h2 style="margin:4px 0">${MATFLERTAL[m][0].toUpperCase()+MATFLERTAL[m].slice(1)}</h2>
+    <p class="muted" style="margin:0">På lager: <b>${l[m]||0}</b>${byg?` af ${lagerPlads(c,m)} – opbevares i ${{ raftegaard:"raftegården", braendeskur:"brændeskuret", materialeskur:"materialeskuret", jordkoeleskab:"jordkøleskabet" }[byg.id]}${bygNiv(c,byg.id)?` (niveau ${bygNiv(c,byg.id)})`:" (ikke bygget endnu)"}`:" – ingen grænse"}</p></div>
+    <h3>🛠️ Sådan skaffer du ${MATFLERTAL[m]}</h3><ol>${x.hvordan.map(t=>`<li>${t}</li>`).join("")}</ol>
+    <h3>📦 Bruges til</h3><p>${x.bruges}</p>
+    ${byg?`<p class="muted psmall">Er lageret fuldt, går det, der ikke er plads til, tabt. ${lagerTip(m)}</p>`:""}
+    <button class="btn" id="m-job">👥 Giv patruljen et job</button></div></div>`;
+  modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
+  modalRoot.querySelector("#m-job").onclick=()=>{ modalRoot.innerHTML=""; lejrArk="patrulje"; render(); };
+}
 // Panelet »Lager«
 function lagerHTML(c){
   const l=lager(c);
-  return `${merTekst("Det har patruljen på lager.", `Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde, ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad. Byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.`)}
-    <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<span class="lagerchip ${lagerFuldt(c,m)?"fuld":""}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></span>`).join("")}</div></div>`;
+  return `${merTekst("Det har patruljen på lager. Tryk på et materiale for at se, hvordan I skaffer det.", `Lageret har plads til ${lagerPlads(c,"rafter")} rafter, ${lagerPlads(c,"braende")} brænde, ${lagerPlads(c,"reb")} reb og ${lagerPlads(c,"mad")} portioner mad. Byg og opgrader raftegården, brændeskuret, materialeskuret og jordkøleskabet for at få mere plads.`)}
+    <div class="card lagerkort"><div class="lagerliste">${Object.keys(MAT).map(m=>`<button class="lagerchip ${lagerFuldt(c,m)?"fuld":""}" data-a="matinfo" data-m="${m}" aria-label="Sådan skaffer du ${MATFLERTAL[m]}">${matIkon(m)}<b>${l[m]||0}${LAGER_BYG[m]?`<small class="af">/${lagerPlads(c,m)}</small>`:""}</b><small>${MATFLERTAL[m].replace("stammer","&shy;stammer")}</small></button>`).join("")}</div></div>`;
 }
 function visJobValg(id, kunTrae, kunJob){
   const c=cur(), m=state.chars.find(x=>x.id===id); if(!m) return;
@@ -10686,6 +10724,7 @@ const actions = {
     visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
   bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrskilt(){ visLejrSkilt(); },
+  matinfo(d){ visMatInfo(d.m); },
   vognvaelg(d){ const k=+d.k; lejrValg = lejrValg && lejrValg.type==="vogn" && lejrValg.k===k ? null : { type:"vogn", k }; if(lejrValg) lejrArk=null; render(); },
   // ---- Nye aktiviteter på lejrpladsen (se AKT_NY) ----
   totemspg(){ const c=cur(); if(dagForsoegt(c,"totempael")) return; const q=emneSpg(c,"dyr","totem");
