@@ -96,7 +96,7 @@ Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens større
 | 60 | Jamboree | 14 × 6 | 14 | 75 | guld | 160 | 7 |
 | 100 | Verdensjamboree | 16 × 6 | 16 | 99 | guld | 200 | 7 |
 
-- Pladsen er 6 felter bred fra Tropslejr og vokser nedad. Søen ligger i øverste højre hjørne: (0,2) på 3 × 3, (0,2), (0,3) og (1,3) på 4 × 4 og 2 × 3 felter fra 6 × 6. Derefter løber den som en å ned langs højre kant – 2 felter pr. 2 nye rækker (`vandSaet`).
+- Pladsen er 6 felter bred fra Tropslejr og vokser nedad. Søen ligger i øverste højre hjørne: (0,2) på 3 × 3, (0,2), (0,3) og (1,3) på 4 × 4 og 2 × 3 felter fra 6 × 6. Derefter løber den som en å ned langs højre kant – 2 felter pr. 2 nye rækker (`vandMoenster`). Når pladsen udvides, bliver et felt, der var land, aldrig til vand (`vandSaet` sørger for det, også hvis mønsteret ændres). Kun feltet (0,2) går fra sø til land, når pladsen bliver 6 × 6.
 - Et felt gemmes som (række, kolonne) i ét tal: række × 6 + kolonne (`felt`, `feltR`, `feltK`), så placeringerne står fast, når pladsen vokser. Størrelse og vand regnes ud fra lejrniveauet (`lejrStr`, `lejrKol`, `lejrRaekker`, `erVand`).
 - Når pladsen vokser, popper de nye felter frem med en animation.
 - **Materielvognen** (`vogn`) er et lager uden for pladsen. Bygninger, der ikke kan stå på pladsen (uden for pladsen eller på et felt, der er blevet til vand), pakkes ned med niveau, opgradering og byggetid intakt (`tilpasLejr`, `pakNed`) og står øverst i Byg-panelet, hvor de kan stilles ud igen (`stilUd`).
