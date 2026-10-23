@@ -362,6 +362,7 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .lejrmap.k3{max-width:330px;margin:0 auto}.lejrmap.k4{max-width:400px;margin:0 auto}
 .celle.udvidet{animation:udvid .7s cubic-bezier(.2,1.4,.4,1) both;animation-delay:.35s}@keyframes udvid{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
 .vogn{background:#efe2c4;border-radius:14px;padding:10px;margin-bottom:12px}
+.celle.forbudt{box-shadow:inset 0 0 0 3px #c62828;background:#e9b3a8 !important}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -7172,7 +7173,7 @@ function scrLejr(){
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":lejrValg.type==="vogn"?"Stil ud":"Flyt"}: ${valgt.navn}</b>
-      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}.${opg?" Bagefter skal du binde besnøringerne.":""}</small></div>
+      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}. Røde felter bryder en placeringsregel – tryk på dem for at se hvorfor.${opg?" Bagefter skal du binde besnøringerne.":""}</small></div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
@@ -7180,7 +7181,7 @@ function scrLejr(){
   for(const i of lejrAlleFelter(c)){
     const r=feltR(i), k=feltK(i), b=BYGID[felter[i]];
     let cls = erVand(i) ? "vand" : ((r+k)%2 ? "a" : "b");
-    if(valgt && !b && kanStaa(valgt,i)) cls += " kan";
+    if(valgt && !b && kanStaa(valgt,i)) cls += nyeBrud(c, valgt.id, i, lejrValg.type==="flyt"?lejrValg.idx:null).length ? " forbudt" : " kan";
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
     if(lejrNy===i) cls += " ny";
     if(udv && (r>=udv.r || k>=udv.k)) cls += " udvidet";
@@ -7324,18 +7325,21 @@ function lejrCelle(i){
     if(i===lejrValg.idx){ lejrValg=null; render(); return; }
     if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
     if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    const brud=nyeBrud(c,b.id,i,lejrValg.idx); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     flytFelt(c,lejrValg.idx,i); lejrValg=null; lejrNy=i; save(); render(); return;
   }
   if(lejrValg && lejrValg.type==="vogn"){
     const v=vogn(c)[lejrValg.k], b=v && BYGID[v.id]; if(!b){ lejrValg=null; render(); return; }
     if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
     if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    const brud=nyeBrud(c,b.id,i); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     stilUd(c, lejrValg.k, i); lejrValg=null; lejrNy=i; save(); render(); lejrToast(`🚚 ${b.navn} er stillet ud igen.`); return;
   }
   if(lejrValg && lejrValg.type==="ny"){
     const b=BYGID[lejrValg.id];
     if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
     if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    const brud=nyeBrud(c,b.id,i); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     if(lejrPoint(c) < b.pris || !harMat(c,BYGMAT[b.id])){ lejrValg=null; render(); return; }
     lejrValg=null;
     if(OPGAVER[b.id]){ bygOpg={ id:b.id, idx:i, bundet:{}, valgt:null, fejl:0 }; go("byg"); return; }
@@ -7344,6 +7348,7 @@ function lejrCelle(i){
     return;
   }
   if(her) return visFeltMenu(i);
+  if(lejrValg) return;
   if(plukVild(c,i)) return;
   // Et tomt felt åbner Byg-panelet – på søen med kategorien Vand
   lejrArk = "byg"; if(erVand(i)) lejrKat = "vand";
@@ -7387,13 +7392,14 @@ function visFeltMenu(i){
   if(!bygger && harNivEffekt(her)) knapper += `<button class="btn secondary" id="m-nivoversigt">📈 Se, hvad hvert niveau giver</button>`;
   if(!bygger) knapper += opgHTML(c, i);
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
-  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
+  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn secondary" id="m-pak">🚚 Pak ned</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
     <small class="muted">${rivTekst(inv)}</small>`;
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
     <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?(c.lejrOpg[i]?`Patruljen opgraderer til niveau ${c.lejrOpg[i]}.`:"Patruljen er i gang med at bygge."):her.besk}</p>${knapper}</div></div>`;
   const $=s=>modalRoot.querySelector(s);
   $("#m-luk").onclick=luk;
   $("#m-flyt").onclick=()=>{ luk(); lejrValg={type:"flyt",idx:i}; render(); };
+  $("#m-pak").onclick=()=>{ const brud=nyeBrud(c,null,i); if(brud.length){ lejrToast(brudTekst(brud)); return; } luk(); pakNed(c,i); save(); render(); lejrToast(`🚚 ${her.navn} er pakket i materielvognen. Stil den ud igen under Byg.`); };
   if($("#m-opg")) $("#m-opg").onclick=()=>{ luk(); opgrader(c,i); };
   if($("#m-nivoversigt")) $("#m-nivoversigt").onclick=()=>visNivOversigt(i);
   if($("#m-faeld")) $("#m-faeld").onclick=()=>visFaeld(i);
@@ -7403,7 +7409,7 @@ function visFeltMenu(i){
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
   if($("#m-flaadetur")) $("#m-flaadetur").onclick=()=>{ luk(); startFlaadetur(); };
   if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
-  $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
+  $("#m-riv").onclick=()=>{ const brud=nyeBrud(c,null,i); if(brud.length){ lejrToast(brudTekst(brud)); return; } luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-rek")) $("#m-rek").onclick=()=>visReklame(()=>{ c.lejrRek=c.lejrRek||{}; c.lejrRek[i]=true; halverTid(c.lejrTid,i); save(); render(); lejrToast("⏩ Tiden er halveret!"); });
@@ -8617,23 +8623,41 @@ function vandFelter(c){ return lejrAlleFelter(c).filter(i=>erVand(i,c)); }
 function minAfst(a, liste){ return liste.length ? Math.min(...liste.map(b=>feltAfst(a,b))) : Infinity; }
 function erKant(c,i){ const s=lejrStr(c), r=feltR(i), k=feltK(i); return k===0 || k===s.k-1 || r===0 || r===s.r-1; }
 const BAAL_IDS = ["baal","lejrbaal","signalbaal"];
-// Lejrinspektionen. Hver opfyldt regel giver INSP_PCT % ekstra XP (højst INSP_MAKS %).
+/* ---------- Placeringsregler (gælder altid – nabo betyder også på skrå) ----------
+   ikke: bygninger i a må ikke være nabo til bygninger i b ("VAND" = søen og åen).
+   skal: bygninger i a skal være nabo til mindst én bygning i b. */
+const TELTE = ["telt","patruljetelt","spisetelt","jamboree"], HYTTER = ["hytte","traehytte","shelter"], TRAEER = ["gran","loevtrae","kongeeg"];
 const INSPEKTION = [
-  { id:"latrin", navn:"Latrinen ligger mindst 3 felter fra køkken og sø", tip:"Byg en latrin, og flyt den mindst 3 felter væk fra lejrkøkkenet og søen.",
-    ok:c=>{ const l=bygFelter(c,"latrin"), fra=[...bygFelter(c,"koekken"), ...vandFelter()]; return l.length>0 && l.every(i=>minAfst(i,fra)>=3); } },
-  { id:"baal", navn:"Bålet ligger mindst 2 felter fra teltene", tip:"Gnister kan brænde hul i teltdug. Flyt bålet mindst 2 felter væk fra alle telte.",
-    ok:c=>{ const b=bygFelter(c,BAAL_IDS), t=bygFelter(c,TELT_IDS); return b.length>0 && b.every(i=>minAfst(i,t)>=2); } },
-  { id:"fh", navn:"Der er en førstehjælpsstation", tip:"Byg en førstehjælpsstation (kræver Førstehjælp i bronze).",
-    ok:c=>bygFelter(c,"forstehjalp").length>0 },
-  { id:"vand", navn:"Der er rent vand – en vandstation eller køkkenet tæt ved søen", tip:"Byg en vandstation, eller læg lejrkøkkenet højst 2 felter fra søen.",
-    ok:c=>bygFelter(c,"vandstation").length>0 || bygFelter(c,"koekken").some(i=>minAfst(i,vandFelter())<=2) },
-  { id:"braende", navn:"Brændeskuret ligger højst 2 felter fra bålet", tip:"Læg brændeskuret tæt ved bålet, så brændet er lige ved hånden.",
-    ok:c=>{ const s=bygFelter(c,"braendeskur"), b=bygFelter(c,BAAL_IDS); return s.length>0 && s.some(i=>minAfst(i,b)<=2); } },
-  { id:"flag", navn:"Flaget er hejst", tip:"Byg en flagstang (kræver Spejderhistorie i bronze).",
-    ok:c=>bygFelter(c,"flag").length>0 },
-  { id:"port", navn:"Lejrporten står i kanten af pladsen", tip:"Byg en lejrport, og flyt den ud til kanten, så den er indgangen til lejren.",
-    ok:c=>bygFelter(c,"port").some(i=>erKant(c,i)) },
+  { id:"baal", type:"ikke", a:BAAL_IDS, b:[...TELTE, ...HYTTER, ...TRAEER], navn:"Bål må ikke ligge ved telte, hytter eller træer",
+    forkl:"Gnister fra bålet kan brænde hul i teltdug og sætte ild i hytter og træer. Hold mindst ét felt fri imellem." },
+  { id:"latrin", type:"ikke", a:["latrin"], b:[...TELTE, "koekken", "VAND"], navn:"Latrinen må ikke ligge ved telte, køkken eller vand",
+    forkl:"Af hensyn til hygiejne og lugt skal latrinen ligge et stykke fra der, hvor I sover, laver mad og henter vand." },
+  { id:"koekken", type:"skal", a:["koekken"], b:["baal"], navn:"Lejrkøkkenet skal ligge ved en bålplads",
+    forkl:"Maden laves over bålet, så køkkenet skal ligge lige ved siden af en bålplads." },
+  { id:"braende", type:"ikke", a:["braendeskur"], b:BAAL_IDS, navn:"Brændeskuret må ikke ligge ved et bål",
+    forkl:"Brændet må ikke ligge, hvor gnister fra bålet kan tænde det. Hent hellere et par stykker ad gangen." },
+  { id:"hugge", type:"ikke", a:["huggeplads"], b:TELTE, navn:"Huggepladsen må ikke ligge ved telte",
+    forkl:"Økser og splinter skal holdes væk fra teltene, hvor folk går og sover." },
+  { id:"telt", type:"ikke", a:TELTE, b:["VAND"], navn:"Telte må ikke stå ved vandet",
+    forkl:"Ved søen er jorden fugtig, og man kan falde i vandet, når man går ud om natten." },
 ];
+// Alle brud på reglerne på en plads (kort: felt → bygnings-id). Hvert brud har en nøgle, så nye brud kan findes.
+function regelBrudKort(c, kort){
+  const brud=[], har=(j,ids)=>ids.includes("VAND") && erVand(j,c) || ids.includes(kort[j]);
+  Object.keys(kort).map(Number).forEach(i=>{ const id=kort[i];
+    INSPEKTION.forEach(r=>{ if(!r.a.includes(id)) return; const nb=naboer(i,c);
+      if(r.type==="ikke") nb.filter(j=>har(j,r.b)).forEach(j=>brud.push({ r, i, j, n:`${r.id}:${i}:${j}` }));
+      else if(!nb.some(j=>har(j,r.b))) brud.push({ r, i, n:`${r.id}:${i}` }); }); });
+  return brud;
+}
+// De regler, der bliver brudt, hvis bygningen id stilles på felt i (og evt. flyttes fra felt fra)
+function nyeBrud(c, id, i, fra){
+  const kort={ ...lejrFelter(c) }; const for_=new Set(regelBrudKort(c,kort).map(x=>x.n));
+  if(fra!=null) delete kort[fra]; if(id) kort[i]=id; else delete kort[i];
+  const set=new Map(); regelBrudKort(c,kort).filter(x=>!for_.has(x.n)).forEach(x=>set.set(x.r.id,x.r));
+  return [...set.values()];
+}
+function brudTekst(liste){ const r=liste[0]; return `🚫 <b>${r.navn}.</b> ${r.forkl}`; }
 function saetKomplet(c, s){ return s.ting.every(id=>bygFelter(c,id).length>0); }
 // Alle XP og hvor de kommer fra
 function lejrXP(c){
@@ -8737,6 +8761,8 @@ function visLejrSkilt(){
     ${nt?`<h3>${nt.ikon} Milepæl til ${nt.navn} (niveau ${nt.niv})</h3>
       <ul class="insp">${mil.map(p=>`<li class="${p.ok?"ok":""}">${p.ok?"✅":"❌"} <b>${p.tekst}</b><small>Nu: ${p.nu}${p.ok?"":` · kræver ${p.krav}`}</small></li>`).join("")}</ul>
       ${mil.every(p=>p.ok)?"":`<p class="muted psmall">Uden milepælen stopper lejrpladsen på niveau ${nt.niv-1}, og XP gemmes op, til den er klaret.</p>`}`:""}
+    <h3>📏 Placeringsregler</h3>
+    <ul class="insp">${INSPEKTION.map(r=>`<li>${r.type==="skal"?"✅":"🚫"} <b>${r.navn}</b><small>${r.forkl}</small></li>`).join("")}</ul>
     <h3>🧩 Sæt</h3>
     <ul class="insp saet">${LEJR_SAET.map(s=>{ const har=s.ting.filter(id=>bygFelter(c,id).length>0).length, ok=har===s.ting.length;
       return `<li class="${ok?"ok":""}">${ok?"✅":s.ikon} <b>${s.navn}</b> <small>${har}/${s.ting.length}: ${s.ting.map(id=>{ const b=BYGID[id]; return b ? (bygFelter(c,id).length?`<s>${b.navn}</s>`:b.navn) : id; }).join(", ")}</small></li>`; }).join("")}</ul>
@@ -8777,6 +8803,9 @@ function tilpasLejr(c){
   Object.keys(f).map(Number).sort((a,b)=>a-b).forEach(i=>{ const b=BYGID[f[i]];
     if(!b){ sletFelt(c,i); return; }
     if(!kanStaa(b,i,c)){ pakNed(c,i); pakket.push(b.navn); } });
+  // Regelbrud: den senere af to bygninger, der ikke må stå sammen, pakkes ned (og køkkener uden bål)
+  for(let n=0;n<50;n++){ const brud=regelBrudKort(c,{ ...f }); if(!brud.length) break;
+    const x=brud[0], i=x.j!=null ? Math.max(x.i,x.j) : x.i; if(x.j!=null && erVand(x.j,c)){ pakket.push(BYGID[f[x.i]].navn); pakNed(c,x.i); } else { pakket.push(BYGID[f[i]].navn); pakNed(c,i); } }
   if(!pakket.length) return;
   save();
   const tekst=`🚚 ${pakket.length===1?`${pakket[0]} kunne ikke stå på pladsen og er`:`${pakket.length} bygninger kunne ikke stå på pladsen og er`} pakket i materielvognen. Stil ${pakket.length===1?"den":"dem"} ud igen under Byg.`;
@@ -10584,6 +10613,7 @@ const actions = {
   bygstart(){
     const c=cur(), o=bygOpg, b=BYGID[o.id];
     if(lejrFelter(c)[o.idx] || lejrPoint(c)<b.pris || !harMat(c,BYGMAT[b.id])){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
+    const brud=nyeBrud(c,b.id,o.idx); if(brud.length){ go("lejr"); lejrToast(brudTekst(brud)); return; }
     placer(c,o.idx,b); lejrNy=o.idx; go("lejr"); vibrer([40,30,80]);
     lejrToast(`🏗️ Besnøringerne holder! Patruljen bygger ${b.navn} – færdig om ${tidTekst(BYGTID[b.id]||0)}.`);
   },

@@ -61,7 +61,7 @@ Scriptet lister de spørgsmål, hvor det rigtige svar er markant længere end de
 - **Tømmerflåden og mærket »24 timer på tømmerflåde«:** tømmerflåden kræver både Vand og sejlads i guld og Knob og reb i guld (`ekstraKrav` giver en ting flere mærkekrav), koster 250 point, 100 rafter, 50 reb, 10 brænde og 20 portioner mad og tager 10 timer at bygge (man skal have lagerplads til materialerne). Man kan kun have én. Tryk på flåden for at tage på en 24 timers tur med alle 5 i patruljen – alle skal være ledige. Turen varer altid 24 timer – den kan ikke halveres med en reklame – og giver 1.500 point (`FLAADE_POINT`), og første gang får man det særlige mærke »24 timer på tømmerflåde«. Særlige mærker står i `SAERMAERKER`, gemmes i `saermaerker` på spejderen, vises under »Særlige mærker« på mærkesiden og sidder på uniformens højre ærme.
 
 ## Lejrniveau (1-100)
-Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen (trin-ikon, titel, niveau og XP-bjælke). Tryk på skiltet for at se XP-fordelingen, lejrinspektionen med tips, næste milepæl og hvad næste niveau låser op. Patruljesiden viser lejrniveauet ved hvert medlem.
+Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen (trin-ikon, titel, niveau og XP-bjælke). Tryk på skiltet for at se XP-fordelingen, milepælen med ✅/❌, placeringsreglerne og hvad næste niveau låser op. Patruljesiden viser lejrniveauet ved hvert medlem.
 
 - **Lejr-XP** regnes hver gang ud fra pladsen og mærkerne (`lejrXP`): hver færdig bygning (også i materielvognen) giver (pris + pointprisen for alle dens opgraderinger) / 10, hver forskellig slags bygning giver 50 XP (`LEJR_XP_BREDDE`), hvert komplet sæt i `LEJR_SAET` giver 150 XP (`LEJR_XP_SAET`), og hvert emne giver 30 / 60 / 100 XP for bronze / sølv / guld (`LEJR_XP_MAERKE`).
 - **XP-krav** (`LEJR_XP_ANKER`, `lejrXPKrav`): niveau 2-4 = 100, 200, 300 · 5 = 400 · 10 = 1.600 · 20 = 6.400 · 30 = 14.400 · 45 = 23.000 · 60 = 33.000 · 100 = 67.000, med geometrisk interpolation mellem ankrene, afrundet til nærmeste 10.
@@ -112,6 +112,17 @@ Aktiviteterne står i `AKT_NY` (scene og knapper) og i `AKT_FOR` (knappen på by
 - **Flagallé** (niv 65, Historie guld): viser de indsamlede flag.
 - **Fyrtårn** (niv 90, Koder guld, ved søen): »Natsignaler« – send dagens ord i morse til skibet på søen. Fyret er tændt fra kl. 17 til 7.
 - **Lande** (`LANDE`, 32 lande): navn, flag og et spørgsmål med det rigtige svar først og en forklaring. Bruges af jamboreen, flagalléen og lejrradioen. Milepælen til Verdensjamboree kræver alle landes flag i flagalléen.
+
+### Placeringsregler og materielvogn
+Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
+- a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).
+- b) Latrinen må ikke være nabo til telte, lejrkøkkenet, spiseteltet eller vand.
+- c) Lejrkøkkenet skal være nabo til en bålplads.
+- d) Brændeskuret må ikke være nabo til et bål.
+- e) Huggepladsen må ikke være nabo til telte.
+- f) Telte må ikke være nabo til vand.
+
+Når man bygger, flytter eller stiller noget ud, er de forbudte felter røde, og et tryk på et rødt felt viser reglen og en kort spejderforklaring (`nyeBrud`, `brudTekst`). Man kan ikke bygge, flytte, pakke ned eller rive ned, hvis det bryder en regel (fx en bålplads, som et køkken står ved). Alt kan pakkes i **materielvognen** fra bygningens menu (»🚚 Pak ned«). Bygninger fra gamle spil, der bryder en regel, pakkes automatisk ned (`tilpasLejr`).
 
 ### Oprydning i bygningerne
 Nogle bygninger er fjernet eller lagt sammen (`GAMMEL`, `FJERNET` og `FLET`). Gemte spil ryddes op én gang (`migrerLejr`, styret af `lejrV`), og spilleren får én samlet besked:
