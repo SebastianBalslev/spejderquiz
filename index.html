@@ -7421,8 +7421,10 @@ function visFeltMenu(i){
   if(!bygger && harNivEffekt(her)) knapper += `<button class="btn secondary" id="m-nivoversigt">📈 Se, hvad hvert niveau giver</button>`;
   if(!bygger) knapper += opgHTML(c, i);
   const inv = c.lejrInv[i] || { p:her.pris, m:BYGMAT[her.id]||{} };
-  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv">🔨 Riv ned</button></div>
-    <small class="muted">${rivTekst(inv)}</small>`;
+  // Et træ, der gror op igen eller bliver fældet, kan ikke fjernes (ellers kunne man rive det ned og plante et nyt, der er klar med det samme)
+  const traeLaast = traeType(her.id) && (traeVokser(c,i) || traeFaeldes(c,i));
+  knapper += `<div class="row"><button class="btn secondary" id="m-flyt">↔️ Flyt</button><button class="btn earth" id="m-riv" ${traeLaast?"disabled":""}>🔨 Riv ned</button></div>
+    <small class="muted">${traeLaast ? `🌱 Træet kan først fjernes, når det er groet op igen.` : rivTekst(inv)}</small>`;
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="bigik ${bygger?"bygger":""}">${bygIkon(her, lejrNiv(c,i))}</div>
     <h2 style="margin-top:6px">${her.navn}${bygger?" 🚧":""}</h2><p class="muted" style="font-size:16px">${bygger?(c.lejrOpg[i]?`Patruljen opgraderer til niveau ${c.lejrOpg[i]}.`:"Patruljen er i gang med at bygge."):her.besk}</p>${knapper}</div></div>`;
   const $=s=>modalRoot.querySelector(s);
@@ -7437,7 +7439,7 @@ function visFeltMenu(i){
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
   if($("#m-flaadetur")) $("#m-flaadetur").onclick=()=>{ luk(); startFlaadetur(); };
   if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
-  $("#m-riv").onclick=()=>{ const brud=nyeBrud(c,null,i); if(brud.length){ lejrToast(brudTekst(brud)); return; } luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
+  $("#m-riv").onclick=()=>{ if(traeLaast){ lejrToast("🌱 Træet kan først fjernes, når det er groet op igen."); return; } const brud=nyeBrud(c,null,i); if(brud.length){ lejrToast(brudTekst(brud)); return; } luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
   if($("#m-ind")) $("#m-ind").onclick=()=>{ luk(); teltValg=null; go("telt",{i}); };
   if($("#m-rek")) $("#m-rek").onclick=()=>visReklame(()=>{ c.lejrRek=c.lejrRek||{}; c.lejrRek[i]=true; halverTid(c.lejrTid,i); save(); render(); lejrToast("⏩ Tiden er halveret!"); });
