@@ -7288,7 +7288,9 @@ function lejrCelle(i){
     return;
   }
   if(her) return visFeltMenu(i);
-  lejrToast(erVand(i) ? "Det er søen. Her kan du sætte kano, badebro og sejlbåd." : "Vælg noget fra byggelisten nedenfor, og tryk så her.");
+  // Et tomt felt åbner Byg-panelet – på søen med kategorien Vand
+  lejrArk = "byg"; if(erVand(i)) lejrKat = "vand";
+  render();
 }
 
 // Bygninger med et job, man kan starte direkte fra bygningen
@@ -9347,8 +9349,7 @@ const SAERMAERKER = {
         <path d="M6 10 Q8 -8 22 -8 Q34 -6 34 10Z" fill="#5fae74"/><path d="M20 -8 V10 M14 -2 H24" fill="none"/>
         <path d="M-12 10 Q-14 3 -10 -1 Q-9 3 -7 1 Q-6 -3 -4 -4 Q-1 2 -3 10Z" fill="#e2352b"/></g>
       <text x="0" y="-26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2b3a3a" font-family="system-ui,sans-serif">24 timer på</text>
-      <text x="0" y="-15" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2b3a3a" font-family="system-ui,sans-serif">tømmerflåde</text>
-      <text x="-13" y="41" text-anchor="middle" font-size="9" font-weight="800" fill="#1d2a2a" font-family="system-ui,sans-serif">X</text></g>
+      <text x="0" y="-15" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2b3a3a" font-family="system-ui,sans-serif">tømmerflåde</text></g>
       <circle r="45" fill="none" stroke="#5b3a24" stroke-width="5"/>` }
 };
 function harSaerMaerke(c, id){ return !!(c.saermaerker||{})[id]; }
