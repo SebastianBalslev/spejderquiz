@@ -367,6 +367,11 @@ body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px
 .lvlrow .lejrlaas{color:#7a4b12;font-weight:800;font-size:12px;white-space:nowrap}.nytliste{text-align:left;font-size:15px;display:flex;flex-direction:column;gap:4px}
 button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 .matinfo .matik{width:56px;height:56px}.matinfo h3{margin:14px 0 6px;font-size:16px;color:var(--forest)}.matinfo ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}.matinfo p{font-size:15px}
+.guidebar{display:flex;align-items:center;gap:8px;width:100%;max-width:420px;border:2px solid #e2c56b;background:#fff7d6;color:var(--ink);border-radius:14px;padding:7px 12px;font:inherit;font-size:14.5px;text-align:left;cursor:pointer;animation:guidepuls 2.6s ease-in-out infinite}
+.guidebar span:nth-child(2){flex:1;min-width:0}.guidebar .pil{font-size:22px;color:#b07a1a}@keyframes guidepuls{50%{box-shadow:0 0 0 4px rgba(242,201,76,.35)}}
+.guide{text-align:left}.guideliste{padding-left:4px;list-style:none;margin:6px 0;display:flex;flex-direction:column;gap:4px;font-size:14.5px}.guideliste li.ok{opacity:.6}.guideliste li.nu{font-weight:800}
+.guidenu{background:#fff7d6;border-radius:14px;padding:10px 12px;margin:10px 0}.guidenu p{margin:6px 0;font-size:15px}.guidenu .mangler{color:#b3261e}
+.lageradv{display:block;color:#b3261e;font-weight:700;font-size:12.5px}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
@@ -7121,6 +7126,7 @@ let bygOpg = null;     // igangværende besnøringsopgave
 let lejrUr = null;     // opdaterer byggetider på skærmen
 let lejrKat = "alle";  // valgt kategori i byggelisten
 let lejrArk = null;
+let lejrVisLaaste = false;   // byggelisten viser låste ting (ellers kun det, man kan bygge)
 let lejrUdvid = null;  // pladsens gamle størrelse, når den lige er vokset (til animationen)    // åbent panel på lejrpladsen: "byg", "patrulje", "lager" eller null
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
@@ -7176,7 +7182,7 @@ function scrLejr(){
   fuldfoerByg(c); tjekArbejde(c); opdaterLejrNiv(c); tilpasLejr(c); delete c.lejrPakTjek; vildVaekst(c);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : lejrValg.type==="vogn" ? BYGID[(vogn(c)[lejrValg.k]||{}).id] : BYGID[felter[lejrValg.idx]]);
   const l=lager(c);
-  let h = `<div class="lejrtop">${lejrSkiltHTML(c)}
+  let h = `<div class="lejrtop">${lejrSkiltHTML(c)}${guideBarHTML(c)}
     <div class="lejrinfo"><span class="chip">🪙 <b>${fmt(ledig)}</b></span><span class="chip">${matIkon("rafter","lille")} ${l.rafter||0}</span><span class="chip">${matIkon("braende","lille")} ${l.braende||0}</span><span class="chip">${matIkon("reb","lille")} ${l.reb||0}</span><span class="chip">${matIkon("mad","lille")} ${l.mad||0}</span></div></div>`;
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
@@ -7241,10 +7247,16 @@ function byggelisteHTML(c){
   if(!kats.some(k=>k.id===lejrKat)) lejrKat="alle";
   let h = vognHTML(c) + `${merTekst("Vælg en ting, og tryk på et felt.", `Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.`)}
     <div class="katvalg" role="tablist">${[{id:"alle",ikon:"📋",navn:"Alle"},...kats].map(k=>`<button role="tab" aria-selected="${lejrKat===k.id}" class="${lejrKat===k.id?"on":""}" data-a="bygkat" data-v="${k.id}">${k.ikon} ${k.navn}</button>`).join("")}</div>`;
+  // Normalt vises kun det, man kan bygge (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én)
+  const kanByg = b => harKrav(c,b) && harLejrNiv(c,b) && !(b.en && bygget.has(b.id));
+  let skjult=0, vist=0;
   for(const k of kats){
     if(lejrKat!=="alle" && lejrKat!==k.id) continue;
+    const ting=k.ting.map(id=>BYGID[id]).filter(Boolean), synlige=lejrVisLaaste ? ting : ting.filter(kanByg);
+    skjult += ting.length-synlige.length; vist += synlige.length;
+    if(!synlige.length) continue;
     h += `<h3 class="kathead">${k.ikon} ${k.navn}</h3><div class="shop">`;
-  for(const b of k.ting.map(id=>BYGID[id]).filter(Boolean)){
+  for(const b of synlige){
     const lnOk=harLejrNiv(c,b), ok=harKrav(c,b) && lnOk, raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
     // Ting, man kun kan have én af, viser, at de allerede står på lejrpladsen
     if(b.en && bygget.has(b.id)){
@@ -7259,6 +7271,8 @@ function byggelisteHTML(c){
   }
     h += `</div>`;
   }
+  if(!vist) h += `<p class="muted center" style="margin:16px 0">Der er ikke noget, du kan bygge her lige nu.</p>`;
+  if(skjult || lejrVisLaaste) h += `<button class="btn secondary" data-a="vislaaste">${lejrVisLaaste?"🙈 Skjul det, du ikke kan bygge endnu":`🔒 Vis også det, du ikke kan bygge endnu (${skjult})`}</button>`;
   return h;
 }
 
@@ -8220,10 +8234,10 @@ const JOB = {
   kloev:     { navn:"Kløv en løvstamme", ikon:"🪓", tid:60,  fag:"baal", bruger:{loevstamme:1}, giver:{braende:4}, kraever:["vaerktoej",1], til:"kløve brænde", bygning:"huggeplads", besk:"Stammen saves og kløves til brænde" },
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
   sno:       { navn:"Sno tovværk", ikon:"🪢", tid:90, fag:"knob", bruger:{fibre:3}, giver:{rebraa:1}, besk:"Fibrene snos til kordeler, som slås sammen til et reb" },
-  facilitere:{ navn:"Facilitér en aktivitet", ikon:"🎯", tid:0, fastTid:2*60*60, fag:"ledelse", bygning:"aktivitetsplads", kraever:["ledelse",2], til:"facilitere aktiviteter", point:true, besk:"Spejderen leder en aktivitet for andre spejdere og tjener point til lejrpladsen" },
+  facilitere:{ navn:"Facilitér en aktivitet", kunVed:true, ikon:"🎯", tid:0, fastTid:2*60*60, fag:"ledelse", bygning:"aktivitetsplads", kraever:["ledelse",2], til:"facilitere aktiviteter", point:true, besk:"Spejderen leder en aktivitet for andre spejdere og tjener point til lejrpladsen" },
   flaadetur: { navn:"24 timer på tømmerflåde", ikon:"🪵", tid:0, fastTid:24*60*60, fag:"vand", bygning:"sejlbaad", hold:true, point:FLAADE_POINT, besk:"Hele patruljen tager på en 24 timers tur på tømmerflåden" },
-  madlav:    { navn:"Lav mad i lejrkøkkenet", ikon:"🍲", tid:60, fag:"koekken", bygning:"koekken", bruger:{braende:2}, giver:{mad:2}, besk:"Et måltid over bålet bruger brænde" },
-  bag:       { navn:"Bag brød i bagerovnen", ikon:"🍞", tid:120, fag:"koekken", bygning:"bagerovn", bruger:{braende:3}, giver:{mad:5}, besk:"Ovnen fyres op med brænde og bager mange brød ad gangen" },
+  madlav:    { navn:"Lav mad i lejrkøkkenet", kunVed:true, ikon:"🍲", tid:60, fag:"koekken", bygning:"koekken", bruger:{braende:2}, giver:{mad:2}, besk:"Et måltid over bålet bruger brænde" },
+  bag:       { navn:"Bag brød i bagerovnen", kunVed:true, ikon:"🍞", tid:120, fag:"koekken", bygning:"bagerovn", bruger:{braende:3}, giver:{mad:5}, besk:"Ovnen fyres op med brænde og bager mange brød ad gangen" },
   takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], til:"takle", besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
 };
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
@@ -8334,7 +8348,8 @@ function arbejdeHTML(c){
     h += `<div class="arb">${hoved(m)}<div class="arbinfo"><b>${esc(m.navn)}</b>`;
     if(j){
       const total=m.job.slut-m.job.start, rest=Math.max(0,m.job.slut-nu);
-      h += `<small>${j.ikon} ${j.navn}</small><div class="bar"><i data-jobbar="${m.id}" style="width:${(1-rest/total)*100}%"></i></div></div><span class="jobtid" data-jobtid="${m.id}">${fmtTid(rest)}</span>${m.job.rek||j.hold?"":`<button class="chip rekchip" data-a="jobrek" data-id="${m.id}" aria-label="Se en reklame og halver tiden">📺 ½</button>`}`;
+      const jt=jobTab(c,m);
+      h += `<small>${j.ikon} ${j.navn}</small>${Object.keys(jt).length?`<small class="lageradv">⚠️ Ikke plads på lageret til ${tabTekst(jt)}</small>`:""}<div class="bar"><i data-jobbar="${m.id}" style="width:${(1-rest/total)*100}%"></i></div></div><span class="jobtid" data-jobtid="${m.id}">${fmtTid(rest)}</span>${m.job.rek||j.hold?"":`<button class="chip rekchip" data-a="jobrek" data-id="${m.id}" aria-label="Se en reklame og halver tiden">📺 ½</button>`}`;
     } else {
       h += `<small>Ledig – klar til et job</small></div><button class="btn" data-a="nytjob" data-id="${m.id}">Giv job</button>`;
     }
@@ -8347,6 +8362,72 @@ function arbejdeHTML(c){
 // Kort hjælpetekst i panelerne – resten vises, når man trykker »Læs mere«
 function merTekst(kort, mere){
   return `<details class="mertekst"><summary><span>${kort}</span> <u>Læs mere</u></summary><p>${mere}</p></details>`;
+}
+/* ---------- Guiden: hjælp i gang fra Teltpladsen ----------
+   Først trinene til Teltpladsens milepæl (GUIDE_START), derefter hjælp til næste milepæl. */
+function harTing(c, id){ return Object.values(lejrFelter(c)).includes(id); }
+function jobIGang(c, ...ids){ return arbejdere(c).some(m=>m.job && ids.includes(m.job.id)); }
+const GUIDE_START = [
+  { tekst:"Tag mærket Kniv, sav og økse i bronze", hint:"Mærket giver patruljen lov til at fælde træer og kløve brænde. Tag bronze-prøven under Mærker.",
+    ok:c=>(c.badges.vaerktoej||0)>=1, gaa:"emne:vaerktoej" },
+  { tekst:"Byg et grantræ", hint:"Grantræer bliver til granstammer, som afgrenes til rafter. Tryk på »Vis mig«, og vælg et felt.", byg:"gran",
+    ok:c=>harTing(c,"gran") },
+  { tekst:"Byg et løvtræ", hint:"Løvtræer bliver til løvstammer, som kløves til brænde. Hold træerne væk fra der, hvor bålet skal ligge.", byg:"loevtrae",
+    ok:c=>harTing(c,"loevtrae") },
+  { tekst:"Fæld grantræet", hint:"Tryk på grantræet på lejrpladsen, og vælg en spejder – eller giv et job under »Patrulje og opgaver«. Træet gror selv op igen.", gaa:"job",
+    ok:c=>(lager(c).granstamme||0)>=1 || (lager(c).rafter||0)>=2 || jobIGang(c,"faeldGran","afgren") || harTing(c,"huggeplads") },
+  { tekst:"Afgren granstammen til rafter", hint:"Giv en spejder jobbet »Afgren en granstamme« – det giver 2 rafter.", gaa:"job",
+    ok:c=>(lager(c).rafter||0)>=2 || jobIGang(c,"afgren") || harTing(c,"huggeplads") },
+  { tekst:"Byg en huggeplads", hint:"Den koster 2 rafter. Huggepladsen må ikke stå ved siden af telte.", byg:"huggeplads",
+    ok:c=>harTing(c,"huggeplads") },
+  { tekst:"Fæld løvtræet", hint:"Tryk på løvtræet, og vælg en spejder. Så får I en løvstamme.", gaa:"job",
+    ok:c=>(lager(c).loevstamme||0)>=1 || (lager(c).braende||0)>=3 || jobIGang(c,"faeldLoev","kloev") || harTing(c,"baal") },
+  { tekst:"Kløv løvstammen til brænde", hint:"Giv en spejder jobbet »Kløv en løvstamme« – det sker på huggepladsen og giver 4 brænde.", gaa:"job",
+    ok:c=>(lager(c).braende||0)>=3 || jobIGang(c,"kloev") || harTing(c,"baal") },
+  { tekst:"Tag mærket Bål i bronze", hint:"Bålpladsen kræver mærket Bål i bronze. Tag prøven under Mærker.",
+    ok:c=>(c.badges.baal||0)>=1, gaa:"emne:baal" },
+  { tekst:"Byg en bålplads", hint:"Den koster 3 brænde. Bålet må ikke ligge ved siden af telte eller træer – hold et felt fri imellem.", byg:"baal",
+    ok:c=>harTing(c,"baal") },
+  { tekst:"Byg et telt", hint:"Teltet må ikke stå ved vandet eller ved bålet. Så har I alt til at blive en Patruljelejr!", byg:"telt",
+    ok:c=>harTing(c,"telt") },
+];
+// Det næste skridt: { tekst, hint, gaa/byg, start:true } eller et punkt fra næste milepæl
+function guideNaeste(c){
+  const n=lejrNiveau(c);
+  if(n<5){ const g=GUIDE_START.find(x=>!x.ok(c)); if(g) return { ...g, start:true }; }
+  const nt=naesteTrin(n); if(!nt) return { tekst:"Din lejr er en Verdensjamboree!", hint:"Der er ikke flere trin. Byg, opgrader og saml flag fra hele verden." };
+  const xp=lejrXP(c), mangler=(LEJR_MILEPAEL[nt.niv]||[]).find(p=>!milPunkt(c,p,xp).ok);
+  if(mangler && mangler.byg){ const b=BYGID[mangler.byg], nu=bygNiv(c,b.id);
+    if(!harLejrNiv(c,b)) return { tekst:`Optjen XP, så ${b.navn.toLowerCase()} låses op`, hint:`${b.navn} låses op på lejrniveau ${b.lejrniv}. Byg, opgrader og tag mærker for at få XP.`, gaa:"skilt" };
+    if(!harKrav(c,b)) return { tekst:`Tag mærket ${kravTekst(b)}`, hint:`${b.navn} kræver mærket ${kravTekst(b)} – og den skal med i milepælen til ${nt.navn}.`, gaa:"emne:"+b.krav[0] };
+    if(!nu) return { tekst:`Byg ${b.navn.toLowerCase()}`, hint:`Den er med i milepælen til ${nt.navn}.`, byg:b.id };
+    return { tekst:`Opgrader ${b.navn.toLowerCase()} til niveau ${mangler.niv}`, hint:`Den er på niveau ${nu}. Tryk på den på lejrpladsen, og vælg »Opgrader«. Milepælen til ${nt.navn} kræver niveau ${mangler.niv}.` };
+  }
+  if(mangler) return { tekst:milPunkt(c,mangler,xp).tekst, hint:`Det er med i milepælen til ${nt.navn}. Tag flere mærker under Mærker.`, gaa:"maerker" };
+  return { tekst:`Optjen XP til ${nt.navn}`, hint:`Milepælen er klaret! Du mangler ${fmt(Math.max(0, lejrXPKrav(nt.niv)-xp.total))} XP til niveau ${nt.niv}. Byg, opgrader og tag mærker.`, gaa:"skilt" };
+}
+function guideBarHTML(c){ const g=guideNaeste(c); return `<button class="guidebar" data-a="guide"><span>💡</span><span><b>Næste skridt:</b> ${g.tekst}</span><span class="pil">›</span></button>`; }
+function visGuide(){
+  const c=cur(), g=guideNaeste(c), n=lejrNiveau(c), point=g.byg ? Math.max(0, BYGID[g.byg].pris-lejrPoint(c)) : 0;
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal guide"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+    <div class="center"><div style="font-size:46px">🧭</div><h2 style="margin:2px 0">Guide</h2></div>
+    ${n<5 ? `<p class="muted psmall">Sådan bliver din Teltplads til en Patruljelejr:</p><ol class="guideliste">${GUIDE_START.map(x=>`<li class="${x.ok(c)?"ok":x===GUIDE_START.find(y=>!y.ok(c))?"nu":""}">${x.ok(c)?"✅":x===GUIDE_START.find(y=>!y.ok(c))?"👉":"⬜"} ${x.tekst}</li>`).join("")}</ol>` : ""}
+    <div class="guidenu"><b>👉 ${g.tekst}</b><p>${g.hint}</p>
+      ${g.byg && vogn(c).some(v=>v.id===g.byg) ? `<p>🚚 Du har ${BYGID[g.byg].navn.toLowerCase()} i materielvognen – stil den ud under Byg i stedet for at bygge en ny.</p>` : ""}
+      ${point?`<p class="mangler">Du mangler ${point} point. Du får point, når du svarer rigtigt på spørgsmål – fx i Træning.</p>`:""}
+      ${g.byg && !point ? `<button class="btn gold" id="m-gaa">👉 Vis mig</button>` : ""}
+      ${point ? `<button class="btn gold" id="m-traen">🎯 Gå til Træning</button>` : ""}
+      ${g.gaa ? `<button class="btn ${g.byg?"secondary":"gold"}" id="m-gaa">👉 ${g.gaa==="job"?"Giv patruljen et job":g.gaa.startsWith("emne:")?"Gå til mærket":g.gaa==="maerker"?"Gå til Mærker":"Se lejrskiltet"}</button>` : ""}</div>
+    <p class="muted psmall">Guiden står altid øverst på lejrpladsen. Tryk på den, når du er i tvivl om, hvad du skal gøre.</p></div></div>`;
+  const luk=()=>{ modalRoot.innerHTML=""; };
+  modalRoot.querySelector("#m-luk").onclick=luk;
+  const gaa=modalRoot.querySelector("#m-gaa"); if(gaa) gaa.onclick=()=>{ luk();
+    if(g.byg && !g.gaa){ lejrArk=null; vaelgByg(g.byg); return; }
+    if(g.gaa==="job"){ lejrArk="patrulje"; render(); }
+    else if(g.gaa.startsWith("emne:")) go("emne",{ id:g.gaa.slice(5) });
+    else if(g.gaa==="maerker") go("maerker");
+    else visLejrSkilt(); };
+  const tr=modalRoot.querySelector("#m-traen"); if(tr) tr.onclick=()=>{ luk(); go("traening",{ emne:"alle", niveau:0 }); };
 }
 // Sådan skaffer man hvert materiale (vises, når man trykker på det på lageret). Tallene hentes fra JOB, så de altid passer.
 function matSkaf(c, m){
@@ -8394,7 +8475,8 @@ function visJobValg(id, kunTrae, kunJob){
   const c=cur(), m=state.chars.find(x=>x.id===id); if(!m) return;
   if(m.job){ lejrToast(`${esc(m.navn)} er allerede i gang med et job.`); return; }
   const l=lager(c);
-  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
+  // Job med kunVed (fx at facilitere en aktivitet) startes kun fra bygningen, ikke fra patruljens liste
+  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!j.kunVed || kunJob===jid) && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Byg et ${TRAETYPE[j.trae].navn.toLowerCase()} på lejrpladsen, eller vent, til det er vokset op.`;
     if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
@@ -8402,16 +8484,40 @@ function visJobValg(id, kunTrae, kunJob){
     if(j.bygning && !harBygget(c,j.bygning)) grund = `Kræver en ${BYGID[j.bygning].navn.toLowerCase()} på lejrpladsen.`;
     const fuld = Object.keys(j.giver||{}).find(mm=>lagerFuldt(c,mm));
     if(!grund && fuld) grund = `Lageret er fuldt (${lagerPlads(c,fuld)} ${MATFLERTAL[fuld]}). ${lagerTip(fuld)}`;
+    const tab = !grund && j.giver ? lagerTab(c, jobGiver(c,jid)) : {};
     const tid=jobTid(m,jid), lvl=m.badges[j.fag]||0;
     return `<button class="pvalg" data-job="${jid}" ${grund?"disabled":""}><span class="jobik">${j.ikon}</span><span><b>${j.navn}</b>
-      <small>${grund || `${j.besk} · ${tidTekst(tid)}${lvl && !j.fastTid?` · hurtigere, fordi ${esc(m.navn)} har ${EMNE[j.fag].navn} i ${NIVEAUER[lvl].navn.toLowerCase()}`:""}`}</small></span>
+      <small>${grund || `${j.besk} · ${tidTekst(tid)}${lvl && !j.fastTid?` · hurtigere, fordi ${esc(m.navn)} har ${EMNE[j.fag].navn} i ${NIVEAUER[lvl].navn.toLowerCase()}`:""}`}</small>${Object.keys(tab).length?`<small class="lageradv">⚠️ Lageret kan ikke rumme det hele – ${tabTekst(tab)} går tabt</small>`:""}</span>
       ${j.giver?`<span class="jobgiv">+${Object.entries(jobGiver(c,jid)).map(([mm,n])=>`${n}${matIkon(mm,"lille")}`).join(" ")}</span>`:""}${j.point?`<span class="jobgiv">+${jobPoint(c,jid)} 🪙</span>`:""}</button>`;
   }).join("");
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button><div class="center">${hoved(m)}<h2 style="margin:6px 0 2px">Hvad skal ${esc(m.navn)} lave?</h2></div>
     <div class="pvalgliste" style="margin-top:12px">${muligheder}</div></div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
-  modalRoot.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{ modalRoot.innerHTML=""; startJob(m, b.dataset.job); });
+  modalRoot.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{ const jid=b.dataset.job, tab=JOB[jid].giver ? lagerTab(c, jobGiver(c,jid)) : {};
+    if(!Object.keys(tab).length){ modalRoot.innerHTML=""; startJob(m, jid); return; }
+    // Advarsel: der er ikke plads til hele udbyttet
+    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center"><div style="font-size:48px">⚠️</div><h2 style="margin:4px 0">Der er ikke plads til det hele</h2>
+      <p style="font-size:16px">Når ${esc(m.navn)} er færdig med »${JOB[jid].navn.toLowerCase()}«, er der ikke plads på lageret til <b>${tabTekst(tab)}</b> – det går tabt.</p>
+      <p class="muted psmall">${Object.keys(tab).map(mm=>lagerTip(mm)).join(" ")} Du kan også bruge noget af det, I har, først.</p>
+      <button class="btn gold" id="m-alligevel">Start alligevel</button><button class="btn secondary" id="m-fortryd">Fortryd</button></div></div>`;
+    modalRoot.querySelector("#m-alligevel").onclick=()=>{ modalRoot.innerHTML=""; startJob(m, jid); };
+    modalRoot.querySelector("#m-fortryd").onclick=()=>{ modalRoot.innerHTML=""; }; });
 }
+// Hvor meget af et jobs udbytte går tabt, fordi lageret ikke kan rumme det? Job, der allerede er i gang, regnes med.
+function ventendeUdbytte(c, m, undtagen){ return arbejdere(c).filter(x=>x.job && x!==undtagen).reduce((n,x)=>n+((x.job.giver||{})[m]||0),0); }
+function lagerTab(c, giver, undtagen){
+  const l=lager(c), tab={};
+  Object.entries(giver||{}).forEach(([m,n])=>{ if(!LAGER_BYG[m]) return; const fri=Math.max(0, lagerPlads(c,m)-(l[m]||0)-ventendeUdbytte(c,m,undtagen)); if(n>fri) tab[m]=n-fri; });
+  return tab;
+}
+// Job i gang: går noget tabt, når det bliver færdigt? (job, der bliver færdige først, fylder lageret først)
+function jobTab(c, mm){
+  const l=lager(c), fyldt={}, tab={};
+  arbejdere(c).filter(x=>x.job).sort((a,b)=>a.job.slut-b.job.slut).forEach(x=>{ Object.entries(x.job.giver||{}).forEach(([m,n])=>{ if(!LAGER_BYG[m]) return;
+    const fri=Math.max(0, lagerPlads(c,m)-(l[m]||0)-(fyldt[m]||0)); fyldt[m]=(fyldt[m]||0)+n; if(x===mm && n>fri) tab[m]=n-fri; }); });
+  return tab;
+}
+function tabTekst(tab){ return Object.entries(tab).map(([m,n])=>`${n} ${MATFLERTAL[m]}`).join(" og "); }
 // Hele patruljen tager på tur på tømmerflåden
 function kanFlaadetur(c){ const ms=arbejdere(c); return harBygget(c,"sejlbaad") && ms.length>=FLAADE_ANTAL && ms.every(m=>!m.job); }
 function startFlaadetur(){
@@ -10722,8 +10828,10 @@ const actions = {
   jobrek(d){ const m=state.chars.find(x=>x.id===d.id); if(!m || !m.job || m.job.rek) return;
     if(JOB[m.job.id] && JOB[m.job.id].hold) return;   // turen på tømmerflåden varer altid 24 timer
     visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
+  vislaaste(){ lejrVisLaaste=!lejrVisLaaste; render(); },
   bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrskilt(){ visLejrSkilt(); },
+  guide(){ visGuide(); },
   matinfo(d){ visMatInfo(d.m); },
   vognvaelg(d){ const k=+d.k; lejrValg = lejrValg && lejrValg.type==="vogn" && lejrValg.k===k ? null : { type:"vogn", k }; if(lejrValg) lejrArk=null; render(); },
   // ---- Nye aktiviteter på lejrpladsen (se AKT_NY) ----

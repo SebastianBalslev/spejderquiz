@@ -76,6 +76,12 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - Det højeste niveau gemmes i `lejrNivMax`, så niveauet aldrig falder. Et nyt trin fejres med den nye titel og listen over det nye. Gemte spil får niveauet regnet forfra med de nye regler og én samlet besked (version 5).
 - **Sæt** (`LEJR_SAET`, 14 sæt): Tømmerlejren, Rebslageriet, Bålhygge, Lejrkøkkenet, Patruljelejren, Pionerpladsen, Sikker lejr, Orientering, Vejr og himmel, Dyr og fugle, Vild natur, Søen, Lejrfest (totempæl, spisetelt, storscene) og Signalcentralen (signalpost, lejrradio, signalmast).
 
+### Guide, byggeliste og job
+- **Guiden** (»💡 Næste skridt« under skiltet) hjælper i gang fra Teltpladsen: først trinene til Patruljelejr (`GUIDE_START`: tag Kniv, sav og økse i bronze → byg grantræ og løvtræ → fæld grantræet → afgren → huggeplads → fæld løvtræet → kløv → Bål i bronze → bålplads → telt), derefter det næste, der mangler i milepælen til næste trin, og til sidst XP (`guideNaeste`). Tryk på den for at se listen og et hint med en »Vis mig«-knap, der fx vælger bygningen eller åbner mærket. Mangler man point, peger den på Træning.
+- **Byggelisten** viser normalt kun det, man kan bygge lige nu (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én). Knappen »🔒 Vis også det, du ikke kan bygge endnu« viser resten.
+- **Lagerplads ved job:** kan lageret ikke rumme hele udbyttet af et job (job, der allerede er i gang, regnes med), står der en advarsel i joblisten, man skal bekræfte, før jobbet startes, og jobbet viser »⚠️ Ikke plads på lageret« under Patrulje og opgaver (`lagerTab`, `jobTab`).
+- **Job ved bygningen:** »Facilitér en aktivitet«, »Lav mad i lejrkøkkenet« og »Bag brød i bagerovnen« (`kunVed`) står ikke i patruljens jobliste – de startes fra bygningen.
+
 ### Trin og plads
 Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens størrelse (`r` × `k`), antal vandfelter (`vand`), det højeste bygningsniveau (`maxByg`), den højeste medalje (`medalje`) og lagerpladsen (`grund` + lagerbygningens niveau × `prNiv`):
 
