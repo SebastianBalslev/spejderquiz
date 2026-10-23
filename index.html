@@ -6507,7 +6507,10 @@ function scrResultat(){
     </div>`;
   const lvl = c.badges[quiz.emne]||0;
   if(test){
-    if(quiz.bestaaet && quiz.niveau<3 && lvl>=quiz.niveau) h += `<button class="btn ${quiz.niveau===2?"gold":""}" data-a="naesteniveau">Prøv ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven →</button>`;
+    // Næste niveau kun, hvis lejrpladsen har låst det op (højeste medalje og emnet)
+    const naesteAaben = quiz.niveau<3 && quiz.niveau+1<=maksMedalje(c) && emneAaben(c,quiz.emne);
+    if(quiz.bestaaet && quiz.niveau<3 && lvl>=quiz.niveau && !naesteAaben) h += `<p class="muted center psmall lejrlaaskort" style="padding:10px;border-radius:12px">${medaljeLaasTekst(quiz.niveau+1)}. Byg din lejrplads op for at tage ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven.</p>`;
+    if(quiz.bestaaet && naesteAaben && lvl>=quiz.niveau) h += `<button class="btn ${quiz.niveau===2?"gold":""}" data-a="naesteniveau">Prøv ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven →</button>`;
     if(!quiz.bestaaet) h += `<button class="btn" data-a="igen">🔁 Prøv igen</button>`;
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
   } else {
@@ -10769,7 +10772,7 @@ const actions = {
   loebbygok(){ loebBygSlut(); },
   moedetraen(d){ startQuiz("moedetraen", "alle", +d.k); },
   ugestart(){ startQuiz("uge", "alle", 0); },
-  naesteniveau(){ startQuiz("test", quiz.emne, quiz.niveau+1); },
+  naesteniveau(){ const c=cur(), n=quiz.niveau+1; if(n>3 || n>maksMedalje(c) || !emneAaben(c,quiz.emne)) return; startQuiz("test", quiz.emne, n); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
   vaelgbyg(d){ vaelgByg(d.id); },
   celle(d){ lejrCelle(+d.i); },
@@ -10855,7 +10858,8 @@ const actions = {
       <div style="padding-top:8px">${badgeHTML(e,l,"xl")}</div><h2 style="margin:12px 0 2px">${e.navn}</h2>
       ${l?`<div class="lvlname l${l}">${NIVEAUER[l].navn}</div>`:`<p class="muted" style="margin:2px 0">Ikke taget endnu</p>`}
       <p class="muted" style="font-size:16px">${e.besk}</p>
-      <button class="btn" id="m-emne">${l>=3?"🏅 Se mærket":l?`Tag ${NIVEAUER[l+1].navn.toLowerCase()}-prøven`:"Tag bronze-prøven"}</button></div></div>`;
+      ${l<3 && (l+1>maksMedalje(c) || !emneAaben(c,e.id)) ? `<p class="muted psmall">${emneAaben(c,e.id) ? medaljeLaasTekst(l+1) : emneLaasTekst(e.id)}</p>` : ""}
+      <button class="btn" id="m-emne">${l>=3 || l+1>maksMedalje(c) || !emneAaben(c,e.id) ? "🏅 Se mærket" : l?`Tag ${NIVEAUER[l+1].navn.toLowerCase()}-prøven`:"Tag bronze-prøven"}</button></div></div>`;
     modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
     modalRoot.querySelector("#m-emne").onclick=()=>{ modalRoot.innerHTML=""; go("emne",{id:e.id}); };
   },

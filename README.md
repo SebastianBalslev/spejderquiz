@@ -149,7 +149,7 @@ Feltet `lejrniv` i `BYG` er det lejrniveau, en ting kræver – sammen med mærk
 ### Mærker og adventureløb låses op af lejrniveauet
 Det er patruljelederens (eller den aktive spejders) lejrniveau, der tæller (`lederNiv`). Mærker, man allerede har, beholdes.
 - **Emner** (`EMNE_TRIN`): Teltplads: Lejrliv, Bål, Kniv, sav og økse, Knob og reb, Førstehjælp, Planter og svampe. Patruljelejr: + Friluftskøkken, Ledelse og ansvar, Dyr, Fugle, Natur og miljø, Spejderhistorie, Tur og udrustning. Tropslejr: + Orientering, Vejr, Koder og signaler, Spor og sporing, GPS og geocaching, Vand og sejlads, Overlevelse, Lejrbål og sang, Stjerner.
-- **Højeste mærke** følger trinnets `medalje`: bronze på Teltpladsen, sølv i Patruljelejren og guld fra Tropslejren.
+- **Højeste mærke** følger trinnets `medalje`: bronze på Teltpladsen, sølv i Patruljelejren og guld fra Tropslejren. Efter en bestået prøve er der kun en knap til næste niveau, hvis det er låst op – ellers står der, hvilket trin der låser det op. Det samme gælder knappen, når man trykker på et mærke på uniformen.
 - Låste emner står som »🔒 Låses op i Patruljelejr« på mærkesiden og i træningen. Ugens udfordring, spejdermødet, patruljetiden, lejrbålsquizzen og vidensposterne på løbene tager kun spørgsmål fra de åbne emner – så længe der er færre end 10 åbne emner, tager ugens udfordring nogle emner to gange med forskellige spørgsmål.
 - **Adventureløb** (`LOEB_NIV`): løb 1 kræver lejrniveau 5, løb 2 → 8, 3 → 10, 4 → 14, 5 → 17, 6 → 20, 7 → 25, 8 → 30, 9 → 45 og 10 → 60, og det forrige løb skal stadig være gennemført. Låste løb står med »🔒 Lejrniveau 14« på patruljesiden.
 - Skiltet og fejringen af et nyt trin viser alt nyt: pladsen, bygningsniveau, medalje, emner, løb og bygninger (`trinNytListe`).
