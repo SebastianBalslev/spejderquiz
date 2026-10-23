@@ -6036,7 +6036,7 @@ function badgeHTML(e, lvl, cls){
 
 /* ---------- Spejderfigur ---------- */
 const SLOTS = [[66,210],[88,210],[112,210],[134,210],[66,233],[88,233],[112,233],[134,233],[66,256],[88,256],[112,256],[134,256],[165,224]];
-function avatarSVG(look, badges, rankI, crop){
+function avatarSVG(look, badges, rankI, crop, saer){
   badges = badges || {};
   const skin=HUD[look.hud]||HUD[0], skinD=shade(skin,-.13);
   const hair=(HAARFARVE[look.haarfarve]||HAARFARVE[0])[0], hairD=shade(hair,-.2);
@@ -6098,6 +6098,9 @@ function avatarSVG(look, badges, rankI, crop){
       else s+=`<circle cx="${x}" cy="${y}" r="${rr}" fill="none" stroke="${shirtD}" stroke-width="1.4" stroke-dasharray="2 2"/>`;
       s+=`</g>`;
     });
+    // Særlige mærker sidder på højre ærme
+    Object.keys(saer||{}).filter(id=>SAERMAERKER[id]).forEach((id,k)=>{ const x=166, y=212+k*20;
+      s+=`<g class="umaerke" data-a="saermaerke" data-id="${id}" role="button" aria-label="${esc(SAERMAERKER[id].navn)}"><g transform="translate(${x},${y}) scale(.2)">${SAERMAERKER[id].svg.replace(/sm-fl/g,"sm-fl-u")}</g></g>`; });
   }
   return s + `</svg>`;
 }
@@ -6225,7 +6228,7 @@ function scrProfil(){
       <div class="rank-pill">${RANG[r].ikon} ${RANG[r].navn}</div>
       ${minPatrulje(c)?`<p class="muted psmall" style="margin:6px 0 0">⚜️ Patruljeleder for ${PDYR[minPatrulje(c).dyr][0]} ${esc(minPatrulje(c).navn)}</p>`:""}
       ${titler(c).length?`<div class="titler">${titler(c).map(t=>`<span>${t}</span>`).join("")}</div>`:""}
-      <div class="avatar-wrap">${avatarSVG(c.look,c.badges,r)}</div>
+      <div class="avatar-wrap">${avatarSVG(c.look,c.badges,r,false,c.saermaerker)}</div>
       <div class="stats">
         <div><b>${fmt(c.point)}</b><span>point</span></div>
         <div><b>${n}/${EMNER.length*3}</b><span>mærker</span></div>
@@ -6266,7 +6269,7 @@ function scrMaerker(){
     <p class="muted center" style="font-size:14px;margin-bottom:0">Tryk på et mærke for at tage prøven. Bronze, sølv og guld tæller hver som ét mærke.</p>
     ${gruppeHTML}
     <div class="sect" style="margin-top:22px">Særlige mærker</div>
-    <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button></div>
+    <div class="grid"><button class="bcell" data-a="til" data-to="hytte">${badgeHTML(MMAERKE,moedeNiv(c))}<b>Fremmøde</b><small class="l${moedeNiv(c)}">${moedeNiv(c)?NIVEAUER[moedeNiv(c)].navn:`${antalMoeder(c)}/${MOEDE_KRAV[1]} møder`}</small></button>${Object.keys(SAERMAERKER).map(id=>`<button class="bcell" data-a="saermaerke" data-id="${id}">${saerBadgeHTML(id,harSaerMaerke(c,id))}<b>${SAERMAERKER[id].navn}</b><small class="${harSaerMaerke(c,id)?"l3":"l0"}">${harSaerMaerke(c,id)?"Taget":"Låst"}</small></button>`).join("")}</div>
     <p class="muted center" style="font-size:14px">Fremmødemærket får du for at komme til spejdermøder i hytten: bronze for ${MOEDE_KRAV[1]}, sølv for ${MOEDE_KRAV[2]} og guld for ${MOEDE_KRAV[3]} møder.</p>`;
 }
 
@@ -6913,7 +6916,7 @@ const BYG = [
 
   { id:"kano",        navn:"Kano",              ikon:"🛶", pris:80,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
   { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
-  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, krav:["vand",3], vand:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen." },
+  { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
   { id:"liljeskilt",  navn:"Liljeskilt",        svg:"lilje",    pris:120, krav:["historie",2],    besk:"Spejderliljen skåret i træ." },
@@ -7040,7 +7043,7 @@ const BYGTID = { aktivitetsplads:300, afgrening:180, rebmaskine:180, jordkoelesk
   stjernetaarn:600, fugletaarn:300, sporkasse:60, geocache:30, telt:60, patruljetelt:180, hytte:900, latrin:60, baal:60, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, baare:120, hjertestarter:60,
   fuglekasse:60, opost:30, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
-  vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:60, flag:60, liljeskilt:180,
+  vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:9000, flag:60, liljeskilt:180,
   jamboree:600, insekthotel:180, bistade:300, morselampe:60, semaforpost:120, radiomast:300 };
 for(const k in BYGTID) BYGTID[k] *= TIDSFAKTOR;
 const TELT_IDS = ["telt","patruljetelt","jamboree"];
@@ -7099,8 +7102,10 @@ function aktKravOk(c,k){ return !k || (c.badges[k[0]]||0) >= k[1]; }
 // Niveauet på en færdig bygning (0 = ikke bygget). En bygning, der opgraderes, tæller med sit nuværende niveau.
 function bygNiv(c,id){ const f=lejrFelter(c); return Math.max(0, ...Object.keys(f).filter(i=>f[i]===id).map(i=>underByg(c,+i) && !c.lejrOpg[i] ? 0 : lejrNiv(c,+i))); }
 function harBygget(c,id){ return bygNiv(c,id) > 0; }
-function harKrav(c,b){ return !b.krav || (c.badges[b.krav[0]]||0) >= b.krav[1]; }
-function kravTekst(b){ return `${EMNE[b.krav[0]].navn} – ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`; }
+// Alle mærker, en ting kræver: krav og evt. ekstraKrav (fx tømmerflåden: Vand og sejlads og Knob og reb i guld)
+function alleKrav(b){ return b.krav ? [b.krav, ...(b.ekstraKrav||[])] : []; }
+function harKrav(c,b){ return alleKrav(b).every(k=>(c.badges[k[0]]||0) >= k[1]); }
+function kravTekst(b){ return alleKrav(b).map(k=>`${EMNE[k[0]].navn} – ${NIVEAUER[k[1]].navn.toLowerCase()}`).join(" og "); }
 function erVand(i){ return VAND.has(Math.floor(i/LEJR_KOL)+","+(i%LEJR_KOL)); }
 function kanStaa(b,i){ return !!b.vand === erVand(i); }
 function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; c.lejrNiv = c.lejrNiv || {}; c.lejrOpg = c.lejrOpg || {}; c.lejrInv = c.lejrInv || {}; return c.lejr; }
@@ -7188,7 +7193,7 @@ function byggelisteHTML(c){
       h += `<button class="item bygget" data-a="vaelgbyg" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget</span><span class="meta">Kun én pr. lejr</span></button>`;
       continue;
     }
-    const kravHTML = b.krav ? `<span class="krav ${ok?"ok":""}">${badgeHTML(EMNE[b.krav[0]], ok?b.krav[1]:0, "xs")}${ok?"✓":NIVEAUER[b.krav[1]].navn}</span>` : `<span class="krav ok">Alle kan bygge</span>`;
+    const kravHTML = b.krav ? alleKrav(b).map(k=>{ const har=(c.badges[k[0]]||0)>=k[1]; return `<span class="krav ${har?"ok":""}">${badgeHTML(EMNE[k[0]], har?k[1]:0, "xs")}${har?"✓":NIVEAUER[k[1]].navn}</span>`; }).join("") : `<span class="krav ok">Alle kan bygge</span>`;
     h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgbyg" data-id="${b.id}">
       <span class="ik">${bygIkon(b)}</span><b>${b.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${b.pris}</span>
       ${BYGMAT[b.id]?`<span class="matkrav ${harMat(c,BYGMAT[b.id])?"":"mangler"}">${Object.entries(BYGMAT[b.id]).map(([m,n])=>`${matIkon(m,"lille")}${n}`).join(" ")}</span>`:""}
@@ -7310,6 +7315,12 @@ function visFeltMenu(i){
     knapper += rest ? `<p class="byggetid">🔥 Signalbålet brænder i <b id="m-signal">${fmtTid(rest)}</b> endnu. Alle nye job går 25 % hurtigere.</p>`
       : `<button class="btn gold" id="m-signal-taend" ${(lager(c).braende||0)<SIGNAL_BRAENDE?"disabled":""}>🔥 Tænd signalbålet (${SIGNAL_BRAENDE} brænde)</button><small class="muted">Det brænder i ${tidTekst(signalTid(c))}. Imens går alle nye job 25 % hurtigere.${(lager(c).braende||0)<SIGNAL_BRAENDE?` Du har kun ${lager(c).braende||0} brænde.`:""}</small>`;
   }
+  if(!bygger && her.id==="sejlbaad"){
+    const paaTur=arbejdere(c).find(m=>m.job && m.job.id==="flaadetur"), har=harSaerMaerke(c,"flaade24");
+    knapper += paaTur ? `<p class="byggetid">🪵 Patruljen er på tømmerflåden. Hjemme om <b>${fmtTid(paaTur.job.slut-Date.now())}</b></p>`
+      : `<button class="btn gold" id="m-flaadetur" ${kanFlaadetur(c)?"":"disabled"}>🪵 24 timer på tømmerflåde (hele patruljen → ${fmt(FLAADE_POINT)} point)</button>
+        <small class="muted">${kanFlaadetur(c)?"":`Alle ${FLAADE_ANTAL} i patruljen skal være ledige. `}${har?"I har allerede mærket »24 timer på tømmerflåde«.":"Første gang får I mærket »24 timer på tømmerflåde«."}</small>`;
+  }
   if(!bygger && BYG_JOB[her.id]){
     const jid = BYG_JOB[her.id], ledig = arbejdere(c).find(m=>!m.job);
     knapper += `<button class="btn" id="m-mad" ${ledig?"":"disabled"}>${JOB[jid].ikon} ${JOB[jid].navn} (${JOB[jid].point ? `${tidTekst(JOB[jid].fastTid)} → ${jobPoint(c,jid)} point` : `${matTekst(jobBruger(c,jid))} → ${matTekst(jobGiver(c,jid))}`})</button>${ledig?"":`<small class="muted">Alle i patruljen er optaget.</small>`}`;
@@ -7331,6 +7342,7 @@ function visFeltMenu(i){
   if($("#m-voks")){ const ur=setInterval(()=>{ const el=$("#m-voks"); if(!el){ clearInterval(ur); return; } const v=traeVokser(c,i); if(!v){ clearInterval(ur); luk(); render(); } else el.textContent=fmtTid(v.vokser-Date.now()); },1000); }
   if($("#m-signal-taend")) $("#m-signal-taend").onclick=()=>{ if((lager(c).braende||0)<SIGNAL_BRAENDE) return; luk(); brugMat(c,{braende:SIGNAL_BRAENDE},-1); c.signal=Date.now()+signalTid(c)*1000; save(); render(); vibrer([40,30,80]);
     lejrToast(`🔥 Signalbålet brænder! I ${tidTekst(signalTid(c))} går alle nye job 25 % hurtigere.`); };
+  if($("#m-flaadetur")) $("#m-flaadetur").onclick=()=>{ luk(); startFlaadetur(); };
   if($("#m-mad")) $("#m-mad").onclick=()=>{ const m=arbejdere(c).find(x=>!x.job); if(!m) return; luk(); visJobValg(m.id, null, BYG_JOB[her.id]); };
   $("#m-riv").onclick=()=>{ luk(); const tilbage=rivMat(inv); brugMat(c, tilbage, 1); delete c.lejr[i]; delete c.lejrTid[i]; delete c.telte[i]; delete traeData(c)[i]; delete c.lejrNiv[i]; delete c.lejrOpg[i]; delete c.lejrInv[i];
     save(); render(); lejrToast(`${her.navn} er revet ned.${Object.keys(tilbage).length?` I fik ${matTekst(tilbage)} tilbage.`:""}`); };
@@ -7380,7 +7392,7 @@ const LAAS_OP = {
   ledelse:   { 2:"Som patruljeleder på løbet får du en ekstra joker – og en fra patruljen kan facilitere aktiviteter på aktivitetspladsen", 3:"Titlen Patruljeleder – og +25 % point på løbene" },
 };
 function laaserOp(emneId, lvl){ return [...nyeTing(emneId,lvl).map(b=>b.navn), (LAAS_OP[emneId]||{})[lvl]].filter(Boolean).join(" · "); }
-function nyeTing(emneId, lvl){ return BYG.filter(b => b.krav && b.krav[0]===emneId && b.krav[1]===lvl); }
+function nyeTing(emneId, lvl){ return BYG.filter(b => alleKrav(b).some(k=>k[0]===emneId && k[1]===lvl)); }
 
 /* ---------- Besnøringsopgaven ---------- */
 function scrByg(){
@@ -7606,7 +7618,6 @@ const AKT_FOR = {
   svaevebane: [["svaeve","🎢 Tag en tur på svævebanen"]],
   flag:       [["flag","🇩🇰 Hejs flaget"]],
   kano:       [["sejl","🛶 Tag på kanotur"]],
-  sejlbaad:   [["sejl","🪵 Tag på flådetur"]],
   fuglekasse: [["dyr","👀 Kig efter fugle"]],
   hjort:      [["dyr","👀 Kig på hjorten"]],
   raev:       [["dyr","👀 Kig på ræven"]],
@@ -8097,13 +8108,15 @@ function matIkon(m, cls){ return `<svg viewBox="0 0 40 40" class="matik ${cls||"
 function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MAT[m]:MATFLERTAL[m]}`).join(" og "); }
 
 // Materialer, de enkelte ting koster at bygge
-const BYGMAT = { bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:8}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
+const BYGMAT = { bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:100, reb:50, braende:10, mad:20}, baare:{rafter:2, reb:1}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, semaforpost:{rafter:1, reb:1}, hytte:{rafter:6, braende:4},
   baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, stjernetaarn:{rafter:8, reb:3}, lejrbaal:{rafter:2, braende:8}, braende:{braende:4}, latrin:{rafter:2, reb:1} };
 
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et fældet træ er om at gro op igen
 const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flertal:"grantræer", job:"faeldGran", besk:"Bliver til granstammer, som kan afgrenes til rafter." },
                    loev:{ navn:"Løvtræ",  ikon:"🌳", best:"løvtræet",  flertal:"løvtræer",  job:"faeldLoev", besk:"Bliver til løvstammer, som kan kløves til brænde." } };
+// 24 timer på tømmerflåde: hele patruljen (5 spejdere) tager af sted sammen. Det giver point og første gang et særligt mærke.
+const FLAADE_POINT = 1500, FLAADE_ANTAL = 5;
 const JOB = {
   faeldGran: { navn:"Fæld et grantræ",  ikon:"🪓", tid:90,  fag:"overlevelse", trae:"gran", giver:{granstamme:1}, kraever:["vaerktoej",1], til:"fælde grantræer", besk:"Giver en granstamme" },
   faeldLoev: { navn:"Fæld et løvtræ",   ikon:"🪓", tid:120, fag:"overlevelse", trae:"loev", giver:{loevstamme:1}, kraever:["vaerktoej",2], til:"fælde løvtræer", besk:"Giver en løvstamme" },
@@ -8112,6 +8125,7 @@ const JOB = {
   fibre:     { navn:"Saml brændenælder og bast", ikon:"🌿", tid:60, fag:"planter", giver:{fibre:2}, besk:"Fibrene i brændenælder kan snos til reb – brug handsker!" },
   sno:       { navn:"Sno tovværk", ikon:"🪢", tid:90, fag:"knob", bruger:{fibre:3}, giver:{rebraa:1}, besk:"Fibrene snos til kordeler, som slås sammen til et reb" },
   facilitere:{ navn:"Facilitér en aktivitet", ikon:"🎯", tid:0, fastTid:2*60*60, fag:"ledelse", bygning:"aktivitetsplads", kraever:["ledelse",2], til:"facilitere aktiviteter", point:true, besk:"Spejderen leder en aktivitet for andre spejdere og tjener point til lejrpladsen" },
+  flaadetur: { navn:"24 timer på tømmerflåde", ikon:"🪵", tid:0, fastTid:24*60*60, fag:"vand", bygning:"sejlbaad", hold:true, point:FLAADE_POINT, besk:"Hele patruljen tager på en 24 timers tur på tømmerflåden" },
   madlav:    { navn:"Lav mad i lejrkøkkenet", ikon:"🍲", tid:60, fag:"koekken", bygning:"koekken", bruger:{braende:2}, giver:{mad:2}, besk:"Et måltid over bålet bruger brænde" },
   bag:       { navn:"Bag brød i bagerovnen", ikon:"🍞", tid:120, fag:"koekken", bygning:"bagerovn", bruger:{braende:3}, giver:{mad:5}, besk:"Ovnen fyres op med brænde og bager mange brød ad gangen" },
   takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], til:"takle", besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
@@ -8125,7 +8139,7 @@ const TRAE_NIV = [5, 10, 20, 40, 52, 64, 75, 87, 99];   // +1 stamme på hvert a
 function stammerPrTrae(niv){ return 1 + TRAE_NIV.filter(x=>niv>=x).length; }
 const AFGREN_NIV = [5, 10, 20, 40, 60, 80, 99];
 // Point for at facilitere en aktivitet: 100 point + 10 pr. niveau over 1 på aktivitetspladsen
-function jobPoint(c, jid){ return JOB[jid].point ? 100 + 10*(Math.max(1,bygNiv(c,"aktivitetsplads"))-1) : 0; }
+function jobPoint(c, jid){ const p=JOB[jid].point; return typeof p==="number" ? p : p ? 100 + 10*(Math.max(1,bygNiv(c,"aktivitetsplads"))-1) : 0; }
 function jobGiver(c, jid, felt){
   const g = { ...JOB[jid].giver };
   if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
@@ -8197,6 +8211,7 @@ function tjekArbejde(c){
     if(m.job && m.job.slut<=nu){
       const j=JOB[m.job.id], giver=m.job.giver || j.giver||{}; brugMat(c, giver, 1);
       if(m.job.point) c.point = (c.point||0) + m.job.point;
+      if(j.hold && m.job.point && m.job.id==="flaadetur") giverSaerMaerke(c, "flaade24");
       // Træet vokser automatisk op igen på samme felt, når det er fældet
       if(m.job.felt!=null && traeType(lejrFelter(c)[m.job.felt])) tr[m.job.felt] = { vokser: m.job.slut + GENVAEKST*1000 };
       beskeder.push(`${esc(m.navn)}: ${j.navn.toLowerCase()} – færdig! +${m.job.point ? m.job.point+" point" : matTekst(giver)}`);
@@ -8246,7 +8261,7 @@ function visJobValg(id, kunTrae, kunJob){
   const c=cur(), m=state.chars.find(x=>x.id===id); if(!m) return;
   if(m.job){ lejrToast(`${esc(m.navn)} er allerede i gang med et job.`); return; }
   const l=lager(c);
-  const muligheder = Object.entries(JOB).filter(([jid,j])=>(!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
+  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Byg et ${TRAETYPE[j.trae].navn.toLowerCase()} på lejrpladsen, eller vent, til det er vokset op.`;
     if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
@@ -8263,6 +8278,14 @@ function visJobValg(id, kunTrae, kunJob){
     <div class="pvalgliste" style="margin-top:12px">${muligheder}</div></div></div>`;
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelectorAll("[data-job]").forEach(b=>b.onclick=()=>{ modalRoot.innerHTML=""; startJob(m, b.dataset.job); });
+}
+// Hele patruljen tager på tur på tømmerflåden
+function kanFlaadetur(c){ const ms=arbejdere(c); return harBygget(c,"sejlbaad") && ms.length>=FLAADE_ANTAL && ms.every(m=>!m.job); }
+function startFlaadetur(){
+  const c=cur(); if(!kanFlaadetur(c)) return;
+  const nu=Date.now(), slut=nu+JOB.flaadetur.fastTid*1000;
+  arbejdere(c).forEach((m,k)=>{ m.job={ id:"flaadetur", start:nu, slut, felt:null, giver:{}, point:k===0?FLAADE_POINT:0 }; });
+  save(); render(); vibrer([40,30,80]);
 }
 function startJob(m, jid, startFelt){
   const c=cur(), j=JOB[jid];
@@ -9311,6 +9334,40 @@ const MOEDE_AKT = [
 ];
 const MOEDE_KRAV = [null, 4, 12, 26];   // møder til fremmødemærket i bronze, sølv og guld
 const MMAERKE = { id:"moede", navn:"Fremmøde", farve:"#2f5d62" };
+// Særlige mærker uden niveauer. Man får dem én gang (gemt i c.saermaerker med tidspunktet).
+const SAERMAERKER = {
+  flaade24: { navn:"24 timer på tømmerflåde", besk:"Hele patruljen har været 24 timer på tømmerflåden. Byg en tømmerflåde på lejrpladsen, og tag på tur med alle fem.",
+    svg:`<defs><clipPath id="sm-fl"><circle r="44"/></clipPath></defs><g clip-path="url(#sm-fl)">
+      <rect x="-50" y="-50" width="100" height="100" fill="#8fc6ea"/>
+      <path d="M-50 -4 Q-34 -14 -16 -9 Q2 -16 20 -10 Q36 -15 50 -8 V8 H-50Z" fill="#74b27c" stroke="#5b3a24" stroke-width=".8"/>
+      <path d="M-50 2 Q-30 -1 -22 3 L50 2 V50 H-50Z" fill="#4c9be0"/>
+      <g stroke="#5b3a24" stroke-width=".8"><ellipse cx="-22" cy="28" rx="7" ry="5" fill="#e8dfc4"/><ellipse cx="3" cy="28" rx="7" ry="5" fill="#e8dfc4"/><ellipse cx="27" cy="28" rx="7" ry="5" fill="#e8dfc4"/>
+        <path d="M-30 6 L30 6 L36 22 L-26 22Z" fill="#a08878"/>
+        ${[8,12,16,20].map((y,k)=>`<path d="M${-32+k*1.5} ${y} H${32+k*1.2}" fill="none"/><circle cx="${-32+k*1.5}" cy="${y}" r="2.4" fill="#e8dfc4"/>`).join("")}
+        <path d="M6 10 Q8 -8 22 -8 Q34 -6 34 10Z" fill="#5fae74"/><path d="M20 -8 V10 M14 -2 H24" fill="none"/>
+        <path d="M-12 10 Q-14 3 -10 -1 Q-9 3 -7 1 Q-6 -3 -4 -4 Q-1 2 -3 10Z" fill="#e2352b"/></g>
+      <text x="0" y="-26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2b3a3a" font-family="system-ui,sans-serif">24 timer på</text>
+      <text x="0" y="-15" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2b3a3a" font-family="system-ui,sans-serif">tømmerflåde</text>
+      <text x="-13" y="41" text-anchor="middle" font-size="9" font-weight="800" fill="#1d2a2a" font-family="system-ui,sans-serif">X</text></g>
+      <circle r="45" fill="none" stroke="#5b3a24" stroke-width="5"/>` }
+};
+function harSaerMaerke(c, id){ return !!(c.saermaerker||{})[id]; }
+function saerBadgeHTML(id, har, cls){ return `<div class="badge ${har?"":"locked"} ${cls||""}"><svg viewBox="-50 -50 100 100" role="img" aria-label="${esc(SAERMAERKER[id].navn)}">${SAERMAERKER[id].svg}</svg>${har?"":LOCK}</div>`; }
+function giverSaerMaerke(c, id){
+  if(harSaerMaerke(c,id)) return;
+  c.saermaerker = c.saermaerker || {}; c.saermaerker[id] = Date.now();
+  // Fejringen vises, når skærmen er tegnet færdig
+  setTimeout(()=>fejrSaer(id), 300);
+}
+function fejrSaer(id){
+  const m=SAERMAERKER[id];
+  modalRoot.innerHTML = `<div class="overlay celebrate"><div class="rays"></div><div class="cbox">
+      <div class="ctitle">NYT MÆRKE!</div><div class="bigbadge">${saerBadgeHTML(id,true,"xl")}</div>
+      <h2>${m.navn}</h2><p style="margin:6px 0 0">${m.besk.split(".")[0]}.</p>
+      <button class="btn gold" id="c-ok" style="margin-top:22px">Fedt! 🎉</button></div></div>`;
+  modalRoot.querySelector("#c-ok").onclick = () => { modalRoot.innerHTML=""; };
+  konfetti(); vibrer([80,60,80,60,160]);
+}
 SYM.moede = `<path d="M-26 0 L0 -22 L26 0Z" fill="#f6e3c4"/><rect x="-19" y="-2" width="38" height="24" fill="#f6e3c4"/>
   <rect x="-6" y="7" width="12" height="15" fill="#2f5d62"/><rect x="9" y="3" width="7" height="7" fill="#2f5d62"/><rect x="-16" y="3" width="7" height="7" fill="#2f5d62"/>
   <path d="M10 -14 V-28 L20 -24 L10 -20" fill="#c62828" stroke="#f6e3c4" stroke-width="1.5"/>`;
@@ -9805,6 +9862,14 @@ const actions = {
   vaelgindbo(d){ vaelgIndbo(d.id); },
   tplads(d){ teltPlads(+d.p); },
   teltannuller(){ teltValg=null; render(); },
+  saermaerke(d){
+    const c=cur(), m=SAERMAERKER[d.id]; if(!c || !m) return; const har=harSaerMaerke(c,d.id);
+    modalRoot.innerHTML = `<div class="overlay"><div class="card modal center maerkestor"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+      <div style="padding-top:8px">${saerBadgeHTML(d.id,har,"xl")}</div><h2 style="margin:12px 0 2px">${m.navn}</h2>
+      <p class="muted" style="margin:2px 0">${har?`Taget ${new Date(c.saermaerker[d.id]).toLocaleDateString("da-DK")}`:"Ikke taget endnu"}</p>
+      <p class="muted" style="font-size:16px">${m.besk}</p></div></div>`;
+    modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
+  },
   umaerke(d){
     const c=cur(), e=EMNE[d.id]; if(!c || !e) return; const l=c.badges[e.id]||0;
     modalRoot.innerHTML = `<div class="overlay"><div class="card modal center maerkestor"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
@@ -9816,7 +9881,9 @@ const actions = {
     modalRoot.querySelector("#m-emne").onclick=()=>{ modalRoot.innerHTML=""; go("emne",{id:e.id}); };
   },
   jobrek(d){ const m=state.chars.find(x=>x.id===d.id); if(!m || !m.job || m.job.rek) return;
-    visReklame(()=>{ m.job.rek=true; halverTid(m.job,"slut"); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
+    // Et job for hele patruljen (tømmerflåden) halveres for alle på én gang
+    const alle = JOB[m.job.id] && JOB[m.job.id].hold ? arbejdere(cur()).filter(x=>x.job && x.job.id===m.job.id) : [m];
+    visReklame(()=>{ alle.forEach(x=>{ x.job.rek=true; halverTid(x.job,"slut"); }); save(); render(); lejrToast("⏩ Tiden er halveret!"); }); },
   bygkat(d){ lejrKat=d.v; render(); const a=document.querySelector(".ark"); if(a) a.scrollTop=0; },
   lejrark(d){ lejrArk = d.v && lejrArk!==d.v ? d.v : null; if(lejrArk) lejrValg=null; render(); },
   braende(){
