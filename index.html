@@ -8617,6 +8617,12 @@ function nivPynt(n){
   return s;
 }
 function lejrNiv(c,i){ return (c.lejrNiv||{})[i] || 1; }
+// Hvornår en bygning kræver guld i sit emne for at blive opgraderet – varierer fra niveau 6 til 9.
+// Bygninger, der kun kræver bronze for at blive bygget, venter længst; de øvrige får et fast tal ud fra id'et.
+function guldFra(b){
+  let h=0; for(const ch of b.id) h=(h*31+ch.charCodeAt(0))%997;
+  return b.krav && b.krav[1]<=1 ? 8 + h%2 : 6 + h%2;
+}
 const DYR_START = { afgrening:true };   // bygninger, der er dyrere at opgradere i de første 10 niveauer
 function opgKost(c, b, ny){
   const p = Math.round(b.pris*0.5*(ny-1)) + 10*(ny-1);
@@ -8631,8 +8637,8 @@ function opgKost(c, b, ny){
   // – og aldrig mere, end lageret overhovedet kan rumme på patruljens nuværende trin, så alle niveauer kan nås
   const tr=LEJR_TRIN.find(t=>t.maxByg>=ny) || LEJR_TRIN[LEJR_TRIN.length-1], nu=lejrTrin((c||{}).lejrNivMax||1);
   const loft=Math.max(1, Math.floor(Math.min(lagerKap(tr, tr.maxByg), lagerKap(nu, MAKSNIV))*0.8));
-  // Fra niveau 4 kræver opgraderingen et bedre mærke i bygningens emne: sølv til niveau 4-5 og guld fra niveau 6
-  const kravNiv = b.krav && ny>=4 ? Math.max(b.krav[1], ny>=6 ? 3 : 2) : 0;
+  // Fra niveau 4 kræver opgraderingen et bedre mærke i bygningens emne: sølv fra niveau 4 og guld fra bygningens guldFra (6-9)
+  const kravNiv = b.krav && ny>=4 ? Math.max(b.krav[1], ny>=guldFra(b) ? 3 : 2) : 0;
   return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, Math.min(loft, k==="mad" ? n : Math.ceil(n*ekstra))])), tid, kravNiv };
 }
 // Hvad en bygning giver på et bestemt niveau (tom streng = ingen fordel ud over udseendet)
@@ -8687,9 +8693,10 @@ function opgHTML(c, i){
   if(!harMat(c,k.m)) mangler.push(matTekst(manglerMat(c,k.m)) + (manglerMat(c,k.m).mad ? " (lav mad i lejrkøkkenet eller bag brød i bagerovnen)" : ""));
   Object.entries(k.m).forEach(([mm,x])=>{ if(x>lagerPlads(c,mm)) mangler.push(`plads til ${x} ${MATFLERTAL[mm]} på lageret`); });
   if(k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv) mangler.push(`${EMNE[b.krav[0]].navn} i ${NIVEAUER[k.kravNiv].navn.toLowerCase()}`);
+  const gf=b.krav && b.krav[1]<3 ? guldFra(b) : 0, kravInfo = gf && n+1<gf && (c.badges[b.krav[0]]||0)<3 ? `<small class="muted">🥇 Fra niveau ${gf} kræver ${b.navn.toLowerCase()} ${EMNE[b.krav[0]].navn} i guld.</small>` : "";
   h += `<button class="btn gold" id="m-opg" ${mangler.length?"disabled":""}>⬆️ Opgrader til niveau ${n+1}: ${nivNavn(n+1)}</button>
     <div class="opgkost">🪙 ${k.p} · ${Object.entries(k.m).filter(([,x])=>x>0).map(([mm,x])=>`${matIkon(mm,"lille")}${x}`).join(" ")} · ⏳ ${tidTekst(k.tid)}${nivTrin(n+1)>nivTrin(n) && trinTekst(b,nivTrin(n+1))?`<br><small>✨ ${trinTekst(b,nivTrin(n+1))}</small>`:""}</div>
-    ${mangler.length?`<small class="mangler">Du mangler: ${mangler.join(", ")}</small>`:`<small class="muted">${AKT_FOR[b.id]?"Højere niveau giver flere point ved aktiviteten.":"Højere niveau gør din lejrplads flottere."}</small>`}`;
+    ${mangler.length?`<small class="mangler">Du mangler: ${mangler.join(", ")}</small>`:`<small class="muted">${AKT_FOR[b.id]?"Højere niveau giver flere point ved aktiviteten.":"Højere niveau gør din lejrplads flottere."}</small>`}${kravInfo}`;
   return h;
 }
 function opgrader(c, i){
