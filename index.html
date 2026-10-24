@@ -8249,8 +8249,8 @@ const JOB = {
   sno:       { navn:"Sno tovværk", ikon:"🪢", tid:90, fag:"knob", bruger:{fibre:3}, giver:{rebraa:1}, besk:"Fibrene snos til kordeler, som slås sammen til et reb" },
   facilitere:{ navn:"Facilitér en aktivitet", kunVed:true, ikon:"🎯", tid:0, fastTid:2*60*60, fag:"ledelse", bygning:"aktivitetsplads", kraever:["ledelse",2], til:"facilitere aktiviteter", point:true, besk:"Spejderen leder en aktivitet for andre spejdere og tjener point til lejrpladsen" },
   flaadetur: { navn:"24 timer på tømmerflåde", ikon:"🪵", tid:0, fastTid:24*60*60, fag:"vand", bygning:"sejlbaad", hold:true, point:FLAADE_POINT, besk:"Hele patruljen tager på en 24 timers tur på tømmerflåden" },
-  madlav:    { navn:"Lav mad i lejrkøkkenet", kunVed:true, ikon:"🍲", tid:60, fag:"koekken", bygning:"koekken", bruger:{braende:2}, giver:{mad:2}, besk:"Et måltid over bålet bruger brænde" },
-  bag:       { navn:"Bag brød i bagerovnen", kunVed:true, ikon:"🍞", tid:120, fag:"koekken", bygning:"bagerovn", bruger:{braende:3}, giver:{mad:5}, besk:"Ovnen fyres op med brænde og bager mange brød ad gangen" },
+  madlav:    { navn:"Lav mad i lejrkøkkenet", naarBygget:true, ikon:"🍲", tid:60, fag:"koekken", bygning:"koekken", bruger:{braende:2}, giver:{mad:2}, besk:"Et måltid over bålet bruger brænde" },
+  bag:       { navn:"Bag brød i bagerovnen", naarBygget:true, ikon:"🍞", tid:120, fag:"koekken", bygning:"bagerovn", bruger:{braende:3}, giver:{mad:5}, besk:"Ovnen fyres op med brænde og bager mange brød ad gangen" },
   takle:     { navn:"Takl tovværket", ikon:"🧵", tid:45, fag:"knob", bruger:{rebraa:1}, giver:{reb:1}, kraever:["knob",1], til:"takle", besk:"Enderne takles med tyndt garn, så rebet ikke flosser" },
 };
 for(const k in JOB) JOB[k].tid *= TIDSFAKTOR;
@@ -8488,8 +8488,9 @@ function visJobValg(id, kunTrae, kunJob){
   const c=cur(), m=state.chars.find(x=>x.id===id); if(!m) return;
   if(m.job){ lejrToast(`${esc(m.navn)} er allerede i gang med et job.`); return; }
   const l=lager(c);
-  // Job med kunVed (fx at facilitere en aktivitet) startes kun fra bygningen, ikke fra patruljens liste
-  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!j.kunVed || kunJob===jid) && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
+  // Job med kunVed (fx at facilitere en aktivitet) startes kun fra bygningen, ikke fra patruljens liste.
+  // Job med naarBygget (madlavning og bagning) står også på listen, så snart bygningen er bygget.
+  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!j.kunVed || kunJob===jid) && (!j.naarBygget || kunJob===jid || harBygget(c,j.bygning)) && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Byg et ${TRAETYPE[j.trae].navn.toLowerCase()} på lejrpladsen, eller vent, til det er vokset op.`;
     if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
