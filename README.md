@@ -68,7 +68,7 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - **Milepæle** (`LEJR_MILEPAEL`): man rykker kun ind i et nyt trin, når trinnets milepæl er klaret. Ellers stopper niveauet på trinnets sidste niveau, og XP gemmes op. Skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
   - Patruljelejr (5): telt, bålplads, huggeplads, grantræ, løvtræ
   - Tropslejr (10): patruljetelt, lejrkøkken, raftegård, bålplads niveau 3
-  - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, bålbænke, vandstation, kano
+  - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, flagstang, førstehjælpsstation, kano
   - Korpslejr (30): spejderhytte niveau 10, udsigtstårn niveau 10, bagerovn, kæmpeeg, 10 mærker i sølv eller bedre
   - Landslejr (45): svævebane niveau 20, signalmast niveau 20, lejrbutik, lejrradio, tømmerflåde, 15 mærker i sølv eller bedre og 5 i guld
   - Jamboree (60): ridderborg niveau 25, storscene niveau 10, vandrutsjebane, 10 guldmærker inkl. Spejderhistorie
@@ -78,7 +78,7 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 
 ### Guide, byggeliste og job
 - **Guiden** (»💡 Næste skridt« under skiltet) hjælper i gang fra Teltpladsen: først trinene til Patruljelejr (`GUIDE_START`: tag Kniv, sav og økse i bronze → byg grantræ og løvtræ → fæld grantræet → afgren → huggeplads → fæld løvtræet → kløv → Bål i bronze → bålplads → telt), derefter det næste, der mangler i milepælen til næste trin, og til sidst XP (`guideNaeste`). Tryk på den for at se listen og et hint med en »Vis mig«-knap, der fx vælger bygningen eller åbner mærket. Mangler man point, peger den på Træning.
-- **Byggelisten** viser normalt kun det, man kan bygge lige nu (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én). Knappen »🔒 Vis også det, du ikke kan bygge endnu« viser resten.
+- **Byggelisten** viser normalt kun det, man kan bygge lige nu (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én). Knappen »🔒 Vis også det, du ikke kan bygge endnu« øverst i listen (lige under kategorierne) viser resten.
 - **Lagerplads ved job:** kan lageret ikke rumme hele udbyttet af et job (job, der allerede er i gang, regnes med), står der en advarsel i joblisten, man skal bekræfte, før jobbet startes, og jobbet viser »⚠️ Ikke plads på lageret« under Patrulje og opgaver (`lagerTab`, `jobTab`).
 - **Job ved bygningen:** »Facilitér en aktivitet«, »Lav mad i lejrkøkkenet« og »Bag brød i bagerovnen« (`kunVed`) står ikke i patruljens jobliste – de startes fra bygningen.
 

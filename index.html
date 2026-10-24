@@ -7260,6 +7260,7 @@ function byggelisteHTML(c){
   // Normalt vises kun det, man kan bygge (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én)
   const kanByg = b => harKrav(c,b) && harLejrNiv(c,b) && !(b.en && bygget.has(b.id));
   let skjult=0, vist=0;
+  h += `<!--VISLAASTE-->`;
   for(const k of kats){
     if(lejrKat!=="alle" && lejrKat!==k.id) continue;
     const ting=k.ting.map(id=>BYGID[id]).filter(Boolean), synlige=lejrVisLaaste ? ting : ting.filter(kanByg);
@@ -7282,8 +7283,9 @@ function byggelisteHTML(c){
     h += `</div>`;
   }
   if(!vist) h += `<p class="muted center" style="margin:16px 0">Der er ikke noget, du kan bygge her lige nu.</p>`;
-  if(skjult || lejrVisLaaste) h += `<button class="btn secondary" data-a="vislaaste">${lejrVisLaaste?"🙈 Skjul det, du ikke kan bygge endnu":`🔒 Vis også det, du ikke kan bygge endnu (${skjult})`}</button>`;
-  return h;
+  // Knappen til at vise/skjule låste ting står øverst, lige under kategorierne
+  const knap = skjult || lejrVisLaaste ? `<button class="btn secondary" data-a="vislaaste" style="margin:0 0 8px">${lejrVisLaaste?"🙈 Skjul det, du ikke kan bygge endnu":`🔒 Vis også det, du ikke kan bygge endnu (${skjult})`}</button>` : "";
+  return h.replace("<!--VISLAASTE-->", knap);
 }
 
 function startLejrUr(){
@@ -8803,7 +8805,7 @@ function trinNytListe(fra, til){
 const LEJR_MILEPAEL = {
   5:   [{byg:"telt"},{byg:"baal"},{byg:"huggeplads"},{byg:"gran"},{byg:"loevtrae"}],
   10:  [{byg:"patruljetelt"},{byg:"koekken"},{byg:"raftegaard"},{byg:"baal",niv:3}],
-  20:  [{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt"},{byg:"baalbaenke"},{byg:"vandstation"},{byg:"kano"}],
+  20:  [{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt"},{byg:"flag"},{byg:"forstehjalp"},{byg:"kano"}],
   30:  [{byg:"hytte",niv:10},{byg:"taarn",niv:10},{byg:"bagerovn"},{byg:"kongeeg"},{maerker:2,antal:10}],
   45:  [{byg:"svaevebane",niv:20},{byg:"radiomast",niv:20},{byg:"lejrbutik"},{byg:"lejrradio"},{byg:"sejlbaad"},{maerker:2,antal:15},{maerker:3,antal:5}],
   60:  [{byg:"ridderborg",niv:25},{byg:"storscene",niv:10},{byg:"vandrutsjebane"},{maerker:3,antal:10},{emne:"historie",lvl:3}],
