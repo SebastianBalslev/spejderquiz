@@ -83,9 +83,9 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - **Job ved bygningen:** »Facilitér en aktivitet«, »Lav mad i lejrkøkkenet« og »Bag brød i bagerovnen« (`kunVed`) står ikke i patruljens jobliste – de startes fra bygningen.
 
 ### Trin og plads
-Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens størrelse (`r` × `k`), antal vandfelter (`vand`), det højeste bygningsniveau (`maxByg`), den højeste medalje (`medalje`) og lagerpladsen (`grund` + lagerbygningens niveau × `prNiv`):
+Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens størrelse (`r` × `k`), antal vandfelter (`vand`), den højeste medalje (`medalje`) og lagerpladsen (`grund` + lagerbygningens niveau × `prNiv`):
 
-| Niveau | Trin | Rækker × kolonner | Vand | Højeste bygningsniveau | Medalje | Lager grund | + pr. lagerniveau |
+| Niveau | Trin | Rækker × kolonner | Vand | Materialeloft (`maxByg`) | Medalje | Lager grund | + pr. lagerniveau |
 |---|---|---|---|---|---|---|---|
 | 1 | Teltplads | 3 × 3 | 1 | 3 | bronze | 10 | 0 |
 | 5 | Patruljelejr | 4 × 4 | 3 | 5 | sølv | 12 | 2 |
@@ -131,7 +131,7 @@ Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 Når man bygger, flytter eller stiller noget ud, står bygningens regler i bjælken øverst, fx »📏 Må ikke stå ved siden af telte, hytter, træer eller brændeskuret – heller ikke på skrå« (`regelLinjer`), og de forbudte felter er røde, og et tryk på et rødt felt viser reglen og en kort spejderforklaring (`nyeBrud`, `brudTekst`). Man kan ikke bygge, flytte eller rive ned, hvis det bryder en regel (fx en bålplads, som et køkken står ved). Man kan ikke selv pakke ting ned – men bygninger fra gamle spil, der ikke kan stå på pladsen eller bryder en regel, pakkes automatisk i **materielvognen** (`tilpasLejr`) og kan stilles ud igen under Byg.
 
 ### Økonomi
-- Bygningerne kan højst opgraderes til trinnets `maxByg` (3 på Teltpladsen, 5 i Patruljelejren, 10 i Tropslejren osv.). Fra niveau 4 kræver en opgradering et bedre mærke i bygningens emne – sølv for niveau 4-5 (Patruljelejren) og guld fra niveau 6 (Tropslejren), så kravet aldrig er højere end den medalje, trinnet tillader (`kravNiv` i `opgKost`).
+- Der er ingen grænse for, hvor højt bygningerne kan opgraderes på de enkelte trin. Fra niveau 4 kræver en opgradering et bedre mærke i bygningens emne – sølv for niveau 4-5 og guld fra niveau 6 (`kravNiv` i `opgKost`). Så længe patruljen ikke kan tage mærket i den medalje, er opgraderingen låst. `maxByg` bruges kun til materialeloftet: en opgradering kræver højst 80 % af lageret i det trin, hvor niveauet hører til, og aldrig mere, end lageret kan rumme på patruljens nuværende trin.
 - Ingen opgradering kræver flere materialer, end lageret kan rumme: materialeprisen er højst 80 % af en fuldt udbygget lagerbygning i det trin, hvor niveauet bliver muligt (`opgKost`).
 - Teltpladsens milepæl kan nås fra start: fæld et grantræ → afgren det (2 rafter) → byg en huggeplads → fæld et løvtræ → kløv det (4 brænde) → byg en bålplads. Grantræer og løvtræer kræver intet mærke, og fældning kræver Kniv, sav og økse i bronze.
 - Det er tjekket, at alt, der kan bygges og opgraderes på hvert trin, kan være på lageret, at milepælenes bygninger er låst op i tide, og at hver milepæl kan placeres på det forrige trins plads uden at bryde en placeringsregel.
@@ -152,7 +152,7 @@ Det er patruljelederens (eller den aktive spejders) lejrniveau, der tæller (`le
 - **Højeste mærke** følger trinnets `medalje`: bronze på Teltpladsen, sølv i Patruljelejren og guld fra Tropslejren. Efter en bestået prøve er der kun en knap til næste niveau, hvis det er låst op – ellers står der, hvilket trin der låser det op. Det samme gælder knappen, når man trykker på et mærke på uniformen.
 - Låste emner står som »🔒 Låses op i Patruljelejr« på mærkesiden og i træningen. Ugens udfordring, spejdermødet, patruljetiden, lejrbålsquizzen og vidensposterne på løbene tager kun spørgsmål fra de åbne emner – så længe der er færre end 10 åbne emner, tager ugens udfordring nogle emner to gange med forskellige spørgsmål.
 - **Adventureløb** (`LOEB_NIV`): løb 1 kræver lejrniveau 5, løb 2 → 8, 3 → 10, 4 → 14, 5 → 17, 6 → 20, 7 → 25, 8 → 30, 9 → 45 og 10 → 60, og det forrige løb skal stadig være gennemført. Låste løb står med »🔒 Lejrniveau 14« på patruljesiden.
-- Skiltet og fejringen af et nyt trin viser alt nyt: pladsen, bygningsniveau, medalje, emner, løb og bygninger (`trinNytListe`).
+- Skiltet og fejringen af et nyt trin viser alt nyt: pladsen, medalje, emner, løb og bygninger (`trinNytListe`).
 
 ### Oprydning i bygningerne
 Nogle bygninger er fjernet eller lagt sammen (`GAMMEL`, `FJERNET` og `FLET`). Gemte spil ryddes op én gang (`migrerLejr`, styret af `lejrV`), og spilleren får én samlet besked:

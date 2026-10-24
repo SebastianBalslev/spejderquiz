@@ -8628,10 +8628,11 @@ function opgKost(c, b, ny){
   // Afgreningsstationen kræver flere materialer i de første niveauer (pointprisen er normal): dobbelt til niveau 2, og tillægget aftager jævnt til 0 ved niveau 11
   const ekstra = DYR_START[b.id] && ny<=10 ? 1 + (11-ny)/9 : 1;
   // Ingen opgradering må kræve mere, end lageret kan rumme i det trin, hvor niveauet bliver muligt (højst 80 % af en fuldt udbygget lagerbygning)
-  const tr=LEJR_TRIN.find(t=>t.maxByg>=ny) || LEJR_TRIN[LEJR_TRIN.length-1], loft=Math.floor(lagerKap(tr, tr.maxByg)*0.8);
-  // Fra niveau 4 kræver opgraderingen et bedre mærke i bygningens emne – men aldrig mere, end det trin, hvor niveauet bliver muligt, tillader
-  // (Patruljelejr: sølv, fra Tropslejr: guld)
-  const kravNiv = b.krav && ny>=4 ? Math.max(b.krav[1], tr.medalje) : 0;
+  // – og aldrig mere, end lageret overhovedet kan rumme på patruljens nuværende trin, så alle niveauer kan nås
+  const tr=LEJR_TRIN.find(t=>t.maxByg>=ny) || LEJR_TRIN[LEJR_TRIN.length-1], nu=lejrTrin((c||{}).lejrNivMax||1);
+  const loft=Math.max(1, Math.floor(Math.min(lagerKap(tr, tr.maxByg), lagerKap(nu, MAKSNIV))*0.8));
+  // Fra niveau 4 kræver opgraderingen et bedre mærke i bygningens emne: sølv til niveau 4-5 og guld fra niveau 6
+  const kravNiv = b.krav && ny>=4 ? Math.max(b.krav[1], ny>=6 ? 3 : 2) : 0;
   return { p, m: Object.fromEntries(Object.entries(m).map(([k,n])=>[k, Math.min(loft, k==="mad" ? n : Math.ceil(n*ekstra))])), tid, kravNiv };
 }
 // Hvad en bygning giver på et bestemt niveau (tom streng = ingen fordel ud over udseendet)
@@ -8681,8 +8682,6 @@ function opgHTML(c, i){
   const nt=naesteTrinNiv(n), tt=trinTekst(b,nivTrin(n));
   let h = `<div class="opgniv"><span class="nivstort">${n}</span><b>Niveau ${n} af ${MAKSNIV}: ${nivNavn(n)}</b><div class="nivbar"><i style="width:${n/MAKSNIV*100}%"></i></div>${tt?`<small>${tt}</small>`:""}${nt?`<small>✨ Skifter udseende på niveau ${nt}: ${nivNavn(nt)}</small>`:""}</div>`;
   if(n>=MAKSNIV) return h + `<p class="muted psmall" style="margin:4px 0 10px">🏆 ${b.navn} er på højeste niveau.</p>`;
-  const tr=lejrTrin(c.lejrNivMax||1), nt2=naesteTrin(c.lejrNivMax||1);
-  if(n>=tr.maxByg) return h + `<p class="muted psmall" style="margin:4px 0 10px">🔒 På en ${tr.navn.toLowerCase()} kan bygningerne højst komme op på niveau ${tr.maxByg}.${nt2?` Når lejrpladsen bliver en ${nt2.navn.toLowerCase()} (niveau ${nt2.niv}), kan de komme op på niveau ${nt2.maxByg}.`:""}</p>`;
   const k=opgKost(c,b,n+1), mangler=[];
   if(lejrPoint(c)<k.p) mangler.push(`${k.p-lejrPoint(c)} point`);
   if(!harMat(c,k.m)) mangler.push(matTekst(manglerMat(c,k.m)) + (manglerMat(c,k.m).mad ? " (lav mad i lejrkøkkenet eller bag brød i bagerovnen)" : ""));
@@ -8695,7 +8694,7 @@ function opgHTML(c, i){
 }
 function opgrader(c, i){
   const b=BYGID[c.lejr[i]], n=lejrNiv(c,i), k=opgKost(c,b,n+1);
-  if(n>=MAKSNIV || n>=lejrTrin(c.lejrNivMax||1).maxByg || lejrPoint(c)<k.p || !harMat(c,k.m) || (k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv)) return;
+  if(n>=MAKSNIV || lejrPoint(c)<k.p || !harMat(c,k.m) || (k.kravNiv && (c.badges[b.krav[0]]||0)<k.kravNiv)) return;
   c.brugt=(c.brugt||0)+k.p; brugMat(c,k.m,-1);
   const inv = c.lejrInv[i] || (c.lejrInv[i]={ p:b.pris, m:{ ...(BYGMAT[b.id]||{}) } });
   inv.p += k.p; Object.entries(k.m).forEach(([mm,x])=>{ inv.m[mm]=(inv.m[mm]||0)+x; });
@@ -8726,7 +8725,8 @@ function lejrXPKrav(n){
   const v=LEJR_XP_ANKER[lo]*Math.pow(LEJR_XP_ANKER[hi]/LEJR_XP_ANKER[lo], (n-lo)/(hi-lo));
   return Math.round(v/10)*10;
 }
-// Trinnene styrer pladsens størrelse (r × k), antal vandfelter, højeste bygningsniveau (maxByg), højeste medalje,
+// Trinnene styrer pladsens størrelse (r × k), antal vandfelter, højeste medalje,
+// (maxByg er ikke længere en grænse for opgraderinger – det bruges kun til materialeloftet i opgKost),
 // lagerplads (grund + lagerbygningens niveau × prNiv) og milepælen for at komme ind i trinnet (mil).
 const LEJR_TRIN = [
   { niv:1,   ikon:"⛺", navn:"Teltplads",       r:3,  k:3, vand:1,  maxByg:3,  medalje:1, grund:10,  prNiv:0, tema:"Et telt, et bål og et par træer – lejren er begyndt." },
@@ -8786,7 +8786,6 @@ function aabneSpg(c){ return SPORGSMAL.filter(q=>emneAaben(c,q.emne)); }
 function trinNytListe(fra, til){
   const a=lejrTrin(fra), b=lejrTrin(til), ud=[];
   if(a.r!==b.r || a.k!==b.k) ud.push(`↕️ Pladsen vokser til ${b.r} × ${b.k} felter`);
-  if(b.maxByg>a.maxByg) ud.push(`⬆️ Bygninger kan komme op på niveau ${b.maxByg}`);
   if(b.medalje>a.medalje) ud.push(`🏅 Mærker i ${NIVEAUER[b.medalje].navn.toLowerCase()}`);
   const emner=EMNER.filter(e=>(EMNE_TRIN[e.id]||1)>fra && (EMNE_TRIN[e.id]||1)<=til); if(emner.length) ud.push(`📚 Nye emner: ${emner.map(e=>e.navn).join(", ")}`);
   const loeb=Object.keys(LOEB_NIV).filter(nr=>LOEB_NIV[nr]>fra && LOEB_NIV[nr]<=til && LOEBNR[nr]); if(loeb.length) ud.push(`🗺️ Adventureløb: ${loeb.map(nr=>LOEBNR[nr].navn).join(", ")}`);
