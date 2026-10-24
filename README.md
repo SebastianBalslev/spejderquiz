@@ -68,6 +68,7 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - **Milepæle** (`LEJR_MILEPAEL`): man rykker kun ind i et nyt trin, når trinnets milepæl er klaret. Ellers stopper niveauet på trinnets sidste niveau, og XP gemmes op. Skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
   - Patruljelejr (5): telt, bålplads, huggeplads, grantræ, løvtræ
   - Tropslejr (10): patruljetelt, lejrkøkken, raftegård, bålplads niveau 3
+  - Stor tropslejr (15): lejrport, lejrbålsplads, vejviser
   - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, flagstang, førstehjælpsstation, kano
   - Korpslejr (30): spejderhytte niveau 10, udsigtstårn niveau 10, bagerovn, kæmpeeg, 10 mærker i sølv eller bedre
   - Landslejr (45): svævebane niveau 20, signalmast niveau 20, lejrbutik, lejrradio, tømmerflåde, 15 mærker i sølv eller bedre og 5 i guld
@@ -90,13 +91,14 @@ Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens større
 | 1 | Teltplads | 3 × 3 | 1 | 3 | bronze | 10 | 0 |
 | 5 | Patruljelejr | 4 × 4 | 3 | 5 | sølv | 12 | 2 |
 | 10 | Tropslejr | 6 × 6 | 6 | 10 | guld | 20 | 3 |
-| 20 | Divisionslejr | 8 × 6 | 8 | 20 | guld | 40 | 4 |
+| 15 | Stor tropslejr | 8 × 6 | 8 | 15 | guld | 30 | 3 |
+| 20 | Divisionslejr | 9 × 6 | 9 | 20 | guld | 40 | 4 |
 | 30 | Korpslejr | 10 × 6 | 10 | 35 | guld | 80 | 5 |
 | 45 | Landslejr | 12 × 6 | 12 | 50 | guld | 120 | 6 |
 | 60 | Jamboree | 14 × 6 | 14 | 75 | guld | 160 | 7 |
 | 100 | Verdensjamboree | 16 × 6 | 16 | 99 | guld | 200 | 7 |
 
-- Pladsen er 6 felter bred fra Tropslejr og vokser nedad. Søen ligger i øverste højre hjørne: (0,2) på 3 × 3, (0,2), (0,3) og (1,3) på 4 × 4 og 2 × 3 felter fra 6 × 6. Derefter løber den som en å ned langs højre kant – 2 felter pr. 2 nye rækker (`vandMoenster`). Når pladsen udvides, bliver et felt, der var land, aldrig til vand (`vandSaet` sørger for det, også hvis mønsteret ændres). Kun feltet (0,2) går fra sø til land, når pladsen bliver 6 × 6.
+- Pladsen er 6 felter bred fra Tropslejr og vokser nedad. Søen ligger i øverste højre hjørne: (0,2) på 3 × 3, (0,2), (0,3) og (1,3) på 4 × 4 og 2 × 3 felter fra 6 × 6. Derefter løber den som en å ned langs højre kant – 1 felt pr. ny række fra række 7 (`vandMoenster`). Når pladsen udvides, bliver et felt, der var land, aldrig til vand (`vandSaet` sørger for det, også hvis mønsteret ændres). Kun feltet (0,2) går fra sø til land, når pladsen bliver 6 × 6.
 - Et felt gemmes som (række, kolonne) i ét tal: række × 6 + kolonne (`felt`, `feltR`, `feltK`), så placeringerne står fast, når pladsen vokser. Størrelse og vand regnes ud fra lejrniveauet (`lejrStr`, `lejrKol`, `lejrRaekker`, `erVand`).
 - Når pladsen vokser, popper de nye felter frem med en animation.
 - **Materielvognen** (`vogn`) er et lager uden for pladsen. Bygninger, der ikke kan stå på pladsen (uden for pladsen eller på et felt, der er blevet til vand), pakkes ned med niveau, opgradering og byggetid intakt (`tilpasLejr`, `pakNed`) og står øverst i Byg-panelet, hvor de kan stilles ud igen (`stilUd`).
