@@ -68,8 +68,8 @@ Lejrpladsen har ét samlet niveau, som vises på skiltet øverst på lejrpladsen
 - **Milepæle** (`LEJR_MILEPAEL`): man rykker kun ind i et nyt trin, når trinnets milepæl er klaret. Ellers stopper niveauet på trinnets sidste niveau, og XP gemmes op. Skiltet viser præcist, hvad der mangler (nuværende og krævet niveau).
   - Patruljelejr (5): telt, bålplads, huggeplads, grantræ, løvtræ
   - Tropslejr (10): patruljetelt, lejrkøkken, raftegård, bålplads niveau 3
-  - Stor tropslejr (15): lejrport, lejrbålsplads, vejviser
-  - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, flagstang, førstehjælpsstation, kano
+  - Stor tropslejr (15): lejrport, lejrbålsplads, vejviser, latrin
+  - Divisionslejr (20): lejrport niveau 5, lejrbålsplads niveau 3, spisetelt, flagstang, førstehjælpsstation, vandstation, kano
   - Korpslejr (30): spejderhytte niveau 10, udsigtstårn niveau 10, bagerovn, kæmpeeg, 10 mærker i sølv eller bedre
   - Landslejr (45): svævebane niveau 20, signalmast niveau 20, lejrbutik, lejrradio, tømmerflåde, 15 mærker i sølv eller bedre og 5 i guld
   - Jamboree (60): ridderborg niveau 25, storscene niveau 10, vandrutsjebane, 10 guldmærker inkl. Spejderhistorie
@@ -90,8 +90,8 @@ Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens større
 |---|---|---|---|---|---|---|---|
 | 1 | Teltplads | 3 × 3 | 1 | 3 | bronze | 10 | 0 |
 | 5 | Patruljelejr | 4 × 4 | 3 | 5 | sølv | 12 | 2 |
-| 10 | Tropslejr | 6 × 6 | 6 | 10 | guld | 20 | 3 |
-| 15 | Stor tropslejr | 8 × 6 | 8 | 15 | guld | 30 | 3 |
+| 10 | Tropslejr | 6 × 6 | 6 | 10 | guld | 20 | 2 |
+| 15 | Stor tropslejr | 8 × 6 | 8 | 15 | guld | 20 | 2 |
 | 20 | Divisionslejr | 9 × 6 | 9 | 20 | guld | 40 | 4 |
 | 30 | Korpslejr | 10 × 6 | 10 | 35 | guld | 80 | 5 |
 | 45 | Landslejr | 12 × 6 | 12 | 50 | guld | 120 | 6 |
