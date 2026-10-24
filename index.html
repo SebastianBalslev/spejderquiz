@@ -8490,7 +8490,8 @@ function visJobValg(id, kunTrae, kunJob){
   const l=lager(c);
   // Job med kunVed (fx at facilitere en aktivitet) startes kun fra bygningen, ikke fra patruljens liste.
   // Job med naarBygget (madlavning og bagning) står også på listen, så snart bygningen er bygget.
-  const muligheder = Object.entries(JOB).filter(([jid,j])=>!j.hold && (!j.kunVed || kunJob===jid) && (!j.naarBygget || kunJob===jid || harBygget(c,j.bygning)) && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
+  // Madlavning og bagning står nederst, så tovværksjobbene står samlet
+  const muligheder = Object.entries(JOB).sort(([,a],[,b])=>!!a.naarBygget-!!b.naarBygget).filter(([jid,j])=>!j.hold && (!j.kunVed || kunJob===jid) && (!j.naarBygget || kunJob===jid || harBygget(c,j.bygning)) && (!kunTrae || j.trae===kunTrae) && (!kunJob || jid===kunJob)).map(([jid,j])=>{
     let grund="";
     if(j.trae && ledigtTrae(c,j.trae)<0) grund = `Der er ingen voksne ${TRAETYPE[j.trae].flertal} at fælde. Byg et ${TRAETYPE[j.trae].navn.toLowerCase()} på lejrpladsen, eller vent, til det er vokset op.`;
     if(j.bruger && !harMat(c,jobBruger(c,jid))) grund = `Kræver ${matTekst(jobBruger(c,jid))} på lageret.`;
