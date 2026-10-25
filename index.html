@@ -8335,8 +8335,8 @@ function tjekArbejde(c){
     if(m.job && m.job.slut<=nu){
       const j=JOB[m.job.id], giver=m.job.giver || j.giver||{}; brugMat(c, giver, 1);
       if(m.job.point) c.point = (c.point||0) + m.job.point;
-      // At facilitere en aktivitet giver også lejr-XP: 10 % af pointene
-      if(m.job.point && m.job.id==="facilitere") c.aktXP = (c.aktXP||0) + Math.round(m.job.point*LEJR_XP_FACIL);
+      // At facilitere en aktivitet giver også lejr-XP: 1 XP pr. niveau på aktivitetspladsen
+      if(m.job.id==="facilitere") c.aktXP = (c.aktXP||0) + Math.max(1, bygNiv(c,"aktivitetsplads"));
       if(j.hold && m.job.point && m.job.id==="flaadetur") giverSaerMaerke(c, "flaade24");
       // Træet vokser automatisk op igen på samme felt, når det er fældet
       if(m.job.felt!=null && traeType(lejrFelter(c)[m.job.felt])) tr[m.job.felt] = { vokser: m.job.slut + GENVAEKST*1000 };
@@ -8894,7 +8894,6 @@ function regelLinjer(id){
 function brudTekst(liste){ const r=liste[0]; return `🚫 <b>${r.navn}.</b> ${r.forkl}`; }
 function saetKomplet(c, s){ return s.ting.every(id=>bygFelter(c,id).length>0); }
 // Alle XP og hvor de kommer fra
-const LEJR_XP_FACIL = 0.1;   // andel af faciliteringspoint, der også bliver til lejr-XP
 function lejrXP(c){
   const f=lejrFelter(c); let byg=0; const ids=new Set();
   const tael=(b,niv)=>{ let p=b.pris; for(let n=2; n<=niv; n++) p += opgKost(c,b,n).p; byg += p/10; ids.add(b.id); };
@@ -8904,7 +8903,7 @@ function lejrXP(c){
   const bredde = ids.size*LEJR_XP_BREDDE;
   const saet = LEJR_SAET.filter(s=>saetKomplet(c,s));
   const maerker = EMNER.reduce((n,e)=>n+LEJR_XP_MAERKE[c.badges[e.id]||0], 0);
-  const aktiv = Math.round(c.aktXP||0);   // point fra aktiviteter (snobrød, kano, spisetelt …) og 10 % af faciliteringer
+  const aktiv = Math.round(c.aktXP||0);   // point fra aktiviteter (snobrød, kano, spisetelt …) og faciliteringer (1 XP pr. niveau på aktivitetspladsen)
   return { byg, bredde, arter:ids.size, saet, saetXP:saet.length*LEJR_XP_SAET, maerker, aktiv, total: byg + bredde + saet.length*LEJR_XP_SAET + maerker + aktiv };
 }
 // Status for ét punkt i en milepæl: { tekst, ok, nu, krav }
@@ -8994,7 +8993,7 @@ function visLejrSkilt(){
       <tr><td>🌈 ${xp.arter} forskellige slags × ${LEJR_XP_BREDDE}</td><td>${fmt(xp.bredde)}</td></tr>
       <tr><td>🧩 ${xp.saet.length} af ${LEJR_SAET.length} sæt × ${LEJR_XP_SAET}</td><td>${fmt(xp.saetXP)}</td></tr>
       <tr><td>🏅 Mærker (bronze 30, sølv 60, guld 100)</td><td>${fmt(xp.maerker)}</td></tr>
-      <tr><td>🎯 Aktiviteter (point fra aktiviteter, 10 % af faciliteringer)</td><td>${fmt(xp.aktiv)}</td></tr></table>
+      <tr><td>🎯 Aktiviteter (point fra aktiviteter + faciliteringer)</td><td>${fmt(xp.aktiv)}</td></tr></table>
     ${n<LEJR_MAKS?`<p class="muted psmall">Niveau ${n+1} kræver ${fmt(lejrXPKrav(n+1))} XP${xp.total<lejrXPKrav(n+1)?` – ${fmt(lejrXPKrav(n+1)-xp.total)} mere`:""}.</p>`:""}
     ${nt?`<h3>${nt.ikon} Milepæl til ${nt.navn} (niveau ${nt.niv})</h3>
       <ul class="insp">${mil.map(p=>`<li class="${p.ok?"ok":""}">${p.ok?"✅":"❌"} <b>${p.tekst}</b><small>Nu: ${p.nu}${p.ok?"":` · kræver ${p.krav}`}</small></li>`).join("")}</ul>
