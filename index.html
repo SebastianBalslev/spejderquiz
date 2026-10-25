@@ -9157,7 +9157,7 @@ function dagBelon(c, id, pts){
   const d=dagens(c); d.dagb=d.dagb||{};
   if(d.dagb[id]) return `<small class="muted">Dagens belønning herfra er allerede hentet – kom igen i morgen.</small>`;
   if(nav.screen==="akt" && nav.params.i!=null){ const n=lejrNiv(c, nav.params.i)-1; pts += Math.min(n,4) + Math.floor(n/10); }
-  d.dagb[id]=1; c.point=(c.point||0)+pts; save();
+  d.dagb[id]=1; c.point=(c.point||0)+pts; c.aktXP=(c.aktXP||0)+pts; save();   // tæller også som lejr-XP
   return `<b class="plus">+${pts} point</b>`;
 }
 // Ét forsøg om dagen på dagens opgave (spørgsmål, pejling, opkald …)
