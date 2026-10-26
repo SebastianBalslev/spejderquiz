@@ -399,6 +399,21 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 .celle.vand{background:transparent}
+/* Dag og nat (lysHTML): ét lag over pladsen */
+.lys{position:absolute;inset:0;border-radius:22px;pointer-events:none;z-index:50;overflow:hidden}
+.lys .tone{position:absolute;inset:0}.lys .lyspos{position:absolute;inset:8px}
+.lys.morgen .tone{background:linear-gradient(180deg,rgba(255,236,214,.28),rgba(214,232,255,.18));mix-blend-mode:soft-light}
+.lys.aften .tone{background:linear-gradient(180deg,rgba(255,150,70,.32),rgba(150,70,40,.22));mix-blend-mode:multiply}
+.lys.nat .tone{background:radial-gradient(ellipse at 50% 40%,rgba(28,40,86,.62),rgba(10,16,44,.8));mix-blend-mode:multiply}
+.lys i{position:absolute;display:block;transform:translate(-50%,-50%);border-radius:50%}
+.lys .lysplet{width:calc(var(--c)*1.5);aspect-ratio:1;background:radial-gradient(closest-side,rgba(255,196,110,.75),rgba(255,150,60,.25) 55%,rgba(255,150,60,0));mix-blend-mode:screen}
+.lys .lysplet.stor{width:calc(var(--c)*2.6)}.lys .lysplet.lille{width:calc(var(--c)*.55);background:radial-gradient(closest-side,rgba(255,232,140,.9),rgba(255,210,110,0))}
+.lys.aften .lysplet{opacity:.75}.lys.aften .lysplet.stor{width:calc(var(--c)*2)}
+.lys .stjerne{width:3px;height:3px;background:#fff;box-shadow:0 0 4px 1px rgba(255,255,255,.7)}
+.lys .stjerne.lev{animation:blinke 3.6s ease-in-out infinite}@keyframes blinke{50%{opacity:.2;transform:translate(-50%,-50%) scale(.6)}}
+.lys .dug{width:3px;height:3px;background:rgba(255,255,255,.95);box-shadow:0 0 3px 1px rgba(220,240,255,.8)}
+.lys .taage{left:-30%;width:160%;height:26%;border-radius:50%;transform:none;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(255,255,255,0));animation:taage 46s ease-in-out infinite alternate}
+@keyframes taage{to{transform:translateX(18%)}}
 /* Spejderne på pladsen (spejdereHTML) */
 .spejdere{position:absolute;inset:8px;pointer-events:none}
 .spejderfig{position:absolute;width:clamp(20px,6.4vw,30px);transform:translate(-50%,-100%);border:none;background:none;padding:0;line-height:0;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.3))}
@@ -7393,10 +7408,10 @@ function scrLejr(){
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
-  h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
+  h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${stierHTML(c, str)}${soeHTML(c, str)}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
-  // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 3 skorstene/bål, flammeskær på højst 3 bål og vajende flag på højst 4 felter
+  // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 2 skorstene/bål, flammeskær på højst 2 bål og vajende flag på højst 3 felter
   const liv=lejrLiv(c), dk=lejrDaekket(c), flytFra = lejrValg && lejrValg.type==="flyt" ? lejrValg.idx : null;
   for(const i of lejrAlleFelter(c)){
     // Felter, en stor bygning dækker, tegnes ikke – bygningen strækker sig hen over dem fra sit anker
@@ -7423,8 +7438,8 @@ function scrLejr(){
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
     h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
-  h += besoegHTML(c) + spejdereHTML(c, str);
-  if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
+  h += besoegHTML(c) + spejdereHTML(c, str) + lysHTML(c, str);
+  if((c.badges.fugle||0)>=3 && lejrDoegn()!=="nat") h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
   // Knapper i bunden og panelerne, de åbner
@@ -7440,7 +7455,7 @@ function scrLejr(){
 }
 /* Spejdere på pladsen: 1-5 af patruljens figurer. Med et job står de ved stedet (i skoven ved træet, de fælder, ved huggepladsen,
    køkkenet …). Uden job sidder de ved bålet om aftenen, én padler i kanoen om dagen, og de andre går langsomt mellem bygningerne
-   (højst 3 går ad gangen). Om natten sover de, der har fri, i teltene. Tryk på en figur for at se, hvem det er, og hvad de laver. */
+   (højst 2 går ad gangen). Om natten sover de, der har fri, i teltene. Tryk på en figur for at se, hvem det er, og hvad de laver. */
 const JOB_STED = { afgren:["afgrening","raftegaard"], kloev:["huggeplads"], fibre:["loevtrae","gran","blomster"], sno:["rebmaskine","materialeskur"], takle:["rebmaskine","materialeskur"],
   madlav:["koekken"], bag:["bagerovn"], facilitere:["aktivitetsplads"], flaadetur:["sejlbaad"] };
 function lejrDoegn(){ const t=new Date().getHours(); return t>=5 && t<9 ? "morgen" : t>=9 && t<18 ? "dag" : t>=18 && t<23 ? "aften" : "nat"; }
@@ -7463,7 +7478,7 @@ function spejdereHTML(c, str){
     } else if(tid==="nat"){ return ""; }   // sover i teltet
     else if(tid==="aften" && baal!=null && vedBaal<4){ const p=foran(baal); pos=[p[0]+[-.42,.42,-.2,.2][vedBaal], p[1]+(vedBaal<2?-.18:.1)]; vedBaal++; cls="sidder"; tekst="sidder ved bålet og synger"; }
     else if(tid!=="aften" && kano!=null && !padler){ padler=true; pos=[feltK(kano)+.5, feltR(kano)+.66]; cls="padler lev"; tekst="padler en tur i kanoen"; }
-    else if(klar.length && gaar<3){
+    else if(klar.length && gaar<2){
       const land=klar.filter(i=>!erVand(i,c)); if(!land.length) return "";
       const a=land[(slot+n*3)%land.length]; let b=land[(slot+n*3+1+n)%land.length];
       const pa=foran(a,.3), pb=foran(b,-.3); if(a===b || vandPaaVej(pa,pb)) pos=pa; else { gaar++; cls="gaar lev"; stil=`--x1:${(pa[0]/str.k*100).toFixed(1)}%;--y1:${(pa[1]/str.r*100).toFixed(1)}%;--x2:${(pb[0]/str.k*100).toFixed(1)}%;--y2:${(pb[1]/str.r*100).toFixed(1)}%;animation-duration:${26+n*5}s;`; }
@@ -7473,6 +7488,30 @@ function spejdereHTML(c, str){
     return `<button class="spejderfig ${cls}" data-a="spejderpaa" data-id="${m.id}" data-v="${esc(tekst)}" style="left:${(pos[0]/str.k*100).toFixed(1)}%;top:${(pos[1]/str.r*100).toFixed(1)}%;z-index:${z};${stil}" aria-label="${esc(m.navn)} ${esc(tekst)}">${avatarSVG(m.look,null,0,"10 24 180 170")}</button>`;
   }).join("");
   return ud ? `<div class="spejdere">${ud}</div>` : "";
+}
+/* Dag og nat efter telefonens ur (lejrDoegn): morgen med dug og let tåge, dag, aften med varmt lys, hvor bål og lanterner lyser,
+   og nat med mørk overflade, lyspletter fra bål og lanterner og stjerner over søen. Ét lag over pladsen – kun få ting er animeret. */
+function lysHTML(c, str){
+  const tid=lejrDoegn(); if(tid==="dag") return "";
+  const f=lejrFelter(c), h=(i,s)=>{ let x=(i*2654435761 ^ s*40503)>>>0; x=(x^(x>>>13))>>>0; return (x%1000)/1000; };
+  const pct=(x,y)=>`left:${(x/str.k*100).toFixed(1)}%;top:${(y/str.r*100).toFixed(1)}%`;
+  let ind="";
+  if(tid==="morgen"){
+    // Dug: små glimt på græsset – og to tågebanker, der driver langsomt
+    lejrAlleFelter(c).filter(i=>!f[i] && !erVand(i,c) && h(i,21)<.5).forEach(i=>{ ind+=`<i class="dug" style="${pct(feltK(i)+.2+h(i,22)*.6, feltR(i)+.3+h(i,23)*.6)}"></i>`; });
+    ind += `<i class="taage lev" style="top:18%"></i><i class="taage lev" style="top:58%;animation-delay:-20s"></i>`;
+  } else {
+    // Lyspletter: bål (størst), køkken og bagerovn – og lanterner på bygninger fra trin 6
+    const klar=Object.keys(f).map(Number).filter(i=>BYGID[f[i]] && !underByg(c,i) && iPladsen(i,c));
+    klar.forEach(i=>{ const s=bygStr(BYGID[f[i]]), cx=feltK(i)+s.k/2, cy=feltR(i)+s.r*.62;
+      if(FLAMME_BYG.includes(f[i])) ind+=`<i class="lysplet stor" style="${pct(cx,cy)}"></i>`;
+      else if(["koekken","bagerovn"].includes(f[i])) ind+=`<i class="lysplet" style="${pct(cx,cy)}"></i>`;
+      if(nivTrin(lejrNiv(c,i))>=6) ind+=`<i class="lysplet lille" style="${pct(feltK(i)+s.k-.1, feltR(i)+.7)}"></i>`; });
+    // Stjerner over søen om natten (få af dem blinker)
+    if(tid==="nat"){ let blink=0; lejrAlleFelter(c).filter(i=>erVand(i,c)).forEach(i=>{ for(let n=0;n<2;n++) if(h(i,30+n)<.7){
+      const b=blink<3 && h(i,40+n)<.25; if(b) blink++; ind+=`<i class="stjerne${b?" lev":""}" style="${pct(feltK(i)+.15+h(i,32+n)*.7, feltR(i)+.15+h(i,34+n)*.7)};animation-delay:${-(h(i,36)*4).toFixed(1)}s"></i>`; } }); }
+  }
+  return `<div class="lys ${tid}" aria-hidden="true"><div class="tone"></div><div class="lyspos" style="--c:${(100/str.k).toFixed(2)}%">${ind}</div></div>`;
 }
 /* Trampestier: slidte stier af trådt græs fra hvert telt til nærmeste bål, latrin og køkken – og fra lejrporten ind til midten.
    Beregnes ud fra placeringen, hver gang pladsen tegnes. Stien går uden om vandet (korteste vej over landfelterne, også på skrå). */
@@ -7512,7 +7551,7 @@ function stierHTML(c, str){
 function soeHTML(c, str){
   const V=new Set(lejrAlleFelter(c).filter(i=>erVand(i,c))); if(!V.size) return "";
   const f=lejrFelter(c), W=(r,k)=>r<0||k<0||r>=str.r||k>=str.k||V.has(felt(r,k));
-  const h=(i,s)=>{ let x=(i*2654435761 ^ s*40503)>>>0; x^=x>>>13; return (x%1000)/1000; };   // fast "tilfældighed" pr. felt
+  const h=(i,s)=>{ let x=(i*2654435761 ^ s*40503)>>>0; x=(x^(x>>>13))>>>0; return (x%1000)/1000; };   // fast "tilfældighed" pr. felt
   const lag=(ind,rad)=>[...V].map(i=>{ const r=feltR(i), k=feltK(i);
     const x0=k+(W(r,k-1)?0:ind+rad), x1=k+1-(W(r,k+1)?0:ind+rad), y0=r+(W(r-1,k)?0:ind+rad), y1=r+1-(W(r+1,k)?0:ind+rad);
     return `<rect x="${x0.toFixed(3)}" y="${y0.toFixed(3)}" width="${(x1-x0).toFixed(3)}" height="${(y1-y0).toFixed(3)}"/>`; }).join("");
@@ -7529,8 +7568,8 @@ function soeHTML(c, str){
     // Åkander på fri vand
     if(h(i,5)<.55){ const x=k+.25+h(i,6)*.5, y=r+.25+h(i,7)*.5, blomst=h(i,8)<.4;
       pynt+=`<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><path class="blad" d="M0 0 L.11 -.04 A.12 .09 0 1 0 .11 .04Z"/>${h(i,9)<.5?`<path class="blad" d="M.2 .14 L.28 .11 A.08 .06 0 1 0 .28 .17Z"/>`:""}${blomst?`<circle class="blomst" cx=".02" cy="-.01" r=".035"/>`:""}</g>`; }
-    // Højst tre langsomme krusninger
-    if(krus<3 && h(i,10)<.45){ krus++; pynt+=`<ellipse class="krus lev" cx="${(k+.3+h(i,11)*.4).toFixed(2)}" cy="${(r+.35+h(i,12)*.3).toFixed(2)}" rx=".16" ry=".06" style="animation-delay:${-(h(i,13)*6).toFixed(1)}s"/>`; }
+    // Højst to langsomme krusninger
+    if(krus<2 && h(i,10)<.45){ krus++; pynt+=`<ellipse class="krus lev" cx="${(k+.3+h(i,11)*.4).toFixed(2)}" cy="${(r+.35+h(i,12)*.3).toFixed(2)}" rx=".16" ry=".06" style="animation-delay:${-(h(i,13)*6).toFixed(1)}s"/>`; }
   }
   const strom = aa.length ? `<g class="strom lev">${aa.map(i=>`<path d="M${feltK(i)+.38} ${feltR(i)} v1 M${feltK(i)+.62} ${feltR(i)+.2} v.8"/>`).join("")}</g>` : "";
   return `<svg class="soe" viewBox="0 0 ${str.k} ${str.r}" preserveAspectRatio="none" aria-hidden="true">
@@ -7549,7 +7588,7 @@ function lejrLiv(c){
   const bål=klar.filter(i=>FLAMME_BYG.includes(f[i])), roeg=[...bål, ...klar.filter(i=>ROEG_BYG.includes(f[i]) && !FLAMME_BYG.includes(f[i]))];
   // Flagstangen vajer altid først; derefter bygninger med vimpler (fra trin 3)
   const flag=[...klar.filter(i=>f[i]==="flag"), ...klar.filter(i=>f[i]!=="flag" && nivTrin(lejrNiv(c,i))>=3)];
-  return { roeg:vaelg(roeg,3), glod:vaelg(bål,3), vaj:vaelg(flag,4) };
+  return { roeg:vaelg(roeg,2), glod:vaelg(bål,2), vaj:vaelg(flag,3) };
 }
 // Høje ting rager op over feltet ovenover (tegnes større og forankret i bunden af feltet)
 const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","flag","kikkert","svaevebane","radiomast","fugletaarn","fyrtaarn","totempael","signalbaal"]);
