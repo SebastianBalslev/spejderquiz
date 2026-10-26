@@ -380,11 +380,19 @@ button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle .okse{position:absolute;top:2px;right:2px;font-size:14px;z-index:3;animation:hug .6s ease-in-out infinite}
 .celle.voks .emo{font-size:clamp(16px,6vw,26px)}
-.lejrmap{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:8px;border-radius:22px;background:#5f8a3a;box-shadow:inset 0 0 0 4px #4f7a2f,0 8px 20px rgba(60,40,10,.15)}
-.celle{aspect-ratio:1;border:none;padding:0;border-radius:9px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
-.celle.a{background:#86b25a}.celle.b{background:#8fbb62}
-.celle.vand{background:linear-gradient(160deg,#5fb2e0,#3d8fc4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
-.celle.vand::after{content:"";position:absolute;left:18%;right:18%;top:58%;height:3px;border-radius:3px;background:rgba(255,255,255,.35)}
+/* Lejrpladsen er én sammenhængende græsmark: græsstrå-tekstur, slåede baner og lidt lys/skygge. Felterne er næsten usynlige. */
+.lejrmap{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;padding:8px;border-radius:22px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Cg stroke-linecap='round' stroke-width='1.6' fill='none'%3E%3Cpath d='M5 12l1-5M7 13l2-4M30 8l-1-5M32 9l2-4M18 30l1-5M20 31l-1-4M40 34l1-5M42 35l2-4M10 42l-1-4M26 20l1-4' stroke='%236f9a44' stroke-opacity='.55'/%3E%3Cpath d='M14 6l1-4M36 22l-1-5M3 28l1-4M24 42l2-4M44 12l-1-4M34 44l1-4' stroke='%23a9cf78' stroke-opacity='.55'/%3E%3C/g%3E%3Ccircle cx='22' cy='9' r='1' fill='%23a9cf78' fill-opacity='.5'/%3E%3Ccircle cx='9' cy='34' r='1' fill='%236f9a44' fill-opacity='.5'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 25% 20%, rgba(255,255,230,.18), transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(30,60,10,.16), transparent 60%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,.03) 34px 68px),
+    #86b25a;
+  box-shadow:inset 0 0 0 4px #5f8a3a,inset 0 0 18px rgba(40,70,15,.35),0 8px 20px rgba(60,40,10,.15)}
+.celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
+.celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.celle.vand{background:linear-gradient(160deg,#5fb2e0,#3d8fc4) fixed;border-radius:3px;margin:-1px;box-shadow:inset 0 0 6px rgba(20,70,110,.25)}
+.celle.vand::after{content:"";position:absolute;left:24%;right:30%;top:56%;height:2px;border-radius:3px;background:rgba(255,255,255,.3)}
 .celle svg{width:90%;height:90%;position:relative;z-index:1}
 .celle .emo{font-size:clamp(24px,8.5vw,40px);position:relative;z-index:1}
 .celle.kan{box-shadow:inset 0 0 0 3px rgba(255,255,255,.9);animation:blink 1.2s ease-in-out infinite}
