@@ -391,8 +391,21 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
   box-shadow:inset 0 0 0 4px #5f8a3a,inset 0 0 18px rgba(40,70,15,.35),0 8px 20px rgba(60,40,10,.15)}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
-.celle.vand{background:linear-gradient(160deg,#5fb2e0,#3d8fc4) fixed;border-radius:3px;margin:-1px;box-shadow:inset 0 0 6px rgba(20,70,110,.25)}
-.celle.vand::after{content:"";position:absolute;left:24%;right:30%;top:56%;height:2px;border-radius:3px;background:rgba(255,255,255,.3)}
+.celle.vand{background:transparent}
+/* Søen (soeHTML): ét SVG-lag under felterne */
+.lejrmap .soe{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible;clip-path:inset(-6px round 18px)}
+.soe .sand rect{fill:#dcc791;stroke:#dcc791;stroke-width:.4;stroke-linejoin:round}
+.soe .lavt rect{fill:#79c1e6;stroke:#79c1e6;stroke-width:.36;stroke-linejoin:round}
+.soe .dybt rect{fill:#3f93c9;stroke:#3f93c9;stroke-width:.28;stroke-linejoin:round}
+.soe .siv path{stroke:#5b7a2e;stroke-width:.025;stroke-linecap:round;fill:none}.soe .siv .dun{stroke:#7a4b22;stroke-width:.045}
+.soe .blad{fill:#5f9e3c;stroke:#3f7a2a;stroke-width:.012}.soe .blomst{fill:#f6b3cf;stroke:#fff;stroke-width:.012}
+.soe .krus{fill:none;stroke:rgba(255,255,255,.55);stroke-width:.02;transform-box:fill-box;transform-origin:center;animation:krus 6s ease-out infinite}
+@keyframes krus{0%{transform:scale(.3);opacity:0}25%{opacity:1}100%{transform:scale(1.6);opacity:0}}
+.soe .strom path{stroke:rgba(255,255,255,.5);stroke-width:.025;stroke-linecap:round;stroke-dasharray:.12 .22;animation:strom 2.4s linear infinite}
+@keyframes strom{to{stroke-dashoffset:-.68}}
+/* Animationerne på lejrpladsen står stille, når pladsen ikke er synlig, og helt, hvis telefonen beder om mindre bevægelse */
+.lejrmap.pause .lev,.lejrmap.pause .lev *{animation-play-state:paused !important}
+@media (prefers-reduced-motion: reduce){ .lejrmap .lev,.lejrmap .lev *{animation:none !important} }
 .celle svg{width:90%;height:90%;position:relative;z-index:1}
 .celle .emo{font-size:clamp(24px,8.5vw,40px);position:relative;z-index:1}
 /* Dybde: blød skygge under tingen; høje ting vokser op fra bunden og rager ind over feltet ovenover */
@@ -6227,6 +6240,7 @@ function render(){
   loebEfterRender();
   renderFaner();
   lejrLuft();
+  lejrSynlighed();
 }
 // Lejrpladsen får præcis så meget luft i bunden, at knapperne (Byg/Patrulje/Lager) og fanerne ikke dækker de nederste rækker –
 // målt på skærmen, så det også passer med stor tekst, knapper på to linjer og telefonens egen navigationslinje
@@ -6237,6 +6251,19 @@ function lejrLuft(){
   if(isFinite(top)) document.body.style.setProperty("--lejrluft", Math.ceil(window.innerHeight - top + 24) + "px");
 }
 window.addEventListener("resize", ()=>lejrLuft());
+// Animationerne på lejrpladsen (klassen .lev) holder pause, når pladsen er rullet ud af syne eller appen ligger i baggrunden
+let lejrSynObs = null;
+function lejrPause(){
+  const m=document.getElementById("lejrmap"); if(!m) return;
+  m.classList.toggle("pause", document.hidden || m.dataset.synlig==="0");
+}
+function lejrSynlighed(){
+  if(lejrSynObs){ lejrSynObs.disconnect(); lejrSynObs=null; }
+  const m=document.getElementById("lejrmap"); if(!m || !("IntersectionObserver" in window)) return;
+  lejrSynObs=new IntersectionObserver(e=>{ m.dataset.synlig = e[0].isIntersecting ? "1" : "0"; lejrPause(); });
+  lejrSynObs.observe(m);
+}
+document.addEventListener("visibilitychange", lejrPause);
 
 /* ---------- Skærme ---------- */
 function scrVaelg(){
@@ -7200,7 +7227,7 @@ function harKrav(c,b){ return alleKrav(b).every(k=>(c.badges[k[0]]||0) >= k[1]);
 function harLejrNiv(c,b){ return !b.lejrniv || lejrNiveau(c) >= b.lejrniv; }
 function lejrNivTekst(b){ return `🔒 ${lejrTrin(b.lejrniv).navn} (niv ${b.lejrniv})`; }
 function kravTekst(b){ return alleKrav(b).map(k=>`${EMNE[k[0]].navn} – ${NIVEAUER[k[1]].navn.toLowerCase()}`).join(" og "); }
-function erVand(i, c){ return vandSaet(lejrStr(c||cur())).has(feltR(i)+","+feltK(i)); }
+function erVand(i, c){ c=c||cur(); return vandSaet(lejrStr(c)).has(feltR(i)+","+feltK(i)) || (!!c && soeVand(c).includes(i)); }
 function kanStaa(b,i,c){ if(!iPladsen(i,c)) return false; return b.vedSoe ? !erVand(i,c) && naboVand(i,c) : !!b.vand === erVand(i,c); }
 function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; c.lejrNiv = c.lejrNiv || {}; c.lejrOpg = c.lejrOpg || {}; c.lejrInv = c.lejrInv || {};
   if((c.lejrV||1) < LEJR_V) migrerLejr(c);   // gemte spil fra før oprydningen
@@ -7232,6 +7259,7 @@ function scrLejr(){
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
+    ${soeHTML(c, str)}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}">📐<span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   for(const i of lejrAlleFelter(c)){
     const r=feltR(i), k=feltK(i), b=BYGID[felter[i]];
@@ -7251,7 +7279,7 @@ function scrLejr(){
     h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
-  if((c.badges.fugle||0)>=3) h += `<div class="fugle" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
+  if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
   // Knapper i bunden og panelerne, de åbner
@@ -7264,6 +7292,36 @@ function scrLejr(){
     h += `<div class="arkbag" data-a="lejrark" data-v=""></div><div class="ark" role="dialog" aria-label="${titel}"><div class="arktop"><b>${titel}</b><button class="lukx" data-a="lejrark" data-v="" aria-label="Luk">✕</button></div>${ind}</div>`;
   }
   return h;
+}
+/* Søen og åen tegnes som én sammenhængende flade under felterne (felterne på vandet er gennemsigtige).
+   Hvert lag er felternes firkanter, der rækker helt ind til nabovandet og holder afstand til land – med runde kanter (stroke-linejoin).
+   Lag: sandbred → lavt vand → dybt vand. Ovenpå: siv ved bredden, åkander, få krusninger og strøm i åen. */
+function soeHTML(c, str){
+  const V=new Set(lejrAlleFelter(c).filter(i=>erVand(i,c))); if(!V.size) return "";
+  const f=lejrFelter(c), W=(r,k)=>r<0||k<0||r>=str.r||k>=str.k||V.has(felt(r,k));
+  const h=(i,s)=>{ let x=(i*2654435761 ^ s*40503)>>>0; x^=x>>>13; return (x%1000)/1000; };   // fast "tilfældighed" pr. felt
+  const lag=(ind,rad)=>[...V].map(i=>{ const r=feltR(i), k=feltK(i);
+    const x0=k+(W(r,k-1)?0:ind+rad), x1=k+1-(W(r,k+1)?0:ind+rad), y0=r+(W(r-1,k)?0:ind+rad), y1=r+1-(W(r+1,k)?0:ind+rad);
+    return `<rect x="${x0.toFixed(3)}" y="${y0.toFixed(3)}" width="${(x1-x0).toFixed(3)}" height="${(y1-y0).toFixed(3)}"/>`; }).join("");
+  // Åen er det vand, der ikke hænger sammen med søen i hjørnet øverst til højre – der er strøm i den
+  const soe=new Set(), kø=[felt(0,str.k-1)];
+  while(kø.length){ const i=kø.pop(); if(soe.has(i) || !V.has(i)) continue; soe.add(i); const r=feltR(i), k=feltK(i); if(r>0) kø.push(felt(r-1,k)); if(r<str.r-1) kø.push(felt(r+1,k)); if(k>0) kø.push(felt(r,k-1)); if(k<str.k-1) kø.push(felt(r,k+1)); }
+  const aa=[...V].filter(i=>!soe.has(i));
+  let pynt="", krus=0;
+  for(const i of V){ const r=feltR(i), k=feltK(i), fri=!f[i];
+    // Siv på bredden mod land (venstre eller nederst)
+    if(!W(r,k-1) && h(i,1)<.6){ const y=r+.35+h(i,2)*.4; pynt+=`<g class="siv" transform="translate(${(k+.13).toFixed(2)} ${y.toFixed(2)})"><path d="M0 0 V-.26 M.05 .01 L.09 -.2 M-.05 .01 L-.08 -.18"/><path class="dun" d="M0 -.26 v-.07 M.09 -.2 v-.06"/></g>`; }
+    if(!W(r+1,k) && h(i,3)<.5){ const x=k+.3+h(i,4)*.4; pynt+=`<g class="siv" transform="translate(${x.toFixed(2)} ${(r+.9).toFixed(2)})"><path d="M0 0 V-.24 M.05 .01 L.08 -.17 M-.05 .01 L-.07 -.19"/><path class="dun" d="M0 -.24 v-.07"/></g>`; }
+    if(!fri || aa.includes(i)) continue;
+    // Åkander på fri vand
+    if(h(i,5)<.55){ const x=k+.25+h(i,6)*.5, y=r+.25+h(i,7)*.5, blomst=h(i,8)<.4;
+      pynt+=`<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><path class="blad" d="M0 0 L.11 -.04 A.12 .09 0 1 0 .11 .04Z"/>${h(i,9)<.5?`<path class="blad" d="M.2 .14 L.28 .11 A.08 .06 0 1 0 .28 .17Z"/>`:""}${blomst?`<circle class="blomst" cx=".02" cy="-.01" r=".035"/>`:""}</g>`; }
+    // Højst tre langsomme krusninger
+    if(krus<3 && h(i,10)<.45){ krus++; pynt+=`<ellipse class="krus lev" cx="${(k+.3+h(i,11)*.4).toFixed(2)}" cy="${(r+.35+h(i,12)*.3).toFixed(2)}" rx=".16" ry=".06" style="animation-delay:${-(h(i,13)*6).toFixed(1)}s"/>`; }
+  }
+  const strom = aa.length ? `<g class="strom lev">${aa.map(i=>`<path d="M${feltK(i)+.38} ${feltR(i)} v1 M${feltK(i)+.62} ${feltR(i)+.2} v.8"/>`).join("")}</g>` : "";
+  return `<svg class="soe" viewBox="0 0 ${str.k} ${str.r}" preserveAspectRatio="none" aria-hidden="true">
+    <g class="sand">${lag(-.07,.2)}</g><g class="lavt">${lag(.05,.18)}</g><g class="dybt">${lag(.17,.14)}</g>${strom}${pynt}</svg>`;
 }
 // Stillads over en ting, der bygges eller opgraderes (i stedet for en ramme)
 const STILLADS = `<svg class="stillads" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#8b5a2b" stroke-width="1.8" stroke-linecap="round" fill="none">
@@ -8801,7 +8859,8 @@ function lejrRaekker(c){ return lejrStr(c||cur()).r; }
 function felt(r,k){ return r*FELT_KOL+k; }
 function feltR(i){ return Math.floor(i/FELT_KOL); }
 function feltK(i){ return i%FELT_KOL; }
-// Søen ligger i øverste højre hjørne (2 × 3 felter fra Tropslejr). Derefter løber den videre som en å ned langs højre kant – 2 felter pr. 2 nye rækker.
+// Søen ligger i øverste højre hjørne (2 × 3 felter fra Tropslejr). På Gruppeturen (8 rækker) løber en å i de to nye rækker langs højre kant.
+// Fra Divisionslejr (SOE_FRA) kommer det nye vand ved søen i stedet (soeVand).
 // Vandet i et trin: grundmønsteret (vandMoenster), men et felt, der var land i trinnet før, bliver aldrig til vand
 const VAND_CACHE = {};
 function vandSaet(str){
@@ -8816,8 +8875,44 @@ function vandMoenster(str){
   const v=new Set();
   if(str.k===3) v.add("0,2");
   else if(str.k===4) ["0,3","0,2","1,3"].forEach(x=>v.add(x));
-  else { for(let r=0;r<2;r++) for(let k=3;k<6;k++) v.add(r+","+k); for(let r=6;r<str.r;r++) v.add(r+",5"); }
+  else { for(let r=0;r<2;r++) for(let k=3;k<6;k++) v.add(r+","+k); for(let r=6;r<Math.min(str.r,8);r++) v.add(r+",5"); }
   return v;
+}
+// Fra Divisionslejr kommer trinnets ekstra vand ved søen: søen breder sig ind over tomme græsfelter ved søen.
+// Et felt med en bygning bliver aldrig til vand, og heller ikke et felt ved siden af et telt eller en latrin (de må ikke stå ved vand).
+// Felterne vælges, første gang trinnet nås, og gemmes i c.soeVand, så søen står fast.
+const SOE_FRA = 20;
+function soeEkstra(c){ const t=lejrTrin(c.lejrNivMax||1); return t.niv>=SOE_FRA ? Math.max(0, t.vand - vandSaet({ r:t.r, k:t.k }).size) : 0; }
+function soeVand(c){
+  const n=soeEkstra(c); if(!n) return [];
+  if(!c.soeVand) c.soeVand = soeGamleAa(c);
+  if(c.soeVand.length < n) udvidSoe(c, n);
+  return c.soeVand.slice(0, n);
+}
+// Gemte spil fra før: åen fortsatte ned langs højre kant. Står der en vandbygning (kano, badebro …) på åen, bliver feltet ved med at være vand.
+function soeGamleAa(c){
+  const s=lejrStr(c), f=c.lejr||{}, ud=[];
+  for(let r=8;r<s.r;r++){ const i=felt(r,5); if(f[i] && BYGID[f[i]] && BYGID[f[i]].vand) ud.push(i); }
+  return ud;
+}
+function udvidSoe(c, n){
+  const s=lejrStr(c), base=vandSaet(s), f=c.lejr||{};
+  const vand=i=>base.has(feltR(i)+","+feltK(i)) || c.soeVand.includes(i);
+  const ingenVand=new Set([...TELTE, "latrin"]);
+  const ok=i=>!vand(i) && !f[i] && !naboer(i,c).some(j=>ingenVand.has(f[j]));
+  const ortho=i=>{ const r=feltR(i), k=feltK(i); return [[r-1,k],[r+1,k],[r,k-1],[r,k+1]].filter(([a,b])=>a>=0&&b>=0&&a<s.r&&b<s.k).map(([a,b])=>felt(a,b)); };
+  const alle=lejrAlleFelter(c);
+  while(c.soeVand.length < n){
+    // Søen er det vand, der hænger sammen med hjørnet øverst til højre
+    const soe=new Set(), kø=[felt(0,s.k-1)];
+    while(kø.length){ const i=kø.pop(); if(soe.has(i) || !vand(i)) continue; soe.add(i); kø.push(...ortho(i)); }
+    const afst=i=>(feltR(i)-0.5)**2 + (feltK(i)-(s.k-1.5))**2;
+    let kand=alle.filter(i=>ok(i) && ortho(i).some(j=>soe.has(j))).sort((a,b)=>afst(a)-afst(b) || a-b);
+    if(!kand.length) kand=alle.filter(i=>ok(i) && ortho(i).some(vand)).sort((a,b)=>afst(a)-afst(b) || a-b);   // pladsen er fuld ved søen: ved anden vand
+    if(!kand.length) kand=alle.filter(i=>!vand(i) && !f[i]).sort((a,b)=>b-a);                                // nødløsning: et tomt felt nederst
+    if(!kand.length) break;
+    c.soeVand.push(kand[0]); if(c.vild) delete c.vild[kand[0]];
+  }
 }
 function iPladsen(i, c){ const s=lejrStr(c||cur()); return feltR(i)<s.r && feltK(i)<s.k; }
 function lejrAlleFelter(c){ const s=lejrStr(c||cur()), r=[]; for(let a=0;a<s.r;a++) for(let b=0;b<s.k;b++) r.push(felt(a,b)); return r; }
