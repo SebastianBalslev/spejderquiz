@@ -331,9 +331,9 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 @keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .byggebar{position:sticky;top:0;z-index:30}
 .celle .vild .vildsvg{width:clamp(18px,6vw,26px);height:auto;display:block}.celle .vild{font-size:clamp(15px,5vw,22px);animation:vildvug 3s ease-in-out infinite;display:inline-block}@keyframes vildvug{50%{transform:rotate(-8deg) scale(1.08)}}
-.besoeg{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:60}
-.dyrgaest{position:absolute;left:-14%;pointer-events:auto;border:none;background:none;padding:4px;font-size:30px;line-height:1;cursor:pointer;animation:dyrgaa 26s linear infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
-@keyframes dyrgaa{0%{left:-14%;transform:scaleX(-1)}40%{left:42%;transform:scaleX(-1) translateY(0)}45%{left:42%;transform:scaleX(-1) translateY(-4px)}55%{left:42%;transform:scaleX(-1) translateY(0)}100%{left:110%;transform:scaleX(-1)}}
+.besoeg{position:absolute;inset:8px;pointer-events:none}
+.dyrgaest{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:none;background:none;padding:4px;font-size:30px;line-height:1;cursor:pointer;animation:dyrgraes 5s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+@keyframes dyrgraes{0%,60%,100%{transform:translate(-50%,-100%) rotate(0)}70%{transform:translate(-50%,-94%) rotate(-7deg)}82%{transform:translate(-50%,-94%) rotate(-7deg)}}
 .lejrskilt{display:flex;align-items:center;gap:10px;width:100%;max-width:420px;border:none;border-radius:16px;padding:8px 12px;background:linear-gradient(#b07a45,#8b5a2b);color:#fff8e7;box-shadow:0 3px 0 #5c3a20,0 6px 14px rgba(0,0,0,.15);text-align:left;cursor:pointer;font:inherit}
 .lejrskilt .skik{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}.lejrskilt .sktekst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .lejrskilt b{font-size:19px;line-height:1.1}.lejrskilt small{font-size:12.5px;opacity:.92}.lejrskilt .xptal{font-variant-numeric:tabular-nums}
@@ -415,6 +415,19 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle .skygge{position:absolute;left:16%;right:16%;bottom:5%;height:20%;border-radius:50%;background:radial-gradient(closest-side,rgba(28,48,12,.42),rgba(28,48,12,0));z-index:0;pointer-events:none}
 .celle.hoej .skygge{left:10%;right:10%;bottom:3%;height:22%}
 .celle.vand .skygge{background:radial-gradient(closest-side,rgba(10,50,80,.35),rgba(10,50,80,0))}
+/* Liv: røg stiger op, bål flakker, flag og vimpler vajer */
+.celle .roeg{position:absolute;left:38%;width:24%;bottom:58%;height:90%;z-index:3;pointer-events:none}
+.celle .roeg i{position:absolute;left:10%;bottom:0;width:80%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(205,205,200,.95),rgba(170,170,165,.5) 60%,rgba(170,170,165,0));animation:roeg 4.2s ease-out infinite;opacity:0}
+.celle .roeg i:nth-child(2){animation-delay:-1.4s}.celle .roeg i:nth-child(3){animation-delay:-2.8s}
+@keyframes roeg{0%{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:.85}100%{transform:translate(40%,-260%) scale(1.9);opacity:0}}
+.celle .glod{position:absolute;left:18%;right:18%;bottom:8%;height:44%;border-radius:50%;z-index:0;pointer-events:none;background:radial-gradient(closest-side,rgba(255,170,60,.55),rgba(255,140,40,0));animation:glod 1.3s ease-in-out infinite alternate}
+@keyframes glod{0%{opacity:.55;transform:scale(.92)}40%{opacity:.9;transform:scale(1.05)}70%{opacity:.65}100%{opacity:1;transform:scale(1)}}
+.lejrmap .celle.vaj .vift{transform-box:fill-box;transform-origin:0% 50%;animation:vift 2.6s ease-in-out infinite}
+.lejrmap .celle.vaj .svaj{transform-box:fill-box;transform-origin:50% 0%;animation:svaj 3.4s ease-in-out infinite}
+@keyframes vift{0%,100%{transform:skewY(0) scaleX(1)}30%{transform:skewY(-6deg) scaleX(.93)}65%{transform:skewY(5deg) scaleX(.97)}}
+@keyframes svaj{0%,100%{transform:rotate(0)}50%{transform:rotate(4deg)}}
+.lejrmap.pause .celle.vaj .vift,.lejrmap.pause .celle.vaj .svaj{animation-play-state:paused}
+@media (prefers-reduced-motion: reduce){ .lejrmap .celle .vift,.lejrmap .celle .svaj{animation:none !important} }
 .celle.kan{box-shadow:inset 0 0 0 3px rgba(255,255,255,.9);animation:blink 1.2s ease-in-out infinite}
 .celle.flyttes{box-shadow:inset 0 0 0 3px #f2c94c}
 .celle.ny>*{animation:byg .55s cubic-bezier(.2,.9,.3,1.3)}
@@ -7115,8 +7128,8 @@ const PIONER = {
   traehytte: `<rect x="17" y="18" width="6" height="21" fill="#6f4a2a"/><circle cx="20" cy="12" r="10" fill="#3a7a35"/><circle cx="9" cy="17" r="6" fill="#4c8a3f"/><circle cx="31" cy="17" r="6" fill="#4c8a3f"/>
     <rect x="11" y="15" width="18" height="10" fill="#b07a45" stroke="#7c4a22"/><path d="M9 16 L20 8 L31 16Z" fill="#7c4a22"/><rect x="18" y="18" width="4" height="7" fill="#5c3a20"/>
     <g stroke="#c49a63" stroke-width="1.2"><path d="M25 25 V39 M29 25 V39 M25 29 H29 M25 33 H29 M25 37 H29"/></g>`,
-  flag: `<path d="M8 3 V39" stroke="#d8d2c2" stroke-width="2.4"/><circle cx="8" cy="3" r="2" fill="#f2c94c"/><rect x="9" y="5" width="26" height="17" fill="#c8102e"/>
-    <rect x="16" y="5" width="4" height="17" fill="#fff"/><rect x="9" y="11.5" width="26" height="4" fill="#fff"/>`,
+  flag: `<path d="M8 3 V39" stroke="#d8d2c2" stroke-width="2.4"/><circle cx="8" cy="3" r="2" fill="#f2c94c"/><g class="vift"><rect x="9" y="5" width="26" height="17" fill="#c8102e"/>
+    <rect x="16" y="5" width="4" height="17" fill="#fff"/><rect x="9" y="11.5" width="26" height="4" fill="#fff"/></g>`,
   insekt: `<path d="M20 4 L36 14 H4Z" fill="#7c4a22"/><rect x="6" y="14" width="28" height="22" fill="#b07a45" stroke="#7c4a22"/><path d="M6 21 H34 M6 28 H34 M20 14 V36" stroke="#7c4a22"/>
     <g fill="#3b2a1a"><circle cx="10" cy="17.5" r="1.2"/><circle cx="14" cy="17.5" r="1.2"/><circle cx="24" cy="17.5" r="1.2"/><circle cx="29" cy="17.5" r="1.2"/><circle cx="10" cy="32" r="1.2"/><circle cx="15" cy="32" r="1.2"/></g>
     <g fill="#e3c88f"><rect x="21" y="23" width="12" height="3"/><rect x="7" y="23" width="12" height="3"/><rect x="22" y="30" width="11" height="3"/></g>`,
@@ -7261,6 +7274,8 @@ function scrLejr(){
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${soeHTML(c, str)}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}">📐<span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
+  // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 3 skorstene/bål, flammeskær på højst 3 bål og vajende flag på højst 4 felter
+  const liv=lejrLiv(c);
   for(const i of lejrAlleFelter(c)){
     const r=feltR(i), k=feltK(i), b=BYGID[felter[i]];
     let cls = erVand(i) ? "vand" : ((r+k)%2 ? "a" : "b");
@@ -7275,8 +7290,10 @@ function scrLejr(){
     if(voks) cls += " voks";
     const vild = !b && VILD[(c.vild||{})[i]];
     if(b && !voks && HOEJ.has(b.id)) cls += " hoej";
+    if(liv.vaj.has(i)) cls += " vaj";
+    const livHTML = (liv.glod.has(i)?`<i class="glod lev" aria-hidden="true"></i>`:"") + (liv.roeg.has(i)?`<span class="roeg lev" aria-hidden="true"><i></i><i></i><i></i></span>`:"");
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
-    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
   if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
@@ -7328,6 +7345,16 @@ const STILLADS = `<svg class="stillads" viewBox="0 0 40 40" aria-hidden="true"><
   <path d="M6 38 V6 M20 38 V6 M34 38 V6"/><path d="M4 14 H36 M4 26 H36" stroke-width="2.2"/><path d="M6 26 L20 14 M20 38 L34 26" stroke="#a87b4f" stroke-width="1.3"/></g>
   <g fill="#c49a63" stroke="#7c4a22" stroke-width=".6"><rect x="3" y="12.5" width="34" height="2.6" rx=".6"/><rect x="3" y="24.5" width="34" height="2.6" rx=".6"/></g>
   <path d="M28 6 V2 H38 M36 2 V8" stroke="#555" stroke-width="1.2" fill="none"/><rect x="34.6" y="8" width="3" height="2.4" fill="#f2c94c" stroke="#555" stroke-width=".5"/></svg>`;
+// Røg, flammeskær og vajende flag – vælger de felter, der skal have liv (højst få ad gangen)
+const ROEG_BYG = ["baal","lejrbaal","signalbaal","koekken","bagerovn"], FLAMME_BYG = ["baal","lejrbaal","signalbaal"];
+function lejrLiv(c){
+  const f=lejrFelter(c), klar=Object.keys(f).map(Number).filter(i=>BYGID[f[i]] && !underByg(c,i) && iPladsen(i,c));
+  const vaelg=(liste,n)=>new Set(liste.slice(0,n));
+  const bål=klar.filter(i=>FLAMME_BYG.includes(f[i])), roeg=[...bål, ...klar.filter(i=>ROEG_BYG.includes(f[i]) && !FLAMME_BYG.includes(f[i]))];
+  // Flagstangen vajer altid først; derefter bygninger med vimpler (fra trin 3)
+  const flag=[...klar.filter(i=>f[i]==="flag"), ...klar.filter(i=>f[i]!=="flag" && nivTrin(lejrNiv(c,i))>=3)];
+  return { roeg:vaelg(roeg,3), glod:vaelg(bål,3), vaj:vaelg(flag,4) };
+}
 // Høje ting rager op over feltet ovenover (tegnes større og forankret i bunden af feltet)
 const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","flag","kikkert","svaevebane","radiomast","fugletaarn","fyrtaarn","totempael","signalbaal"]);
 // Kategorier i byggelisten. Ting, der ikke står her, kommer under »Andet«.
@@ -8710,8 +8737,8 @@ function gnister(pos, f){ return pos.map(([x,y])=>`<path d="M${x} ${y-2.2} L${x+
 function nivPynt(n){
   let s="";
   if(n>=2) s += `<g stroke="#3f7a35" stroke-width="1.2" stroke-linecap="round"><path d="M2.5 39 L3.5 35.5 M4.5 39 L4.5 35 M6.5 39 L5.5 35.8 M33.5 39 L34.5 35.8 M35.5 39 L35.5 35 M37.5 39 L36.5 35.5"/></g><circle cx="4.5" cy="34.6" r="1.1" fill="#f28c8c"/><circle cx="35.5" cy="34.6" r="1.1" fill="#f2e14c"/>`;
-  if(n>=3) s += `<path d="M34 1.5 V11" stroke="#777" stroke-width=".8"/><path d="M34 1.5 L39.5 3.5 L34 5.5Z" fill="#c62828"/>`;
-  if(n>=4) s += `<path d="M0.5 4 Q6 8 11.5 4" fill="none" stroke="#5c3a20" stroke-width=".5"/><path d="M2 4.6 L4 4.6 L3 7Z" fill="#f2c94c"/><path d="M5 5.8 L7 5.8 L6 8.2Z" fill="#1e5fb4"/><path d="M8 5 L10 5 L9 7.4Z" fill="#c62828"/>`;
+  if(n>=3) s += `<path d="M34 1.5 V11" stroke="#777" stroke-width=".8"/><path class="vift" d="M34 1.5 L39.5 3.5 L34 5.5Z" fill="#c62828"/>`;
+  if(n>=4) s += `<path d="M0.5 4 Q6 8 11.5 4" fill="none" stroke="#5c3a20" stroke-width=".5"/><g class="svaj"><path d="M2 4.6 L4 4.6 L3 7Z" fill="#f2c94c"/><path d="M5 5.8 L7 5.8 L6 8.2Z" fill="#1e5fb4"/><path d="M8 5 L10 5 L9 7.4Z" fill="#c62828"/></g>`;
   if(n>=5) s += stjerne(4.5, 35, 3.6, "#f2c94c");
   if(n>=6) s += `<path d="M37.5 39 V30.5" stroke="#5c3a20" stroke-width="1"/><rect x="35.8" y="26.5" width="3.4" height="4.4" rx=".8" fill="#ffe680" stroke="#444" stroke-width=".5"/><circle cx="37.5" cy="28.7" r="3.6" fill="#ffe680" opacity=".3"/>`;
   if(n>=7) s += `<g fill="#9b9285" stroke="#6b6355" stroke-width=".4">${[7,12,17,22,27,32].map(x=>`<ellipse cx="${x}" cy="38.6" rx="2.4" ry="1.3"/>`).join("")}</g>`;
@@ -9270,10 +9297,18 @@ function plukVild(c,i){
    Med mindst 3 naturbygninger kigger kronhjorten (Dyr i sølv) og ræven (Dyr i guld) forbi. */
 const NATUR_BYG = ["kongeeg","blomster","pindsvinehus","insekthotel","bistade","fuglekasse","fugletaarn","sporkasse"];
 const BESOEG = [ { id:"hjort", ikon:"🦌", krav:2, top:10, delay:0 }, { id:"raev", ikon:"🦊", krav:3, top:33, delay:-11 } ];
+// Dyrene står aldrig oven på en bygning: hvert dyr vælger et tomt græsfelt (det skifter hver halve time) – er der ingen, står det ved kanten.
+// De ligger i samme lag som felterne (z-index efter række), så bygninger længere nede ligger foran.
 function besoegHTML(c){
   if(bygFelter(c,NATUR_BYG).length<3) return "";
   const d=BESOEG.filter(x=>(c.badges.dyr||0)>=x.krav); if(!d.length) return "";
-  return `<div class="besoeg" aria-hidden="false">${d.map(x=>`<button class="dyrgaest" data-a="dyrbesoeg" data-id="${x.id}" style="top:${x.top}%;animation-delay:${x.delay}s" aria-label="${DYREFAKTA[x.id][1]} på besøg">${x.ikon}</button>`).join("")}</div>`;
+  const f=lejrFelter(c), s=lejrStr(c), tomme=lejrAlleFelter(c).filter(i=>!f[i] && !erVand(i,c) && !(c.vild||{})[i]), brugt=new Set();
+  const slot=Math.floor(Date.now()/1800e3);
+  return `<div class="besoeg">${d.map((x,n)=>{
+    const fri=tomme.filter(i=>!brugt.has(i)); let top, left, z;
+    if(fri.length){ const i=fri[(slot*7 + n*13 + x.id.length) % fri.length]; brugt.add(i); top=(feltR(i)+.62)/s.r*100; left=(feltK(i)+.5)/s.k*100; z=10+feltR(i); }
+    else { top=100; left=n ? 92 : 8; z=40; }   // ved kanten nederst
+    return `<button class="dyrgaest lev" data-a="dyrbesoeg" data-id="${x.id}" style="top:${top.toFixed(1)}%;left:${left.toFixed(1)}%;z-index:${z};animation-delay:${x.delay}s" aria-label="${DYREFAKTA[x.id][1]} på besøg">${x.ikon}</button>`; }).join("")}</div>`;
 }
 
 /* =====================================================================
