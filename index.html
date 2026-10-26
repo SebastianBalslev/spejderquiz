@@ -6787,7 +6787,7 @@ function infoBox(html){
 }
 
 /* ---------- Indstillinger (gemmes pr. spejder) ---------- */
-const INDST = { lyd:true, stor:false, oplaes:false };
+const INDST = { lyd:true, stor:false, oplaes:false, doegn:true };
 function indst(c){ return { ...INDST, ...(c && c.indst || {}) }; }
 const kanOplaese = () => "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 // Indstillinger: udseende, lyd/tekst/oplæsning og backup
@@ -6806,7 +6806,9 @@ function indstKort(c){
   return `<div class="card indst"><b>🔊 Lyd og tekst</b>
     ${t("ind-lyd", "🔊 Lyd", "Lyde ved rigtige og forkerte svar – og morselampens bip", v.lyd)}
     ${t("ind-stor", "🔠 Større tekst", "Gør spørgsmål og svar lettere at læse", v.stor)}
-    ${t("ind-oplaes", "🗣️ Læs højt", kanOplaese() ? "Telefonen læser spørgsmål og svar op på dansk" : "Din browser kan desværre ikke læse op", v.oplaes && kanOplaese(), !kanOplaese())}</div>`;
+    ${t("ind-oplaes", "🗣️ Læs højt", kanOplaese() ? "Telefonen læser spørgsmål og svar op på dansk" : "Din browser kan desværre ikke læse op", v.oplaes && kanOplaese(), !kanOplaese())}</div>
+    <div class="card indst"><b>⛺ Lejrpladsen</b>
+    ${t("ind-doegn", "🌗 Dag og nat", "Lejrpladsen følger telefonens ur: morgentåge, aftenlys og nat med stjerner. Slå fra, så er det altid dag", v.doegn)}</div>`;
 }
 function saetIndst(k, paa){
   const c = cur(); if(!c) return;
@@ -7458,7 +7460,8 @@ function scrLejr(){
    (højst 2 går ad gangen). Om natten sover de, der har fri, i teltene. Tryk på en figur for at se, hvem det er, og hvad de laver. */
 const JOB_STED = { afgren:["afgrening","raftegaard"], kloev:["huggeplads"], fibre:["loevtrae","gran","blomster"], sno:["rebmaskine","materialeskur"], takle:["rebmaskine","materialeskur"],
   madlav:["koekken"], bag:["bagerovn"], facilitere:["aktivitetsplads"], flaadetur:["sejlbaad"] };
-function lejrDoegn(){ const t=new Date().getHours(); return t>=5 && t<9 ? "morgen" : t>=9 && t<18 ? "dag" : t>=18 && t<23 ? "aften" : "nat"; }
+// Kan slås fra under Indstillinger (indst.doegn) – så er det altid dag på lejrpladsen
+function lejrDoegn(){ if(!indst(cur()).doegn) return "dag"; const t=new Date().getHours(); return t>=5 && t<9 ? "morgen" : t>=9 && t<18 ? "dag" : t>=18 && t<23 ? "aften" : "nat"; }
 function spejdereHTML(c, str){
   const ms=arbejdere(c).slice(0,5); if(!ms.length) return "";
   const f=lejrFelter(c), nu=Date.now(), tid=lejrDoegn();
@@ -11452,7 +11455,7 @@ app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.
   if(ev.target.dataset.pn!=null && pdraft){ pdraft.navne[+ev.target.dataset.pn] = ev.target.value; ev.target.classList.remove("err"); } });
 app.addEventListener("change", ev => {
   if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); }
-  const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes" }[ev.target.id];
+  const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes", "ind-doegn":"doegn" }[ev.target.id];
   if(k) saetIndst(k, ev.target.checked);
 });
 
