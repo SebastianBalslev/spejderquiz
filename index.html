@@ -399,6 +399,10 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 .celle.vand{background:transparent}
+/* Trampestierne (stierHTML): et SVG-lag under søen og felterne */
+.lejrmap .stier{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible}
+.stier path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.stier .kant{stroke:rgba(196,186,120,.45);stroke-width:.3}.stier .midte{stroke:rgba(226,214,160,.6);stroke-width:.15;stroke-dasharray:.05 .09}
 /* Søen (soeHTML): ét SVG-lag under felterne */
 .lejrmap .soe{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible;clip-path:inset(-6px round 18px)}
 .soe .sand rect{fill:#dcc791;stroke:#dcc791;stroke-width:.4;stroke-linejoin:round}
@@ -7381,7 +7385,7 @@ function scrLejr(){
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
-    ${soeHTML(c, str)}
+    ${stierHTML(c, str)}${soeHTML(c, str)}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 3 skorstene/bål, flammeskær på højst 3 bål og vajende flag på højst 4 felter
   const liv=lejrLiv(c), dk=lejrDaekket(c), flytFra = lejrValg && lejrValg.type==="flyt" ? lejrValg.idx : null;
@@ -7424,6 +7428,38 @@ function scrLejr(){
     h += `<div class="arkbag" data-a="lejrark" data-v=""></div><div class="ark" role="dialog" aria-label="${titel}"><div class="arktop"><b>${titel}</b><button class="lukx" data-a="lejrark" data-v="" aria-label="Luk">✕</button></div>${ind}</div>`;
   }
   return h;
+}
+/* Trampestier: slidte stier af trådt græs fra hvert telt til nærmeste bål, latrin og køkken – og fra lejrporten ind til midten.
+   Beregnes ud fra placeringen, hver gang pladsen tegnes. Stien går uden om vandet (korteste vej over landfelterne, også på skrå). */
+const STI_TELTE = ["telt","patruljetelt","jamboree"];
+function stierHTML(c, str){
+  const f=lejrFelter(c), alle=lejrAlleFelter(c), land=new Set(alle.filter(i=>!erVand(i,c)));
+  const af=ids=>Object.keys(f).map(Number).filter(i=>ids.includes(f[i]) && land.has(i) && !(underByg(c,i) && !c.lejrOpg[i]));
+  const midt=i=>{ const s=bygStr(BYGID[f[i]]); return [feltK(i)+s.k/2, feltR(i)+s.r/2+.18]; };
+  const afst=(a,b)=>{ const [x1,y1]=midt(a), [x2,y2]=Array.isArray(b)?b:midt(b); return (x1-x2)**2+(y1-y2)**2; };
+  // Korteste vej mellem to felter over land (8 retninger – på skrå kun, hvis ingen af hjørnerne er vand)
+  const vej=(fra,til)=>{
+    const forr=new Map([[fra,null]]), kø=[fra];
+    while(kø.length){ const i=kø.shift(); if(i===til) break; const r=feltR(i), k=feltK(i);
+      for(const [dr,dk] of [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]){ const rr=r+dr, kk=k+dk;
+        if(rr<0||kk<0||rr>=str.r||kk>=str.k) continue; const j=felt(rr,kk);
+        if(forr.has(j) || !land.has(j) || (dr && dk && (!land.has(felt(r,kk)) || !land.has(felt(rr,k))))) continue;
+        forr.set(j,i); kø.push(j); } }
+    if(!forr.has(til)) return null; const ud=[]; for(let i=til;i!=null;i=forr.get(i)) ud.unshift(i); return ud; };
+  const par=[], set=new Set(), tilfoej=(a,b,slut)=>{ const n=a<b?a+":"+b:b+":"+a; if(a===b || set.has(n)) return; set.add(n); par.push([a,b,slut]); };
+  for(const t of af(STI_TELTE)) for(const grp of [BAAL_IDS,["latrin"],["koekken"]]){
+    const m=af(grp).sort((a,b)=>afst(t,a)-afst(t,b))[0]; if(m!=null) tilfoej(t,m); }
+  // Fra lejrporten ind til det landfelt, der ligger nærmest pladsens midte
+  const m=[str.k/2, str.r/2], centrum=[...land].sort((a,b)=>((feltK(a)+.5-m[0])**2+(feltR(a)+.5-m[1])**2)-((feltK(b)+.5-m[0])**2+(feltR(b)+.5-m[1])**2))[0];
+  for(const p of af(["port"])) if(centrum!=null) tilfoej(p, centrum, [feltK(centrum)+.5, feltR(centrum)+.5]);
+  const d=par.map(([a,b,slut])=>{ const v=vej(a,b); if(!v) return "";
+    const pts=v.map(i=>[feltK(i)+.5, feltR(i)+.55]); pts[0]=midt(a); pts[pts.length-1]=slut||(f[b]?midt(b):pts[pts.length-1]);
+    if(pts.length===2) return `M${pts[0].map(x=>x.toFixed(2)).join(" ")} L${pts[1].map(x=>x.toFixed(2)).join(" ")}`;
+    let s=`M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+    for(let n=1;n<pts.length-1;n++){ const [x,y]=pts[n], [x2,y2]=pts[n+1]; s+=` Q${x.toFixed(2)} ${y.toFixed(2)} ${((x+x2)/2).toFixed(2)} ${((y+y2)/2).toFixed(2)}`; }
+    const z=pts[pts.length-1]; return s+` L${z[0].toFixed(2)} ${z[1].toFixed(2)}`; }).filter(Boolean).join(" ");
+  if(!d) return "";
+  return `<svg class="stier" viewBox="0 0 ${str.k} ${str.r}" preserveAspectRatio="none" aria-hidden="true"><path class="kant" d="${d}"/><path class="midte" d="${d}"/></svg>`;
 }
 /* Søen og åen tegnes som én sammenhængende flade under felterne (felterne på vandet er gennemsigtige).
    Hvert lag er felternes firkanter, der rækker helt ind til nabovandet og holder afstand til land – med runde kanter (stroke-linejoin).
