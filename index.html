@@ -391,6 +391,11 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
     repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,.03) 34px 68px),
     #86b25a;
   box-shadow:inset 0 0 0 4px #5f8a3a,inset 0 0 18px rgba(40,70,15,.35),0 8px 20px rgba(60,40,10,.15)}
+.lejrmap{grid-auto-rows:1fr}
+.celle.stor{aspect-ratio:auto}
+.celle.wire .ting{right:auto;width:calc(300% + 2px)}.celle.wire.spejl .ting{left:auto;right:0}
+.celle.wire .ting>svg{width:100%;height:100%;overflow:visible}
+.celle.stor .ting>svg{width:94%;height:94%}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 .celle.vand{background:transparent}
@@ -6981,7 +6986,7 @@ const BYG = [
 
   { id:"latrin",      navn:"Latrin",            svg:"latrin",   pris:30, lejrniv:5,  krav:["lejr",1],        besk:"Et godt stykke fra køkken og sø." },
   { id:"patruljetelt",navn:"Patruljetelt",      svg:"patruljetelt", ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
-  { id:"hytte",       navn:"Spejderhytte",      svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
+  { id:"hytte",       navn:"Spejderhytte",      str:{r:1,k:2}, svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
 
   { id:"baal",        navn:"Bålplads",          svg:"baal",     pris:40, lejrniv:1,  krav:["baal",1],        besk:"En sikker bålplads med sten om." },
   { id:"baalbaenke",  navn:"Bålbænke",          svg:"baalbaenke", ikon:"🪵", pris:90, lejrniv:10,  krav:["baal",2],        besk:"Bænke af kløvede stammer rundt om bålet." },
@@ -7029,7 +7034,7 @@ const BYG = [
   { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, lejrniv:42, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50, lejrniv:6,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
-  { id:"jamboree",    navn:"Jamboree-telt",     svg:"jamboree", ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
+  { id:"jamboree",    navn:"Jamboree-telt",     str:{r:2,k:2}, svg:"jamboree", ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
 
   { id:"signalpost",  navn:"Signalpost",        svg:"signalpost", pris:60, lejrniv:12, krav:["koder",1],      besk:"Morselampe og semaforflag på én post. Morse kræver Koder og signaler i bronze, semafor kræver sølv." },
   { id:"radiomast",   navn:"Signalmast",        svg:"radiomast", pris:240, lejrniv:40, krav:["koder",3],      besk:"Høj mast med antenne – nu kan I kalde hele verden." },
@@ -7040,9 +7045,9 @@ const BYG = [
   { id:"spisetelt",   navn:"Spisetelt",         svg:"spisetelt", pris:150, lejrniv:12, krav:["koekken",1], en:true,  besk:"Et stort telt med langborde, hvor hele lejren spiser sammen." },
   { id:"lejrbutik",   navn:"Lejrbutik",         svg:"butik",    pris:250, lejrniv:32, krav:["ledelse",1], en:true,  besk:"Sælg de materialer, I har for mange af, for point. Hver dag er der et tilbud." },
   { id:"lejrradio",   navn:"Lejrradio",         svg:"radio",    pris:300, lejrniv:38, krav:["koder",2], en:true,    besk:"Radio til JOTA – Jamboree On The Air. Tal med spejdere fra andre lande, og saml QSL-kort." },
-  { id:"ridderborg",  navn:"Ridderborg",        svg:"borg",     pris:500, lejrniv:45, krav:["knob",3], en:true,     besk:"Et stort pionerprojekt, der bygges i tre etaper: borgmur, tårn og vindebro." },
+  { id:"ridderborg",  navn:"Ridderborg",        str:{r:2,k:2}, svg:"borg",     pris:500, lejrniv:45, krav:["knob",3], en:true,     besk:"Et stort pionerprojekt, der bygges i tre etaper: borgmur, tårn og vindebro." },
   { id:"vandrutsjebane", navn:"Vandrutsjebane", svg:"rutsj",    pris:600, lejrniv:50, krav:["vand",2], en:true, vedSoe:true, besk:"En pioneret rutsjebane ned i søen. Står på land lige ved søen – og badevagten skal tjekke den hver dag." },
-  { id:"storscene",   navn:"Storscene",         svg:"scene",    pris:700, lejrniv:55, krav:["lejrbaal",3], en:true, besk:"En scene med tæppe og lys, hvor patruljen opfører lejrshow." },
+  { id:"storscene",   navn:"Storscene",         str:{r:1,k:2}, svg:"scene",    pris:700, lejrniv:55, krav:["lejrbaal",3], en:true, besk:"En scene med tæppe og lys, hvor patruljen opfører lejrshow." },
   { id:"flagalle",    navn:"Flagallé",          svg:"flagalle", pris:800, lejrniv:65, krav:["historie",3], en:true, besk:"Flagstænger med flagene fra de lande, der har besøgt jeres jamboree." },
   { id:"jportal",     navn:"Jamboree-portal",   svg:"jportal",  pris:1200, lejrniv:75, krav:["knob",3], en:true,    besk:"En kæmpe portal af trebukke, der bygges over flere dage." },
   { id:"fyrtaarn",    navn:"Fyrtårn",           svg:"fyr",      pris:1500, lejrniv:90, krav:["koder",3], en:true, vedSoe:true, besk:"Et fyrtårn ved søen. Om aftenen sender I morse til skibene." },
@@ -7075,6 +7080,22 @@ const FUGL_SVG = f => `<svg viewBox="0 0 24 14" aria-hidden="true"><path class="
 const TID_SVG = { byg:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M1.5 1 H8.5 M1.5 11 H8.5 M2.5 1 Q2.5 5 5 6 Q7.5 5 7.5 1 M2.5 11 Q2.5 7 5 6 Q7.5 7 7.5 11" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M3.4 10.4 Q5 8.4 6.6 10.4Z" fill="#f2c94c"/></svg>`,
   opg:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M5 11 V2 M1.5 5.5 L5 2 L8.5 5.5" fill="none" stroke="#f2c94c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   voks:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M5 11 V5 M5 7.5 C2.5 7.5 1.5 6 1.5 4 C3.8 4 5 5.4 5 7.5Z M5 6 C7.5 6 8.5 4.5 8.5 2.5 C6.2 2.5 5 3.9 5 6Z" fill="#8fd16a" stroke="#8fd16a" stroke-width=".6"/></svg>` };
+// Brede tegninger til bygninger, der fylder 1 × 2 felter på pladsen (viewBox 80 × 40)
+const PIONER_BRED = {
+  hytte: `<rect x="6" y="18" width="68" height="19" fill="#9a6232"/><path d="M6 23 H74 M6 28 H74 M6 33 H74" stroke="#7c4a22" stroke-width="1"/>
+    <path d="M1 19 L14 5 H66 L79 19Z" fill="#b3261e"/><path d="M14 5 H66" stroke="#8a1c16" stroke-width="1.4"/><rect x="57" y="0" width="5" height="9" fill="#6b6b6b"/>
+    <rect x="35" y="25" width="10" height="12" fill="#5c3a20"/><circle cx="43" cy="31" r=".8" fill="#f2c94c"/><rect x="32" y="36.4" width="16" height="2" fill="#7c4a22"/>
+    ${[11,22,52,63].map(x=>`<rect x="${x}" y="22" width="6" height="6" fill="#f6e7a8" stroke="#5c3a20"/><path d="M${x+3} 22 V28 M${x} 25 H${x+6}" stroke="#5c3a20" stroke-width=".6"/>`).join("")}`,
+  scene: `<rect x="2" y="27" width="76" height="10" fill="#8b5a2b"/><path d="M2 32 H78" stroke="#6b4626"/><rect x="6" y="6" width="68" height="21" fill="#2a2a3a"/>
+    <path d="M24 27 L32 9 L40 27Z M42 27 L50 9 L58 27Z" fill="#ffe680" opacity=".3"/><path d="M6 6 Q16 16 6 27Z M74 6 Q64 16 74 27Z" fill="#c62828"/><path d="M6 6 Q23 12 40 6 Q57 12 74 6Z" fill="#a51e1e"/>
+    <path d="M3 5 H77" stroke="#c62828" stroke-width="3"/><g fill="#ffd166">${[14,24,34,46,56,66].map(x=>`<circle cx="${x}" cy="5" r="1.2"/>`).join("")}</g>
+    <circle cx="32" cy="18" r="2.6" fill="#f3c99a"/><path d="M29 27 Q32 21 35 27Z" fill="#1e5fb4"/><circle cx="50" cy="18" r="2.6" fill="#c98b5a"/><path d="M47 27 Q50 21 53 27Z" fill="#2a9d8f"/>`,
+};
+// Svævebanen på pladsen: en høj mast på sit eget felt og en lav mast 2 felter væk, med en wire og en gondol imellem (viewBox 120 × 40)
+const SVAEVE_WIRE = `<g stroke="${TRAE}" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M11 39 L20 -6 L29 39 M14.5 24 H25.5"/><path d="M94 39 L100 14 L106 39 M96.5 30 H103.5"/></g>
+  <g fill="#9b9285" stroke="#6b6355" stroke-width=".4"><ellipse cx="11" cy="38.6" rx="2.6" ry="1.3"/><ellipse cx="29" cy="38.6" rx="2.6" ry="1.3"/><ellipse cx="94" cy="38.6" rx="2.2" ry="1.1"/><ellipse cx="106" cy="38.6" rx="2.2" ry="1.1"/></g>
+  <path d="M20 -4 Q60 9 100 15" stroke="#444" stroke-width="1" fill="none"/>
+  <g transform="translate(57 5.4)"><circle r="1.8" fill="#666"/><path d="M0 1 V11" stroke="#444" stroke-width=".9"/><path d="M-5 11 H5" stroke="#c62828" stroke-width="2.4" stroke-linecap="round"/></g>`;
 const PIONER = {
   // Tegnet i samme stil som hytte, port og tårn (tidligere emoji)
   telt: `<path d="M2 37 H38" stroke="#7c4a22" stroke-width="1.2" stroke-linecap="round"/><path d="M4 36 L20 8 L36 36Z" fill="#e8873a" stroke="#a5521c" stroke-width="1"/>
@@ -7280,8 +7301,12 @@ let lejrUdvid = null;  // pladsens gamle størrelse, når den lige er vokset (ti
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
 // Bygningerne skifter udseende på nye niveauer (trin 1-8, se nivTrin). Ting tegnet med emoji får pynten i en SVG omkring emojien.
-function bygIkon(b, niv){
+function bygIkon(b, niv, form){
   const t = nivTrin(niv || 1), ekstra = bygEkstra(b);
+  // På pladsen: brede bygninger (1 × 2) har deres egen brede tegning, og svævebanens wire går over 3 felter
+  if(form==="bred" && PIONER_BRED[b.id]) return `<svg viewBox="0 0 80 40" aria-hidden="true">${PIONER_BRED[b.id]}<svg x="20" width="40" height="40" viewBox="0 0 40 40" overflow="visible">${nivBag(t)}${ekstra}${nivPynt(t)}</svg></svg>`;
+  if(form==="wire" || form==="wireV"){ const v=form==="wireV";
+    return `<svg viewBox="0 0 120 40" overflow="visible" aria-hidden="true"><g${v?' transform="translate(120 0) scale(-1 1)"':""}>${SVAEVE_WIRE}</g><svg x="${v?80:0}" width="40" height="40" viewBox="0 0 40 40" overflow="visible">${nivPynt(t)}</svg></svg>`; }
   if(!b.svg && t<=1 && !ekstra) return `<span class="emo">${b.ikon}</span>`;
   const midt = !b.svg ? `<text x="20" y="30.5" font-size="25" text-anchor="middle">${b.ikon}</text>` : b.id==="port" ? portSVG(t) : PIONER[b.svg];
   return `<svg viewBox="0 0 40 40" aria-hidden="true">${nivBag(t)}${midt}${ekstra}${b.id==="port" ? "" : nivPynt(t)}</svg>`;
@@ -7310,7 +7335,22 @@ function harLejrNiv(c,b){ return !b.lejrniv || lejrNiveau(c) >= b.lejrniv; }
 function lejrNivTekst(b){ return `🔒 ${lejrTrin(b.lejrniv).navn} (niv ${b.lejrniv})`; }
 function kravTekst(b){ return alleKrav(b).map(k=>`${EMNE[k[0]].navn} – ${NIVEAUER[k[1]].navn.toLowerCase()}`).join(" og "); }
 function erVand(i, c){ c=c||cur(); return vandSaet(lejrStr(c)).has(feltR(i)+","+feltK(i)) || (!!c && soeVand(c).includes(i)); }
-function kanStaa(b,i,c){ if(!iPladsen(i,c)) return false; return b.vedSoe ? !erVand(i,c) && naboVand(i,c) : !!b.vand === erVand(i,c); }
+function kanStaa(b,i,c){ if(!iPladsen(i,c) || !fodsporPasser(b,i,c)) return false; return b.vedSoe ? !erVand(i,c) && naboVand(i,c) : fodspor(b,i).every(j=>!!b.vand === erVand(j,c)); }
+/* Store bygninger fylder flere felter (str i BYG, fx hytten 1 × 2). Bygningen gemmes på sit øverste venstre felt (ankeret),
+   og de andre felter er dækket af den. Placering, flytning, regler og nabotjek tæller alle felterne. */
+function bygStr(b){ return (b && b.str) || { r:1, k:1 }; }
+function erStor(b){ const s=bygStr(b); return s.r*s.k>1; }
+function fodspor(b, i){ const s=bygStr(b), ud=[]; for(let r=0;r<s.r;r++) for(let k=0;k<s.k;k++) ud.push(i + r*FELT_KOL + k); return ud; }
+function fodsporPasser(b, i, c){ const s=bygStr(b), p=lejrStr(c||cur()); return feltK(i)+s.k<=p.k && feltR(i)+s.r<=p.r; }
+// Felt → ankerfelt for alle felter, bygningerne fylder (kort: felt → id, som c.lejr)
+function lejrDaekket(c, kort){
+  kort=kort||lejrFelter(c); const m=new Map();
+  Object.keys(kort).map(Number).forEach(i=>{ const b=BYGID[kort[i]]; (b?fodspor(b,i):[i]).forEach(j=>{ if(!m.has(j)) m.set(j,i); }); });
+  return m;
+}
+// Er der plads til bygningen med anker i (fra = feltet, den flyttes fra, tæller som frit)
+function fodsporFrit(c, b, i, fra){ const d=lejrDaekket(c); return fodspor(b,i).every(j=>!d.has(j) || (fra!=null && d.get(j)===fra)); }
+function strTekst(b){ const s=bygStr(b); return `${s.k} × ${s.r} felter`; }
 function lejrFelter(c){ c.lejr = c.lejr || {}; c.lejrTid = c.lejrTid || {}; c.telte = c.telte || {}; c.lejrNiv = c.lejrNiv || {}; c.lejrOpg = c.lejrOpg || {}; c.lejrInv = c.lejrInv || {};
   if((c.lejrV||1) < LEJR_V) migrerLejr(c);   // gemte spil fra før oprydningen
   return c.lejr; }
@@ -7336,7 +7376,7 @@ function scrLejr(){
   if(valgt){
     const opg = lejrValg.type==="ny" && OPGAVER[valgt.id];
     h += `<div class="byggebar"><div class="bik">${bygIkon(valgt)}</div><div><b>${lejrValg.type==="ny"?"Byg":lejrValg.type==="vogn"?"Stil ud":"Flyt"}: ${valgt.navn}</b>
-      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}. ${opg?" Bagefter skal du binde besnøringerne.":""}</small>${regelLinjer(valgt.id).map(t=>`<small class="regeltekst">📏 ${t}</small>`).join("")}</div>
+      <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}.${erStor(valgt)?` ${valgt.navn} fylder ${strTekst(valgt)} – feltet er det øverste venstre hjørne.`:""} ${opg?" Bagefter skal du binde besnøringerne.":""}</small>${regelLinjer(valgt.id).map(t=>`<small class="regeltekst">📏 ${t}</small>`).join("")}</div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
@@ -7344,11 +7384,17 @@ function scrLejr(){
     ${soeHTML(c, str)}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 3 skorstene/bål, flammeskær på højst 3 bål og vajende flag på højst 4 felter
-  const liv=lejrLiv(c);
+  const liv=lejrLiv(c), dk=lejrDaekket(c), flytFra = lejrValg && lejrValg.type==="flyt" ? lejrValg.idx : null;
   for(const i of lejrAlleFelter(c)){
-    const r=feltR(i), k=feltK(i), b=BYGID[felter[i]];
+    // Felter, en stor bygning dækker, tegnes ikke – bygningen strækker sig hen over dem fra sit anker
+    if(dk.has(i) && dk.get(i)!==i) continue;
+    const r=feltR(i), k=feltK(i), b=BYGID[felter[i]], st=bygStr(b);
     let cls = erVand(i) ? "vand" : ((r+k)%2 ? "a" : "b");
-    if(valgt && !b && kanStaa(valgt,i)) cls += nyeBrud(c, valgt.id, i, lejrValg.type==="flyt"?lejrValg.idx:null).length ? " forbudt" : " kan";
+    if(valgt && !b && kanStaa(valgt,i) && fodsporFrit(c,valgt,i,flytFra)) cls += nyeBrud(c, valgt.id, i, flytFra).length ? " forbudt" : " kan";
+    if(erStor(b)) cls += " stor";
+    // Svævebanen: den ene mast står på feltet, og wiren går 3 felter hen over pladsen (til venstre, hvis der ikke er plads til højre)
+    const wire = b && b.id==="svaevebane" && !underByg(c,i) ? (k+2 < str.k ? "wire" : "wireV") : "";
+    if(wire) cls += " wire" + (wire==="wireV" ? " spejl" : "");
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
     if(lejrNy===i) cls += " ny";
     if(udv && (r>=udv.r || k>=udv.k)) cls += " udvidet";
@@ -7358,11 +7404,11 @@ function scrLejr(){
     const voks = b && !bygger && traeType(b.id) && traeVokser(c,i), faeld = b && !bygger && traeType(b.id) && traeFaeldes(c,i);
     if(voks) cls += " voks";
     const vild = !b && VILD[(c.vild||{})[i]];
-    if(b && !voks && HOEJ.has(b.id)) cls += " hoej";
+    if(b && !voks && !wire && !erStor(b) && HOEJ.has(b.id)) cls += " hoej";
     if(liv.vaj.has(i)) cls += " vaj";
     const livHTML = (liv.glod.has(i)?`<i class="glod lev" aria-hidden="true"></i>`:"") + (liv.roeg.has(i)?`<span class="roeg lev" aria-hidden="true"><i></i><i></i><i></i></span>`:"");
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
-    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv)}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
   if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
@@ -7551,22 +7597,22 @@ function lejrCelle(i){
   if(lejrValg && lejrValg.type==="flyt"){
     const b=BYGID[felter[lejrValg.idx]];
     if(i===lejrValg.idx){ lejrValg=null; render(); return; }
-    if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
-    if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    if(!fodsporFrit(c,b,i,lejrValg.idx)){ lejrToast(erStor(b) ? `Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.` : "Feltet er optaget – vælg et tomt felt."); return; }
+    if(!kanStaa(b,i)){ lejrToast(!fodsporPasser(b,i,c)?`Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.`:b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
     const brud=nyeBrud(c,b.id,i,lejrValg.idx); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     flytFelt(c,lejrValg.idx,i); lejrValg=null; lejrNy=i; save(); render(); return;
   }
   if(lejrValg && lejrValg.type==="vogn"){
     const v=vogn(c)[lejrValg.k], b=v && BYGID[v.id]; if(!b){ lejrValg=null; render(); return; }
-    if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
-    if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    if(!fodsporFrit(c,b,i)){ lejrToast(erStor(b) ? `Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.` : "Feltet er optaget – vælg et tomt felt."); return; }
+    if(!kanStaa(b,i)){ lejrToast(!fodsporPasser(b,i,c)?`Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.`:b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
     const brud=nyeBrud(c,b.id,i); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     stilUd(c, lejrValg.k, i); lejrValg=null; lejrNy=i; save(); render(); lejrToast(`🚚 ${b.navn} er stillet ud igen.`); return;
   }
   if(lejrValg && lejrValg.type==="ny"){
     const b=BYGID[lejrValg.id];
-    if(her){ lejrToast("Feltet er optaget – vælg et tomt felt."); return; }
-    if(!kanStaa(b,i)){ lejrToast(b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
+    if(!fodsporFrit(c,b,i)){ lejrToast(erStor(b) ? `Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.` : "Feltet er optaget – vælg et tomt felt."); return; }
+    if(!kanStaa(b,i)){ lejrToast(!fodsporPasser(b,i,c)?`Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.`:b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:b.vand?`${b.navn} skal stå på søen.`:`${b.navn} kan ikke stå på søen.`); return; }
     const brud=nyeBrud(c,b.id,i); if(brud.length){ lejrToast(brudTekst(brud)); return; }
     if(lejrPoint(c) < b.pris || !harMat(c,BYGMAT[b.id])){ lejrValg=null; render(); return; }
     lejrValg=null;
@@ -8992,10 +9038,10 @@ function soeGamleAa(c){
   return ud;
 }
 function udvidSoe(c, n){
-  const s=lejrStr(c), base=vandSaet(s), f=c.lejr||{};
+  const s=lejrStr(c), base=vandSaet(s), f=c.lejr||{}, dk=lejrDaekket(c, f);
   const vand=i=>base.has(feltR(i)+","+feltK(i)) || c.soeVand.includes(i);
   const ingenVand=new Set([...TELTE, "latrin"]);
-  const ok=i=>!vand(i) && !f[i] && !naboer(i,c).some(j=>ingenVand.has(f[j]));
+  const ok=i=>!vand(i) && !dk.has(i) && !naboer(i,c).some(j=>dk.has(j) && ingenVand.has(f[dk.get(j)]));
   const ortho=i=>{ const r=feltR(i), k=feltK(i); return [[r-1,k],[r+1,k],[r,k-1],[r,k+1]].filter(([a,b])=>a>=0&&b>=0&&a<s.r&&b<s.k).map(([a,b])=>felt(a,b)); };
   const alle=lejrAlleFelter(c);
   while(c.soeVand.length < n){
@@ -9005,7 +9051,7 @@ function udvidSoe(c, n){
     const afst=i=>(feltR(i)-0.5)**2 + (feltK(i)-(s.k-1.5))**2;
     let kand=alle.filter(i=>ok(i) && ortho(i).some(j=>soe.has(j))).sort((a,b)=>afst(a)-afst(b) || a-b);
     if(!kand.length) kand=alle.filter(i=>ok(i) && ortho(i).some(vand)).sort((a,b)=>afst(a)-afst(b) || a-b);   // pladsen er fuld ved søen: ved anden vand
-    if(!kand.length) kand=alle.filter(i=>!vand(i) && !f[i]).sort((a,b)=>b-a);                                // nødløsning: et tomt felt nederst
+    if(!kand.length) kand=alle.filter(i=>!vand(i) && !dk.has(i)).sort((a,b)=>b-a);                                // nødløsning: et tomt felt nederst
     if(!kand.length) break;
     c.soeVand.push(kand[0]); if(c.vild) delete c.vild[kand[0]];
   }
@@ -9091,11 +9137,14 @@ const INSPEKTION = [
     forkl:"Ved søen er jorden fugtig, og man kan falde i vandet, når man går ud om natten." },
 ];
 // Alle brud på reglerne på en plads (kort: felt → bygnings-id). Hvert brud har en nøgle, så nye brud kan findes.
+// Store bygninger: naboerne er naboerne til alle de felter, bygningen fylder, og bruddet peger på ankrene.
 function regelBrudKort(c, kort){
-  const brud=[], har=(j,ids)=>ids.includes("VAND") && erVand(j,c) || ids.includes(kort[j]);
-  Object.keys(kort).map(Number).forEach(i=>{ const id=kort[i];
-    INSPEKTION.forEach(r=>{ if(!r.a.includes(id)) return; const nb=naboer(i,c);
-      if(r.type==="ikke") nb.filter(j=>har(j,r.b)).forEach(j=>brud.push({ r, i, j, n:`${r.id}:${i}:${j}` }));
+  const brud=[], d=lejrDaekket(c,kort), idAf=j=>d.has(j) ? kort[d.get(j)] : undefined;
+  const har=(j,ids)=>ids.includes("VAND") && erVand(j,c) || ids.includes(idAf(j));
+  Object.keys(kort).map(Number).forEach(i=>{ const id=kort[i], b=BYGID[id], egne=new Set(b?fodspor(b,i):[i]);
+    const nb=[...new Set([...egne].flatMap(x=>naboer(x,c)))].filter(j=>!egne.has(j));
+    INSPEKTION.forEach(r=>{ if(!r.a.includes(id)) return;
+      if(r.type==="ikke"){ const set=new Set(); nb.filter(j=>har(j,r.b)).forEach(j=>{ const aj=d.has(j)?d.get(j):j; if(set.has(aj)) return; set.add(aj); brud.push({ r, i, j:aj, n:`${r.id}:${i}:${aj}` }); }); }
       else if(!nb.some(j=>har(j,r.b))) brud.push({ r, i, n:`${r.id}:${i}` }); }); });
   return brud;
 }
@@ -9272,6 +9321,10 @@ function tilpasLejr(c){
   Object.keys(f).map(Number).sort((a,b)=>a-b).forEach(i=>{ const b=BYGID[f[i]];
     if(!b){ sletFelt(c,i); return; }
     if(!kanStaa(b,i,c)){ pakNed(c,i); pakket.push(b.navn); } });
+  // Store bygninger, der overlapper noget (fx i gamle gemte spil, før de fyldte flere felter), pakkes ned – de små bliver stående
+  const taget=new Set(), str=i=>{ const s=bygStr(BYGID[f[i]]); return s.r*s.k; };
+  Object.keys(f).map(Number).sort((a,b)=>str(a)-str(b) || a-b).forEach(i=>{ const b=BYGID[f[i]]; if(!b) return;
+    const fs=fodspor(b,i); if(fs.some(j=>taget.has(j))){ pakNed(c,i); pakket.push(b.navn); } else fs.forEach(j=>taget.add(j)); });
   // Regelbrud: den senere af to bygninger, der ikke må stå sammen, pakkes ned (og køkkener uden bål)
   for(let n=0;n<50;n++){ const brud=regelBrudKort(c,{ ...f }); if(!brud.length) break;
     const x=brud[0], i=x.j!=null ? Math.max(x.i,x.j) : x.i; if(x.j!=null && erVand(x.j,c)){ pakket.push(BYGID[f[x.i]].navn); pakNed(c,x.i); } else { pakket.push(BYGID[f[i]].navn); pakNed(c,i); } }
@@ -9342,13 +9395,14 @@ const VILD = { svampe:{ ikon:KANTAREL, navn:"kantareller", krav:1, mad:1 }, blaa
 const VILD_INT = 2*60*60*1000, VILD_MAKS = 3;   // et nyt fund hver 2. time, højst 3 ad gangen
 function vildVaekst(c){
   const v=c.vild=c.vild||{}, f=lejrFelter(c), nu=Date.now();
-  Object.keys(v).forEach(i=>{ if(f[i] || erVand(+i) || !VILD[v[i]]) delete v[i]; });
+  const dk=lejrDaekket(c);
+  Object.keys(v).forEach(i=>{ if(dk.has(+i) || erVand(+i) || !VILD[v[i]]) delete v[i]; });
   const typer=Object.keys(VILD).filter(k=>(c.badges.planter||0)>=VILD[k].krav); if(!typer.length) return;
   if(!c.vildTid) c.vildTid=nu-VILD_INT;
   let n=Math.floor((nu-c.vildTid)/VILD_INT); if(n<=0) return;
   c.vildTid += n*VILD_INT;
   while(n-- > 0 && Object.keys(v).length<VILD_MAKS){
-    const tomme=lejrSynligeFelter(c).filter(i=>!f[i] && !erVand(i) && !v[i]); if(!tomme.length) break;
+    const tomme=lejrSynligeFelter(c).filter(i=>!dk.has(i) && !erVand(i) && !v[i]); if(!tomme.length) break;
     v[tomme[Math.floor(Math.random()*tomme.length)]] = typer[Math.floor(Math.random()*typer.length)];
   }
   save();
@@ -9371,12 +9425,12 @@ const BESOEG = [ { id:"hjort", ikon:"🦌", svg:()=>HJORT_SVG, krav:2, top:10, d
 function besoegHTML(c){
   if(bygFelter(c,NATUR_BYG).length<3) return "";
   const d=BESOEG.filter(x=>(c.badges.dyr||0)>=x.krav); if(!d.length) return "";
-  const f=lejrFelter(c), s=lejrStr(c), tomme=lejrAlleFelter(c).filter(i=>!f[i] && !erVand(i,c) && !(c.vild||{})[i]), brugt=new Set();
+  const f=lejrFelter(c), s=lejrStr(c), dk=lejrDaekket(c), tomme=lejrAlleFelter(c).filter(i=>!dk.has(i) && !erVand(i,c) && !(c.vild||{})[i]), brugt=new Set();
   const slot=Math.floor(Date.now()/1800e3);
   return `<div class="besoeg">${d.map((x,n)=>{
     const fri=tomme.filter(i=>!brugt.has(i)); let top, left, z;
-    if(fri.length){ const i=fri[(slot*7 + n*13 + x.id.length) % fri.length]; brugt.add(i); top=(feltR(i)+.62)/s.r*100; left=(feltK(i)+.5)/s.k*100; z=10+feltR(i); }
-    else { top=100; left=n ? 92 : 8; z=40; }   // ved kanten nederst
+    if(fri.length){ const i=fri[(slot*7 + n*13 + x.id.length) % fri.length]; brugt.add(i); top=(feltR(i)+.62)/s.r*100; left=(feltK(i)+.5)/s.k*100; z=10+2*feltR(i); }
+    else { top=100; left=n ? 92 : 8; z=60; }   // ved kanten nederst
     return `<button class="dyrgaest lev" data-a="dyrbesoeg" data-id="${x.id}" style="top:${top.toFixed(1)}%;left:${left.toFixed(1)}%;z-index:${z};animation-delay:${x.delay}s" aria-label="${DYREFAKTA[x.id][1]} på besøg">${x.svg()}</button>`; }).join("")}</div>`;
 }
 
@@ -11096,7 +11150,7 @@ const actions = {
   },
   bygstart(){
     const c=cur(), o=bygOpg, b=BYGID[o.id];
-    if(lejrFelter(c)[o.idx] || lejrPoint(c)<b.pris || !harMat(c,BYGMAT[b.id])){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
+    if(lejrFelter(c)[o.idx] || !fodsporFrit(c,b,o.idx) || lejrPoint(c)<b.pris || !harMat(c,BYGMAT[b.id])){ go("lejr"); lejrToast("Det kunne ikke bygges – feltet er optaget, eller du mangler point."); return; }
     const brud=nyeBrud(c,b.id,o.idx); if(brud.length){ go("lejr"); lejrToast(brudTekst(brud)); return; }
     placer(c,o.idx,b); lejrNy=o.idx; go("lejr"); vibrer([40,30,80]);
     lejrToast(`🏗️ Besnøringerne holder! Patruljen bygger ${b.navn} – færdig om ${tidTekst(BYGTID[b.id]||0)}.`);
