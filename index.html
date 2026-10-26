@@ -391,7 +391,7 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
     repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,.03) 34px 68px),
     #86b25a;
   box-shadow:inset 0 0 0 4px #5f8a3a,inset 0 0 18px rgba(40,70,15,.35),0 8px 20px rgba(60,40,10,.15)}
-.lejrmap{grid-auto-rows:1fr}
+.lejrmap{grid-auto-rows:1fr;isolation:isolate}   /* alle lag (rækker, dyr, lys) holdes inde i pladsen – så panelerne altid ligger øverst */
 .celle.stor{aspect-ratio:auto}
 .celle.wire .ting{right:auto;width:calc(300% + 2px)}.celle.wire.spejl .ting{left:auto;right:0}
 .celle.wire .ting>svg{width:100%;height:100%;overflow:visible}
