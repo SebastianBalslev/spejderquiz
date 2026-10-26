@@ -88,7 +88,7 @@ input.err{border-color:var(--bad);animation:shake .4s}
 /* Profil */
 .profile{text-align:center;background:linear-gradient(180deg,#dfe9cf 0,var(--paper) 55%)}
 .titler{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}.titler span{background:var(--gold,#e8b84a);color:#3b2a0a;border-radius:999px;padding:3px 10px;font-weight:800;font-size:13px}
-.fugle{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px}.fugle span{position:absolute;left:-10%;font-size:20px;animation:flyv 14s linear infinite}
+.fugle{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:61}.fugle span{position:absolute;left:-10%;font-size:20px;animation:flyv 14s linear infinite}
 @keyframes flyv{0%{transform:translate(0,0)}25%{transform:translate(32vw,-10px)}50%{transform:translate(64vw,8px)}75%{transform:translate(96vw,-6px)}100%{transform:translate(130vw,0)}}
 .rank-pill{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
 .avatar-wrap{width:min(230px,62vw);margin:8px auto 0}
@@ -331,7 +331,7 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 @keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .byggebar{position:sticky;top:0;z-index:30}
 .celle .vild .vildsvg{width:clamp(18px,6vw,26px);height:auto;display:block}.celle .vild{font-size:clamp(15px,5vw,22px);animation:vildvug 3s ease-in-out infinite;display:inline-block}@keyframes vildvug{50%{transform:rotate(-8deg) scale(1.08)}}
-.besoeg{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:4}
+.besoeg{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:60}
 .dyrgaest{position:absolute;left:-14%;pointer-events:auto;border:none;background:none;padding:4px;font-size:30px;line-height:1;cursor:pointer;animation:dyrgaa 26s linear infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 @keyframes dyrgaa{0%{left:-14%;transform:scaleX(-1)}40%{left:42%;transform:scaleX(-1) translateY(0)}45%{left:42%;transform:scaleX(-1) translateY(-4px)}55%{left:42%;transform:scaleX(-1) translateY(0)}100%{left:110%;transform:scaleX(-1)}}
 .lejrskilt{display:flex;align-items:center;gap:10px;width:100%;max-width:420px;border:none;border-radius:16px;padding:8px 12px;background:linear-gradient(#b07a45,#8b5a2b);color:#fff8e7;box-shadow:0 3px 0 #5c3a20,0 6px 14px rgba(0,0,0,.15);text-align:left;cursor:pointer;font:inherit}
@@ -395,6 +395,13 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle.vand::after{content:"";position:absolute;left:24%;right:30%;top:56%;height:2px;border-radius:3px;background:rgba(255,255,255,.3)}
 .celle svg{width:90%;height:90%;position:relative;z-index:1}
 .celle .emo{font-size:clamp(24px,8.5vw,40px);position:relative;z-index:1}
+/* Dybde: blød skygge under tingen; høje ting vokser op fra bunden og rager ind over feltet ovenover */
+.celle .ting{position:absolute;inset:0;display:grid;place-items:center;z-index:1;pointer-events:none}
+.celle .ting>svg{width:90%;height:90%}
+.celle.hoej .ting{transform:scale(1.32);transform-origin:50% 94%}
+.celle .skygge{position:absolute;left:16%;right:16%;bottom:5%;height:20%;border-radius:50%;background:radial-gradient(closest-side,rgba(28,48,12,.42),rgba(28,48,12,0));z-index:0;pointer-events:none}
+.celle.hoej .skygge{left:10%;right:10%;bottom:3%;height:22%}
+.celle.vand .skygge{background:radial-gradient(closest-side,rgba(10,50,80,.35),rgba(10,50,80,0))}
 .celle.kan{box-shadow:inset 0 0 0 3px rgba(255,255,255,.9);animation:blink 1.2s ease-in-out infinite}
 .celle.flyttes{box-shadow:inset 0 0 0 3px #f2c94c}
 .celle.ny>*{animation:byg .55s cubic-bezier(.2,.9,.3,1.3)}
@@ -419,7 +426,7 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 
 .item .meta{font-size:11px;color:var(--muted);font-weight:700}
 .celle .tid{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:rgba(42,42,31,.82);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:2px 0;font-variant-numeric:tabular-nums}
-.celle.bygger>svg,.celle.bygger>.emo{opacity:.45;filter:saturate(.4)}
+.celle.bygger .ting{opacity:.45;filter:saturate(.4)}
 .celle.bygger::before{content:"🚧";position:absolute;top:1px;right:3px;font-size:14px;z-index:2}
 .bigik.bygger{opacity:.5}
 .byggetid{font-size:18px;margin:4px 0;font-variant-numeric:tabular-nums}
@@ -7233,7 +7240,9 @@ function scrLejr(){
     const voks = b && !bygger && traeType(b.id) && traeVokser(c,i), faeld = b && !bygger && traeType(b.id) && traeFaeldes(c,i);
     if(voks) cls += " voks";
     const vild = !b && VILD[(c.vild||{})[i]];
-    h += `<button class="celle ${cls}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?(voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)):vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    if(b && !voks && HOEJ.has(b.id)) cls += " hoej";
+    // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
+    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
   if((c.badges.fugle||0)>=3) h += `<div class="fugle" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
@@ -7250,6 +7259,8 @@ function scrLejr(){
   }
   return h;
 }
+// Høje ting rager op over feltet ovenover (tegnes større og forankret i bunden af feltet)
+const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","flag","kikkert","svaevebane","radiomast","fugletaarn","fyrtaarn","totempael","signalbaal"]);
 // Kategorier i byggelisten. Ting, der ikke står her, kommer under »Andet«.
 const BYGKAT = [
   { id:"lejr", ikon:"⛺", navn:"Lejrliv", ting:["telt","patruljetelt","hytte","latrin","shelter","traehytte","vandstation","jamboree","patruljehjoerne","aktivitetsplads","flag","totempael","lejrbutik","storscene","flagalle"] },
