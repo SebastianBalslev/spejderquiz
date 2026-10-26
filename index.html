@@ -320,7 +320,7 @@ body.has-tabs #app{padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px))
 .byggebar .btn{width:auto;min-height:44px;margin:0;padding:8px 14px;font-size:15px}
 .lejrtop{display:flex;flex-direction:column;align-items:center;gap:6px;margin:2px 0 8px}.lejrtop h1{font-size:22px;margin:4px 0 0;text-align:center}
 .lejrtop .lejrinfo{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}.lejrtop .chip{padding:5px 10px;font-size:14px;display:inline-flex;align-items:center;gap:3px}.lejrtop .chip .matik{width:20px;height:20px}
-body.lejrskaerm #app{padding-bottom:calc(180px + env(safe-area-inset-bottom, 0px))}
+body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-inset-bottom, 0px)))}
 .lejrbund{position:fixed;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom, 0px));z-index:55;display:flex;justify-content:center;gap:8px;padding:8px max(10px, env(safe-area-inset-left, 0px));pointer-events:none}
 .lejrbund button{pointer-events:auto;flex:1;max-width:170px;min-height:58px;border:none;border-radius:16px;background:var(--forest);color:#fff;font-weight:800;font-size:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 #1f3320,0 6px 16px rgba(0,0,0,.18);position:relative;line-height:1}
 .lejrbund button span{font-size:12px;line-height:1.1;text-align:center}.lejrbund button.on{background:#c98a1c;box-shadow:0 4px 0 #8a5c0e,0 6px 16px rgba(0,0,0,.18)}
@@ -6216,7 +6216,17 @@ function render(){
   startLoebUr();
   loebEfterRender();
   renderFaner();
+  lejrLuft();
 }
+// Lejrpladsen får præcis så meget luft i bunden, at knapperne (Byg/Patrulje/Lager) og fanerne ikke dækker de nederste rækker –
+// målt på skærmen, så det også passer med stor tekst, knapper på to linjer og telefonens egen navigationslinje
+function lejrLuft(){
+  const bund=document.querySelector(".lejrbund");
+  if(!bund || !document.body.classList.contains("lejrskaerm")){ document.body.style.removeProperty("--lejrluft"); return; }
+  const top=Math.min(...[...bund.querySelectorAll("button")].map(x=>x.getBoundingClientRect().top));
+  if(isFinite(top)) document.body.style.setProperty("--lejrluft", Math.ceil(window.innerHeight - top + 24) + "px");
+}
+window.addEventListener("resize", ()=>lejrLuft());
 
 /* ---------- Skærme ---------- */
 function scrVaelg(){
