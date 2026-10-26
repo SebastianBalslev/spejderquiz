@@ -427,7 +427,10 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .item .meta{font-size:11px;color:var(--muted);font-weight:700}
 .celle .tid{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:rgba(42,42,31,.82);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:2px 0;font-variant-numeric:tabular-nums}
 .celle.bygger .ting{opacity:.45;filter:saturate(.4)}
-.celle.bygger::before{content:"🚧";position:absolute;top:1px;right:3px;font-size:14px;z-index:2}
+.celle .stillads{position:absolute;inset:4% 6% 6%;width:auto;height:auto;z-index:2;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.byggetilst{position:absolute;top:-13px;right:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}
+.byggetilst span{font-size:12px;font-weight:800}.byggetilst.on{background:var(--forest);color:#fff}
+.lejrmap{margin-top:16px}
 .bigik.bygger{opacity:.5}
 .byggetid{font-size:18px;margin:4px 0;font-variant-numeric:tabular-nums}
 .bygkort{padding:12px;background:linear-gradient(180deg,#cfe6f2 0,#e6f0d8 60%,#b9d48f 100%)}
@@ -572,16 +575,16 @@ div.prk+div.prk{border-top:1px solid var(--line)}
 @keyframes vakl{50%{transform:rotate(-6deg)}}
 @keyframes hug{50%{transform:rotate(-30deg)}}
 
-.celle.niv2{box-shadow:inset 0 0 0 2px #cd8a4a}.celle.niv3{box-shadow:inset 0 0 0 2px #dfe4e9}
-.celle.niv4{box-shadow:inset 0 0 0 3px #f4cb4e}.celle.niv5{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 2px rgba(244,203,78,.8);z-index:1}
-.celle.niv6{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 8px 2px rgba(244,203,78,.8);z-index:1}
-.celle.niv7{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 3px rgba(244,203,78,.85);z-index:1}
-.celle.niv8{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 3px rgba(244,203,78,.9);z-index:1}
-.celle.niv9{box-shadow:inset 0 0 0 3px #ffd84d,0 0 14px 4px rgba(255,216,77,.95);z-index:1;animation:nivglød 2.4s ease-in-out infinite}
-.celle.niv10{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(255,143,216,.9);z-index:1;animation:nivregnbue 4s linear infinite}
+.byggetilstand .celle.niv2{box-shadow:inset 0 0 0 2px #cd8a4a}.byggetilstand .celle.niv3{box-shadow:inset 0 0 0 2px #dfe4e9}
+.byggetilstand .celle.niv4{box-shadow:inset 0 0 0 3px #f4cb4e}.byggetilstand .celle.niv5{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 2px rgba(244,203,78,.8)}
+.byggetilstand .celle.niv6{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 8px 2px rgba(244,203,78,.8)}
+.byggetilstand .celle.niv7{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 3px rgba(244,203,78,.85)}
+.byggetilstand .celle.niv8{box-shadow:inset 0 0 0 3px #f4cb4e,0 0 10px 3px rgba(244,203,78,.9)}
+.byggetilstand .celle.niv9{box-shadow:inset 0 0 0 3px #ffd84d,0 0 14px 4px rgba(255,216,77,.95);animation:nivglød 2.4s ease-in-out infinite}
+.byggetilstand .celle.niv10{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(255,143,216,.9);animation:nivregnbue 4s linear infinite}
 @keyframes nivglød{50%{box-shadow:inset 0 0 0 3px #ffd84d,0 0 6px 2px rgba(255,216,77,.6)}}
 @keyframes nivregnbue{0%,100%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(230,57,70,.85)}25%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(242,201,76,.9)}50%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(42,157,143,.85)}75%{box-shadow:inset 0 0 0 3px #fff,0 0 16px 5px rgba(142,68,173,.85)}}
-.nivtal{position:absolute;top:2px;left:2px;z-index:2;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:rgba(42,42,31,.82);color:#fff;font-size:9.5px;font-weight:800;line-height:15px;text-align:center;font-variant-numeric:tabular-nums}
+.nivtal{display:none;position:absolute;top:2px;left:2px;z-index:2;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:rgba(42,42,31,.82);color:#fff;font-size:9.5px;font-weight:800;line-height:15px;text-align:center;font-variant-numeric:tabular-nums}.byggetilstand .nivtal{display:block}
 .nivtal.t2{color:#f1c08f}.nivtal.t3{color:#e5e9ee}.nivtal.t4,.nivtal.t5,.nivtal.t6,.nivtal.t7,.nivtal.t8{color:#f4cb4e}.nivtal.t9{background:#a8790c;color:#fff}.nivtal.t10{background:linear-gradient(90deg,#e63946,#f2c94c,#2a9d8f,#8e44ad);color:#fff}
 .nivtabel{width:100%;border-collapse:collapse;font-size:15px;margin:4px 0 12px}.nivtabel th{text-align:left;font-size:13px;color:var(--muted);padding:4px 8px;border-bottom:2px solid var(--line)}
 .nivtabel td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}.nivtabel td:first-child{width:56px;text-align:center;font-variant-numeric:tabular-nums}
@@ -7162,6 +7165,8 @@ let lejrUr = null;     // opdaterer byggetider på skærmen
 let lejrKat = "alle";  // valgt kategori i byggelisten
 let lejrArk = null;
 let lejrVisLaaste = false;   // byggelisten viser låste ting (ellers kun det, man kan bygge)
+// Byggetilstand: niveautal og farvede rammer på pladsen vises kun her (ellers er pladsen ren) – valget huskes på enheden
+let lejrByggetilstand = (()=>{ try{ return !!localStorage.getItem("spq-byggetilstand"); }catch(e){ return false; } })();
 let lejrUdvid = null;  // pladsens gamle størrelse, når den lige er vokset (til animationen)    // åbent panel på lejrpladsen: "byg", "patrulje", "lager" eller null
 
 function lejrPoint(c){ return Math.max(0, (c.point||0) - (c.brugt||0)); }
@@ -7226,7 +7231,8 @@ function scrLejr(){
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
-  h += `<div class="lejrmap k${str.k}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">`;
+  h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
+    <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}">📐<span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   for(const i of lejrAlleFelter(c)){
     const r=feltR(i), k=feltK(i), b=BYGID[felter[i]];
     let cls = erVand(i) ? "vand" : ((r+k)%2 ? "a" : "b");
@@ -7242,7 +7248,7 @@ function scrLejr(){
     const vild = !b && VILD[(c.vild||{})[i]];
     if(b && !voks && HOEJ.has(b.id)) cls += " hoej";
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
-    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
   if((c.badges.fugle||0)>=3) h += `<div class="fugle" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
@@ -7259,6 +7265,11 @@ function scrLejr(){
   }
   return h;
 }
+// Stillads over en ting, der bygges eller opgraderes (i stedet for en ramme)
+const STILLADS = `<svg class="stillads" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#8b5a2b" stroke-width="1.8" stroke-linecap="round" fill="none">
+  <path d="M6 38 V6 M20 38 V6 M34 38 V6"/><path d="M4 14 H36 M4 26 H36" stroke-width="2.2"/><path d="M6 26 L20 14 M20 38 L34 26" stroke="#a87b4f" stroke-width="1.3"/></g>
+  <g fill="#c49a63" stroke="#7c4a22" stroke-width=".6"><rect x="3" y="12.5" width="34" height="2.6" rx=".6"/><rect x="3" y="24.5" width="34" height="2.6" rx=".6"/></g>
+  <path d="M28 6 V2 H38 M36 2 V8" stroke="#555" stroke-width="1.2" fill="none"/><rect x="34.6" y="8" width="3" height="2.4" fill="#f2c94c" stroke="#555" stroke-width=".5"/></svg>`;
 // Høje ting rager op over feltet ovenover (tegnes større og forankret i bunden af feltet)
 const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","flag","kikkert","svaevebane","radiomast","fugletaarn","fyrtaarn","totempael","signalbaal"]);
 // Kategorier i byggelisten. Ting, der ikke står her, kommer under »Andet«.
@@ -10826,6 +10837,7 @@ const actions = {
   vaelgbyg(d){ vaelgByg(d.id); },
   celle(d){ lejrCelle(+d.i); },
   lejrannuller(){ lejrValg=null; render(); },
+  byggetilstand(){ lejrByggetilstand=!lejrByggetilstand; try{ localStorage.setItem("spq-byggetilstand", lejrByggetilstand?"1":""); }catch(e){} render(); },
   nytjob(d){ visJobValg(d.id); },
   bygstop(){ if(bygOpg && bygOpg.projekt){ const pr=bygOpg.projekt; bygOpg=null; go("akt",{ i:pr.i, a:"projekt" }); return; } if(bygOpg && bygOpg.loeb){ bygOpg=null; go(aktivtLoeb()?"loeb":"patrulje"); lejrToast("Posten venter – I kan prøve igen."); return; } if(bygOpg && bygOpg.moede){ go(moede?"moede":"hytte"); return; } if(bygOpg && bygOpg.patrulje){ go("patrulje"); return; } go("lejr"); lejrToast("Byggeriet blev ikke startet – du har ikke brugt nogen point."); },
   pny(){ const navne=shuffle(STANDARDNAVNE.slice()).slice(0,PATRULJE_STR);
