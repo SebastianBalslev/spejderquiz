@@ -339,6 +339,7 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 .lejrskilt .skik{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}.lejrskilt .sktekst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .lejrskilt b{font-size:19px;line-height:1.1}.lejrskilt small{font-size:12.5px;opacity:.92}.lejrskilt .xptal{font-variant-numeric:tabular-nums}
 .xpbar{display:block;height:8px;border-radius:99px;background:rgba(0,0,0,.25);overflow:hidden;margin:3px 0 1px}.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#f4cb4e,#ffe9a0);border-radius:99px}
+.sovekap{margin:2px 0 10px;font-size:15px;background:#eef3e4;border-radius:12px;padding:8px 10px}
 .lejrskiltmodal{text-align:left;max-height:85dvh;overflow-y:auto}.lejrskiltmodal h3{margin:16px 0 6px;font-size:16px;color:var(--forest)}
 .xptab{width:100%;border-collapse:collapse;font-size:14.5px}.xptab td{padding:4px 2px;border-bottom:1px solid var(--line)}.xptab td:last-child{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
 .insp{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14px}.insp li{background:var(--paper2);border-radius:10px;padding:7px 9px}.insp li.ok{background:#e6efd9}.insp small{display:block;color:var(--muted);margin-top:2px}
@@ -7003,7 +7004,7 @@ function konfetti(){
        vand: true (kan kun bygges på søen), besk }
    ===================================================================== */
 const BYG = [
-  { id:"telt",        navn:"Telt",              svg:"telt", ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
+  { id:"telt",        navn:"Telt",              sove:{basis:5,pr5:1}, svg:"telt", ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, lejrniv:5, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Hvert niveau giver mere plads til rafter – hvor meget afhænger af lejrens trin." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
@@ -7015,8 +7016,8 @@ const BYG = [
   { id:"loevtrae",    navn:"Løvtræ",            svg:"loevtrae", ikon:"🌳", pris:15, lejrniv:1,  besk:"Fæld det, så får du løvstammer til brænde. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
 
   { id:"latrin",      navn:"Latrin",            svg:"latrin",   pris:30, lejrniv:5,  krav:["lejr",1],        besk:"Et godt stykke fra køkken og sø." },
-  { id:"patruljetelt",navn:"Patruljetelt",      svg:"patruljetelt", ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
-  { id:"hytte",       navn:"Spejderhytte",      str:{r:1,k:2}, svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
+  { id:"patruljetelt",navn:"Patruljetelt",      sove:{basis:10,pr5:2}, svg:"patruljetelt", ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
+  { id:"hytte",       navn:"Spejderhytte",      sove:{basis:30,pr5:5}, str:{r:1,k:2}, svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
 
   { id:"baal",        navn:"Bålplads",          svg:"baal",     pris:40, lejrniv:1,  krav:["baal",1],        besk:"En sikker bålplads med sten om." },
   { id:"baalbaenke",  navn:"Bålbænke",          svg:"baalbaenke", ikon:"🪵", pris:90, lejrniv:10,  krav:["baal",2],        besk:"Bænke af kløvede stammer rundt om bålet." },
@@ -7055,16 +7056,16 @@ const BYG = [
   { id:"patruljehjoerne", navn:"Patruljehjørne", svg:"patruljehjoerne", ikon:"🚩", pris:60, lejrniv:8, krav:["ledelse",1], besk:"Patruljens eget hjørne med flag, opslagstavle og bænk." },
   { id:"geocache",    navn:"Geocache",          svg:"geocache", ikon:"📦", pris:50, lejrniv:14,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
 
-  { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80, lejrniv:10,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
+  { id:"shelter",     navn:"Shelter",           sove:{basis:2,pr5:1}, svg:"shelter",  pris:80, lejrniv:10,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
   { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, lejrniv:16, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
-  { id:"traehytte",   navn:"Træhytte",          svg:"traehytte", pris:280, lejrniv:36, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
+  { id:"traehytte",   navn:"Træhytte",          sove:{basis:4,pr5:1}, svg:"traehytte", pris:280, lejrniv:36, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
 
   { id:"kano",        navn:"Kano",              svg:"kano", ikon:"🛶", pris:80, lejrniv:10,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
   { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, lejrniv:16, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
   { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, lejrniv:42, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50, lejrniv:6,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
-  { id:"jamboree",    navn:"Jamboree-telt",     str:{r:2,k:2}, svg:"jamboree", ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
+  { id:"jamboree",    navn:"Jamboree-telt",     sove:{basis:100,pr5:20}, str:{r:2,k:2}, svg:"jamboree", ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
 
   { id:"signalpost",  navn:"Signalpost",        svg:"signalpost", pris:60, lejrniv:12, krav:["koder",1],      besk:"Morselampe og semaforflag på én post. Morse kræver Koder og signaler i bronze, semafor kræver sølv." },
   { id:"radiomast",   navn:"Signalmast",        svg:"radiomast", pris:240, lejrniv:40, krav:["koder",3],      besk:"Høj mast med antenne – nu kan I kalde hele verden." },
@@ -7765,6 +7766,8 @@ function visFeltMenu(i){
     knapper = (AKT_FOR[her.id]||[]).map(([a,t,k])=>aktKravOk(c,k) ? `<button class="btn" data-akt="${a}">${t}</button>` : `<button class="btn" disabled>🔒 ${t.replace(/^\S+\s/,"")} · kræver ${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()}</button>`).join("");
     if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
   }
+  if(her.sove){ const niv=lejrNiv(c,i), nn=soveNaesteNiv(niv);
+    knapper = `<p class="sovekap">👥 <b>${her.navn}: ${soveKap(her,niv)}</b> sovepladser${nn?` → ${soveKap(her,nn)} ved niv ${nn}`:""}${bygger && !c.lejrOpg[i]?" (tæller, når den er bygget)":""}</p>` + knapper; }
   if(!bygger && traeType(her.id)){
     const v=traeVokser(c,i), f=traeFaeldes(c,i);
     if(v) knapper += `<p class="byggetid">🌱 Træet vokser op igen. Klar om <b id="m-voks">${fmtTid(v.vokser-Date.now())}</b></p>${v.rek?`<p class="muted psmall">📺 Tiden er allerede halveret med en reklame.</p>`:`<button class="btn gold" id="m-voksrek">📺 Se en reklame og halver tiden</button>`}`;
@@ -8781,6 +8784,8 @@ function guideNaeste(c){
     if(!nu) return { tekst:`Byg ${b.navn.toLowerCase()}`, hint:`Den er med i milepælen til ${nt.navn}.`, byg:b.id };
     return { tekst:`Opgrader ${b.navn.toLowerCase()} til niveau ${mangler.niv}`, hint:`Den er på niveau ${nu}. Tryk på den på lejrpladsen, og vælg »Opgrader«. Milepælen til ${nt.navn} kræver niveau ${mangler.niv}.` };
   }
+  if(mangler && mangler.sove){ const b=soveBedst(c), kan=kanSoveByg(c,b);
+    return { tekst:`Skaf sovepladser: ${sovepladser(c)}/${mangler.sove}`, hint:`${nt.navn} kræver plads til ${mangler.sove} deltagere. Byg flere telte og hytter, eller opgrader dem. ${soveTip(c)}`, ...(kan?{ byg:b.id }:{ gaa:"skilt" }) }; }
   if(mangler) return { tekst:milPunkt(c,mangler,xp).tekst, hint:`Det er med i milepælen til ${nt.navn}. Tag flere mærker under Mærker.`, gaa:"maerker" };
   return { tekst:`Optjen XP til ${nt.navn}`, hint:`Milepælen er klaret! Du mangler ${fmt(Math.max(0, lejrXPKrav(nt.niv)-xp.total))} XP til niveau ${nt.niv}. Byg, opgrader og tag mærker.`, gaa:"skilt" };
 }
@@ -9018,6 +9023,7 @@ function nivEffekt(b, L){
     const tr=lejrTrin((cur()||{}).lejrNivMax||1);
     t.push(`Plads til ${lagerKap(tr,L)} ${mats.length>1 ? "af hver: "+mats.join(", ") : mats[0]} i ${tr.navn.toLowerCase()}en`);
   }
+  if(b.sove) t.push(`${soveKap(b,L)} sovepladser`);
   if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
   if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
   if(b.id==="loevtrae") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"løvstamme":"løvstammer"} pr. fældet løvtræ`);
@@ -9208,14 +9214,14 @@ function trinNytListe(fra, til){
 }
 // Milepælen for at rykke ind i hvert trin (nøglen er trinnets første niveau)
 const LEJR_MILEPAEL = {
-  5:   [{byg:"telt"},{byg:"baal"},{byg:"huggeplads"},{byg:"gran"},{byg:"loevtrae"}],
-  10:  [{byg:"patruljetelt"},{byg:"koekken"},{byg:"raftegaard"},{byg:"baal",niv:3}],
-  15:  [{byg:"port"},{byg:"lejrbaal"},{byg:"vejviser"},{byg:"latrin"}],
-  20:  [{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt"},{byg:"flag"},{byg:"forstehjalp"},{byg:"vandstation"},{byg:"kano"}],
-  30:  [{byg:"hytte",niv:10},{byg:"taarn",niv:10},{byg:"bagerovn"},{byg:"kongeeg"},{maerker:2,antal:10}],
-  45:  [{byg:"svaevebane",niv:20},{byg:"radiomast",niv:20},{byg:"lejrbutik"},{byg:"lejrradio"},{byg:"sejlbaad"},{maerker:2,antal:15},{maerker:3,antal:5}],
-  60:  [{byg:"ridderborg",niv:25},{byg:"storscene",niv:10},{byg:"vandrutsjebane"},{maerker:3,antal:10},{emne:"historie",lvl:3}],
-  100: [{byg:"jamboree",niv:50},{lande:"alle"},{byg:"jportal"},{byg:"fyrtaarn"},{maerker:3,antal:"alle"}],
+  5:   [{byg:"telt"},{byg:"baal"},{byg:"huggeplads"},{byg:"gran"},{byg:"loevtrae"},{sove:5}],
+  10:  [{byg:"patruljetelt"},{byg:"koekken"},{byg:"raftegaard"},{byg:"baal",niv:3},{sove:10}],
+  15:  [{byg:"port"},{byg:"lejrbaal"},{byg:"vejviser"},{byg:"latrin"},{sove:30}],
+  20:  [{byg:"port",niv:5},{byg:"lejrbaal",niv:3},{byg:"spisetelt"},{byg:"flag"},{byg:"forstehjalp"},{byg:"vandstation"},{byg:"kano"},{sove:50}],
+  30:  [{byg:"hytte",niv:10},{byg:"taarn",niv:10},{byg:"bagerovn"},{byg:"kongeeg"},{maerker:2,antal:10},{sove:100}],
+  45:  [{byg:"svaevebane",niv:20},{byg:"radiomast",niv:20},{byg:"lejrbutik"},{byg:"lejrradio"},{byg:"sejlbaad"},{maerker:2,antal:15},{maerker:3,antal:5},{sove:200}],
+  60:  [{byg:"ridderborg",niv:25},{byg:"storscene",niv:10},{byg:"vandrutsjebane"},{maerker:3,antal:10},{emne:"historie",lvl:3},{sove:400}],
+  100: [{byg:"jamboree",niv:50},{lande:"alle"},{byg:"jportal"},{byg:"fyrtaarn"},{maerker:3,antal:"alle"},{sove:1000}],
 };
 // Sæt af bygninger, der hører sammen. Et komplet sæt giver LEJR_XP_SAET XP.
 const LEJR_SAET = [
@@ -9319,9 +9325,33 @@ function milPunkt(c, p, xp){
     return { tekst: p.antal==="alle" ? `Alle ${EMNER.length} mærker i ${n}` : `${k} mærker i ${n}${p.maerker<3?" eller bedre":""}`, ok:nu>=k, nu:`${nu} mærker`, krav:`${k}` }; }
   if(p.emne){ const nu=c.badges[p.emne]||0;
     return { tekst:`${EMNE[p.emne].navn} i ${NIVEAUER[p.lvl].navn.toLowerCase()}`, ok:nu>=p.lvl, nu: nu?NIVEAUER[nu].navn.toLowerCase():"intet mærke", krav:NIVEAUER[p.lvl].navn.toLowerCase() }; }
+  if(p.sove){ const nu=sovepladser(c);
+    return { tekst:`👥 Sovepladser ${nu}/${p.sove}`, ok:nu>=p.sove, nu:`${nu} sovepladser`, krav:`${p.sove}`, tip:soveTip(c) }; }
   if(p.lande){ const alle=typeof LANDE!=="undefined"?LANDE.length:30, nu=Object.keys(c.flag||{}).length;
     return { tekst:"Flagalléen komplet – alle landes flag", ok: nu>=alle && bygFelter(c,"flagalle").length>0, nu:`${nu} flag${bygFelter(c,"flagalle").length?"":", ingen flagallé"}`, krav:`flagallé med ${alle} flag` }; }
   return { tekst:"?", ok:false, nu:"", krav:"" };
+}
+/* Sovepladser: overnatningsbygninger har sove {basis, pr5}. Kapacitet = basis + (hvert 5. niveau over 1) × pr5.
+   Kun det, der står på pladsen, tæller (ikke materielvognen og ikke ting, der stadig bygges). */
+function soveKap(b, niv){ return b && b.sove ? b.sove.basis + Math.floor((Math.max(1,niv||1)-1)/5)*b.sove.pr5 : 0; }
+function sovepladser(c){
+  const f=lejrFelter(c);
+  return Object.keys(f).map(Number).filter(i=>BYGID[f[i]] && BYGID[f[i]].sove && iPladsen(i,c) && !(underByg(c,i) && !c.lejrOpg[i]))
+    .reduce((sum,i)=>sum+soveKap(BYGID[f[i]], lejrNiv(c,i)), 0);
+}
+// Næste niveau, hvor kapaciteten stiger (niveau 6, 11, 16 …)
+function soveNaesteNiv(niv){ const n=niv+(5-((niv-1)%5)); return n<=MAKSNIV ? n : null; }
+// Den overnatningsbygning, der giver flest pladser pr. felt blandt dem, patruljen kan bygge (ellers blandt alle)
+function soveBedst(c){
+  const alle=BYG.filter(b=>b.sove), pr=b=>b.sove.basis/(bygStr(b).r*bygStr(b).k);
+  const kan=alle.filter(b=>kanSoveByg(c,b));
+  return (kan.length?kan:alle).slice().sort((a,b)=>pr(b)-pr(a))[0];
+}
+// Bruger det gemte lejrniveau (lejrNivMax) – lejrniveauet regnes selv ud fra milepælene, så harLejrNiv ville gå i ring
+function kanSoveByg(c,b){ return harKrav(c,b) && (!b.lejrniv || (c.lejrNivMax||1) >= b.lejrniv); }
+function soveTip(c){
+  const b=soveBedst(c), fl=bygStr(b).r*bygStr(b).k, kan=kanSoveByg(c,b);
+  return `${kan?"Tip":"Senere"}: ${b.navn.toLowerCase()} giver flest pladser pr. felt – ${b.sove.basis} pladser på ${fl===1?"ét felt":fl+" felter"} og ${b.sove.pr5} mere for hvert 5. niveau.`;
 }
 function milepael(c, trin, xp){ return (LEJR_MILEPAEL[trin.niv]||[]).map(p=>milPunkt(c,p,xp||lejrXP(c))); }
 // Niveauet ud fra XP og milepæle (uden det gemte maksimum)
@@ -9383,7 +9413,7 @@ function lejrSkiltHTML(c){
   const stop = n<LEJR_MAKS && xp.total>=til;   // nok XP, men milepælen mangler
   return `<button class="lejrskilt" data-a="lejrskilt" aria-label="Lejrniveau ${n}: ${t.navn}"><span class="skik">${t.ikon}</span>
     <span class="sktekst"><b>${t.navn}</b><small>${esc(c.navn)}s lejrplads · niveau ${n}</small>
-    <span class="xpbar"><i style="width:${pct}%"></i></span><small class="xptal">${fmt(xp.total)}${n<LEJR_MAKS?` / ${fmt(til)}`:""} XP${stop?" · 🔒 milepæl mangler":""}</small></span></button>`;
+    <span class="xpbar"><i style="width:${pct}%"></i></span><small class="xptal">${fmt(xp.total)}${n<LEJR_MAKS?` / ${fmt(til)}`:""} XP · 👥 ${fmt(sovepladser(c))} sovepladser${stop?" · 🔒 milepæl mangler":""}</small></span></button>`;
 }
 function visLejrSkilt(){
   const c=cur(), xp=lejrXP(c), n=lejrNiveau(c), t=lejrTrin(n), nt=naesteTrin(n);
@@ -9399,7 +9429,7 @@ function visLejrSkilt(){
       <tr><td>🎯 Aktiviteter (point fra aktiviteter + faciliteringer)</td><td>${fmt(xp.aktiv)}</td></tr></table>
     ${n<LEJR_MAKS?`<p class="muted psmall">Niveau ${n+1} kræver ${fmt(lejrXPKrav(n+1))} XP${xp.total<lejrXPKrav(n+1)?` – ${fmt(lejrXPKrav(n+1)-xp.total)} mere`:""}.</p>`:""}
     ${nt?`<h3>${nt.ikon} Milepæl til ${nt.navn} (niveau ${nt.niv})</h3>
-      <ul class="insp">${mil.map(p=>`<li class="${p.ok?"ok":""}">${p.ok?"✅":"❌"} <b>${p.tekst}</b><small>Nu: ${p.nu}${p.ok?"":` · kræver ${p.krav}`}</small></li>`).join("")}</ul>
+      <ul class="insp">${mil.map(p=>`<li class="${p.ok?"ok":""}">${p.ok?"✅":"❌"} <b>${p.tekst}</b><small>${p.tip ? (p.ok ? "Der er plads nok til deltagerne." : p.tip) : `Nu: ${p.nu}${p.ok?"":` · kræver ${p.krav}`}`}</small></li>`).join("")}</ul>
       ${mil.every(p=>p.ok)?"":`<p class="muted psmall">Uden milepælen stopper lejrpladsen på niveau ${nt.niv-1}, og XP gemmes op, til den er klaret.</p>`}`:""}
     <h3>📏 Placeringsregler</h3>
     <ul class="insp">${INSPEKTION.map(r=>`<li>${r.type==="skal"?"✅":"🚫"} <b>${r.navn}</b><small>${r.forkl}</small></li>`).join("")}</ul>
