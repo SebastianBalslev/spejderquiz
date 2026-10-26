@@ -399,6 +399,15 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle{aspect-ratio:1;border:none;padding:0;border-radius:6px;position:relative;display:grid;place-items:center;line-height:1;min-width:0}
 .celle.a{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}.celle.b{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 .celle.vand{background:transparent}
+/* Spejderne på pladsen (spejdereHTML) */
+.spejdere{position:absolute;inset:8px;pointer-events:none}
+.spejderfig{position:absolute;width:clamp(20px,6.4vw,30px);transform:translate(-50%,-100%);border:none;background:none;padding:0;line-height:0;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.3))}
+.spejderfig svg{display:block;width:100%;height:auto}
+.spejderfig.sidder{width:clamp(17px,5.4vw,25px)}
+.spejderfig.padler{width:clamp(15px,4.8vw,22px);clip-path:inset(0 0 38% 0);animation:padle 3.2s ease-in-out infinite}
+@keyframes padle{50%{transform:translate(-50%,-96%) rotate(-4deg)}}
+.spejderfig.gaar{animation:gaa 30s ease-in-out infinite alternate}
+@keyframes gaa{0%,8%{left:var(--x1);top:var(--y1)}92%,100%{left:var(--x2);top:var(--y2)}}
 /* Trampestierne (stierHTML): et SVG-lag under søen og felterne */
 .lejrmap .stier{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible}
 .stier path{fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -7414,7 +7423,7 @@ function scrLejr(){
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
     h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
-  h += besoegHTML(c);
+  h += besoegHTML(c) + spejdereHTML(c, str);
   if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
@@ -7428,6 +7437,42 @@ function scrLejr(){
     h += `<div class="arkbag" data-a="lejrark" data-v=""></div><div class="ark" role="dialog" aria-label="${titel}"><div class="arktop"><b>${titel}</b><button class="lukx" data-a="lejrark" data-v="" aria-label="Luk">✕</button></div>${ind}</div>`;
   }
   return h;
+}
+/* Spejdere på pladsen: 1-5 af patruljens figurer. Med et job står de ved stedet (i skoven ved træet, de fælder, ved huggepladsen,
+   køkkenet …). Uden job sidder de ved bålet om aftenen, én padler i kanoen om dagen, og de andre går langsomt mellem bygningerne
+   (højst 3 går ad gangen). Om natten sover de, der har fri, i teltene. Tryk på en figur for at se, hvem det er, og hvad de laver. */
+const JOB_STED = { afgren:["afgrening","raftegaard"], kloev:["huggeplads"], fibre:["loevtrae","gran","blomster"], sno:["rebmaskine","materialeskur"], takle:["rebmaskine","materialeskur"],
+  madlav:["koekken"], bag:["bagerovn"], facilitere:["aktivitetsplads"], flaadetur:["sejlbaad"] };
+function lejrDoegn(){ const t=new Date().getHours(); return t>=5 && t<9 ? "morgen" : t>=9 && t<18 ? "dag" : t>=18 && t<23 ? "aften" : "nat"; }
+function spejdereHTML(c, str){
+  const ms=arbejdere(c).slice(0,5); if(!ms.length) return "";
+  const f=lejrFelter(c), nu=Date.now(), tid=lejrDoegn();
+  const klar=Object.keys(f).map(Number).filter(i=>BYGID[f[i]] && !(underByg(c,i) && !c.lejrOpg[i]));
+  const af=ids=>klar.filter(i=>ids.includes(f[i]));
+  const foran=(i,dx)=>{ const s=bygStr(BYGID[f[i]]); return [feltK(i)+s.k/2+(dx||0), feltR(i)+s.r-.04]; };
+  const vandPaaVej=(a,b)=>{ for(let t=.1;t<1;t+=.1){ const x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t; if(erVand(felt(Math.min(str.r-1,Math.floor(y)),Math.min(str.k-1,Math.floor(x))),c)) return true; } return false; };
+  const baal=af(BAAL_IDS)[0], kano=af(["kano"])[0], slot=Math.floor(nu/600e3);
+  let gaar=0, vedBaal=0, padler=false;
+  const ud=ms.map((m,n)=>{
+    let pos=null, tekst="", cls="", stil="";
+    const job=m.job && m.job.slut>nu && JOB[m.job.id];
+    if(job){
+      const sted = m.job.felt!=null && f[m.job.felt] ? m.job.felt : (af(JOB_STED[m.job.id]||[])[0]);
+      tekst = `${job.navn.toLowerCase().replace(/^fæld/,"fælder").replace(/^saml/,"samler").replace(/^sno/,"snor").replace(/^takl/,"takler").replace(/^lav/,"laver").replace(/^bag/,"bager").replace(/^afgren/,"afgrener").replace(/^kløv/,"kløver").replace(/^facilitér/,"faciliterer")} – færdig om ${fmtTid(m.job.slut-nu)}`;
+      if(sted!=null) pos=foran(sted, n%2 ? .32 : -.32); else { pos=[.25+n*.3, str.r-.05]; tekst += " (ude i skoven)"; }
+    } else if(tid==="nat"){ return ""; }   // sover i teltet
+    else if(tid==="aften" && baal!=null && vedBaal<4){ const p=foran(baal); pos=[p[0]+[-.42,.42,-.2,.2][vedBaal], p[1]+(vedBaal<2?-.18:.1)]; vedBaal++; cls="sidder"; tekst="sidder ved bålet og synger"; }
+    else if(tid!=="aften" && kano!=null && !padler){ padler=true; pos=[feltK(kano)+.5, feltR(kano)+.66]; cls="padler lev"; tekst="padler en tur i kanoen"; }
+    else if(klar.length && gaar<3){
+      const land=klar.filter(i=>!erVand(i,c)); if(!land.length) return "";
+      const a=land[(slot+n*3)%land.length]; let b=land[(slot+n*3+1+n)%land.length];
+      const pa=foran(a,.3), pb=foran(b,-.3); if(a===b || vandPaaVej(pa,pb)) pos=pa; else { gaar++; cls="gaar lev"; stil=`--x1:${(pa[0]/str.k*100).toFixed(1)}%;--y1:${(pa[1]/str.r*100).toFixed(1)}%;--x2:${(pb[0]/str.k*100).toFixed(1)}%;--y2:${(pb[1]/str.r*100).toFixed(1)}%;animation-duration:${26+n*5}s;`; }
+      pos=pos||pa; tekst=`går en tur hen til ${BYGID[f[b]].navn.toLowerCase()}`;
+    } else return "";
+    const z=10+2*Math.min(str.r-1,Math.floor(pos[1]))+1;
+    return `<button class="spejderfig ${cls}" data-a="spejderpaa" data-id="${m.id}" data-v="${esc(tekst)}" style="left:${(pos[0]/str.k*100).toFixed(1)}%;top:${(pos[1]/str.r*100).toFixed(1)}%;z-index:${z};${stil}" aria-label="${esc(m.navn)} ${esc(tekst)}">${avatarSVG(m.look,null,0,"10 24 180 170")}</button>`;
+  }).join("");
+  return ud ? `<div class="spejdere">${ud}</div>` : "";
 }
 /* Trampestier: slidte stier af trådt græs fra hvert telt til nærmeste bål, latrin og køkken – og fra lejrporten ind til midten.
    Beregnes ud fra placeringen, hver gang pladsen tegnes. Stien går uden om vandet (korteste vej over landfelterne, også på skrå). */
@@ -11295,6 +11340,7 @@ const actions = {
     render(); },
 
   dyrbesoeg(d){ const f=DYREFAKTA[d.id]; if(f) lejrToast(`${f[0]} <b>${f[1]}</b> kigger forbi: ${pick(f[2])}`); },
+  spejderpaa(d){ const s=state.chars.find(x=>x.id===d.id); if(s) lejrToast(`<b>${esc(s.navn)}</b> ${d.v}.`); },
   lejrark(d){ lejrArk = d.v && lejrArk!==d.v ? d.v : null; if(lejrArk) lejrValg=null; render(); },
   braende(){
     if(akt.ild>=3){ aktBesked("Bålet brænder godt nu. Pas på – et for stort bål er farligt! 🔥"); return; }
