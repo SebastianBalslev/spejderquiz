@@ -88,7 +88,7 @@ input.err{border-color:var(--bad);animation:shake .4s}
 /* Profil */
 .profile{text-align:center;background:linear-gradient(180deg,#dfe9cf 0,var(--paper) 55%)}
 .titler{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}.titler span{background:var(--gold,#e8b84a);color:#3b2a0a;border-radius:999px;padding:3px 10px;font-weight:800;font-size:13px}
-.fugle{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:61}.fugle span{position:absolute;left:-10%;font-size:20px;animation:flyv 14s linear infinite}
+.fugle{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:22px;z-index:61}.fugle span{position:absolute;left:-10%;width:26px;animation:flyv 14s linear infinite}.fugle svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 3px rgba(0,0,0,.18))}.fugle .vinge{transform-box:fill-box;transform-origin:center;animation:flaks .5s ease-in-out infinite alternate}@keyframes flaks{to{transform:scaleY(.35)}}
 @keyframes flyv{0%{transform:translate(0,0)}25%{transform:translate(32vw,-10px)}50%{transform:translate(64vw,8px)}75%{transform:translate(96vw,-6px)}100%{transform:translate(130vw,0)}}
 .rank-pill{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
 .avatar-wrap{width:min(230px,62vw);margin:8px auto 0}
@@ -332,7 +332,8 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 .byggebar{position:sticky;top:0;z-index:30}
 .celle .vild .vildsvg{width:clamp(18px,6vw,26px);height:auto;display:block}.celle .vild{font-size:clamp(15px,5vw,22px);animation:vildvug 3s ease-in-out infinite;display:inline-block}@keyframes vildvug{50%{transform:rotate(-8deg) scale(1.08)}}
 .besoeg{position:absolute;inset:8px;pointer-events:none}
-.dyrgaest{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:none;background:none;padding:4px;font-size:30px;line-height:1;cursor:pointer;animation:dyrgraes 5s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.dyrgaest{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:none;background:none;padding:4px;width:clamp(40px,13vw,58px);line-height:0;cursor:pointer;animation:dyrgraes 5s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.dyrgaest svg{display:block;width:100%;height:auto}
 @keyframes dyrgraes{0%,60%,100%{transform:translate(-50%,-100%) rotate(0)}70%{transform:translate(-50%,-94%) rotate(-7deg)}82%{transform:translate(-50%,-94%) rotate(-7deg)}}
 .lejrskilt{display:flex;align-items:center;gap:10px;width:100%;max-width:420px;border:none;border-radius:16px;padding:8px 12px;background:linear-gradient(#b07a45,#8b5a2b);color:#fff8e7;box-shadow:0 3px 0 #5c3a20,0 6px 14px rgba(0,0,0,.15);text-align:left;cursor:pointer;font:inherit}
 .lejrskilt .skik{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}.lejrskilt .sktekst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -378,7 +379,8 @@ button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
 body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
-.celle .okse{position:absolute;top:2px;right:2px;font-size:14px;z-index:3;animation:hug .6s ease-in-out infinite}
+.celle .okse{position:absolute;top:2px;right:2px;width:30%;z-index:3;animation:hug .6s ease-in-out infinite}.celle .okse svg{display:block;width:100%;height:auto}
+.celle .tid .tidik{width:9px;height:11px;vertical-align:-1px}
 .celle.voks .emo{font-size:clamp(16px,6vw,26px)}
 /* Lejrpladsen er én sammenhængende græsmark: græsstrå-tekstur, slåede baner og lidt lys/skygge. Felterne er næsten usynlige. */
 .lejrmap{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;padding:8px;border-radius:22px;
@@ -6966,31 +6968,31 @@ function konfetti(){
        vand: true (kan kun bygges på søen), besk }
    ===================================================================== */
 const BYG = [
-  { id:"telt",        navn:"Telt",              ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
+  { id:"telt",        navn:"Telt",              svg:"telt", ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, lejrniv:5, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Hvert niveau giver mere plads til rafter – hvor meget afhænger af lejrens trin." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
   { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, lejrniv:10, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, lejrniv:7, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:5, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Hvert niveau giver mere plads til portioner mad – hvor meget afhænger af lejrens trin." },
-  { id:"braendeskur", navn:"Brændeskur",        ikon:"🛖", pris:40, lejrniv:5,  en:true,                besk:"Her ligger brændet tørt. Hvert niveau giver mere plads til brænde – hvor meget afhænger af lejrens trin." },
-  { id:"gran",        navn:"Grantræ",           ikon:"🌲", pris:15, lejrniv:1,  besk:"Fæld det, så får du granstammer til rafter. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
-  { id:"loevtrae",    navn:"Løvtræ",            ikon:"🌳", pris:15, lejrniv:1,  besk:"Fæld det, så får du løvstammer til brænde. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
+  { id:"braendeskur", navn:"Brændeskur",        svg:"braendeskur", ikon:"🛖", pris:40, lejrniv:5,  en:true,                besk:"Her ligger brændet tørt. Hvert niveau giver mere plads til brænde – hvor meget afhænger af lejrens trin." },
+  { id:"gran",        navn:"Grantræ",           svg:"gran", ikon:"🌲", pris:15, lejrniv:1,  besk:"Fæld det, så får du granstammer til rafter. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
+  { id:"loevtrae",    navn:"Løvtræ",            svg:"loevtrae", ikon:"🌳", pris:15, lejrniv:1,  besk:"Fæld det, så får du løvstammer til brænde. Det vokser selv op igen. Opgrader træet, så giver netop det flere stammer." },
 
   { id:"latrin",      navn:"Latrin",            svg:"latrin",   pris:30, lejrniv:5,  krav:["lejr",1],        besk:"Et godt stykke fra køkken og sø." },
-  { id:"patruljetelt",navn:"Patruljetelt",      ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
+  { id:"patruljetelt",navn:"Patruljetelt",      svg:"patruljetelt", ikon:"🏕️", pris:90, lejrniv:5,  krav:["lejr",2],        besk:"Plads til hele patruljen." },
   { id:"hytte",       navn:"Spejderhytte",      svg:"hytte",    pris:250, lejrniv:20, krav:["lejr",3],        besk:"Gruppens egen hytte med skorsten." },
 
   { id:"baal",        navn:"Bålplads",          svg:"baal",     pris:40, lejrniv:1,  krav:["baal",1],        besk:"En sikker bålplads med sten om." },
-  { id:"baalbaenke",  navn:"Bålbænke",          ikon:"🪵", pris:90, lejrniv:10,  krav:["baal",2],        besk:"Bænke af kløvede stammer rundt om bålet." },
-  { id:"signalbaal",  navn:"Signalbål",         ikon:"🔥", pris:200, lejrniv:34, krav:["baal",3],        besk:"Et højt bål på bakken, som kan ses langt væk." },
+  { id:"baalbaenke",  navn:"Bålbænke",          svg:"baalbaenke", ikon:"🪵", pris:90, lejrniv:10,  krav:["baal",2],        besk:"Bænke af kløvede stammer rundt om bålet." },
+  { id:"signalbaal",  navn:"Signalbål",         svg:"signalbaal", ikon:"🔥", pris:200, lejrniv:34, krav:["baal",3],        besk:"Et højt bål på bakken, som kan ses langt væk." },
 
-  { id:"koekken",     navn:"Lejrkøkken",        ikon:"🍲", pris:120, lejrniv:6, krav:["koekken",2],     besk:"Gryde over gløderne – nu kan der laves mad." },
-  { id:"bagerovn",    navn:"Bagerovn",          ikon:"🧱", pris:240, lejrniv:24, krav:["koekken",3],     besk:"En ovn af ler og sten. Her bager patruljen brød og pizza." },
+  { id:"koekken",     navn:"Lejrkøkken",        svg:"koekken", ikon:"🍲", pris:120, lejrniv:6, krav:["koekken",2],     besk:"Gryde over gløderne – nu kan der laves mad." },
+  { id:"bagerovn",    navn:"Bagerovn",          svg:"bagerovn", ikon:"🧱", pris:240, lejrniv:24, krav:["koekken",3],     besk:"En ovn af ler og sten. Her bager patruljen brød og pizza." },
 
   { id:"lejrbaal",    navn:"Lejrbålsplads",     svg:"lejrbaal", pris:250, lejrniv:13, krav:["lejrbaal",2], besk:"Stort bål med bænke til sange og sketches." },
 
-  { id:"huggeplads",  navn:"Huggeplads",        ikon:"🪓", pris:60, lejrniv:1,  krav:["vaerktoej",1], en:true, besk:"Huggeblok og savbuk. Her kløves brænde – højere niveau giver mere brænde og hurtigere kløvning." },
+  { id:"huggeplads",  navn:"Huggeplads",        svg:"huggeplads", ikon:"🪓", pris:60, lejrniv:1,  krav:["vaerktoej",1], en:true, besk:"Huggeblok og savbuk. Her kløves brænde – højere niveau giver mere brænde og hurtigere kløvning." },
 
   { id:"bord",        navn:"Pionerbord",        svg:"bord",     pris:60, lejrniv:7,  krav:["knob",1],        besk:"Rafter besnøret sammen til et spisebord." },
   { id:"port",        navn:"Lejrport",          svg:"port",     pris:150, lejrniv:10, krav:["knob",2],        besk:"Pioneret port med vinkelbesnøringer. Med Spejderhistorie i sølv får den et liljeskilt." },
@@ -6999,7 +7001,7 @@ const BYG = [
 
   { id:"forstehjalp", navn:"Førstehjælpsstation", svg:"kors",   pris:60, lejrniv:6,  krav:["forstehjalp",1], besk:"Plaster og forbindinger klar. Med Førstehjælp i sølv får stationen en båre, og i guld en hjertestarter." },
 
-  { id:"pindsvinehus",navn:"Pindsvinehus",      ikon:"🦔", pris:40, lejrniv:10,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
+  { id:"pindsvinehus",navn:"Pindsvinehus",      svg:"pindsvinehus", ikon:"🦔", pris:40, lejrniv:10,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
 
   { id:"kongeeg",     navn:"Kæmpeeg",           svg:"eg",       pris:220, lejrniv:26, krav:["planter",3],     besk:"Et ældgammelt egetræ med agern." },
 
@@ -7009,30 +7011,30 @@ const BYG = [
   { id:"vejrstation", navn:"Vejrstation",       svg:"vejrstation", pris:60, lejrniv:12, krav:["vejr",1],     besk:"Termometer og regnmåler. Med Vejr i sølv får den en vejrhane, der peger mod vinden." },
   { id:"solur",       navn:"Solur",             svg:"solur",    pris:220, lejrniv:25, krav:["vejr",3],        besk:"Viser tiden med solens skygge." },
 
-  { id:"kikkert",     navn:"Stjernekikkert",    ikon:"🔭", pris:150, lejrniv:16, krav:["stjerner",1],    besk:"Find Karlsvognen, Nordstjernen og flere stjernebilleder. Med Stjerner i guld bliver den til et stjernetårn." },
+  { id:"kikkert",     navn:"Stjernekikkert",    svg:"kikkert", ikon:"🔭", pris:150, lejrniv:16, krav:["stjerner",1],    besk:"Find Karlsvognen, Nordstjernen og flere stjernebilleder. Med Stjerner i guld bliver den til et stjernetårn." },
 
   { id:"fuglekasse",  navn:"Fuglekasse",        svg:"fuglekasse", pris:40, lejrniv:10, krav:["fugle",1],      besk:"Et hjem til musvitter." },
-  { id:"fugletaarn",  navn:"Fugletårn",         ikon:"🦅", pris:180, lejrniv:14, krav:["fugle",2],       besk:"Et tårn ved søen, hvor I kan se fuglene uden at forstyrre dem." },
+  { id:"fugletaarn",  navn:"Fugletårn",         svg:"fugletaarn", ikon:"🦅", pris:180, lejrniv:14, krav:["fugle",2],       besk:"Et tårn ved søen, hvor I kan se fuglene uden at forstyrre dem." },
 
-  { id:"sporkasse",   navn:"Sporkasse",         ikon:"🐾", pris:50, lejrniv:14,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
-  { id:"patruljehjoerne", navn:"Patruljehjørne", ikon:"🚩", pris:60, lejrniv:8, krav:["ledelse",1], besk:"Patruljens eget hjørne med flag, opslagstavle og bænk." },
-  { id:"geocache",    navn:"Geocache",          ikon:"📦", pris:50, lejrniv:14,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
+  { id:"sporkasse",   navn:"Sporkasse",         svg:"sporkasse", ikon:"🐾", pris:50, lejrniv:14,  krav:["spor",1],        besk:"En kasse med fint sand, hvor dyrene sætter deres spor om natten." },
+  { id:"patruljehjoerne", navn:"Patruljehjørne", svg:"patruljehjoerne", ikon:"🚩", pris:60, lejrniv:8, krav:["ledelse",1], besk:"Patruljens eget hjørne med flag, opslagstavle og bænk." },
+  { id:"geocache",    navn:"Geocache",          svg:"geocache", ikon:"📦", pris:50, lejrniv:14,  krav:["gps",1],         besk:"En lille skjult kasse med logbog. Find den med GPS!" },
 
   { id:"shelter",     navn:"Shelter",           svg:"shelter",  pris:80, lejrniv:10,  krav:["overlevelse",1], besk:"Et læ af grene og blade." },
   { id:"vandstation", navn:"Vandstation",       svg:"vandstation", pris:120, lejrniv:16, krav:["overlevelse",2], besk:"Her koges og renses vandet." },
   { id:"traehytte",   navn:"Træhytte",          svg:"traehytte", pris:280, lejrniv:36, krav:["overlevelse",3], besk:"Et skjul højt oppe i træet." },
 
-  { id:"kano",        navn:"Kano",              ikon:"🛶", pris:80, lejrniv:10,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
+  { id:"kano",        navn:"Kano",              svg:"kano", ikon:"🛶", pris:80, lejrniv:10,  krav:["vand",1], vand:true, besk:"Kan kun bygges på søen." },
   { id:"badebro",     navn:"Badebro",           svg:"bro",      pris:150, lejrniv:16, krav:["vand",2], vand:true, besk:"Pioneret bro ud i søen." },
   { id:"sejlbaad",    navn:"Tømmerflåde",       svg:"flaade",   pris:250, lejrniv:42, krav:["vand",3], ekstraKrav:[["knob",3]], vand:true, en:true, besk:"Stammer besnøret sammen til en flåde, der kan bære hele patruljen ud på søen – i 24 timer." },
 
   { id:"flag",        navn:"Flagstang",         svg:"flag",     pris:50, lejrniv:6,  krav:["historie",1],    besk:"Dannebrog hejses hver morgen." },
-  { id:"jamboree",    navn:"Jamboree-telt",     ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
+  { id:"jamboree",    navn:"Jamboree-telt",     svg:"jamboree", ikon:"🎪", pris:600, lejrniv:60, krav:["historie",3],    besk:"Stort telt til spejdere fra hele verden." },
 
   { id:"signalpost",  navn:"Signalpost",        svg:"signalpost", pris:60, lejrniv:12, krav:["koder",1],      besk:"Morselampe og semaforflag på én post. Morse kræver Koder og signaler i bronze, semafor kræver sølv." },
   { id:"radiomast",   navn:"Signalmast",        svg:"radiomast", pris:240, lejrniv:40, krav:["koder",3],      besk:"Høj mast med antenne – nu kan I kalde hele verden." },
 
-  { id:"blomster",    navn:"Blomsterbed",       ikon:"🌼", pris:30, lejrniv:10,  krav:["natur",1],       besk:"Vilde blomster til bierne." },
+  { id:"blomster",    navn:"Blomsterbed",       svg:"blomster", ikon:"🌼", pris:30, lejrniv:10,  krav:["natur",1],       besk:"Vilde blomster til bierne." },
   { id:"insekthotel", navn:"Insekthotel",       svg:"insekt",   pris:80, lejrniv:14,  krav:["natur",2],       besk:"Huller og rør til vilde bier." },
   { id:"totempael",   navn:"Totempæl",          svg:"totem",    pris:70,  lejrniv:8,  krav:["dyr",1], en:true,      besk:"Udskårne dyr på en høj pæl. Hvert trin får et nyt dyr – og hver dag et spørgsmål om dyr." },
   { id:"spisetelt",   navn:"Spisetelt",         svg:"spisetelt", pris:150, lejrniv:12, krav:["koekken",1], en:true,  besk:"Et stort telt med langborde, hvor hele lejren spiser sammen." },
@@ -7054,7 +7056,74 @@ const FELT_KOL = 6, GL_EKSTRA = [5, 10, 20, 30, 45, 60], GL_EKSTRA_R = 6;
 
 const TRAE = "#8b5a2b", REB = "#efdcae";
 function surring(x,y){ return `<circle cx="${x}" cy="${y}" r="1.8" fill="${REB}"/>`; }
+// Små tegninger, der bruges på lejrpladsen i stedet for emoji
+const PINDSVIN = `<g><path d="M24 38 Q24 30 31 30 Q37 30 37 36 L39.5 37.2 Q38.4 38.4 36 38Z" fill="#6b4a2a"/><g stroke="#3b2a1a" stroke-width=".7" stroke-linecap="round"><path d="M26 33 l-1.2 -2 M28 31.4 l-.6 -2.1 M30.5 30.8 v-2.2 M33 31.3 l.7 -2 M35.2 32.8 l1.2 -1.6"/></g><path d="M35 35 Q38 35 39.5 37 L35 38Z" fill="#d9b37a"/><circle cx="37" cy="35.6" r=".55" fill="#111"/><circle cx="39.6" cy="37.1" r=".55" fill="#111"/></g>`;
+function blomst(x, y, f){ return `<path d="M${x} ${y+2} V${y+7}" stroke="#3f7a35" stroke-width="1"/><path d="M${x} ${y+5} q2 -2 3 0 q-1.5 1 -3 0Z" fill="#4f9a3a"/><g fill="${f}">${[0,72,144,216,288].map(g=>`<circle cx="${(x+1.6*Math.cos(g*Math.PI/180)).toFixed(2)}" cy="${(y+1.6*Math.sin(g*Math.PI/180)).toFixed(2)}" r="1.3"/>`).join("")}</g><circle cx="${x}" cy="${y}" r=".9" fill="${f==="#f2c94c"?"#8a5a1a":"#f2c94c"}"/>`; }
+const UNG_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true"><ellipse cx="20" cy="37" rx="7" ry="1.8" fill="#7a5a3a"/><path d="M20 37 V22" stroke="#5c7a2e" stroke-width="2" stroke-linecap="round"/><path d="M20 28 C14 28 10.5 24 10.5 19.5 C16 19.5 20 23 20 28Z M20 25 C26 25 29.5 21 29.5 16.5 C24 16.5 20 20 20 25Z" fill="#6dbb4a" stroke="#3f7a2a" stroke-width=".8"/></svg>`;
+const OKSE_SVG = `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 18 L14 4" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round"/><path d="M10.5 6.5 L15.5 2.5 L18.5 7 L14 9.2Z" fill="#9aa3ab" stroke="#5f6670" stroke-width=".8"/></svg>`;
+const BLAABAER = `<svg viewBox="0 0 20 20" class="vildsvg" aria-hidden="true"><path d="M10 4 Q12 1 15 2" stroke="#3f7a35" stroke-width="1" fill="none"/><path d="M12 3.5 q3 -1 4 1.5 q-2.5 .8 -4 -1.5Z" fill="#4f9a3a"/>${[[6,9,3.4],[13,9.5,3.2],[9.5,14.5,3.4]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#3b4f9a" stroke="#26336a" stroke-width=".7"/><circle cx="${x-1}" cy="${y-1}" r=".9" fill="#8a9ad6" opacity=".7"/>`).join("")}</svg>`;
+const RAEV_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 24 Q1 21 2 30 Q6 34 11 28Z" fill="#e8742a"/><path d="M2 30 Q3 33 6.5 31.8 Q4.2 30.5 3.6 28.4Z" fill="#fff"/>
+  <g stroke="#3b2a1a" stroke-width="1.8" stroke-linecap="round"><path d="M12 29 V36 M16 29.5 V36 M22 29.5 V36 M25.5 28.5 V36"/></g><ellipse cx="18" cy="25" rx="9" ry="5" fill="#e8742a"/>
+  <path d="M24 22 L33 19.5 L37.5 24 L31 27 Q26 27 24 25Z" fill="#e8742a"/><path d="M28 21 L29 14.5 L31.2 20 Z M31.2 20.4 L33.4 15 L33.8 21Z" fill="#e8742a" stroke="#b5541e" stroke-width=".5"/>
+  <path d="M31 25.6 L37.5 24 L33 27.2Z" fill="#fff"/><path d="M24 24 Q26.5 29 23 30.4 Q21 27 24 24Z" fill="#fff"/><circle cx="37.4" cy="24" r=".9" fill="#111"/><circle cx="31" cy="22.4" r=".75" fill="#111"/></svg>`;
+const HJORT_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true"><g stroke="#6b4626" stroke-width="1.6" stroke-linecap="round"><path d="M11 27 V38 M14.5 28 V38 M22.5 28 V38 M26 27 V38"/></g>
+  <ellipse cx="18" cy="23" rx="10" ry="5.5" fill="#a0673a"/><path d="M10 25 Q18 30 26 25 Q18 28 10 25Z" fill="#d9b37a"/><path d="M8.4 21.5 L6 19.4 L7.4 23Z" fill="#fff"/>
+  <path d="M24.5 21 L28.6 11 L32.8 12 L30.2 22Z" fill="#a0673a"/><path d="M28.4 10 L36.4 12 L35.4 15.4 L29.8 14.4Z" fill="#a0673a"/><path d="M29.4 10.2 L26.6 7.8 L30.6 9.2Z" fill="#a0673a"/>
+  <circle cx="32.6" cy="11.8" r=".7" fill="#111"/><circle cx="36.2" cy="13" r=".8" fill="#111"/>
+  <g stroke="#7a5230" stroke-width="1.1" stroke-linecap="round" fill="none"><path d="M30 10 L28 2.6 M28.7 5.4 L26 3.8 M29.3 7.6 L26.5 7 M31.6 10 L33.2 2.8 M32.7 5 L35.2 3.6 M32.3 7.4 L35.2 7"/></g></svg>`;
+const FUGL_SVG = f => `<svg viewBox="0 0 24 14" aria-hidden="true"><path class="vinge" d="M1 6 Q6 0 12 7 Q18 0 23 6 Q18 3.5 12 9.5 Q6 3.5 1 6Z" fill="${f}"/><ellipse cx="12" cy="8.6" rx="2.2" ry="1.6" fill="${f}"/></svg>`;
+const TID_SVG = { byg:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M1.5 1 H8.5 M1.5 11 H8.5 M2.5 1 Q2.5 5 5 6 Q7.5 5 7.5 1 M2.5 11 Q2.5 7 5 6 Q7.5 7 7.5 11" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M3.4 10.4 Q5 8.4 6.6 10.4Z" fill="#f2c94c"/></svg>`,
+  opg:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M5 11 V2 M1.5 5.5 L5 2 L8.5 5.5" fill="none" stroke="#f2c94c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  voks:`<svg class="tidik" viewBox="0 0 10 12" aria-hidden="true"><path d="M5 11 V5 M5 7.5 C2.5 7.5 1.5 6 1.5 4 C3.8 4 5 5.4 5 7.5Z M5 6 C7.5 6 8.5 4.5 8.5 2.5 C6.2 2.5 5 3.9 5 6Z" fill="#8fd16a" stroke="#8fd16a" stroke-width=".6"/></svg>` };
 const PIONER = {
+  // Tegnet i samme stil som hytte, port og tårn (tidligere emoji)
+  telt: `<path d="M2 37 H38" stroke="#7c4a22" stroke-width="1.2" stroke-linecap="round"/><path d="M4 36 L20 8 L36 36Z" fill="#e8873a" stroke="#a5521c" stroke-width="1"/>
+    <path d="M20 8 L27 36 H13Z" fill="#c4622a"/><path d="M20 15 L23.5 36 H16.5Z" fill="#3b2a1a"/><path d="M20 8 V4" stroke="#7c4a22" stroke-width="1.4"/><path d="M4 36 L1 39 M36 36 L39 39" stroke="#7c4a22" stroke-width=".8"/>`,
+  patruljetelt: `<path d="M1 37 H39" stroke="#7c4a22" stroke-width="1.2" stroke-linecap="round"/><path d="M2 36 L12 12 H30 L38 36Z" fill="#4f7a3a" stroke="#2f5022" stroke-width="1"/>
+    <path d="M12 12 L3 36 H21Z" fill="#6a9a4a" stroke="#2f5022" stroke-width=".8"/><path d="M12 19 L8.5 36 H15.5Z" fill="#2a3a1a"/><path d="M30 12 V4" stroke="#7c4a22" stroke-width="1.2"/><path class="vift" d="M30 4 L36 6 L30 8Z" fill="#c62828"/>`,
+  gran: `<rect x="18" y="31" width="4" height="8" fill="#6f4a2a"/><path d="M20 2 L29 14 H25 L32 23 H27 L35 33 H5 L13 23 H8 L15 14 H11Z" fill="#2f6b3a" stroke="#1f4a28" stroke-width=".8" stroke-linejoin="round"/>
+    <path d="M20 2 L15 14 H18 L13 23 H16.5 L11 33 H20Z" fill="#3a7d44"/>`,
+  loevtrae: `<rect x="17" y="22" width="6" height="17" rx="2" fill="#7a5230"/><path d="M20 29 L14 23 M21 27 L27 21" stroke="#7a5230" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="20" cy="13" r="10" fill="#4f9a3a"/><circle cx="11" cy="19" r="7" fill="#5aa845"/><circle cx="29" cy="19" r="7" fill="#5aa845"/><circle cx="20" cy="20" r="7" fill="#5aa845"/><circle cx="15" cy="10" r="3.2" fill="#7cc35e" opacity=".7"/>`,
+  braendeskur: `<path d="M5 16 V38 M35 12 V38" stroke="#6b4626" stroke-width="2.4"/><path d="M2 14 L38 9 V13.5 L2 18.5Z" fill="#7c4a22"/>
+    <g fill="#c49a63" stroke="#7c4a22" stroke-width=".8">${[22,27,32,36.5].map((y,r)=>[9,15,21,27,32].slice(r===0?1:0).map(x=>`<circle cx="${x}" cy="${y}" r="2.7"/>`).join("")).join("")}</g>`,
+  baalbaenke: `<circle cx="20" cy="23" r="3.4" fill="#9b9285"/><path d="M18 23 L22 23" stroke="#7c4a22" stroke-width="1.6"/><g fill="#6b4626"><rect x="7" y="17" width="3" height="5"/><rect x="30" y="17" width="3" height="5"/><rect x="7" y="33" width="3" height="5"/><rect x="30" y="33" width="3" height="5"/></g>
+    <g fill="#9a6232" stroke="#6b4626" stroke-width=".8"><rect x="3" y="11" width="34" height="6" rx="3"/><rect x="3" y="27" width="34" height="6" rx="3"/></g><g fill="#d9b37a" stroke="#6b4626" stroke-width=".6"><ellipse cx="4" cy="14" rx="1.8" ry="3"/><ellipse cx="4" cy="30" rx="1.8" ry="3"/></g>`,
+  signalbaal: `<g stroke="#7c4a22" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M8 38 L20 12 L32 38 M13 38 L20 18 L27 38 M5 38 H35"/></g>
+    <path d="M20 1 C26 8 30 12 28 19 C27 24 23 26 20 26 C16 26 12 23 12 18 C12 12 17 10 18 5 C19 8 20 9 20 12 C22 8 21 5 20 1Z" fill="#f4a261"/>
+    <path d="M20 12 C23 16 24 18 23.5 21 C23 23.5 21.5 24.5 20 24.5 C18 24.5 16.5 23 16.5 21 C16.5 18 18.5 17 20 12Z" fill="#ffd166"/>`,
+  koekken: `<g fill="#9b9285"><circle cx="13" cy="35" r="2.4"/><circle cx="27" cy="35" r="2.4"/><circle cx="20" cy="36.5" r="2.4"/></g><path d="M20 27 C23 30 23 33 20 34.5 C17 33 17 30 20 27Z" fill="#f4a261"/>
+    <g stroke="#7c4a22" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M6 38 L20 5 L34 38"/></g><path d="M20 6 V16" stroke="#555" stroke-width="1"/>
+    <path d="M12 17 H28 L26 26 Q20 28 14 26Z" fill="#3f454c" stroke="#262a2e" stroke-width=".8"/><path d="M11.5 17 H28.5" stroke="#6b737c" stroke-width="2" stroke-linecap="round"/>`,
+  bagerovn: `<path d="M2 37 H38" stroke="#7c4a22" stroke-width="1.4" stroke-linecap="round"/><rect x="25" y="8" width="5" height="8" fill="#8a4a2a"/><path d="M4 37 Q4 12 20 12 Q36 12 36 37Z" fill="#c9774a" stroke="#8a4a2a" stroke-width="1"/>
+    <path d="M8 34 Q8 17 20 16.5" fill="none" stroke="#e09a6a" stroke-width="1.4" stroke-linecap="round"/><path d="M14 37 V30 Q14 24 20 24 Q26 24 26 30 V37Z" fill="#3b2a1a"/><path d="M16 37 Q17 31 20 32 Q23 31 24 37Z" fill="#f4a261"/>`,
+  huggeplads: `<g fill="#c49a63" stroke="#7c4a22" stroke-width=".6"><path d="M29 37 L35 32 L37.5 34 L31.5 39Z"/><path d="M1.5 36 L8 33 L9 36 L2.5 38.5Z"/></g>
+    <ellipse cx="18" cy="34" rx="10" ry="3.5" fill="#7a5230"/><rect x="8" y="22" width="20" height="12" fill="#9a6232"/><ellipse cx="18" cy="22" rx="10" ry="3.5" fill="#d9b37a" stroke="#9a6232"/><ellipse cx="18" cy="22" rx="5" ry="1.6" fill="none" stroke="#b08a52" stroke-width=".6"/>
+    <path d="M21 21 L30 6" stroke="#8b5a2b" stroke-width="2.2" stroke-linecap="round"/><path d="M26 9 L32.5 5 L35.5 10.5 L30.5 12.5Z" fill="#9aa3ab" stroke="#5f6670" stroke-width=".8"/>`,
+  pindsvinehus: `<path d="M3 36 Q5 14 21 14 Q36 14 37 36Z" fill="#8a6a3a"/><g stroke="#5c3f26" stroke-width="1.4" stroke-linecap="round"><path d="M6 31 L14 18 M11 35 L21 15 M19 36 L28 17 M27 35 L34 24"/></g>
+    <g fill="#c47a2a"><ellipse cx="10" cy="23" rx="3" ry="1.6" transform="rotate(-30 10 23)"/><ellipse cx="30" cy="21" rx="3" ry="1.6" transform="rotate(30 30 21)"/><ellipse cx="21" cy="16" rx="3" ry="1.6"/><ellipse cx="16" cy="26" rx="2.6" ry="1.4" fill="#d9a03a"/></g>
+    <path d="M13 36 Q13 28 18 28 Q23 28 23 36Z" fill="#3b2a1a"/>${PINDSVIN}`,
+  kikkert: `<g stroke="#5f6670" stroke-width="1.6" stroke-linecap="round"><path d="M20 21 L11 38 M20 21 L29 38 M20 21 V38"/></g><circle cx="20" cy="21" r="1.8" fill="#5f6670"/>
+    <g transform="rotate(-28 20 17)"><rect x="5" y="13" width="25" height="7" rx="2" fill="#2f4a7a" stroke="#1d2f50"/><rect x="28" y="12" width="6" height="9" rx="1.5" fill="#c9d3e0" stroke="#1d2f50"/><rect x="2" y="14.5" width="4" height="4" rx="1" fill="#1d2f50"/><path d="M14 13 V20" stroke="#f2c94c" stroke-width="1.2"/></g>`,
+  fugletaarn: `<g stroke="${TRAE}" stroke-width="2.4" stroke-linecap="round"><path d="M9 39 L13 18 M31 39 L27 18 M11 30 H29 M10 35 L30 22 M30 35 L10 22"/></g>
+    <rect x="9" y="10" width="22" height="9" fill="#9a6232" stroke="#6b4626"/><path d="M7 11 L20 3 L33 11Z" fill="#2f5e2f"/><rect x="12.5" y="12.5" width="15" height="3.5" fill="#3b2a1a"/>
+    <path d="M31 5 Q33 2.5 35 4.6 Q37 2.5 39 5 Q37 4 35 5.6 Q33 4 31 5Z" fill="#3b2a1a"/>`,
+  sporkasse: `<rect x="4" y="15" width="32" height="21" rx="1.5" fill="#e3cf9a" stroke="#9a6232" stroke-width="2.4"/><path d="M6 20 Q14 18 20 21 T34 19" fill="none" stroke="#cdb57a" stroke-width=".8"/>
+    <g fill="#8a6a3a">${[[11,30],[19,24],[27,29]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="2.2" ry="1.8"/><circle cx="${x-2.2}" cy="${y-2.6}" r=".9"/><circle cx="${x-.7}" cy="${y-3.4}" r=".9"/><circle cx="${x+.9}" cy="${y-3.4}" r=".9"/><circle cx="${x+2.3}" cy="${y-2.5}" r=".9"/>`).join("")}</g>`,
+  patruljehjoerne: `<g stroke="#9a6232" stroke-width="1.8" stroke-linecap="round"><path d="M14 39 V27 M22 39 V27 M30 39 V27 M38 39 V27 M12.5 30 H39 M12.5 35 H39"/></g>
+    <path d="M8 39 V3" stroke="#7c4a22" stroke-width="2"/><path class="vift" d="M8 4 L24 8 L8 12Z" fill="#c62828"/>
+    <path d="M24 14 H34 V20 Q34 25 29 27 Q24 25 24 20Z" fill="#1e5fb4" stroke="#123c75"/><path d="M29 16 l1 2 2 .2 -1.5 1.4 .5 2 -2 -1 -2 1 .5 -2 -1.5 -1.4 2 -.2Z" fill="#f2c94c"/>`,
+  geocache: `<circle cx="11" cy="29" r="9" fill="#3a7a35"/><circle cx="29" cy="28" r="10" fill="#2f6b2f"/><rect x="11" y="24" width="18" height="12" rx="1.5" fill="#5f7a3a" stroke="#3a4a22"/>
+    <rect x="11" y="24" width="18" height="3.5" fill="#4a6230"/><path d="M16 31 l2.4 2.4 5 -5" stroke="#f2c94c" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M20 2 a5 5 0 0 1 5 5 c0 4 -5 9 -5 9 s-5 -5 -5 -9 a5 5 0 0 1 5 -5Z" fill="#c62828"/><circle cx="20" cy="7" r="1.8" fill="#fff"/>`,
+  kano: `<path d="M2 22 Q20 34 38 22 Q34 29 20 30 Q6 29 2 22Z" fill="#b5541e" stroke="#7a3410" stroke-width="1"/><path d="M5 23.5 Q20 31 35 23.5" fill="none" stroke="#e8873a" stroke-width="1.4"/>
+    <path d="M12 25 V28 M20 26.5 V29.5 M28 25 V28" stroke="#7a3410" stroke-width="1"/><path d="M27 7 L19 31" stroke="#8b5a2b" stroke-width="1.6" stroke-linecap="round"/><path d="M18 30 Q16.5 35.5 18.8 36.5 Q21 35.5 20.5 31Z" fill="#c49a63" stroke="#7c4a22" stroke-width=".6"/>`,
+  jamboree: `<path d="M5 18 H35 L37 37 H3Z" fill="#f4f1e6" stroke="#b3261e" stroke-width=".8"/><g fill="#d63a2f">${[[5,9.3],[13.6,17.9],[22.1,26.4],[30.7,35]].map(([a,b])=>`<path d="M${a} 18 H${b} L${b+(b-20)*.07} 37 H${a+(a-20)*.07}Z"/>`).join("")}</g>
+    <path d="M20 4 L5 18 H35Z" fill="#f4f1e6" stroke="#b3261e" stroke-width=".8"/><g fill="#d63a2f"><path d="M20 4 L5 18 H10Z"/><path d="M20 4 L15 18 H20Z"/><path d="M20 4 L25 18 H30Z"/></g>
+    <path d="M5 18 Q8 21 11 18 Q14 21 17 18 Q20 21 23 18 Q26 21 29 18 Q32 21 35 18" fill="#f2c94c" stroke="#b3261e" stroke-width=".6"/><path d="M15.5 37 Q20 26 24.5 37Z" fill="#3b2a1a"/>
+    <path d="M20 4 V0" stroke="#555" stroke-width=".9"/><path class="vift" d="M20 0 L26 1.6 L20 3.2Z" fill="#1e5fb4"/>`,
+  blomster: `<ellipse cx="20" cy="32" rx="17" ry="6" fill="#7a5a3a"/><ellipse cx="20" cy="31" rx="15" ry="4.4" fill="#5c3f26"/>
+    ${[[8,25,"#f2c94c"],[14,21,"#e76f51"],[20,24,"#f6b3cf"],[26,20,"#f2c94c"],[32,25,"#8e7cc3"],[16,28,"#fff"],[25,28,"#e76f51"]].map(([x,y,f])=>blomst(x,y,f)).join("")}`,
   bord: `<g stroke="${TRAE}" stroke-width="2.6" stroke-linecap="round"><path d="M8 34 L15 18 M15 34 L8 18 M25 34 L32 18 M32 34 L25 18"/></g>
     <rect x="4" y="14" width="32" height="5" rx="2" fill="#b07a45"/><path d="M4 16.5 H36" stroke="#8b5a2b" stroke-width=".8"/>${surring(11.5,26)}${surring(28.5,26)}`,
   port: `<g stroke="${TRAE}" stroke-width="2.8" stroke-linecap="round"><path d="M7 38 V6 M12 38 V6 M28 38 V6 M33 38 V6 M4 9 H36 M7 30 L12 20 M12 30 L7 20 M28 30 L33 20 M33 30 L28 20"/></g>
@@ -7220,13 +7289,13 @@ function bygIkon(b, niv){
 // Bygninger, der har fået trinnene fra gamle bygninger (vejrhane, båre, hjertestarter, liljeskilt, stjernetårn), viser dem, når mærket er taget
 function bygEkstra(b){
   const c=cur(); if(!c) return ""; const m=id=>c.badges[id]||0;
-  if(b.id==="vejrstation" && m("vejr")>=2) return `<text x="33" y="11" font-size="11" text-anchor="middle">🐓</text>`;
+  if(b.id==="vejrstation" && m("vejr")>=2) return `<path d="M33 3 V12" stroke="#555" stroke-width=".8"/><path d="M29 7 Q30 4 33 5 Q34.6 2.6 36 4.4 L38.4 4.2 L36.4 6.4 Q36.4 9.6 32.6 9.6 Q29 9.6 29 7Z" fill="#c9a33a" stroke="#7a5a1a" stroke-width=".4"/><path d="M35.2 3.6 l.6 -1.4 .6 1.2Z" fill="#c62828"/>`;
   if(b.id==="forstehjalp"){ let e="";
     if(m("forstehjalp")>=2) e += `<path d="M1 33 L13 37 M1 37 L13 40" stroke="${TRAE}" stroke-width="1.4"/><path d="M3 34 L11 36.6 L11 39 L3 36.6Z" fill="#c62828"/>`;
     if(m("forstehjalp")>=3) e += `<rect x="30" y="27" width="9" height="12" rx="1.5" fill="#1e8a4a"/><path d="M34.5 36 C32 34 31.5 32.5 32.4 31.6 C33.2 30.9 34.1 31.3 34.5 32 C34.9 31.3 35.8 30.9 36.6 31.6 C37.5 32.5 37 34 34.5 36Z" fill="#fff"/>`;
     return e; }
   if(b.id==="port" && m("historie")>=2) return `<circle cx="20" cy="27" r="5.5" fill="#b07a45" stroke="#7c4a22"/><g transform="translate(20 27) scale(.16)">${SYM.historie.replace('fill="#ffd166"','fill="#5c3a20"')}</g>`;
-  if(b.id==="kikkert" && m("stjerner")>=3) return `<text x="33" y="11" font-size="11" text-anchor="middle">🌠</text>`;
+  if(b.id==="kikkert" && m("stjerner")>=3) return `<path d="M26 11 L35.5 4" stroke="#fff6c2" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>${stjerne(36, 3.6, 2.6, "#f2c94c")}`;
   return "";
 }
 function aktKravOk(c,k){ return !k || (c.badges[k[0]]||0) >= k[1]; }
@@ -7273,7 +7342,7 @@ function scrLejr(){
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${soeHTML(c, str)}
-    <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}">📐<span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
+    <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 3 skorstene/bål, flammeskær på højst 3 bål og vajende flag på højst 4 felter
   const liv=lejrLiv(c);
   for(const i of lejrAlleFelter(c)){
@@ -7293,10 +7362,10 @@ function scrLejr(){
     if(liv.vaj.has(i)) cls += " vaj";
     const livHTML = (liv.glod.has(i)?`<i class="glod lev" aria-hidden="true"></i>`:"") + (liv.roeg.has(i)?`<span class="roeg lev" aria-hidden="true"><i></i><i></i><i></i></span>`:"");
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
-    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?`<span class="emo">🌱</span>`:bygIkon(b,niv)}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">🪓</span>`:""}${voks?`<span class="tid" data-voks="${i}">🌱 ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?"⬆️":"⏳"} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    h += `<button class="celle ${cls}" style="z-index:${10+r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv)}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += besoegHTML(c);
-  if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["🐦",12,0],["🕊️",38,-5],["🐦",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${f}</span>`).join("")}</div>`;
+  if((c.badges.fugle||0)>=3) h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
   // Knapper i bunden og panelerne, de åbner
@@ -7426,13 +7495,13 @@ function startLejrUr(){
       const t=document.querySelector(`[data-jobtid="${m.id}"]`), b=document.querySelector(`[data-jobbar="${m.id}"]`);
       if(t) t.textContent=fmtTid(rest); if(b) b.style.width=((1-rest/(m.job.slut-m.job.start))*100)+"%"; });
     Object.entries(traeData(c)).forEach(([i,x])=>{ if(!x || !x.vokser) return; const el=document.querySelector(`[data-voks="${i}"]`);
-      if(x.vokser<=nu) arbFaerdig=true; else if(el) el.textContent=fmtTid(x.vokser-nu); });
+      if(x.vokser<=nu) arbFaerdig=true; else if(el) el.innerHTML=TID_SVG.voks+" "+fmtTid(x.vokser-nu); });
     if(arbFaerdig){ render(); vibrer(40); return; }
     const st=document.getElementById("signaltid"); if(st){ const r=signalRest(c); if(r<=0){ render(); return; } st.textContent=fmtTid(r); }
     let faerdig=null;
     document.querySelectorAll("[data-tid]").forEach(el=>{
       const i=+el.dataset.tid, ms=restTid(c,i);
-      if(ms<=0) faerdig=i; else el.textContent="⏳ "+fmtTid(ms);
+      if(ms<=0) faerdig=i; else el.innerHTML=(c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg)+" "+fmtTid(ms);
     });
     if(faerdig!==null) render();
   }, 1000);
@@ -9269,7 +9338,7 @@ function migrerOprydning(c){
    Vokser af sig selv på tomme græsfelter (kræver Planter og svampe) og kan plukkes til mad. */
 // Kantarellen er tegnet (emojien 🍄 ligner en giftig fluesvamp)
 const KANTAREL = `<svg viewBox="0 0 20 20" class="vildsvg" aria-hidden="true"><path d="M2.5 6.5 Q10 2.5 17.5 6.5 Q15 9 11.3 9.2 L12 17 Q10 18.4 8 17 L8.7 9.2 Q5 9 2.5 6.5Z" fill="#f2a516" stroke="#b9770e" stroke-width=".9"/><path d="M5 7 Q10 8.4 15 7" stroke="#d68910" stroke-width=".7" fill="none"/></svg>`;
-const VILD = { svampe:{ ikon:KANTAREL, navn:"kantareller", krav:1, mad:1 }, blaabaer:{ ikon:"🫐", navn:"blåbær", krav:2, mad:2 } };
+const VILD = { svampe:{ ikon:KANTAREL, navn:"kantareller", krav:1, mad:1 }, blaabaer:{ ikon:BLAABAER, navn:"blåbær", krav:2, mad:2 } };
 const VILD_INT = 2*60*60*1000, VILD_MAKS = 3;   // et nyt fund hver 2. time, højst 3 ad gangen
 function vildVaekst(c){
   const v=c.vild=c.vild||{}, f=lejrFelter(c), nu=Date.now();
@@ -9296,7 +9365,7 @@ function plukVild(c,i){
 /* ---------- Dyr på besøg ----------
    Med mindst 3 naturbygninger kigger kronhjorten (Dyr i sølv) og ræven (Dyr i guld) forbi. */
 const NATUR_BYG = ["kongeeg","blomster","pindsvinehus","insekthotel","bistade","fuglekasse","fugletaarn","sporkasse"];
-const BESOEG = [ { id:"hjort", ikon:"🦌", krav:2, top:10, delay:0 }, { id:"raev", ikon:"🦊", krav:3, top:33, delay:-11 } ];
+const BESOEG = [ { id:"hjort", ikon:"🦌", svg:()=>HJORT_SVG, krav:2, top:10, delay:0 }, { id:"raev", ikon:"🦊", svg:()=>RAEV_SVG, krav:3, top:33, delay:-11 } ];
 // Dyrene står aldrig oven på en bygning: hvert dyr vælger et tomt græsfelt (det skifter hver halve time) – er der ingen, står det ved kanten.
 // De ligger i samme lag som felterne (z-index efter række), så bygninger længere nede ligger foran.
 function besoegHTML(c){
@@ -9308,7 +9377,7 @@ function besoegHTML(c){
     const fri=tomme.filter(i=>!brugt.has(i)); let top, left, z;
     if(fri.length){ const i=fri[(slot*7 + n*13 + x.id.length) % fri.length]; brugt.add(i); top=(feltR(i)+.62)/s.r*100; left=(feltK(i)+.5)/s.k*100; z=10+feltR(i); }
     else { top=100; left=n ? 92 : 8; z=40; }   // ved kanten nederst
-    return `<button class="dyrgaest lev" data-a="dyrbesoeg" data-id="${x.id}" style="top:${top.toFixed(1)}%;left:${left.toFixed(1)}%;z-index:${z};animation-delay:${x.delay}s" aria-label="${DYREFAKTA[x.id][1]} på besøg">${x.ikon}</button>`; }).join("")}</div>`;
+    return `<button class="dyrgaest lev" data-a="dyrbesoeg" data-id="${x.id}" style="top:${top.toFixed(1)}%;left:${left.toFixed(1)}%;z-index:${z};animation-delay:${x.delay}s" aria-label="${DYREFAKTA[x.id][1]} på besøg">${x.svg()}</button>`; }).join("")}</div>`;
 }
 
 /* =====================================================================
