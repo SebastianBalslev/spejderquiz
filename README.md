@@ -98,8 +98,8 @@ Trinnene står i `LEJR_TRIN` (nemme at justere). Hvert trin har pladsens større
 | 5 | Patruljelejr | 4 × 4 | 3 | 5 | sølv | 12 | 2 |
 | 10 | Tropslejr | 6 × 6 | 6 | 10 | guld | 20 | 3 |
 | 15 | Gruppetur | 8 × 6 | 8 | 15 | guld | 20 | 3 |
-| 20 | Divisionslejr | 9 × 6 | 9 | 20 | guld | 40 | 4 |
-| 30 | Korpslejr | 10 × 6 | 10 | 35 | guld | 80 | 5 |
+| 20 | Divisionslejr | 10 × 6 | 9 | 20 | guld | 40 | 4 |
+| 30 | Korpslejr | 11 × 6 | 10 | 35 | guld | 80 | 5 |
 | 45 | Landslejr | 12 × 6 | 12 | 50 | guld | 120 | 6 |
 | 60 | Jamboree | 14 × 6 | 14 | 75 | guld | 160 | 7 |
 | 100 | Verdensjamboree | 16 × 6 | 16 | 99 | guld | 200 | 7 |
