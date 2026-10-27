@@ -7009,6 +7009,7 @@ const BYG = [
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
   { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, lejrniv:10, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
+  { id:"takling",     navn:"Taklingsstation",   svg:"takling", pris:120, lejrniv:15, krav:["knob",3], en:true,           besk:"Et arbejdsbord med takkegarn og sejlnål, hvor tovværket takles. Giver 1 reb mere pr. taklet tovværk – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, lejrniv:7, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:5, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Hvert niveau giver mere plads til portioner mad – hvor meget afhænger af lejrens trin." },
   { id:"braendeskur", navn:"Brændeskur",        svg:"braendeskur", ikon:"🛖", pris:40, lejrniv:5,  en:true,                besk:"Her ligger brændet tørt. Hvert niveau giver mere plads til brænde – hvor meget afhænger af lejrens trin." },
@@ -7209,6 +7210,10 @@ const PIONER = {
     <path d="M14 38 L17 21 M26 38 L23 21 M20 38 V24" stroke="${TRAE}" stroke-width="1.8" stroke-linecap="round"/><rect x="12" y="20" width="16" height="11" rx="1" fill="#fff" stroke="#6b4626" stroke-width="1"/>
     <path d="M14.5 27.5 L17.5 24.5 L20 26.5 L25 22.5" fill="none" stroke="#2e7d32" stroke-width="1.3" stroke-linecap="round"/>
     <circle cx="7" cy="31" r="2.6" fill="#f3c99a"/><path d="M4 39 Q7 33 10 39Z" fill="#c62828"/><circle cx="33" cy="31" r="2.6" fill="#e0ac69"/><path d="M30 39 Q33 33 36 39Z" fill="#1e5fb4"/>`,
+  takling: `<path d="M6 38 V24 M34 38 V24 M6 32 H34" stroke="${TRAE}" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="20" width="34" height="5" rx="1.5" fill="#9a6232" stroke="#6b4626" stroke-width="1"/>
+    <ellipse cx="14" cy="15" rx="8" ry="4.6" fill="none" stroke="${REB}" stroke-width="2.6"/><ellipse cx="14" cy="15" rx="4.5" ry="2.4" fill="none" stroke="#d9c38f" stroke-width="1.8"/>
+    <path d="M21 17 Q25 19 29 15" fill="none" stroke="${REB}" stroke-width="2.4" stroke-linecap="round"/><path d="M27.4 13.6 h3.2 v3 h-3.2Z" fill="#c62828"/>
+    <rect x="30" y="9" width="5" height="9" rx="1.2" fill="#c49a63" stroke="#6b4626" stroke-width=".8"/><path d="M30 11.5 H35 M30 13.5 H35 M30 15.5 H35" stroke="#c62828" stroke-width=".9"/>`,
   afgrening: `<path d="M5 38 L12 22 M19 38 L12 22 M21 38 L28 22 M35 38 L28 22" stroke="${TRAE}" stroke-width="2.4" stroke-linecap="round"/>
     <rect x="3" y="15" width="34" height="8" rx="4" fill="#9a6232" stroke="#6b4626" stroke-width="1"/><ellipse cx="37" cy="19" rx="2" ry="4" fill="#e3c08a" stroke="#6b4626" stroke-width=".8"/>
     <g stroke="#3f7a35" stroke-width="1.6" stroke-linecap="round"><path d="M8 15 l-2 -5 M14 15 l1 -6 M30 15 l2 -5"/></g>
@@ -7277,7 +7282,7 @@ const PIONER = {
 // Alle ventetider (byggeri, opgradering, job og træer, der vokser) ganges med denne faktor. Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 4;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { aktivitetsplads:300, afgrening:180, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:45, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:45, patruljetelt:180, hytte:900, latrin:60, baal:45, koekken:120, lejrbaal:300,
+const BYGTID = { aktivitetsplads:300, afgrening:180, takling:180, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:45, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:45, patruljetelt:180, hytte:900, latrin:60, baal:45, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, fuglekasse:60, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
   vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:9000, flag:60, jamboree:600, insekthotel:180, bistade:300, signalpost:90, radiomast:300,
   totempael:120, spisetelt:300, lejrbutik:450, lejrradio:450, ridderborg:900, vandrutsjebane:900, storscene:900, flagalle:600, jportal:1800, fyrtaarn:1800 };
@@ -7459,7 +7464,7 @@ function scrLejr(){
 /* Spejdere på pladsen: 1-5 af patruljens figurer. Med et job står de ved stedet (i skoven ved træet, de fælder, ved huggepladsen,
    køkkenet …). Uden job sidder de ved bålet om aftenen, én padler i kanoen om dagen, og de andre går langsomt mellem bygningerne
    (højst 2 går ad gangen). Om natten sover de, der har fri, i teltene. Tryk på en figur for at se, hvem det er, og hvad de laver. */
-const JOB_STED = { afgren:["afgrening","raftegaard"], kloev:["huggeplads"], fibre:["loevtrae","gran","blomster"], sno:["rebmaskine","materialeskur"], takle:["rebmaskine","materialeskur"],
+const JOB_STED = { afgren:["afgrening","raftegaard"], kloev:["huggeplads"], fibre:["loevtrae","gran","blomster"], sno:["rebmaskine","materialeskur"], takle:["takling","rebmaskine","materialeskur"],
   madlav:["koekken"], bag:["bagerovn"], facilitere:["aktivitetsplads"], flaadetur:["sejlbaad"] };
 // Kan slås fra under Indstillinger (indst.doegn) – så er det altid dag på lejrpladsen
 function lejrDoegn(){ if(!indst(cur()).doegn) return "dag"; const t=new Date().getHours(); return t>=5 && t<9 ? "morgen" : t>=9 && t<18 ? "dag" : t>=18 && t<23 ? "aften" : "nat"; }
@@ -7600,7 +7605,7 @@ const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","f
 const BYGKAT = [
   { id:"lejr", ikon:"⛺", navn:"Lejrliv", ting:["telt","patruljetelt","hytte","latrin","shelter","traehytte","vandstation","jamboree","patruljehjoerne","aktivitetsplads","flag","totempael","lejrbutik","storscene","flagalle"] },
   { id:"baal", ikon:"🔥", navn:"Bål og mad", ting:["baal","baalbaenke","signalbaal","lejrbaal","koekken","bagerovn","spisetelt"] },
-  { id:"vaerksted", ikon:"🪓", navn:"Værksted og lager", ting:["raftegaard","materialeskur","braendeskur","jordkoeleskab","afgrening","rebmaskine","huggeplads"] },
+  { id:"vaerksted", ikon:"🪓", navn:"Værksted og lager", ting:["raftegaard","materialeskur","braendeskur","jordkoeleskab","afgrening","takling","rebmaskine","huggeplads"] },
   { id:"natur", ikon:"🌲", navn:"Træer og natur", ting:["gran","loevtrae","kongeeg","blomster","pindsvinehus","insekthotel","bistade","fuglekasse","fugletaarn","sporkasse"] },
   { id:"pioner", ikon:"🪢", navn:"Pionering", ting:["bord","port","taarn","svaevebane","ridderborg","jportal"] },
   { id:"orient", ikon:"🧭", navn:"Orientering og vejr", ting:["vejviser","kompasrose","geocache","vejrstation","solur","kikkert"] },
@@ -7754,7 +7759,7 @@ function lejrCelle(i){
 }
 
 // Bygninger med et job, man kan starte direkte fra bygningen
-const BYG_JOB = { koekken:"madlav", bagerovn:"bag", rebmaskine:"sno", afgrening:"afgren", aktivitetsplads:"facilitere" };
+const BYG_JOB = { koekken:"madlav", bagerovn:"bag", rebmaskine:"sno", afgrening:"afgren", takling:"takle", aktivitetsplads:"facilitere" };
 function visFeltMenu(i){
   const c=cur(), her=BYGID[c.lejr[i]], bygger=underByg(c,i), indbo=indboVaerdi(c,i);
   const luk=()=>{ modalRoot.innerHTML=""; };
@@ -8599,7 +8604,7 @@ function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MA
 const BYGMAT = { totempael:{rafter:2}, spisetelt:{rafter:6, reb:3}, lejrbutik:{rafter:8, reb:2}, lejrradio:{rafter:4, reb:2}, ridderborg:{rafter:30, reb:15}, vandrutsjebane:{rafter:20, reb:10},
   storscene:{rafter:25, reb:10}, flagalle:{rafter:20, reb:10}, jportal:{rafter:60, reb:30}, fyrtaarn:{rafter:40, reb:20, braende:20}, bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:100, reb:50, braende:10, mad:20}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, signalpost:{rafter:1, reb:1}, hytte:{rafter:30, braende:10},
-  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, lejrbaal:{rafter:2, braende:8}, latrin:{rafter:2, reb:1} };
+  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, takling:{rafter:8, reb:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, lejrbaal:{rafter:2, braende:8}, latrin:{rafter:2, reb:1} };
 
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et fældet træ er om at gro op igen
 const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flertal:"grantræer", job:"faeldGran", besk:"Bliver til granstammer, som kan afgrenes til rafter." },
@@ -8636,6 +8641,8 @@ function jobGiver(c, jid, felt){
   if(jid==="madlav" || jid==="bag") g.mad += Math.floor((bygNiv(c, JOB[jid].bygning)-1)/5);
   // Afgreningsstationen: +1 rafte, når den er bygget, og +1 mere på hvert af niveauerne i AFGREN_NIV
   if(jid==="afgren"){ const n=bygNiv(c,"afgrening"); if(n) g.rafter += 1 + AFGREN_NIV.filter(x=>n>=x).length; }
+  // Taklingsstationen virker på samme måde: +1 taklet reb, når den er bygget, og +1 mere på hvert af niveauerne i AFGREN_NIV
+  if(jid==="takle"){ const n=bygNiv(c,"takling"); if(n) g.reb += 1 + AFGREN_NIV.filter(x=>n>=x).length; }
   // Rebslåningsmaskinen: +1 utaklet reb for hvert 5. niveau
   if(jid==="sno") g.rebraa += Math.floor(bygNiv(c,"rebmaskine")/5);
   // Stammer pr. træ afhænger kun af det træ, der fældes
@@ -8828,7 +8835,7 @@ function matSkaf(c, m){
       bruges:`Snos til tovværk (utaklede reb).` },
     rebraa: { hvordan:[`Saml plantefibre (»${J.fibre.navn}«).`, `Giv en spejder jobbet »${J.sno.navn}«: ${matTekst(J.sno.bruger)} → ${matTekst(J.sno.giver)}.`, `En <b>rebslåningsmaskine</b> gør det hurtigere og giver mere reb.`],
       bruges:`Takles til taklede reb.` },
-    reb: { hvordan:[`Sno tovværk, så du har utaklede reb.`, `Giv en spejder jobbet »${J.takle.navn}«: ${matTekst(J.takle.bruger)} → ${matTekst(J.takle.giver)}. Det kræver ${kn} i bronze.`],
+    reb: { hvordan:[`Sno tovværk, så du har utaklede reb.`, `Giv en spejder jobbet »${J.takle.navn}«: ${matTekst(J.takle.bruger)} → ${matTekst(J.takle.giver)}. Det kræver ${kn} i bronze.`, `En <b>taklingsstation</b> (Knob og reb i guld, fra lejrniveau 15) giver flere reb pr. taklet tovværk.`],
       bruges:`Pionering og mange bygninger og opgraderinger.` },
     mad: { hvordan:[`Byg et <b>lejrkøkken</b> (ved en bålplads), og giv en spejder jobbet »${J.madlav.navn}«: ${matTekst(J.madlav.bruger)} → ${matTekst(J.madlav.giver)}.`,
         `Byg en <b>bagerovn</b>, og giv en spejder jobbet »${J.bag.navn}«: ${matTekst(J.bag.bruger)} → ${matTekst(J.bag.giver)}.`,
@@ -8997,7 +9004,7 @@ function guldFra(b){
   let h=0; for(const ch of b.id) h=(h*31+ch.charCodeAt(0))%997;
   return b.krav && b.krav[1]<=1 ? 8 + h%2 : 6 + h%2;
 }
-const DYR_START = { afgrening:true };   // bygninger, der er dyrere at opgradere i de første 10 niveauer
+const DYR_START = { afgrening:true, takling:true };   // bygninger, der er dyrere at opgradere i de første 10 niveauer
 function opgKost(c, b, ny){
   const p = Math.round(b.pris*0.5*(ny-1)) + 10*(ny-1);
   const base = BYGMAT[b.id], m = {};
@@ -9027,6 +9034,7 @@ function nivEffekt(b, L){
   if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
   if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
   if(b.id==="loevtrae") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"løvstamme":"løvstammer"} pr. fældet løvtræ`);
+  if(b.id==="takling") t.push(`${JOB.takle.giver.reb+1+AFGREN_NIV.filter(x=>L>=x).length} reb pr. taklet tovværk`);
   if(b.id==="afgrening") t.push(`${JOB.afgren.giver.rafter+1+AFGREN_NIV.filter(x=>L>=x).length} rafter pr. granstamme`);
   if(b.id==="koekken") t.push(`${JOB.madlav.giver.mad+Math.floor((L-1)/5)} portioner mad pr. måltid`);
   if(b.id==="bagerovn") t.push(`${JOB.bag.giver.mad+Math.floor((L-1)/5)} portioner mad pr. bagning`);
