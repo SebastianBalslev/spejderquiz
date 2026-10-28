@@ -9138,8 +9138,7 @@ function lejrRaekker(c){ return lejrStr(c||cur()).r; }
 function felt(r,k){ return r*FELT_KOL+k; }
 function feltR(i){ return Math.floor(i/FELT_KOL); }
 function feltK(i){ return i%FELT_KOL; }
-// Søen ligger i øverste højre hjørne (2 × 3 felter fra Tropslejr). På Gruppeturen (8 rækker) løber en å i de to nye rækker langs højre kant.
-// Fra Divisionslejr (SOE_FRA) kommer det nye vand ved søen i stedet (soeVand).
+// Søen ligger i øverste højre hjørne (2 × 3 felter fra Tropslejr). Fra Gruppeturen (SOE_FRA) vokser den til én stor sø: alt nyt vand kommer ved søen (soeVand).
 // Vandet i et trin: grundmønsteret (vandMoenster), men et felt, der var land i trinnet før, bliver aldrig til vand
 const VAND_CACHE = {};
 function vandSaet(str){
@@ -9154,24 +9153,26 @@ function vandMoenster(str){
   const v=new Set();
   if(str.k===3) v.add("0,2");
   else if(str.k===4) ["0,3","0,2","1,3"].forEach(x=>v.add(x));
-  else { for(let r=0;r<2;r++) for(let k=3;k<6;k++) v.add(r+","+k); for(let r=6;r<Math.min(str.r,8);r++) v.add(r+",5"); }
+  else { for(let r=0;r<2;r++) for(let k=3;k<6;k++) v.add(r+","+k); }
   return v;
 }
-// Fra Divisionslejr kommer trinnets ekstra vand ved søen: søen breder sig ind over tomme græsfelter ved søen.
+// Fra Gruppeturen kommer trinnets ekstra vand ved søen: søen breder sig ind over tomme græsfelter ved søen.
 // Et felt med en bygning bliver aldrig til vand, og heller ikke et felt ved siden af et telt eller en latrin (de må ikke stå ved vand).
 // Felterne vælges, første gang trinnet nås, og gemmes i c.soeVand, så søen står fast.
-const SOE_FRA = 20;
+const SOE_FRA = 15;
 function soeEkstra(c){ const t=lejrTrin(c.lejrNivMax||1); return t.niv>=SOE_FRA ? Math.max(0, t.vand - vandSaet({ r:t.r, k:t.k }).size) : 0; }
 function soeVand(c){
   const n=soeEkstra(c); if(!n) return [];
-  if(!c.soeVand) c.soeVand = soeGamleAa(c);
+  if(!c.soeVand) c.soeVand = [];
+  soeGamleAa(c).forEach(i=>{ if(!c.soeVand.includes(i)) c.soeVand.unshift(i); });
   if(c.soeVand.length < n) udvidSoe(c, n);
   return c.soeVand.slice(0, n);
 }
-// Gemte spil fra før: åen fortsatte ned langs højre kant. Står der en vandbygning (kano, badebro …) på åen, bliver feltet ved med at være vand.
+// Gemte spil fra før: en å løb ned langs højre kant fra række 7. Står der en vandbygning (kano, badebro …) på åen, bliver feltet ved med at være vand.
 function soeGamleAa(c){
   const s=lejrStr(c), f=c.lejr||{}, ud=[];
-  for(let r=8;r<s.r;r++){ const i=felt(r,5); if(f[i] && BYGID[f[i]] && BYGID[f[i]].vand) ud.push(i); }
+  if(s.k<6) return ud;
+  for(let r=6;r<s.r;r++){ const i=felt(r,5), b=BYGID[f[i]]; if(b && b.vand) ud.push(i); }
   return ud;
 }
 function udvidSoe(c, n){
