@@ -8224,20 +8224,10 @@ function aktDel(c, a, b){
   }
   else if(a==="stjerner"){
     titel="Stjernekikkerten";
-    const liste = stjerneOpg(c), opg = liste[akt.trin||0], har = id => liste.some(o=>o[0]===id);
-    scene = `<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(70,11)}${stjernehimmel(30,29).replace(/cy="(\d+)"/g,(m,y)=>`cy="${+y+110}"`)}
-      ${(akt.fundet||[]).includes("karl")?`<path d="${KARL.map((p,k)=>(k?"L":"M")+p.join(" ")).join(" ")} L${KARL[3].join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
-      ${(akt.fundet||[]).includes("nord")?`<path d="M${KARL[1].join(" ")} L${POLARIS.join(" ")}" stroke="#ffe28a" stroke-width="1.2" stroke-dasharray="4 4"/>`:""}
-      ${(akt.fundet||[]).includes("kass")?`<path d="M${KASS.map(p=>p.join(" ")).join(" L")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
-      ${(akt.fundet||[]).includes("orion")?`<path d="M${ORION[0].join(" ")} L${ORION[2].join(" ")} L${ORION[4].join(" ")} L${ORION[1].join(" ")} M${ORION[2].join(" ")} L${ORION[5].join(" ")} M${ORION[4].join(" ")} L${ORION[6].join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`:""}
-      ${KARL.map(p=>stjerneKnap(p,"karl",2.6)).join("")}${KASS.map(p=>stjerneKnap(p,"kass",2.4)).join("")}${stjerneKnap(POLARIS,"nord",2.8)}
-      ${har("orion")?ORION.map(p=>stjerneKnap(p,"orion",2.4)).join(""):""}
-      ${har("planet")?`<g class="stjerneknap" data-a="stjerne" data-g="planet"><circle cx="${JUPITER[0]}" cy="${JUPITER[1]}" r="13" fill="transparent"/><circle cx="${JUPITER[0]}" cy="${JUPITER[1]}" r="3.6" fill="#ffe7b0"/></g>`:""}
-      ${har("tiltag")?maaneSVG(MAANER.tiltag,"tiltag",true)+maaneSVG(MAANER.aftag,"aftag",false):""}
-      <path d="M0 240 V222 l14 -14 14 14 10 -10 14 -18 14 18 10 -8 12 -14 12 14 10 -10 16 -20 16 20 8 -9 12 -15 12 15 10 -12 14 -17 14 17 8 -7 12 -15 12 15 10 -10 V240Z" fill="#0a120d"/>
-    </svg>`;
+    const liste = stjerneOpg(c), opg = liste[akt.trin||0];
+    scene = himmelSVG(c, defs);
     knapper = opg ? `<div class="aktopg">🔭 <b>${opg[1]}</b><br><small class="muted">${opg[2]}</small></div>` :
-      `<div class="aktopg">⭐ Du har fundet alle ${liste.length}! Kom tilbage en anden aften og find dem igen.${(c.badges.stjerner||0)<2?`<br><small class="muted">Tag mærket ${EMNE.stjerner.navn} for at finde flere på himlen.</small>`:""}</div><button class="btn" data-a="stjernerigen">🔁 Start forfra</button>`;
+      `<div class="aktopg">⭐ Du har fundet alle ${liste.length}! Start forfra, så er himlen drejet, og der er nye ting at finde.${(c.badges.stjerner||0)<2?`<br><small class="muted">Tag mærket ${EMNE.stjerner.navn} for at finde flere på himlen.</small>`:""}</div><button class="btn" data-a="stjernerigen">🔁 Start forfra</button>`;
   }
   else if(a==="svaeve"){
     titel="Svævebanen";
@@ -8366,23 +8356,87 @@ function konfettiLille(){
     document.body.appendChild(d); setTimeout(()=>d.remove(),3200); }
 }
 
-/* Stjernekikkerten */
-const KARL = [[97,190],[123,177],[150,180],[180,187],[215,175],[220,205],[185,215]];
-const POLARIS = [190,25];
-const KASS = [[30,70],[50,48],[72,66],[92,44],[112,60]];
-const ORION = [[252,78],[290,74],[262,104],[272,100],[282,96],[254,134],[292,128]];
-const JUPITER = [118,128];
-const MAANER = { tiltag:[160,92], aftag:[40,118] };
-// Opgaverne i kikkerten. Med mærket Stjerner og nattehimmel kommer der flere til (bronze: Orion, sølv: planet og måne)
-const STJERNEOPG_ALLE = [
-  ["karl","Find Karlsvognen","Den ligner en vogn med fire hjul og en lang stang. Tryk på en af dens stjerner.",0],
-  ["nord","Find Nordstjernen","Forlæng linjen gennem de to bageste stjerner i vognkassen cirka fem gange opad.",0],
-  ["kass","Find Kassiopeia","Den ligner et stort W og står på den anden side af Nordstjernen.",0],
-  ["orion","Find Orion","Kig efter tre klare stjerner tæt sammen på en lige række – det er Orions bælte.",1],
-  ["planet","Find planeten Jupiter","Planeter blinker ikke som stjernerne. Jupiter lyser klart og roligt.",2],
-  ["tiltag","Find den tiltagende måne","Hos os i Danmark er den tiltagende måne lys i højre side – ligesom et spejlvendt C.",2],
-];
-function stjerneOpg(c){ const l=(c && c.badges.stjerner)||0; return STJERNEOPG_ALLE.filter(o=>o[3]<=l); }
+/* Stjernekikkerten – en ny himmel hver gang (lavHimmel)
+   Himlen drejer rundt om Nordstjernen: Karlsvognen og Kassiopeia står altid på hver sin side af den, og linjen gennem
+   de to bageste stjerner i vognkassen peger altid på Nordstjernen. Vinklen, et ekstra stjernebillede, en planet og
+   hvilken måne man skal finde skifter fra gang til gang. Alt står over horisonten, så det kan ses. */
+// Karlsvognen i forhold til Nordstjernen (0,0): Dubhe, Merak, Phecda, Megrez, Alioth, Mizar, Alkaid
+const H_KARL = [[0,50],[0,60],[-12,62],[-12,52],[-22,50],[-31,51],[-40,58]];
+const H_KASS = [[-16,-52],[-8,-44],[0,-50],[8,-43],[16,-53]];
+// Ekstra stjernebilleder (bronze): punkter i pixels omkring deres midte og linjerne mellem dem
+const H_EKSTRA = {
+  orion:  { navn:"Orion", hint:"Kig efter tre klare stjerner tæt sammen på en lige række – det er Orions bælte.", r:2.4,
+            p:[[-20,-26],[18,-30],[-10,0],[0,-4],[10,-8],[-18,30],[20,24]], l:[[0,2],[2,3],[3,4],[4,1],[2,5],[4,6]] },
+  svanen: { navn:"Svanen", hint:"Svanen ligner et stort kors. Den klare stjerne Deneb sidder i halen for enden af korset.", r:2.3,
+            p:[[0,-26],[0,-9],[0,8],[0,24],[-20,-6],[20,-12]], l:[[0,1],[1,2],[2,3],[4,1],[1,5]] },
+  lyren:  { navn:"Lyren", hint:"Lyren er lille: én meget klar, blåhvid stjerne – Vega – med et lille parallelogram ved siden af.", r:2,
+            p:[[0,-10],[7,0],[15,-3],[19,12],[11,15]], l:[[0,1],[1,2],[2,3],[3,4],[4,1]], klar:0 },
+  syvstjernen: { navn:"Syvstjernen", hint:"Syvstjernen (Plejaderne) er en lille, tæt klynge af svage stjerner – som en lille, uklar sky.", r:1.5,
+            p:[[-8,-3],[-2,-7],[4,-4],[-4,2],[3,3],[9,0],[0,8]], l:[], ring:true },
+  loeven: { navn:"Løven", hint:"Løvens hoved ligner et spejlvendt spørgsmålstegn, og bagkroppen er en trekant.", r:2.3,
+            p:[[-24,14],[-26,0],[-20,-12],[-10,-16],[-4,-8],[-12,-2],[24,-6],[30,10]], l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[5,6],[6,7],[7,0]] },
+};
+const H_PLANET = {
+  jupiter:{ navn:"Jupiter", hint:"Planeter blinker ikke som stjernerne. Jupiter lyser klart og roligt.", farve:"#ffe7b0", r:3.6 },
+  mars:   { navn:"Mars", hint:"Mars blinker ikke og har en tydelig rødlig farve.", farve:"#ff9a6a", r:3.2 },
+  venus:  { navn:"Venus", hint:"Venus – Aftenstjernen – er det klareste lys på himlen og står lavt over horisonten.", farve:"#fffbe6", r:4.4, lav:true },
+};
+const H_MAANE = { tiltag:["Find den tiltagende måne","Hos os i Danmark er den tiltagende måne lys i højre side – ligesom et spejlvendt C."],
+                  aftag:["Find den aftagende måne","Hos os i Danmark er den aftagende måne lys i venstre side – ligesom et C."] };
+function himmelRng(seed){ let r=(seed>>>0)||1; return ()=>{ r=(Math.imul(r,1664525)+1013904223)>>>0; return r/4294967296; }; }
+function lavHimmel(seed){
+  const rnd=himmelRng(seed), pick=l=>l[Math.floor(rnd()*l.length)], inde=([x,y],m)=>x>=m && x<=320-m && y>=m && y<=196-m;
+  // Nordstjernen, Karlsvognen og Kassiopeia: prøv vinkler og spejlinger, til det hele kan ses
+  let h=null;
+  for(let n=0;n<200 && !h;n++){
+    const v=rnd()*Math.PI*2, sp=rnd()<.5?-1:1, sk=1.55+rnd()*.35, P=[110+rnd()*100, 70+rnd()*60];
+    const t=([x,y])=>[P[0]+(x*sp*Math.cos(v)-y*Math.sin(v))*sk, P[1]+(x*sp*Math.sin(v)+y*Math.cos(v))*sk];
+    const karl=H_KARL.map(t), kass=H_KASS.map(t);
+    if([...karl,...kass].every(p=>inde(p,14))) h={ P, karl, kass };
+  }
+  if(!h) h={ P:[190,25], karl:[[215,175],[220,185],[195,190],[190,175],[160,172],[135,175],[110,185]], kass:[[30,70],[50,48],[72,66],[92,44],[112,60]] };
+  const optaget=[h.P,...h.karl,...h.kass], fri=(p,a)=>optaget.every(q=>Math.hypot(p[0]-q[0],p[1]-q[1])>=a);
+  const placer=(pts,m,a,lav)=>{ for(let n=0;n<300;n++){ const c=[30+rnd()*260, lav ? 150+rnd()*40 : 22+rnd()*170], q=pts.map(([x,y])=>[c[0]+x,c[1]+y]);
+      if(q.every(p=>inde(p,m) && fri(p,a))){ optaget.push(...q); return q; } } return null; };
+  const eid=pick(Object.keys(H_EKSTRA)), E=H_EKSTRA[eid];
+  h.ekstra={ id:eid, p:placer(E.p,12,26) };
+  const pid=pick(Object.keys(H_PLANET));
+  h.planet={ id:pid, p:(placer([[0,0]],14,30,H_PLANET[pid].lav)||[[60,150]])[0] };
+  h.maane={ tiltag:(placer([[0,0]],18,36)||[[160,92]])[0], aftag:(placer([[0,0]],18,36)||[[40,118]])[0] };
+  h.spoerg=rnd()<.5?"tiltag":"aftag";
+  h.seed=1+Math.floor(rnd()*90);
+  // Horisont med grantræer hele vejen hen over billedet
+  let d="M0 240 V214", x=0; while(x<320){ const b=10+rnd()*10, top=196+rnd()*12; d+=` L${(x+b/2).toFixed(1)} ${top.toFixed(1)} L${Math.min(320,x+b).toFixed(1)} ${(210+rnd()*6).toFixed(1)}`; x+=b; }
+  h.horisont=d+" V240Z";
+  return h;
+}
+// Himlen for den aktivitet, man er i gang med (en ny, når man starter forfra)
+function himmel(){ if(!akt) return lavHimmel(1); return akt.himmel || (akt.himmel=lavHimmel(Math.floor(Math.random()*1e9))); }
+// Opgaverne i kikkerten. Med mærket Stjerner og nattehimmel kommer der flere til (bronze: et ekstra stjernebillede, sølv: planet og måne)
+function stjerneOpg(c){
+  const l=(c && c.badges.stjerner)||0, h=himmel(), E=H_EKSTRA[h.ekstra.id], P=H_PLANET[h.planet.id];
+  const ud=[["karl","Find Karlsvognen","Den ligner en vogn med fire hjul og en lang stang. Tryk på en af dens stjerner."],
+    ["nord","Find Nordstjernen","Forlæng linjen gennem de to bageste stjerner i vognkassen cirka fem gange."],
+    ["kass","Find Kassiopeia","Den ligner et stort W og står på den anden side af Nordstjernen."]];
+  if(l>=1 && h.ekstra.p) ud.push([h.ekstra.id, `Find ${E.navn}`, E.hint]);
+  if(l>=2){ ud.push(["planet", `Find planeten ${P.navn}`, P.hint]); ud.push([h.spoerg, ...H_MAANE[h.spoerg]]); }
+  return ud;
+}
+function himmelSVG(c, defs){
+  const h=himmel(), f=akt && akt.fundet || [], liste=stjerneOpg(c), har=id=>liste.some(o=>o[0]===id), L=p=>p.map(x=>x.toFixed(1)).join(" ");
+  const linje=(pts,par)=>`<path d="${par.map(([a,b])=>`M${L(pts[a])} L${L(pts[b])}`).join(" ")}" stroke="#9fc4ff" stroke-width="1.2" fill="none" opacity=".8"/>`;
+  const E=H_EKSTRA[h.ekstra.id], P=H_PLANET[h.planet.id];
+  let s=`<svg viewBox="0 0 320 240" class="aktsvg">${defs}<rect width="320" height="240" fill="url(#nat)"/>${stjernehimmel(70,h.seed)}`;
+  if(f.includes("karl")) s+=linje(h.karl,[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]]);
+  if(f.includes("nord")) s+=`<path d="M${L(h.karl[1])} L${L(h.P)}" stroke="#ffe28a" stroke-width="1.2" stroke-dasharray="4 4"/>`;
+  if(f.includes("kass")) s+=linje(h.kass,[[0,1],[1,2],[2,3],[3,4]]);
+  if(har(h.ekstra.id) && f.includes(h.ekstra.id)) s+= E.ring ? `<circle cx="${h.ekstra.p[3][0]}" cy="${h.ekstra.p[3][1]}" r="16" fill="none" stroke="#9fc4ff" stroke-dasharray="3 3"/>` : linje(h.ekstra.p,E.l);
+  s+=h.karl.map(p=>stjerneKnap(p,"karl",2.6)).join("")+h.kass.map(p=>stjerneKnap(p,"kass",2.4)).join("")+stjerneKnap(h.P,"nord",2.8);
+  if(har(h.ekstra.id)) s+=h.ekstra.p.map((p,k)=>stjerneKnap(p,h.ekstra.id,k===E.klar?3.2:E.r)).join("");
+  if(har("planet")) s+=`<g class="stjerneknap" data-a="stjerne" data-g="planet"><circle cx="${h.planet.p[0]}" cy="${h.planet.p[1]}" r="13" fill="transparent"/><circle cx="${h.planet.p[0]}" cy="${h.planet.p[1]}" r="${P.r}" fill="${P.farve}"/></g>`;
+  if(har(h.spoerg)) s+=maaneSVG(h.maane.tiltag,"tiltag",true)+maaneSVG(h.maane.aftag,"aftag",false);
+  return s+`<path d="${h.horisont}" fill="#0a120d"/></svg>`;
+}
 function maaneSVG([x,y], g, lysHoejre){
   return `<g class="stjerneknap" data-a="stjerne" data-g="${g}"><circle cx="${x}" cy="${y}" r="16" fill="transparent"/><circle cx="${x}" cy="${y}" r="10" fill="#f4f1d0"/><circle cx="${x+(lysHoejre?-6:6)}" cy="${y}" r="10" fill="#1a2440"/></g>`;
 }
@@ -11455,9 +11509,9 @@ const actions = {
       akt.besked = `⭐ Flot! Du fandt ${opg[1].replace("Find ","")}. ${belon(c,"stjerner",4)}`;
       if(nav.screen==="moede" && !liste[akt.trin]){ moedeAktKlaret(); return; }
       render(); }
-    else aktBesked(d.g==="aftag" ? "Det er den aftagende måne – den er lys i venstre side. Prøv den anden!" : `Det er ikke den. ${opg[2]}`);
+    else aktBesked(d.g==="aftag" || d.g==="tiltag" ? `Det er den ${d.g==="aftag"?"aftagende måne – den er lys i venstre side":"tiltagende måne – den er lys i højre side"}. Prøv den anden!` : `Det er ikke den. ${opg[2]}`);
   },
-  stjernerigen(){ akt.trin=0; akt.fundet=[]; akt.besked=""; render(); },
+  stjernerigen(){ akt.trin=0; akt.fundet=[]; akt.besked=""; delete akt.himmel; render(); },   // en ny himmel
   svaevetur(){
     const c=cur(); akt.tur=true; akt.besked="Hold godt fast…"; render();
     setTimeout(()=>{ if(!akt||akt.a!=="svaeve") return; akt.tur=false; akt.besked=`Wuhuu! 🎉 Sikke en tur! ${belon(c,"svaeve",3)}`; render(); vibrer([40,30,40]); }, 3200);
