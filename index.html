@@ -339,6 +339,10 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 .lejrskilt .skik{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}.lejrskilt .sktekst{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .lejrskilt b{font-size:19px;line-height:1.1}.lejrskilt small{font-size:12.5px;opacity:.92}.lejrskilt .xptal{font-variant-numeric:tabular-nums}
 .xpbar{display:block;height:8px;border-radius:99px;background:rgba(0,0,0,.25);overflow:hidden;margin:3px 0 1px}.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#f4cb4e,#ffe9a0);border-radius:99px}
+.byginfo{text-align:left;max-height:85dvh;overflow-y:auto}.byginfo h3{margin:14px 0 6px;font-size:16px;color:var(--forest)}
+.byginfoliste{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:15px}.byginfoliste li{display:flex;gap:8px;align-items:flex-start}.byginfoliste li>span:first-child{flex:none;width:22px;text-align:center}
+.byginfoliste .matik{width:18px;height:18px;vertical-align:-3px}
+.byginfostatus{background:#eef3e4;border-radius:12px;padding:8px 10px;font-weight:700;font-size:15px;margin:0}
 .sovekap{margin:2px 0 10px;font-size:15px;background:#eef3e4;border-radius:12px;padding:8px 10px}
 .lejrskiltmodal{text-align:left;max-height:85dvh;overflow-y:auto}.lejrskiltmodal h3{margin:16px 0 6px;font-size:16px;color:var(--forest)}
 .xptab{width:100%;border-collapse:collapse;font-size:14.5px}.xptab td{padding:4px 2px;border-bottom:1px solid var(--line)}.xptab td:last-child{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
@@ -7640,11 +7644,11 @@ function byggelisteHTML(c){
     const lnOk=harLejrNiv(c,b), ok=harKrav(c,b) && lnOk, raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
     // Ting, man kun kan have én af, viser, at de allerede står på lejrpladsen
     if(b.en && bygget.has(b.id)){
-      h += `<button class="item bygget" data-a="vaelgbyg" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget</span><span class="meta">Kun én pr. lejr</span></button>`;
+      h += `<button class="item bygget" data-a="byginfo" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget</span><span class="meta">Kun én pr. lejr</span></button>`;
       continue;
     }
     const kravHTML = (lnOk?"":`<span class="krav lejrlaas">${lejrNivTekst(b)}</span>`) + (b.krav ? alleKrav(b).map(k=>{ const har=(c.badges[k[0]]||0)>=k[1]; return `<span class="krav ${har?"ok":""}">${badgeHTML(EMNE[k[0]], har?k[1]:0, "xs")}${har?"✓":NIVEAUER[k[1]].navn}</span>`; }).join("") : lnOk ? `<span class="krav ok">Alle kan bygge</span>` : "");
-    h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="vaelgbyg" data-id="${b.id}">
+    h += `<button class="item ${ok?"":"laast"} ${on?"valgt":""}" data-a="byginfo" data-id="${b.id}">
       <span class="ik">${bygIkon(b)}</span><b>${b.navn}</b>${kravHTML}<span class="pris ${ok&&!raad?"mangler":""}">🪙 ${b.pris}</span>
       ${BYGMAT[b.id]?`<span class="matkrav ${harMat(c,BYGMAT[b.id])?"":"mangler"}">${Object.entries(BYGMAT[b.id]).map(([m,n])=>`${matIkon(m,"lille")}${n}`).join(" ")}</span>`:""}
       ${tid||OPGAVER[b.id]?`<span class="meta">${OPGAVER[b.id]?"🪢 ":""}${tid?"⏳ "+tidTekst(tid):""}</span>`:""}</button>`;
@@ -7703,6 +7707,67 @@ function vaelgByg(id){
   if(lejrValg) lejrArk = null;
   render();
   if(lejrValg){ const t=document.getElementById("toast"); if(t) t.hidden=true; lejrScrollKort(); }
+}
+/* Infoside for en bygning i Byg-menuen: hvad den koster, kræver og kan – og en knap til at bygge den */
+function bygInfoHTML(c, b){
+  const li=(ik,t)=>`<li><span>${ik}</span><span>${t}</span></li>`, ja=ok=>ok?"✅":"❌";
+  const st=bygStr(b), fl=st.r*st.k, mat=BYGMAT[b.id];
+  // Status
+  let status;
+  if(!harLejrNiv(c,b)) status=`🔒 Låses op på lejrniveau ${b.lejrniv} (${lejrTrin(b.lejrniv).navn}).`;
+  else if(!harKrav(c,b)) status=`🔒 Kræver mærket ${kravTekst(b)}.`;
+  else if(b.en && Object.values(lejrFelter(c)).includes(b.id)) status=`✓ Står allerede på lejrpladsen – du kan kun have én. Tryk på den på pladsen for at opgradere den.`;
+  else { const mangler=[]; if(lejrPoint(c)<b.pris) mangler.push(`${b.pris-lejrPoint(c)} point`); if(!harMat(c,mat)) mangler.push(matTekst(manglerMat(c,mat)));
+    status = mangler.length ? `Du mangler ${mangler.join(" og ")}.` : `✅ Du kan bygge den nu.`; }
+  // Pris og byggeri
+  const pris=[li("🪙",`<b>${b.pris} point</b>${mat?` · ${Object.entries(mat).map(([m,n])=>`${matIkon(m,"lille")} ${n} ${MATFLERTAL[m]}`).join(" · ")}`:""}`)];
+  if(BYGTID[b.id]) pris.push(li("⏳",`Tager ${tidTekst(BYGTID[b.id])} at bygge.`));
+  if(OPGAVER[b.id]) pris.push(li("🪢",`Pionerarbejde – du skal selv binde besnøringerne, før den er bygget.`));
+  // Krav og placering
+  const krav=[];
+  if(b.lejrniv) krav.push(li(ja(harLejrNiv(c,b)),`Lejrniveau ${b.lejrniv} (${lejrTrin(b.lejrniv).navn})`));
+  alleKrav(b).forEach(k=>krav.push(li(ja((c.badges[k[0]]||0)>=k[1]),`${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()}`)));
+  if(!krav.length) krav.push(li("✅","Kræver intet mærke."));
+  const sted=[];
+  sted.push(li("📍", b.vand ? "Skal stå på søen." : b.vedSoe ? "Skal stå på land lige ved søen." : "Står på land."));
+  if(fl>1) sted.push(li("📐",`Fylder ${strTekst(b)}.`));
+  if(b.id==="svaevebane") sted.push(li("📐","Fylder ét felt, men wiren går hen over 3 felter."));
+  if(b.en) sted.push(li("1️⃣","Du kan kun have én på lejrpladsen."));
+  regelLinjer(b.id).filter(t=>!t.startsWith("Røde felter")).forEach(t=>sted.push(li("📏",t)));
+  // Det kan den
+  const kan=[];
+  (AKT_FOR[b.id]||[]).forEach(([a,t,k])=>kan.push(li("🎯",`${t.replace(/^\S+\s/,"")}${k?` <small>(kræver ${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()})</small>`:""}`)));
+  // Job, der hører til bygningen: dem, der kan startes herfra, og dem, der kræver den (fx kløvning på huggepladsen)
+  Object.keys(JOB).filter(k=>BYG_JOB[b.id]===k || JOB[k].bygning===b.id || (JOB_STED[k] && JOB_STED[k][0]===b.id && !traeType(b.id))).forEach(k=>{ const j=JOB[k];
+    kan.push(li(j.ikon,`Job: <b>${j.navn}</b> – ${j.bruger?`${matTekst(j.bruger)} → `:""}${matTekst(jobGiver(c,k))}${BYG_JOB[b.id]===k?". Kan startes direkte herfra.":"."}`)); });
+  if(traeType(b.id)){ const T=TRAETYPE[traeType(b.id)]; kan.push(li("🪓",`Kan fældes. ${T.besk} Træet gror selv op igen, og højere niveau giver flere stammer.`)); }
+  if(b.sove) kan.push(li("👥",`${b.sove.basis} sovepladser – ${b.sove.pr5} mere for hvert 5. niveau.`));
+  const eff=nivEffekt(b,1); if(eff) kan.push(li("📦",eff.charAt(0).toUpperCase()+eff.slice(1)+" (på niveau 1)."));
+  if(TELT_IDS.includes(b.id)) kan.push(li("🚪","Du kan gå ind og indrette den."));
+  if(!kan.length) kan.push(li("🌟","Gør lejrpladsen flottere og giver lejr-XP."));
+  // Med i
+  const med=[];
+  LEJR_SAET.filter(x=>x.ting.includes(b.id)).forEach(x=>med.push(li(x.ikon,`Sættet <b>${x.navn}</b> (${x.ting.map(id=>BYGID[id]?BYGID[id].navn:id).join(", ")}) – giver ${LEJR_XP_SAET} XP, når det er komplet.`)));
+  Object.entries(LEJR_MILEPAEL).forEach(([n,l])=>l.filter(p=>p.byg===b.id).forEach(p=>{ const t=LEJR_TRIN.find(x=>x.niv===+n); med.push(li("🏁",`Milepælen til ${t?t.navn:"niveau "+n}${p.niv>1?` (på niveau ${p.niv})`:""}.`)); }));
+  med.push(li("✨",`Giver ${Math.round(b.pris/10)} lejr-XP${Object.values(lejrFelter(c)).includes(b.id)?"":` + ${LEJR_XP_BREDDE} XP for en ny slags`} – og mere, når den opgraderes.`));
+  const sek=(t,l)=>`<h3>${t}</h3><ul class="byginfoliste">${l.join("")}</ul>`;
+  return `<div class="center"><div class="bigik" style="width:72px;height:72px">${bygIkon(b)}</div><h2 style="margin:4px 0 2px">${b.navn}</h2><p class="muted psmall" style="margin:0 0 8px">${b.besk||""}</p></div>
+    <p class="byginfostatus">${status}</p>
+    ${sek("💰 Pris",pris)}${sek("🔑 Krav",krav)}${sek("🎯 Det kan den",kan)}${sek("📍 Hvor den må stå",sted)}${sek("🧩 Den er med i",med)}`;
+}
+function visBygInfo(id){
+  const c=cur(), b=BYGID[id]; if(!b) return;
+  const bygget=b.en && Object.values(lejrFelter(c)).includes(b.id);
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal byginfo"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+    ${bygInfoHTML(c,b)}
+    ${harNivEffekt(b)?`<button class="btn secondary" id="m-niv">📈 Se, hvad hvert niveau giver</button>`:""}
+    ${bygget?"":`<button class="btn gold" id="m-byg">🏗️ Byg ${b.navn.toLowerCase()}</button>`}
+    <button class="btn secondary" id="m-tilbage">← Tilbage til listen</button></div></div>`;
+  const luk=()=>{ modalRoot.innerHTML=""; };
+  modalRoot.querySelector("#m-luk").onclick=luk;
+  modalRoot.querySelector("#m-tilbage").onclick=luk;
+  const nv=modalRoot.querySelector("#m-niv"); if(nv) nv.onclick=()=>visNivOversigt(null, b.id, ()=>visBygInfo(b.id));
+  const bg=modalRoot.querySelector("#m-byg"); if(bg) bg.onclick=()=>{ luk(); vaelgByg(b.id); };
 }
 function placer(c,i,b){
   const felter=lejrFelter(c);
@@ -8693,7 +8758,7 @@ const AFGREN_NIV = [5, 10, 20, 40, 60, 80, 99];
 function jobPoint(c, jid){ const p=JOB[jid].point; return typeof p==="number" ? p : p ? 100 + 10*(Math.max(1,bygNiv(c,"aktivitetsplads"))-1) : 0; }
 function jobGiver(c, jid, felt){
   const g = { ...JOB[jid].giver };
-  if(jid==="kloev") g.braende += Math.floor((bygNiv(c,"huggeplads")-1)/2);
+  if(jid==="kloev") g.braende += Math.floor((Math.max(1,bygNiv(c,"huggeplads"))-1)/2);
   // Højere niveau på lejrkøkkenet og bagerovnen giver mere mad: +1 for hvert 5. niveau
   if(jid==="madlav" || jid==="bag") g.mad += Math.floor((bygNiv(c, JOB[jid].bygning)-1)/5);
   // Afgreningsstationen: +1 rafte, når den er bygget, og +1 mere på hvert af niveauerne i AFGREN_NIV
@@ -9103,22 +9168,22 @@ function nivEffekt(b, L){
 }
 function harNivEffekt(b){ return !!nivEffekt(b, MAKSNIV) && nivEffekt(b,1)!==nivEffekt(b,MAKSNIV); }
 // Tabel over de niveauer, hvor bygningen giver noget nyt eller skifter udseende
-function visNivOversigt(i){
-  const c=cur(), b=BYGID[c.lejr[i]], nu=lejrNiv(c,i);
+function visNivOversigt(i, id, tilbageFn){
+  const c=cur(), b=BYGID[id || c.lejr[i]], nu=id ? 0 : lejrNiv(c,i);
   const niv=new Set([1, ...TRIN_NIV.filter(x=>x>1)]);
   for(let L=2; L<=MAKSNIV; L++) if(nivEffekt(b,L)!==nivEffekt(b,L-1)) niv.add(L);
   let liste=[...niv].sort((a,x)=>a-x);
   // Bliver listen for lang (fordelen stiger på hvert niveau), vises udvalgte niveauer
   if(liste.length>24) liste=liste.filter(L=>L<=5 || L%5===0 || L===MAKSNIV || TRIN_NIV.includes(L));
-  if(!liste.includes(nu)) liste=[...liste, nu].sort((a,x)=>a-x);   // dit eget niveau vises altid
+  if(nu && !liste.includes(nu)) liste=[...liste, nu].sort((a,x)=>a-x);   // dit eget niveau vises altid
   let forrige="";
   const rk=liste.map(L=>{ const trin=TRIN_NIV.includes(L) && L>1, eff=nivEffekt(b,L), op=forrige && eff!==forrige; forrige=eff;
     return `<tr class="${L===nu?"nu":L<nu?"naaet":""}"><td><b>${L}</b></td><td>${op?`<span class="op">⬆️ ${eff}</span>`:eff||"–"}${trin?`<br><small>✨ Nyt udseende: ${nivNavn(L)}</small>`:""}</td></tr>`; }).join("");
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
-    <div class="center"><div class="bigik" style="width:64px;height:64px">${bygIkon(b,nu)}</div><h2 style="margin:4px 0 2px">${b.navn}</h2><p class="muted psmall" style="margin:0 0 8px">Det giver hvert niveau. Du er på niveau ${nu}.</p></div>
+    <div class="center"><div class="bigik" style="width:64px;height:64px">${bygIkon(b,nu||1)}</div><h2 style="margin:4px 0 2px">${b.navn}</h2><p class="muted psmall" style="margin:0 0 8px">Det giver hvert niveau.${nu?` Du er på niveau ${nu}.`:""}</p></div>
     <table class="nivtabel"><thead><tr><th>Niveau</th><th>Det får du</th></tr></thead><tbody>${rk}</tbody></table>
     <button class="btn secondary" id="m-tilbage">← Tilbage</button></div></div>`;
-  const tilbage=()=>visFeltMenu(i);
+  const tilbage=tilbageFn || (()=>visFeltMenu(i));
   modalRoot.querySelector("#m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
   modalRoot.querySelector("#m-tilbage").onclick=tilbage;
   const r=modalRoot.querySelector("tr.nu"); if(r) r.scrollIntoView({block:"center"});
@@ -11307,6 +11372,7 @@ const actions = {
   naesteniveau(){ const c=cur(), n=quiz.niveau+1; if(n>3 || n>maksMedalje(c) || !emneAaben(c,quiz.emne)) return; startQuiz("test", quiz.emne, n); },
   til(d){ go(d.to, d.id ? { id:d.id } : {}); },
   vaelgbyg(d){ vaelgByg(d.id); },
+  byginfo(d){ visBygInfo(d.id); },
   celle(d){ lejrCelle(+d.i); },
   lejrannuller(){ lejrValg=null; render(); },
   byggetilstand(){ lejrByggetilstand=!lejrByggetilstand; try{ localStorage.setItem("spq-byggetilstand", lejrByggetilstand?"1":""); }catch(e){} render(); },
