@@ -8162,6 +8162,9 @@ let akt = null;       // tilstand for den aktivitet, man er i gang med
 let aktUr = null;
 
 function dagens(c){ const d=new Date().toDateString(); if(!c.dag || c.dag.dato!==d) c.dag={ dato:d, akt:{} }; return c.dag; }
+// Dagstælleren for en aktivitet. Aktiviteter, som flere bygninger deler (fx »Kig nærmere« ved geocachen, fuglekassen,
+// pindsvinehuset, fugletårnet og sporkassen), tæller hver bygning for sig – ellers brugte én bygning de andres point op
+function aktTaellerId(a, bid){ return a==="dyr" && bid ? "dyr:"+bid : a; }
 function belon(c, id, pts){
   if(nav.screen==="moede") return "";   // mødet har sin egen belønning
   const d=dagens(c), n=d.akt[id]||0;
@@ -8282,7 +8285,7 @@ function scrAkt(){
   const c=cur(), a=nav.params.a, b=BYGID[c.lejr[nav.params.i]];
   if(!akt || akt.a!==a) akt={ a, ild:2, besked:"" };
   const { titel, scene, knapper } = aktDel(c, a, b);
-  const d=dagens(c), brugt=d.akt[a]||0;
+  const d=dagens(c), brugt=d.akt[aktTaellerId(a, b && b.id)]||0;
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${titel}</h1><span class="spacer"></span></div>
     <div class="aktscene">${scene}</div>
     <div class="aktbesked ${akt.besked?"":"tom"}" id="aktbesked">${akt.besked||"&nbsp;"}</div>
@@ -11527,7 +11530,7 @@ const actions = {
   dyrfakta(){
     const c=cur(), [ikon,navn,fakta]=DYREFAKTA[c.lejr[nav.params.i]];
     akt.fi=((akt.fi??-1)+1)%fakta.length;
-    aktBesked(`${ikon} <b>${navn}:</b> ${fakta[akt.fi]} ${belon(c,"dyr",3)}`);
+    aktBesked(`${ikon} <b>${navn}:</b> ${fakta[akt.fi]} ${belon(c,aktTaellerId("dyr",c.lejr[nav.params.i]),3)}`);
   },
   spis(){ const c=cur(); akt.spist=true; akt.besked=`Patruljen spiser ${pick(RETTER)}. Husk at sige tak for mad! 😋 ${belon(c,"spis",4)}`; render(); },
   teltfarve(d){ const c=cur(); teltData(c,nav.params.i).farve=+d.k; save(); render(); },
