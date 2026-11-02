@@ -331,7 +331,7 @@ body.lejrskaerm #app{padding-bottom:var(--lejrluft, calc(200px + env(safe-area-i
 @keyframes arkind{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .byggebar{position:sticky;top:0;z-index:30}
 .celle .vild .vildsvg{width:clamp(18px,6vw,26px);height:auto;display:block}.celle .vild{font-size:clamp(15px,5vw,22px);animation:vildvug 3s ease-in-out infinite;display:inline-block}@keyframes vildvug{50%{transform:rotate(-8deg) scale(1.08)}}
-.besoeg{position:absolute;inset:8px;pointer-events:none}
+.besoeg{position:absolute;inset:var(--kant,8px);pointer-events:none}
 .dyrgaest{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:none;background:none;padding:4px;width:clamp(40px,13vw,58px);line-height:0;cursor:pointer;animation:dyrgraes 5s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
 .dyrgaest svg{display:block;width:100%;height:auto}
 @keyframes dyrgraes{0%,60%,100%{transform:translate(-50%,-100%) rotate(0)}70%{transform:translate(-50%,-94%) rotate(-7deg)}82%{transform:translate(-50%,-94%) rotate(-7deg)}}
@@ -383,6 +383,11 @@ button.lagerchip{border:none;font:inherit;color:inherit;cursor:pointer}
 .kathead{margin:14px 0 8px;font-size:17px;color:var(--forest)}
 .mertekst{margin:0 0 10px;font-size:15px;color:var(--muted)}.mertekst summary{list-style:none;cursor:pointer;font-weight:400;color:var(--muted);font-size:15px;padding:0;margin:0;background:none;border:none}.mertekst summary::-webkit-details-marker{display:none}
 .mertekst u{color:var(--forest);font-weight:800;text-decoration:none;white-space:nowrap;margin-left:4px}.mertekst[open] u{display:none}.mertekst p{margin:4px 0 0}
+#toast .vildsvg{width:1.3em;height:1.3em;vertical-align:-.25em;display:inline-block}
+.lejrmap .svaev{position:absolute;z-index:70;transform:translate(-50%,-50%);pointer-events:none;font-weight:800;font-size:17px;color:#fff;background:rgba(47,74,43,.88);border-radius:12px;padding:3px 9px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:svaev 1.5s ease-out forwards}
+.lejrmap .svaev .matik{width:18px;height:18px}
+@keyframes svaev{0%{opacity:0;transform:translate(-50%,-30%) scale(.7)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-160%)}}
+@media (prefers-reduced-motion: reduce){ .lejrmap .svaev{animation:svaevrolig 1.5s linear forwards} @keyframes svaevrolig{0%,70%{opacity:1}100%{opacity:0}} }
 body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle .okse{position:absolute;top:2px;right:2px;width:30%;z-index:3;animation:hug .6s ease-in-out infinite}.celle .okse svg{display:block;width:100%;height:auto}
 .celle .tid .tidik{width:9px;height:11px;vertical-align:-1px}
@@ -396,6 +401,11 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
     repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,.03) 34px 68px),
     #86b25a;
   box-shadow:inset 0 0 0 4px #5f8a3a,inset 0 0 18px rgba(40,70,15,.35),0 8px 20px rgba(60,40,10,.15)}
+/* Skoven rundt om lejrpladsen: lejren ligger i en lysning. Et bånd af skovbund med træer hele vejen rundt (under bygningerne) */
+.lejrmap{--kant:24px;padding:var(--kant)}
+.lejrmap::before{content:"";position:absolute;inset:0;border-radius:22px;z-index:2;pointer-events:none;box-sizing:border-box;border:var(--kant) solid rgba(36,66,30,.55);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='26'%3E%3Cpath d='M8 1 L14 10 H11 L16 18 H12.5 L17 25 H-1 L3.5 18 H0 L5 10 H2Z' fill='%2324502a'/%3E%3Cpath d='M8 1 L5 10 H7 L3.5 18 H7 L4 25 H8Z' fill='%232f6634'/%3E%3Crect x='22.5' y='18' width='2.4' height='8' fill='%235a3d22'/%3E%3Ccircle cx='24' cy='12' r='8' fill='%233a7034'/%3E%3Ccircle cx='19.5' cy='16' r='5' fill='%232f6430'/%3E%3Ccircle cx='28.5' cy='16.5' r='5' fill='%23346b31'/%3E%3Ccircle cx='22' cy='9' r='3' fill='%234f8a43'/%3E%3C/svg%3E") 0 0/34px var(--kant) repeat-x,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='26'%3E%3Cpath d='M8 1 L14 10 H11 L16 18 H12.5 L17 25 H-1 L3.5 18 H0 L5 10 H2Z' fill='%2324502a'/%3E%3Cpath d='M8 1 L5 10 H7 L3.5 18 H7 L4 25 H8Z' fill='%232f6634'/%3E%3Crect x='22.5' y='18' width='2.4' height='8' fill='%235a3d22'/%3E%3Ccircle cx='24' cy='12' r='8' fill='%233a7034'/%3E%3Ccircle cx='19.5' cy='16' r='5' fill='%232f6430'/%3E%3Ccircle cx='28.5' cy='16.5' r='5' fill='%23346b31'/%3E%3Ccircle cx='22' cy='9' r='3' fill='%234f8a43'/%3E%3C/svg%3E") 17px 100%/34px var(--kant) repeat-x,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='34'%3E%3Cpath d='M9 0 L15 9 H12 L17 17 H13.5 L18 23 H0 L4.5 17 H1 L6 9 H3Z' fill='%2324502a'/%3E%3Cpath d='M9 0 L6 9 H8 L4.5 17 H8 L5 23 H9Z' fill='%232f6634'/%3E%3Ccircle cx='17' cy='27' r='7' fill='%233a7034'/%3E%3Ccircle cx='12' cy='30' r='5' fill='%232f6430'/%3E%3Ccircle cx='15' cy='24.5' r='2.6' fill='%234f8a43'/%3E%3C/svg%3E") 0 0/var(--kant) 34px repeat-y,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='34'%3E%3Cpath d='M9 0 L15 9 H12 L17 17 H13.5 L18 23 H0 L4.5 17 H1 L6 9 H3Z' fill='%2324502a'/%3E%3Cpath d='M9 0 L6 9 H8 L4.5 17 H8 L5 23 H9Z' fill='%232f6634'/%3E%3Ccircle cx='17' cy='27' r='7' fill='%233a7034'/%3E%3Ccircle cx='12' cy='30' r='5' fill='%232f6430'/%3E%3Ccircle cx='15' cy='24.5' r='2.6' fill='%234f8a43'/%3E%3C/svg%3E") 100% 17px/var(--kant) 34px repeat-y;
+  background-origin:border-box;background-clip:border-box;box-shadow:inset 0 0 12px 4px rgba(20,45,15,.35)}
 .lejrmap{grid-auto-rows:1fr;isolation:isolate}   /* alle lag (rækker, dyr, lys) holdes inde i pladsen – så panelerne altid ligger øverst */
 .celle.stor{aspect-ratio:auto}
 .celle.wire .ting{right:auto;width:calc(300% + 2px)}.celle.wire.spejl .ting{left:auto;right:0}
@@ -406,7 +416,7 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .celle.vand{background:transparent}
 /* Dag og nat (lysHTML): ét lag over pladsen */
 .lys{position:absolute;inset:0;border-radius:22px;pointer-events:none;z-index:50;overflow:hidden}
-.lys .tone{position:absolute;inset:0}.lys .lyspos{position:absolute;inset:8px}
+.lys .tone{position:absolute;inset:0}.lys .lyspos{position:absolute;inset:var(--kant,8px)}
 .lys.morgen .tone{background:linear-gradient(180deg,rgba(255,236,214,.28),rgba(214,232,255,.18));mix-blend-mode:soft-light}
 .lys.aften .tone{background:linear-gradient(180deg,rgba(255,150,70,.32),rgba(150,70,40,.22));mix-blend-mode:multiply}
 .lys.nat .tone{background:radial-gradient(ellipse at 50% 40%,rgba(28,40,86,.62),rgba(10,16,44,.8));mix-blend-mode:multiply}
@@ -420,7 +430,7 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .lys .taage{left:-30%;width:160%;height:26%;border-radius:50%;transform:none;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(255,255,255,0));animation:taage 46s ease-in-out infinite alternate}
 @keyframes taage{to{transform:translateX(18%)}}
 /* Spejderne på pladsen (spejdereHTML) */
-.spejdere{position:absolute;inset:8px;pointer-events:none}
+.spejdere{position:absolute;inset:var(--kant,8px);pointer-events:none}
 .spejderfig{position:absolute;width:clamp(20px,6.4vw,30px);transform:translate(-50%,-100%);border:none;background:none;padding:0;line-height:0;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.3))}
 .spejderfig svg{display:block;width:100%;height:auto}
 .spejderfig.sidder{width:clamp(17px,5.4vw,25px)}
@@ -429,11 +439,11 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .spejderfig.gaar{animation:gaa 30s ease-in-out infinite alternate}
 @keyframes gaa{0%,8%{left:var(--x1);top:var(--y1)}92%,100%{left:var(--x2);top:var(--y2)}}
 /* Trampestierne (stierHTML): et SVG-lag under søen og felterne */
-.lejrmap .stier{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible}
+.lejrmap .stier{position:absolute;left:var(--kant,8px);top:var(--kant,8px);width:calc(100% - 2*var(--kant,8px));height:calc(100% - 2*var(--kant,8px));z-index:1;pointer-events:none;overflow:visible}
 .stier path{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .stier .kant{stroke:rgba(196,186,120,.45);stroke-width:.3}.stier .midte{stroke:rgba(226,214,160,.6);stroke-width:.15;stroke-dasharray:.05 .09}
 /* Søen (soeHTML): ét SVG-lag under felterne */
-.lejrmap .soe{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);z-index:1;pointer-events:none;overflow:visible;clip-path:inset(-6px round 18px)}
+.lejrmap .soe{position:absolute;left:var(--kant,8px);top:var(--kant,8px);width:calc(100% - 2*var(--kant,8px));height:calc(100% - 2*var(--kant,8px));z-index:1;pointer-events:none;overflow:visible;clip-path:inset(-6px round 18px)}
 .soe .sand rect{fill:#dcc791;stroke:#dcc791;stroke-width:.4;stroke-linejoin:round}
 .soe .lavt rect{fill:#79c1e6;stroke:#79c1e6;stroke-width:.36;stroke-linejoin:round}
 .soe .dybt rect{fill:#3f93c9;stroke:#3f93c9;stroke-width:.28;stroke-linejoin:round}
@@ -7691,6 +7701,14 @@ function lejrToast(t){
   el.innerHTML=t; el.hidden=false; el.style.animation="none"; void el.offsetWidth; el.style.animation="";
   clearTimeout(lejrToast.t); lejrToast.t=setTimeout(()=>{ el.hidden=true; }, 3400);
 }
+// En lille tekst, der svæver op fra et felt på lejrpladsen (fx +2 mad, når man plukker bær). Skærmlæsere får en kort besked.
+function lejrSvaev(i, html, tekst){
+  const m=document.getElementById("lejrmap"), cel=m && m.querySelector(`[data-i="${i}"]`); if(!cel) return;
+  const r=cel.getBoundingClientRect(), mr=m.getBoundingClientRect(), el=document.createElement("div");
+  el.className="svaev"; el.innerHTML=html; el.setAttribute("role","status"); el.setAttribute("aria-label",tekst||"");
+  el.style.left=(r.left-mr.left+r.width/2)+"px"; el.style.top=(r.top-mr.top+r.height*.35)+"px";
+  m.appendChild(el); setTimeout(()=>el.remove(), 1500);
+}
 function lejrScrollKort(){ const m=document.getElementById("lejrmap"); if(m) m.scrollIntoView({behavior:"smooth",block:"center"}); }
 
 function vaelgByg(id){
@@ -9696,7 +9714,8 @@ function plukVild(c,i){
   const id=(c.vild||{})[i], v=VILD[id]; if(!v) return false;
   if(lagerFuldt(c,"mad")){ lejrToast(`${v.ikon} Der er ikke plads til mere mad. ${lagerTip("mad")}`); return true; }
   brugMat(c,{ mad:v.mad },1); delete c.vild[i]; save(); render(); vibrer(30);
-  lejrToast(`${v.ikon} Du plukkede ${v.navn}: +${v.mad} ${v.mad===1?"portion":"portioner"} mad.`);
+  // Ingen besked, der dækker skærmen – bare en lille tekst, der svæver op fra feltet og forsvinder
+  lejrSvaev(i, `+${v.mad} ${matIkon("mad","lille")}`, `Du plukkede ${v.navn}: +${v.mad} ${v.mad===1?"portion":"portioner"} mad.`);
   return true;
 }
 
