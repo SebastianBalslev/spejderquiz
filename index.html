@@ -7023,6 +7023,8 @@ const BYG = [
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
   { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, lejrniv:10, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
+  { id:"savvaerk",    navn:"Savværk",           svg:"savvaerk", pris:350, lejrniv:35, krav:["vaerktoej",3], en:true,       besk:"Et lille savværk, der af sig selv laver 1 rafte i timen – også når appen er lukket. For hvert 25. niveau laver det 1 rafte mere i timen." },
+  { id:"reberbane",   navn:"Reberbane",         svg:"reberbane", pris:350, lejrniv:35, krav:["knob",3], en:true,           besk:"En lang bane, hvor tovværket slås og takles. Laver af sig selv 1 taklet reb i timen – og 1 mere for hvert 25. niveau." },
   { id:"takling",     navn:"Taklingsstation",   svg:"takling", pris:120, lejrniv:15, krav:["knob",3], en:true,           besk:"Et arbejdsbord med takkegarn og sejlnål, hvor tovværket takles. Giver 1 reb mere pr. taklet tovværk – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, lejrniv:7, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:5, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Hvert niveau giver mere plads til portioner mad – hvor meget afhænger af lejrens trin." },
@@ -7224,6 +7226,15 @@ const PIONER = {
     <path d="M14 38 L17 21 M26 38 L23 21 M20 38 V24" stroke="${TRAE}" stroke-width="1.8" stroke-linecap="round"/><rect x="12" y="20" width="16" height="11" rx="1" fill="#fff" stroke="#6b4626" stroke-width="1"/>
     <path d="M14.5 27.5 L17.5 24.5 L20 26.5 L25 22.5" fill="none" stroke="#2e7d32" stroke-width="1.3" stroke-linecap="round"/>
     <circle cx="7" cy="31" r="2.6" fill="#f3c99a"/><path d="M4 39 Q7 33 10 39Z" fill="#c62828"/><circle cx="33" cy="31" r="2.6" fill="#e0ac69"/><path d="M30 39 Q33 33 36 39Z" fill="#1e5fb4"/>`,
+  savvaerk: `<g stroke="#c49a63" stroke-width="2.4" stroke-linecap="round"><path d="M3 37 H17 M4 34.4 H16"/></g><path d="M8 20 V38 M32 20 V38" stroke="#6b4626" stroke-width="2.4"/>
+    <path d="M2 17 L20 6 L38 17Z" fill="#7c4a22"/><rect x="6" y="16" width="28" height="4" fill="#9a6232"/>
+    <rect x="4" y="27" width="32" height="5" rx="1" fill="#b07a45" stroke="#6b4626" stroke-width=".8"/>
+    <rect x="22" y="22.5" width="14" height="4.6" rx="2.3" fill="#9a6232" stroke="#6b4626" stroke-width=".7"/><ellipse cx="36" cy="24.8" rx="1.4" ry="2.3" fill="#e3c08a" stroke="#6b4626" stroke-width=".5"/>
+    <circle cx="17" cy="25" r="6.5" fill="#c9d3dc" stroke="#5f6670" stroke-width="1.2" stroke-dasharray="1.6 1"/><circle cx="17" cy="25" r="1.6" fill="#5f6670"/>`,
+  reberbane: `<path d="M5 38 V14 M35 38 V14" stroke="${TRAE}" stroke-width="2.6" stroke-linecap="round"/><rect x="2" y="11" width="7" height="5" rx="1" fill="#9a6232"/><rect x="31" y="11" width="7" height="5" rx="1" fill="#9a6232"/>
+    <circle cx="5" cy="13.5" r="3.4" fill="none" stroke="#5c3a20" stroke-width="1.2"/><path d="M5 13.5 L8 11" stroke="#5c3a20" stroke-width="1.2"/>
+    <path d="M8 15 Q20 21 32 15" stroke="${REB}" stroke-width="2.4" fill="none"/><g stroke="#b89a5a" stroke-width=".8">${[11,14,17,20,23,26,29].map(x=>`<path d="M${x} ${(16.3+Math.sin((x-8)/24*Math.PI)*2.6).toFixed(1)} l1.4 1.6"/>`).join("")}</g>
+    <ellipse cx="20" cy="32" rx="8.5" ry="4.2" fill="none" stroke="${REB}" stroke-width="2.6"/><ellipse cx="20" cy="32" rx="4.4" ry="2" fill="none" stroke="#d9c38f" stroke-width="1.6"/><path d="M27.5 33.5 q2.6 1.6 5.4 .2" stroke="${REB}" stroke-width="2.2" fill="none" stroke-linecap="round"/><rect x="31.6" y="32" width="2.4" height="2.6" fill="#c62828"/>`,
   takling: `<path d="M6 38 V24 M34 38 V24 M6 32 H34" stroke="${TRAE}" stroke-width="2.4" stroke-linecap="round"/><rect x="3" y="20" width="34" height="5" rx="1.5" fill="#9a6232" stroke="#6b4626" stroke-width="1"/>
     <ellipse cx="14" cy="15" rx="8" ry="4.6" fill="none" stroke="${REB}" stroke-width="2.6"/><ellipse cx="14" cy="15" rx="4.5" ry="2.4" fill="none" stroke="#d9c38f" stroke-width="1.8"/>
     <path d="M21 17 Q25 19 29 15" fill="none" stroke="${REB}" stroke-width="2.4" stroke-linecap="round"/><path d="M27.4 13.6 h3.2 v3 h-3.2Z" fill="#c62828"/>
@@ -7296,7 +7307,7 @@ const PIONER = {
 // Alle ventetider (byggeri, opgradering, job og træer, der vokser) ganges med denne faktor. Sæt den ned, hvis spillet skal gå hurtigere.
 const TIDSFAKTOR = 4;
 // Byggetid i sekunder (ting, der ikke står her, bygges med det samme)
-const BYGTID = { aktivitetsplads:300, afgrening:180, takling:180, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:45, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:45, patruljetelt:180, hytte:900, latrin:60, baal:45, koekken:120, lejrbaal:300,
+const BYGTID = { aktivitetsplads:300, afgrening:180, takling:180, savvaerk:600, reberbane:600, rebmaskine:180, jordkoeleskab:120, materialeskur:120, raftegaard:120, baalbaenke:120, braendeskur:120, signalbaal:180, bagerovn:300, huggeplads:45, pindsvinehus:60, fugletaarn:300, sporkasse:60, geocache:30, telt:45, patruljetelt:180, hytte:900, latrin:60, baal:45, koekken:120, lejrbaal:300,
   bord:120, port:300, taarn:900, svaevebane:1200, forstehjalp:60, fuglekasse:60, vejviser:60, kompasrose:300, vejrstation:120, solur:240, shelter:180,
   vandstation:240, traehytte:900, kano:30, badebro:600, sejlbaad:9000, flag:60, jamboree:600, insekthotel:180, bistade:300, signalpost:90, radiomast:300,
   totempael:120, spisetelt:300, lejrbutik:450, lejrradio:450, ridderborg:900, vandrutsjebane:900, storscene:900, flagalle:600, jportal:1800, fyrtaarn:1800 };
@@ -7418,7 +7429,7 @@ function tidTekst(sek){
 
 function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
-  fuldfoerByg(c); tjekArbejde(c); opdaterLejrNiv(c); tilpasLejr(c); delete c.lejrPakTjek; vildVaekst(c);
+  fuldfoerByg(c); tjekArbejde(c); const prod=produktion(c); if(prod.length) setTimeout(()=>prodSvaev(prod), 60); opdaterLejrNiv(c); tilpasLejr(c); delete c.lejrPakTjek; vildVaekst(c);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : lejrValg.type==="vogn" ? BYGID[(vogn(c)[lejrValg.k]||{}).id] : BYGID[felter[lejrValg.idx]]);
   const l=lager(c);
   let h = `<div class="lejrtop">${lejrSkiltHTML(c)}${guideBarHTML(c)}
@@ -7619,7 +7630,7 @@ const HOEJ = new Set(["gran","loevtrae","kongeeg","taarn","hytte","traehytte","f
 const BYGKAT = [
   { id:"lejr", ikon:"⛺", navn:"Lejrliv", ting:["telt","patruljetelt","hytte","latrin","shelter","traehytte","vandstation","jamboree","patruljehjoerne","aktivitetsplads","flag","totempael","lejrbutik","storscene","flagalle"] },
   { id:"baal", ikon:"🔥", navn:"Bål og mad", ting:["baal","baalbaenke","signalbaal","lejrbaal","koekken","bagerovn","spisetelt"] },
-  { id:"vaerksted", ikon:"🪓", navn:"Værksted og lager", ting:["raftegaard","materialeskur","braendeskur","jordkoeleskab","afgrening","takling","rebmaskine","huggeplads"] },
+  { id:"vaerksted", ikon:"🪓", navn:"Værksted og lager", ting:["raftegaard","materialeskur","braendeskur","jordkoeleskab","afgrening","takling","rebmaskine","huggeplads","savvaerk","reberbane"] },
   { id:"natur", ikon:"🌲", navn:"Træer og natur", ting:["gran","loevtrae","kongeeg","blomster","pindsvinehus","insekthotel","bistade","fuglekasse","fugletaarn","sporkasse"] },
   { id:"pioner", ikon:"🪢", navn:"Pionering", ting:["bord","port","taarn","svaevebane","ridderborg","jportal"] },
   { id:"orient", ikon:"🧭", navn:"Orientering og vejr", ting:["vejviser","kompasrose","geocache","vejrstation","solur","kikkert"] },
@@ -7674,10 +7685,11 @@ function byggelisteHTML(c){
 function startLejrUr(){
   clearInterval(lejrUr); lejrUr=null;
   const c=cur(); if(!c || nav.screen!=="lejr") return;
-  if(!Object.keys(c.lejrTid||{}).some(i=>underByg(c,+i)) && !arbejdeAktivt(c) && !signalRest(c)) return;
+  if(!Object.keys(c.lejrTid||{}).some(i=>underByg(c,+i)) && !arbejdeAktivt(c) && !signalRest(c) && !Object.keys(PRODUKTION).some(id=>prodFelt(c,id)!=null)) return;
   lejrUr = setInterval(()=>{
     if(nav.screen!=="lejr"){ clearInterval(lejrUr); lejrUr=null; return; }
     if(modalRoot.innerHTML) return;
+    const pr=produktion(c); if(pr.length){ render(); prodSvaev(pr); return; }
     const nu=Date.now(); let arbFaerdig=false;
     arbejdere(c).forEach(m=>{ if(!m.job) return; const rest=m.job.slut-nu;
       if(rest<=0){ arbFaerdig=true; return; }
@@ -7700,6 +7712,34 @@ function lejrToast(t){
   const el=document.getElementById("toast"); if(!el) return;
   el.innerHTML=t; el.hidden=false; el.style.animation="none"; void el.offsetWidth; el.style.animation="";
   clearTimeout(lejrToast.t); lejrToast.t=setTimeout(()=>{ el.hidden=true; }, 3400);
+}
+/* Bygninger, der selv laver materialer (fra lejrniveau 35): savværket laver rafter, reberbanen taklede reb.
+   1 pr. time og 1 mere pr. time for hvert 25. niveau. Det lægges på lageret af sig selv – også mens appen er lukket.
+   Er lageret fuldt, holder bygningen pause (det, den ville have lavet imens, går tabt). Starttiden gemmes i c.prod. */
+const PRODUKTION = { savvaerk:{ m:"rafter" }, reberbane:{ m:"reb" } }, PROD_INT = 3600e3;
+function prodRate(niv){ return 1 + Math.floor((niv||1)/25); }
+function prodFelt(c, id){ const f=lejrFelter(c); const i=Object.keys(f).map(Number).find(j=>f[j]===id); return i==null || (underByg(c,i) && !c.lejrOpg[i]) ? null : i; }
+function produktion(c){
+  const nu=Date.now(), ud=[]; c.prod=c.prod||{};
+  for(const [id,P] of Object.entries(PRODUKTION)){
+    const i=prodFelt(c,id);
+    if(i==null){ delete c.prod[id]; continue; }
+    if(!c.prod[id]){ const t=(c.lejrTid||{})[i]; c.prod[id] = t && t<nu ? t : nu; continue; }   // starter, når bygningen er færdig
+    const timer=Math.floor((nu-c.prod[id])/PROD_INT); if(timer<=0) continue;
+    c.prod[id] += timer*PROD_INT;
+    const plads=lagerPlads(c,P.m)-(lager(c)[P.m]||0), n=Math.min(timer*prodRate(lejrNiv(c,i)), Math.max(0,plads));
+    if(n>0){ brugMat(c,{ [P.m]:n },1); ud.push({ i, m:P.m, n }); }
+  }
+  if(ud.length) save();
+  return ud;
+}
+function prodSvaev(liste){ liste.forEach(x=>lejrSvaev(x.i, `+${x.n} ${matIkon(x.m,"lille")}`, `${BYGID[cur().lejr[x.i]].navn} har lavet ${x.n} ${x.n===1?MAT[x.m]:MATFLERTAL[x.m]}.`)); }
+function prodStatus(c, i){
+  const id=c.lejr[i], P=PRODUKTION[id]; if(!P) return "";
+  const rate=prodRate(lejrNiv(c,i)), mn=rate===1?MAT[P.m]:MATFLERTAL[P.m];
+  if(prodFelt(c,id)==null) return `<p class="sovekap">⚙️ Når ${BYGID[id].navn.toLowerCase()} er bygget, laver den ${rate} ${mn} i timen.</p>`;
+  const rest=PROD_INT-((Date.now()-(c.prod&&c.prod[id]||Date.now()))%PROD_INT);
+  return `<p class="sovekap">⚙️ Laver <b>${rate} ${mn} i timen</b> af sig selv.${lagerFuldt(c,P.m)?` <br>📦 Lageret er fuldt – den holder pause, til der er plads.`:` Næste om <b>${Math.max(1,Math.ceil(rest/60000))} min</b>.`}</p>`;
 }
 // En lille tekst, der svæver op fra et felt på lejrpladsen (fx +2 mad, når man plukker bær). Skærmlæsere får en kort besked.
 function lejrSvaev(i, html, tekst){
@@ -7854,6 +7894,7 @@ function visFeltMenu(i){
     knapper = (AKT_FOR[her.id]||[]).map(([a,t,k])=>aktKravOk(c,k) ? `<button class="btn" data-akt="${a}">${t}</button>` : `<button class="btn" disabled>🔒 ${t.replace(/^\S+\s/,"")} · kræver ${EMNE[k[0]].navn} i ${NIVEAUER[k[1]].navn.toLowerCase()}</button>`).join("");
     if(TELT_IDS.includes(her.id)) knapper += `<button class="btn" id="m-ind">🚪 Gå ind i teltet</button>`;
   }
+  if(PRODUKTION[her.id]) knapper = prodStatus(c,i) + knapper;
   if(her.sove){ const niv=lejrNiv(c,i), nn=soveNaesteNiv(niv);
     knapper = `<p class="sovekap">👥 <b>${her.navn}: ${soveKap(her,niv)}</b> sovepladser${nn?` → ${soveKap(her,nn)} ved niv ${nn}`:""}${bygger && !c.lejrOpg[i]?" (tæller, når den er bygget)":""}</p>` + knapper; }
   if(!bygger && traeType(her.id)){
@@ -8744,7 +8785,7 @@ function matTekst(obj){ return Object.entries(obj).map(([m,n])=>`${n} ${n===1?MA
 const BYGMAT = { totempael:{rafter:2}, spisetelt:{rafter:6, reb:3}, lejrbutik:{rafter:8, reb:2}, lejrradio:{rafter:4, reb:2}, ridderborg:{rafter:30, reb:15}, vandrutsjebane:{rafter:20, reb:10},
   storscene:{rafter:25, reb:10}, flagalle:{rafter:20, reb:10}, jportal:{rafter:60, reb:30}, fyrtaarn:{rafter:40, reb:20, braende:20}, bord:{rafter:4, reb:2}, bagerovn:{braende:6}, sejlbaad:{rafter:100, reb:50, braende:10, mad:20}, port:{rafter:8, reb:4}, taarn:{rafter:12, reb:6}, svaevebane:{rafter:10, reb:8}, badebro:{rafter:8, reb:4},
   shelter:{rafter:3, reb:1}, traehytte:{rafter:6, reb:2}, vejviser:{rafter:1}, flag:{rafter:1, reb:1}, signalpost:{rafter:1, reb:1}, hytte:{rafter:30, braende:10},
-  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, takling:{rafter:8, reb:4}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, lejrbaal:{rafter:2, braende:8}, latrin:{rafter:2, reb:1} };
+  baal:{braende:3}, koekken:{braende:4}, braendeskur:{rafter:3}, raftegaard:{rafter:4}, materialeskur:{rafter:4}, jordkoeleskab:{rafter:2}, aktivitetsplads:{rafter:6, reb:3}, rebmaskine:{rafter:4}, afgrening:{rafter:8, reb:4}, takling:{rafter:8, reb:4}, savvaerk:{rafter:20, reb:6}, reberbane:{rafter:14, reb:10}, baalbaenke:{braende:4}, signalbaal:{braende:10}, huggeplads:{rafter:2}, fugletaarn:{rafter:6, reb:2}, lejrbaal:{rafter:2, braende:8}, latrin:{rafter:2, reb:1} };
 
 const GENVAEKST = 5*60*TIDSFAKTOR;   // sekunder, et fældet træ er om at gro op igen
 const TRAETYPE = { gran:{ navn:"Grantræ", ikon:"🌲", best:"grantræet", flertal:"grantræer", job:"faeldGran", besk:"Bliver til granstammer, som kan afgrenes til rafter." },
@@ -9171,6 +9212,7 @@ function nivEffekt(b, L){
     t.push(`Plads til ${lagerKap(tr,L)} ${mats.length>1 ? "af hver: "+mats.join(", ") : mats[0]} i ${tr.navn.toLowerCase()}en`);
   }
   if(b.sove) t.push(`${soveKap(b,L)} sovepladser`);
+  if(PRODUKTION[b.id]){ const m=PRODUKTION[b.id].m, n=prodRate(L); t.push(`${n} ${n===1?MAT[m]:MATFLERTAL[m]} i timen`); }
   if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
   if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
   if(b.id==="loevtrae") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"løvstamme":"løvstammer"} pr. fældet løvtræ`);
