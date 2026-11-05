@@ -442,6 +442,34 @@ body.lejrskaerm #toast{bottom:calc(160px + env(safe-area-inset-bottom, 0px))}
 .lejrmap .stier{position:absolute;left:var(--kant,8px);top:var(--kant,8px);width:calc(100% - 2*var(--kant,8px));height:calc(100% - 2*var(--kant,8px));z-index:1;pointer-events:none;overflow:visible}
 .stier path{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .stier .kant{stroke:rgba(196,186,120,.45);stroke-width:.3}.stier .midte{stroke:rgba(226,214,160,.6);stroke-width:.15;stroke-dasharray:.05 .09}
+/* Træning */
+.dagmaal .dagtop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.dagmaal .dagtop span{font-weight:700;color:#b5541e;font-size:14px}
+.dagmaal .bar{height:12px;border-radius:8px;background:var(--line);overflow:hidden;margin:8px 0 6px}.dagmaal .bar i{display:block;height:100%;background:linear-gradient(90deg,#f2c94c,#e8873a);border-radius:8px}
+.dagmaal small{color:var(--muted)}
+.tkortliste{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.tkort{display:flex;gap:12px;align-items:center;text-align:left;border:none;font:inherit;color:inherit;cursor:pointer;background:var(--paper);border-radius:18px;padding:12px 14px;box-shadow:0 3px 0 var(--line)}
+.tkort .tik{font-size:28px;flex:none;width:40px;text-align:center}.tkort b{display:block;font-size:17px}.tkort small{display:block;color:var(--muted);font-size:14px;line-height:1.3;margin-top:2px}
+.tkort.stor{background:#eef3e4;box-shadow:0 3px 0 #c9d8b3}.tkort.stor .tik{font-size:32px}
+.tsaer{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.tsaerknap{border:none;font:inherit;color:inherit;cursor:pointer;background:var(--paper);border-radius:16px;padding:10px 4px;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:4px}.tsaerknap span{font-size:26px}.tsaerknap b{font-size:14px}
+.vselv{margin-top:16px}.vselv>summary{font-weight:800;font-size:17px;cursor:pointer;list-style:none}.vselv>summary::-webkit-details-marker{display:none}.vselv>summary::after{content:" ▾";color:var(--muted)}.vselv[open]>summary::after{content:" ▴"}
+.tgruppe{font-weight:800;color:var(--forest);margin:12px 0 6px;font-size:15px}
+.tfliser{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tflise{border:2px solid transparent;font:inherit;color:inherit;cursor:pointer;background:var(--paper2,#f6efdd);border-radius:14px;padding:8px 3px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.tflise b{font-size:12.5px;line-height:1.15;text-align:center}.tflise small{font-size:11px;color:var(--muted)}.tflise .tstat{color:var(--forest);font-weight:700;text-align:center}
+.tflise.on{border-color:var(--forest);background:#e6efd9}
+.tring{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:conic-gradient(var(--moss,#5b8a3a) calc(var(--p)*1%), rgba(0,0,0,.08) 0)}.tring .badge{width:32px;height:32px;background:var(--paper);border-radius:50%}
+.tlaast{margin-top:12px}.tlaast summary{cursor:pointer;font-weight:700;color:var(--muted)}.tlaast ul{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--muted)}
+.tstartfast{position:fixed;left:0;right:0;bottom:var(--fanehoejde,76px);z-index:49;padding:8px max(16px,env(safe-area-inset-left,0px));background:linear-gradient(transparent,var(--bg,#f3ecd9) 30%);display:flex;justify-content:center}.tstartfast .btn{max-width:480px;margin:0}
+body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) + 90px)}
+.dagsmaalnaaet{background:#fff3c4;border-radius:10px;padding:6px 10px;margin:8px 0 0;font-weight:700}
+.morsefelt{width:100%;font-size:24px;font-weight:800;letter-spacing:3px;text-align:center;text-transform:uppercase;border:2px solid var(--line);border-radius:14px;padding:12px;margin:10px 0 0;background:#fff}
+.morsefacit{font-family:monospace;font-size:18px;letter-spacing:2px}
+.semstort{font-size:30px;color:var(--forest)}
+.semvalg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.semknap{border:2px solid var(--line);background:#fff;border-radius:16px;padding:4px;cursor:pointer;display:flex;flex-direction:column;align-items:center}.semknap svg{width:100%;max-width:150px;height:auto}
+.semknap.correct{border-color:var(--ok);background:#e8f5e4}.semknap.wrong{border-color:var(--bad);background:#fbe6e3}.semknap.dim{opacity:.55}
+.flashkort{min-height:200px}.flashbag{border-top:2px dashed var(--line);margin-top:10px;padding-top:10px}.flashknapper{display:grid;grid-template-columns:1fr 1fr;gap:8px}.flashknapper .btn{margin:0}
+.fejlpost .qtopic{display:flex;align-items:center;gap:6px}.fejlpost .fejlfrem{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted)}.fejlspm{display:block;margin:6px 0}.fejlsvar{margin:4px 0;font-weight:700;color:var(--forest)}
 /* Søen (soeHTML): ét SVG-lag under felterne */
 .lejrmap .soe{position:absolute;left:var(--kant,8px);top:var(--kant,8px);width:calc(100% - 2*var(--kant,8px));height:calc(100% - 2*var(--kant,8px));z-index:1;pointer-events:none;overflow:visible;clip-path:inset(-6px round 18px)}
 .soe .sand rect{fill:#dcc791;stroke:#dcc791;stroke-width:.4;stroke-linejoin:round}
@@ -6286,15 +6314,17 @@ function render(){
   if(s==="loebroller" && !loebKlar && !(aktivtLoeb() && aktivtLoeb().fase==="roller")) s = aktivtLoeb() ? "loeb" : "patrulje";
   if(s==="loebmaal" && !(minPatrulje(cur()) && minPatrulje(cur()).sidsteLoeb)) s = "patrulje";
   if((s==="pquiz" || s==="presultat") && !pquiz) s = "patrulje";
+  if((s==="flash" && !flash) || (s==="morsetr" && !mtr) || (s==="semafortr" && !strn)) s = "traening";
   if(s==="akt" && !(cur() && cur().lejr && AKT_FOR[cur().lejr[nav.params.i]] && !underByg(cur(),nav.params.i))) s = "lejr";
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
+               traening:scrTraening, fejlliste:scrFejlliste, flash:scrFlash, morsetr:scrMorseTr, semafortr:scrSemaforTr, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   document.body.classList.toggle("lejrskaerm", s==="lejr");
   app.innerHTML = `<div class="screen">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
+  if(s==="morsetr" && mtr && !mtr.res) startMedia(morseTrQ());
   if(s==="loeb" && loebOpg && loebOpg.trin==="svar" && loebOpg.o.media && !loebOpg.svaret) startMedia({ media:loebOpg.o.media });
   startLejrUr();
   aktEfterRender();
@@ -6396,7 +6426,7 @@ function scrProfil(){
     </div>
     <button class="btn" data-a="til" data-to="maerker">🏅 Mine mærker</button>
     <button class="btn" data-a="til" data-to="lejr">⛺ Byg din lejrplads <small style="font-weight:600;opacity:.85">· 🪙 ${fmt(lejrPoint(c))}</small></button>
-    <button class="btn earth" data-a="traening">🎯 Fri træning</button>
+    <button class="btn earth" data-a="traening">🎯 Træning</button>
     ${hytteKort(c)}
     ${installKort()}
     <p class="muted center" style="font-size:13px">Bronze, sølv og guld tæller hver som ét mærke. ${SPORGSMAL.length} spørgsmål i ${EMNER.length} emner.</p>`;
@@ -6454,29 +6484,192 @@ function scrEmne(){
   return h;
 }
 
-function scrTraening(){
-  const p = nav.params;
-  if(!p.emne) p.emne = "alle";
-  if(p.niveau == null) p.niveau = 0;
-  const chip = (k,v,label) => `<button class="chip ${p[k]===v?"on":""}" data-a="tvalg" data-k="${k}" data-v="${v}">${label}</button>`;
-  const fejl = fejlAntal(cur());
-  return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Fri træning</h1><span class="spacer"></span></div>
-    ${fejl ? fejlKort(cur()) : ""}
-    <div class="card"><p style="margin-top:0">Øv dig uden pres – træning tæller ikke til mærkerne, men du får stadig point.</p>
-      <div class="sect">Emne</div><div class="chips">${chip("emne","alle","🌍 Alle åbne emner")}${EMNER.map(e=>emneAaben(cur(),e.id) ? chip("emne",e.id,e.navn) : `<button class="chip" disabled title="${emneLaasTekst(e.id)}">🔒 ${e.navn}</button>`).join("")}</div>
-      <div class="sect" style="margin-top:16px">Sværhedsgrad</div><div class="chips">${chip("niveau",0,"Blandet")}${chip("niveau",1,"Let")}${chip("niveau",2,"Mellem")}${chip("niveau",3,"Svær")}</div>
-    </div>
-    ${timerToggle()}
-    <button class="btn earth" data-a="tstart">Start træning 🎯</button>
-    ${fejl ? "" : fejlKort(cur())}`;
+/* =====================================================================
+   TRÆNING – genveje, vælg selv, særlige træningstyper, statistik og dagens træning
+   ===================================================================== */
+// Det niveau, spejderen øver på i et emne: næste medalje, dog højst den medalje, lejrpladsen tillader
+function mitNiveau(c, id){ return Math.max(1, Math.min(3, (c.badges[id]||0)+1, maksMedalje(c))); }
+function aabneEmner(c){ return EMNER.filter(e=>emneAaben(c,e.id)); }
+// Statistik pr. emne i træning og prøver: c.stat[emne] = { svar, rigtige }
+function emneStat(c, id){ const s=(c.stat||{})[id]; return s && s.svar ? { ...s, pct:Math.round(s.rigtige/s.svar*100) } : { svar:0, rigtige:0, pct:null }; }
+function emneSet(c, id){ const alle=SPORGSMAL.filter(q=>q.emne===id), set=alle.filter(q=>(c.seen||{})[q.id]); return { set:set.length, alle:alle.length }; }
+function noterStat(c, id, ok){ c.stat=c.stat||{}; const s=c.stat[id]||(c.stat[id]={ svar:0, rigtige:0 }); s.svar++; if(ok) s.rigtige++; }
+// Anbefalet: det åbne emne, hvor spejderen er tættest på næste mærke (bedste resultat på det niveau, derefter flest rigtige i træning)
+function anbefalet(c){
+  const maks=maksMedalje(c), kand=aabneEmner(c).filter(e=>(c.badges[e.id]||0)<maks);
+  if(!kand.length) return null;
+  const vaerdi=e=>{ const n=(c.badges[e.id]||0)+1; return (c.best[e.id+n]||0)*100 + (emneStat(c,e.id).pct||0); };
+  const e=kand.slice().sort((a,b)=>vaerdi(b)-vaerdi(a) || (c.badges[b.id]||0)-(c.badges[a.id]||0))[0];
+  return { e, n:(c.badges[e.id]||0)+1 };
 }
+function svagesteEmner(c){ return aabneEmner(c).map(e=>({ e, s:emneStat(c,e.id) })).filter(x=>x.s.svar>=10).sort((a,b)=>a.s.pct-b.s.pct).slice(0,3).map(x=>x.e); }
+// Dagens træning: 10 rigtige svar i træning om dagen. Belønning én gang pr. dag og en streak (c.traenStreak)
+const TRAEN_MAAL = 10, TRAEN_BONUS = 25;
+function iDag(){ return new Date().toDateString(); }
+function iGaar(){ return new Date(Date.now()-864e5).toDateString(); }
+function traenDag(c){ if(!c.traenDag || c.traenDag.dato!==iDag()) c.traenDag={ dato:iDag(), rigtige:0, naaet:false }; return c.traenDag; }
+function traenStreakNu(c){ return [iDag(),iGaar()].includes(c.traenSidst) ? (c.traenStreak||0) : 0; }
+// Kaldes ved hvert rigtigt svar i træning. Giver true, når dagens mål lige er nået
+function traenRigtig(c){
+  const d=traenDag(c); d.rigtige++;
+  if(d.naaet || d.rigtige<TRAEN_MAAL) return false;
+  d.naaet=true; c.traenStreak = c.traenSidst===iGaar() ? (c.traenStreak||0)+1 : c.traenSidst===iDag() ? (c.traenStreak||1) : 1; c.traenSidst=iDag();
+  c.point=(c.point||0)+TRAEN_BONUS; save(); setTimeout(()=>{ konfettiLille(); vibrer([30,30,80]); }, 200);
+  return true;
+}
+function traenValg(c){ return c.traenValg || (c.traenValg = { aaben:false, emner:[], niv:"mit", antal:10 }); }
+const TRAEN_MODES = ["train","fejl","general"];
 
+function scrTraening(){
+  const c=cur(), v=traenValg(c), fejl=fejlAntal(c), an=anbefalet(c), d=traenDag(c), st=traenStreakNu(c), svage=svagesteEmner(c);
+  const kort=(a,ik,tit,tekst,cls,ekstra)=>`<button class="tkort ${cls||""}" data-a="${a}" ${ekstra||""}><span class="tik">${ik}</span><span><b>${tit}</b><small>${tekst}</small></span></button>`;
+  // Dagens træning
+  let h=`<div class="topbar"><span class="spacer"></span><h1>Træning</h1><span class="spacer"></span></div>
+    <div class="card dagmaal"><div class="dagtop"><b>🎯 Dagens træning</b><span>${st?`🔥 ${st} ${st===1?"dag":"dage"} i træk`:"Start en streak i dag"}</span></div>
+      <div class="bar"><i style="width:${Math.min(100,d.rigtige/TRAEN_MAAL*100)}%"></i></div>
+      <small>${d.naaet?`✅ Målet er nået i dag – du fik +${TRAEN_BONUS} point. Kom igen i morgen!`:`${Math.min(d.rigtige,TRAEN_MAAL)} af ${TRAEN_MAAL} rigtige svar i dag – nå målet og få +${TRAEN_BONUS} point.`}</small></div>`;
+  // Genveje
+  h+=`<div class="tkortliste">`;
+  if(an) h+=kort("tanbefalet","⭐","Anbefalet til dig",`Du mangler ${NIVEAUER[an.n].navn.toLowerCase()} i ${an.e.navn} – øv ${ANTAL_SPG} ${NIVEAUER[an.n].navn.toLowerCase()}spørgsmål.`,"stor");
+  else h+=kort("thurtig","⭐","Du har alle de mærker, du kan tage nu","Byg lejrpladsen op for at låse flere op. Tag en hurtig runde imens.","stor");
+  if(fejl) h+=kort("fejlstart","🔁",`Øv dine fejl (${fejl})`,`Et spørgsmål forsvinder, når du har svaret rigtigt på det to gange i træk.`,"stor");
+  if(an) h+=kort("tgeneral","📝","Generalprøve",`Som ${NIVEAUER[an.n].navn.toLowerCase()}-prøven i ${an.e.navn} (mindst ${NIVEAUER[an.n].krav} af ${ANTAL_SPG}) – tæller ikke til mærket og giver halve point.`);
+  h+=kort("thurtig","⚡","Hurtig runde","5 spørgsmål fra alle dine åbne emner på dit niveau.");
+  if(svage.length) h+=kort("tsvage","💪",`Øv de ${svage.length===1?"svageste emne":svage.length+" svageste emner"}`,svage.map(e=>`${e.navn} (${emneStat(c,e.id).pct} %)`).join(", "));
+  h+=`</div>`;
+  if(fejl) h+=`<button class="btn secondary" data-a="tfejlliste" style="margin-top:8px">📖 Bladr dine fejl igennem</button>`;
+  // Særlige træningstyper
+  const knob=emneAaben(c,"knob"), koder=emneAaben(c,"koder"), billeder=SPORGSMAL.some(q=>q.media && q.media.type==="billede" && emneAaben(c,q.emne));
+  h+=`<div class="sect" style="margin-top:18px">Særlige træningstyper</div><div class="tsaer">
+    ${koder?`<button class="tsaerknap" data-a="tmorse"><span>💡</span><b>Morse</b></button><button class="tsaerknap" data-a="tsemafor"><span>🚩</span><b>Semafor</b></button>`:""}
+    ${knob?`<button class="tsaerknap" data-a="tbesnoer"><span>🪢</span><b>Besnøringer</b></button>`:""}
+    ${billeder?`<button class="tsaerknap" data-a="tbilleder"><span>🖼️</span><b>Billeder</b></button>`:""}
+    <button class="tsaerknap" data-a="tflash"><span>🃏</span><b>Flashcards</b></button></div>
+    ${koder?"":`<p class="muted psmall" style="margin:6px 2px 0">🔒 Morse- og semafortræneren kommer, når ${EMNE.koder.navn} låses op (${emneLaasTekst("koder").replace(/^🔒\s*/,"").toLowerCase()}).</p>`}`;
+  // Vælg selv
+  h+=`<details class="card vselv" ${v.aaben?"open":""} id="vselv"><summary>🎛️ Vælg selv</summary>${vaelgSelvHTML(c,v)}</details>`;
+  if(v.aaben) h+=`<div class="tstartfast"><button class="btn earth" data-a="tstart">Start ${v.antal} spørgsmål 🎯</button></div>`;
+  return h;
+}
+function vaelgSelvHTML(c, v){
+  const iGrp=new Set(MGRUPPER.flatMap(g=>g.emner)), grupper=MGRUPPER.concat([{ navn:"Andre", ikon:"🏅", emner:EMNER.map(e=>e.id).filter(id=>!iGrp.has(id)) }]);
+  const flise=e=>{ const l=c.badges[e.id]||0, valgt=v.emner.includes(e.id), st=emneSet(c,e.id), s=emneStat(c,e.id), pct=st.alle?st.set/st.alle*100:0;
+    return `<button class="tflise ${valgt?"on":""}" data-a="temne" data-id="${e.id}" aria-pressed="${valgt}"><span class="tring" style="--p:${pct.toFixed(0)}">${badgeHTML(e,l||1,l?"xs":"xs faded")}</span><b>${e.navn}</b>
+      <small>${l?NIVEAUER[l].navn:"Intet mærke"}</small>${valgt?`<small class="tstat">${st.set}/${st.alle} set${s.svar?` · ${s.pct} % rigtige`:""}</small>`:""}</button>`; };
+  let h=`<p class="muted psmall" style="margin:4px 0 8px">Vælg et eller flere emner (ingen valgt = alle åbne). Ringen viser, hvor mange af emnets spørgsmål du har set. Tryk på et emne for at se statistikken.</p>`;
+  grupper.forEach(g=>{ const es=g.emner.map(id=>EMNE[id]).filter(e=>e && emneAaben(c,e.id)); if(!es.length) return;
+    h+=`<div class="tgruppe">${g.ikon} ${g.navn}</div><div class="tfliser">${es.map(flise).join("")}</div>`; });
+  const laaste=EMNER.filter(e=>!emneAaben(c,e.id));
+  if(laaste.length) h+=`<details class="tlaast"><summary>🔒 Låste emner (${laaste.length})</summary><ul>${laaste.map(e=>`<li><b>${e.navn}</b> – ${emneLaasTekst(e.id)}</li>`).join("")}</ul></details>`;
+  const chip=(k,val,label)=>`<button class="chip ${v[k]===val?"on":""}" data-a="tvalg" data-k="${k}" data-v="${val}">${label}</button>`;
+  h+=`<div class="sect" style="margin-top:14px">Sværhedsgrad</div><div class="chips">${chip("niv","mit","Mit niveau")}${chip("niv","1","Let")}${chip("niv","2","Mellem")}${chip("niv","3","Svær")}${chip("niv","0","Blandet")}</div>
+    <div class="sect" style="margin-top:14px">Antal spørgsmål</div><div class="chips">${chip("antal",5,"5")}${chip("antal",10,"10")}${chip("antal",20,"20")}</div>`;
+  return h + timerToggle();
+}
+// Starter en træning med de spørgsmål, der passer (emner og niveau), og en titel
+function traenPool(c, emner, niv){
+  const ids=(emner && emner.length ? emner : aabneEmner(c).map(e=>e.id)).filter(id=>emneAaben(c,id));
+  return SPORGSMAL.filter(q=>ids.includes(q.emne) && (niv==="mit" ? q.niveau===mitNiveau(c,q.emne) : !+niv || q.niveau===+niv));
+}
+function startTraen(titel, pool, n, emne, ekstra){
+  const c=cur(); if(!pool.length){ alert("Der er ingen spørgsmål at øve her endnu."); return; }
+  const genstart=()=>startTraen(titel, pool, n, emne, ekstra);
+  koerQuiz("train", emne||"alle", 0, vaelgSpg(pool, n, c), { titel, genstart, ...(ekstra||{}) });
+}
 function fejlKort(c){
   const n = fejlAntal(c);
   return `<div class="card fejlkort"><b>🔁 Øv dine fejl</b><small>${n
     ? `Du har svaret forkert på <b>${n}</b> spørgsmål. Et spørgsmål forsvinder fra listen, når du har svaret rigtigt på det to gange i træk.`
     : "Her samles de spørgsmål, du svarer forkert på, så du kan øve dem igen."}</small>
     ${n ? `<button class="btn" data-a="fejlstart">Øv ${Math.min(n, ANTAL_SPG)} af dine fejl</button>` : ""}</div>`;
+}
+
+/* ---------- Særlige træningstyper ---------- */
+const tilTraening = `<button class="iconbtn" data-a="til" data-to="traening" aria-label="Tilbage til træning">←</button>`;
+const traenPlus = (c, ok, pts) => { if(!ok) return false; c.point=(c.point||0)+pts; return traenRigtig(c); };
+// Morsetræneren: lampen blinker et bogstav eller et ord, og spejderen skriver svaret. Tre tempi.
+let mtr = null;
+const MORSE_TEMPO = [["🐢 Langsom",340],["🚶 Mellem",230],["🏃 Hurtig",150]];
+function startMorseTr(){ mtr={ tempo:0, antal:0, rigtige:0 }; nyMorseOpg(); go("morsetr"); }
+function nyMorseOpg(){
+  const bog=Object.keys(MORSE).filter(k=>/^[A-ZÆØÅ]$/.test(k)), ord=SIGNALORD.concat(NATORD), l=cur().badges.koder||0;
+  let ny; do { ny = l>=1 && Math.random()<.5 ? pick(ord) : pick(bog); } while(mtr.opg && ny===mtr.opg);
+  mtr.opg=ny; mtr.svar=""; mtr.res=null; mtr.dags=false;
+}
+function morseTrQ(){ return { media:{ type:"morse", tekst:mtr.opg, enhed:MORSE_TEMPO[mtr.tempo][1] } }; }
+function morseTjek(){
+  if(!mtr || mtr.res) return; const c=cur(), ok=mtr.svar.trim().toUpperCase()===mtr.opg;
+  stopMedia(); mtr.res=ok?"ok":"bad"; mtr.antal++; if(ok) mtr.rigtige++;
+  noterStat(c,"koder",ok); mtr.dags=traenPlus(c, ok, mtr.opg.length>1?5:3); lydEffekt(ok); vibrer(ok?30:[60,40,60]); save(); render();
+}
+function scrMorseTr(){
+  const res=mtr.res, ordet=mtr.opg.length>1;
+  return `<div class="topbar">${tilTraening}<h1>Morsetræner</h1><span class="spacer"></span></div>
+    <div class="card qcard"><p class="qtext" style="margin-top:0">Lampen blinker ${ordet?"et ord":"et bogstav"}. Skriv, hvad den siger.</p>${res?"":mediaHTML(morseTrQ())}
+      <div class="chips" style="justify-content:center;margin-top:8px">${MORSE_TEMPO.map(([n],k)=>`<button class="chip ${mtr.tempo===k?"on":""}" data-a="mtempo" data-v="${k}">${n}</button>`).join("")}</div></div>
+    ${res ? `<div class="fb ${res}"><b class="head">${res==="ok"?"Rigtigt! ✅":"Ikke helt"}</b><p>Lampen sagde <b>${mtr.opg}</b>: <span class="morsefacit">${morse(mtr.opg)}</span></p>${mtr.dags?`<p class="dagsmaalnaaet">🎯 Dagens træning er klaret! <b>+${TRAEN_BONUS} point</b></p>`:""}</div>
+      <button class="btn" data-a="mnaeste">Næste →</button>`
+    : `<input type="text" id="morseinput" class="morsefelt" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Skriv svaret" value="${esc(mtr.svar)}" aria-label="Dit svar">
+      <button class="btn earth" data-a="mtjek">✔️ Tjek</button>`}
+    <p class="muted center psmall">${mtr.rigtige} af ${mtr.antal} rigtige · ${ordet?"5":"3"} point pr. rigtigt svar</p>
+    <details class="card"><summary>📖 Morsealfabetet</summary><div class="morsetab">${Object.keys(MORSE).filter(k=>/^[A-ZÆØÅ]$/.test(k)).map(k=>`<span><b>${k}</b> ${MORSE[k]}</span>`).join("")}</div></details>`;
+}
+// Semafortræneren: aflæs figuren – eller vælg den rigtige stilling for et bogstav
+let strn = null;
+function startSemaforTr(){ strn={ antal:0, rigtige:0 }; nySemaforOpg(); go("semafortr"); }
+function nySemaforOpg(){
+  const bog=Object.keys(SEMAFOR); let a; do { a=pick(bog); } while(a===strn.opg);
+  strn.opg=a; strn.valg=shuffle([a, ...shuffle(bog.filter(x=>x!==a)).slice(0,3)]); strn.type=Math.random()<.5?"aflaes":"vaelg"; strn.res=null; strn.valgt=null; strn.dags=false;
+}
+function semaforSvar(v){
+  if(!strn || strn.res) return; const c=cur(), ok=v===strn.opg;
+  strn.valgt=v; strn.res=ok?"ok":"bad"; strn.antal++; if(ok) strn.rigtige++;
+  noterStat(c,"koder",ok); strn.dags=traenPlus(c, ok, 3); lydEffekt(ok); vibrer(ok?30:[60,40,60]); save(); render();
+}
+function scrSemaforTr(){
+  const t=strn, res=t.res, kl=v=>res ? (v===t.opg?"correct":v===t.valgt?"wrong":"dim") : "";
+  const opg = t.type==="aflaes"
+    ? `<p class="qtext" style="margin-top:0">Hvilket bogstav viser spejderen?</p><div class="media">${semaforSVG(...SEMAFOR[t.opg])}</div></div>
+       <div class="answers">${t.valg.map((v,k)=>`<button class="ans ${kl(v)}" data-a="ssvar" data-v="${v}" ${res?"disabled":""}><span class="letter">${"ABCD"[k]}</span><span>${v}</span></button>`).join("")}</div>`
+    : `<p class="qtext" style="margin-top:0">Hvilken stilling er bogstavet <b class="semstort">${t.opg}</b>?</p></div>
+       <div class="semvalg">${t.valg.map(v=>`<button class="semknap ${kl(v)}" data-a="ssvar" data-v="${v}" ${res?"disabled":""} aria-label="Stilling ${res?v:""}">${semaforSVG(...SEMAFOR[v])}${res?`<b>${v}</b>`:""}</button>`).join("")}</div>`;
+  return `<div class="topbar">${tilTraening}<h1>Semafortræner</h1><span class="spacer"></span></div>
+    <div class="card qcard">${opg}
+    ${res ? `<div class="fb ${res}"><b class="head">${res==="ok"?"Rigtigt! ✅":`Det var ${t.opg}`}</b>${mtrDag(t)}</div><button class="btn" data-a="snaeste">Næste →</button>` : ""}
+    <p class="muted center psmall">${t.rigtige} af ${t.antal} rigtige · 3 point pr. rigtigt svar</p>`;
+}
+function mtrDag(t){ return t.dags ? `<p class="dagsmaalnaaet">🎯 Dagens træning er klaret! <b>+${TRAEN_BONUS} point</b></p>` : ""; }
+// Flashcards: forside = spørgsmål, bagside = svar og forklaring. »Øv igen« lægger kortet i fejllisten.
+let flash = null;
+function startFlash(){
+  const c=cur(), v=traenValg(c), pool=traenPool(c, v.emner, "mit").filter(q=>q.type!=="raekke" && !q.media);
+  const qs=vaelgSpg(pool, 10, c); if(!qs.length){ alert("Der er ingen kort at øve her endnu."); return; }
+  qs.forEach(q=>{ c.seen[q.id]=(c.seen[q.id]||0)+1; }); save();
+  flash={ qs, i:0, vendt:false, kunne:0 }; go("flash");
+}
+function scrFlash(){
+  const c=cur(), top=`<div class="topbar">${tilTraening}<h1>Flashcards</h1><span class="spacer"></span></div>`;
+  if(flash.i>=flash.qs.length) return top+`<div class="card center"><div class="resmsg">${flash.kunne===flash.qs.length?"Du kunne dem alle! 🌟":"Godt øvet! 💪"}</div>
+    <p>Du kunne <b>${flash.kunne} af ${flash.qs.length}</b>.${flash.kunne<flash.qs.length?" De andre ligger nu i dine fejl, så du kan øve dem igen.":""}</p></div>
+    <button class="btn earth" data-a="tflash">🃏 Nye kort</button><button class="btn secondary" data-a="til" data-to="traening">Til træning</button>`;
+  const q=flash.qs[flash.i], e=EMNE[q.emne];
+  return top+`<p class="muted center psmall">Kort ${flash.i+1} af ${flash.qs.length}</p>
+    <div class="card flashkort ${flash.vendt?"vendt":""}"><div class="qtopic">${badgeHTML(e,c.badges[e.id]||0,"xs")} ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div>
+      <p class="qtext">${esc(q.spm)}</p>
+      ${flash.vendt ? `<div class="flashbag"><b>✅ ${esc(q.svar[0])}</b><p class="forkl">💡 ${esc(q.forklaring)}</p></div>` : `<p class="muted center psmall">Tænk over svaret – og vend så kortet.</p>`}</div>
+    ${flash.vendt ? `<div class="flashknapper"><button class="btn earth" data-a="flashsvar" data-v="1">👍 Kunne det</button><button class="btn secondary" data-a="flashsvar" data-v="0">🔁 Øv igen</button></div>`
+      : `<button class="btn" data-a="flashvend">🔄 Vend kortet</button>`}`;
+}
+// Fejllisten: bladr fejlene igennem med det rigtige svar og forklaringen
+function scrFejlliste(){
+  const c=cur(), l=fejlSpg(c), f=c.forkert||{};
+  return `<div class="topbar">${tilTraening}<h1>Dine fejl</h1><span class="spacer"></span></div>
+    <p class="muted center psmall">${l.length?`${l.length} spørgsmål. Et spørgsmål forsvinder, når du har svaret rigtigt på det to gange i træk.`:"Du har ingen fejl at øve – flot! 🎉"}</p>
+    ${l.length?`<button class="btn earth" data-a="fejlstart">🔁 Øv ${Math.min(l.length, ANTAL_SPG)} af dem i en quiz</button>`:""}
+    ${l.map(q=>{ const e=EMNE[q.emne]; return `<div class="card fejlpost"><div class="qtopic">${badgeHTML(e,c.badges[e.id]||0,"xs")} ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}<span class="fejlfrem">${f[q.id]?"✔ 1 af 2":"0 af 2"}</span></div>
+      <b class="fejlspm">${esc(q.spm)}</b>
+      ${q.type==="raekke" ? `<ol class="facit">${q.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>` : `<p class="fejlsvar">✅ ${esc(q.svar[0])}</p>`}
+      <p class="forkl">💡 ${esc(q.forklaring)}</p></div>`; }).join("")}`;
 }
 
 /* ---------- Opgavetyper: rækkefølge, morselampe og semafor ---------- */
@@ -6529,9 +6722,9 @@ function mediaHTML(q){
 }
 function startMedia(q){
   stopMedia();
-  const m=q && q.media; if(!m || !["quiz","loeb"].includes(nav.screen)) return;
+  const m=q && q.media; if(!m || !["quiz","loeb","morsetr"].includes(nav.screen)) return;
   if(m.type==="morse"){
-    const enhed=230, seq=[];
+    const enhed=m.enhed||230, seq=[];
     [...m.tekst].forEach((bog,bi)=>{
       if(bi) seq.push([false, enhed*3]);
       [...MORSE[bog]].forEach((t,ti)=>{ if(ti) seq.push([false,enhed]); seq.push([true, t==="·"?enhed:enhed*3]); });
@@ -6576,7 +6769,7 @@ function raekkeHTML(q){
 
 function scrQuiz(){
   const c=cur(), q=quiz.qs[quiz.i], e=EMNE[q.emne], n=quiz.qs.length;
-  const label = quiz.mode==="moede" ? `🏠 Spejdermøde · Uge ${quiz.uge.uge}` : quiz.mode==="moedeakt" ? `🏠 Ugens aktivitet · ${moede.akt.navn}` : quiz.mode==="moedetraen" ? `Træning · Mødet i uge ${quiz.uge.uge} (uden point)` : quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
+  const label = quiz.mode==="moede" ? `🏠 Spejdermøde · Uge ${quiz.uge.uge}` : quiz.mode==="moedeakt" ? `🏠 Ugens aktivitet · ${moede.akt.navn}` : quiz.mode==="moedetraen" ? `Træning · Mødet i uge ${quiz.uge.uge} (uden point)` : quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : quiz.titel ? quiz.titel : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : quiz.mode==="general" ? "Generalprøve · "+NIVEAUER[quiz.niveau].navn : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="afbryd" aria-label="Stop">✕</button>
       <div class="qinfo"><small>${label}</small><b>Spørgsmål ${quiz.i+1} af ${n}</b></div>
       <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
@@ -6593,7 +6786,7 @@ function scrQuiz(){
     const ok = quiz.svar[quiz.i];
     const rigtig = q.type==="raekke" ? `<ol class="facit">${q.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>` : `<b>${esc(q.opts.find(o=>o.ok).t)}</b>`;
     h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok ? quiz.ros + (quiz.sidstePoint ? `<span class="plus">+${quiz.sidstePoint} point</span>` : "") : quiz.valgt<0 ? "⏰ Tiden løb ud!" : q.type==="raekke" ? "Ikke helt den rigtige rækkefølge" : "Desværre – forkert"}</b>
-      ${ok?"":`<p>${q.type==="raekke"?"Sådan skal det bindes:":"Det rigtige svar er:"} ${rigtig}</p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p></div>
+      ${ok?"":`<p>${q.type==="raekke"?"Sådan skal det bindes:":"Det rigtige svar er:"} ${rigtig}</p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p>${quiz.dagsmaal?`<p class="dagsmaalnaaet">🎯 Dagens træning er klaret! <b>+${TRAEN_BONUS} point</b></p>`:""}</div>
       <button class="btn" data-a="naeste">${quiz.i+1>=n?"Se resultat 🏁":"Næste spørgsmål →"}</button>`;
   }
   return h;
@@ -6603,7 +6796,11 @@ function scrResultat(){
   const c=cur(), n=quiz.qs.length, r=quiz.rigtige;
   const test = quiz.mode==="test";
   let msg, col;
-  if(test){
+  if(quiz.mode==="general"){
+    const krav=NIVEAUER[quiz.niveau].krav, ok=r>=krav;
+    msg = ok ? "Du ville have bestået! 🎉" : "Ikke helt endnu"; col = ok ? "var(--ok)" : "var(--bad)";
+    var sub = ok ? `Du er klar til ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøven i ${EMNE[quiz.emne].navn}. Generalprøven tæller ikke til mærket.` : `Prøven kræver mindst ${krav} rigtige. Øv lidt mere – generalprøven tæller ikke.`;
+  } else if(test){
     const krav = NIVEAUER[quiz.niveau].krav;
     if(quiz.bestaaet){ msg="Bestået! 🎉"; col="var(--ok)"; }
     else { msg="Ikke bestået – endnu!"; col="var(--bad)"; }
@@ -6617,7 +6814,7 @@ function scrResultat(){
     if(quiz.mode==="uge"){ const b=ugeBedst(c, quiz.uge); sub = quiz.nyRekord && b ? `Nyt bedste resultat for uge ${quiz.uge.uge}! 🏅` : `Dit bedste i uge ${quiz.uge.uge} er stadig ${b.r}/${b.n}.`; }
     if(quiz.mode==="fejl"){ const f=fejlAntal(c); sub = f ? `Du har ${f} spørgsmål tilbage at øve. Et spørgsmål forsvinder, når du har svaret rigtigt to gange i træk.` : "Du har ikke flere fejl at øve – flot! 🎉"; }
   }
-  let h = `<div class="topbar"><span class="spacer"></span><h1>${test?"Prøven er slut":quiz.mode==="uge"?"Ugens udfordring":"Træning slut"}</h1><span class="spacer"></span></div>
+  let h = `<div class="topbar"><span class="spacer"></span><h1>${test?"Prøven er slut":quiz.mode==="uge"?"Ugens udfordring":quiz.mode==="general"?"Generalprøven er slut":"Træning slut"}</h1><span class="spacer"></span></div>
     <div class="card center">
       <div class="score" style="--p:${r/n*100};--c:${col}"><div>${r}/${n}</div></div>
       <div class="resmsg">${msg}</div><p class="muted" style="margin:6px 0 2px">${sub}</p>
@@ -6631,11 +6828,14 @@ function scrResultat(){
     if(quiz.bestaaet && naesteAaben && lvl>=quiz.niveau) h += `<button class="btn ${quiz.niveau===2?"gold":""}" data-a="naesteniveau">Prøv ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven →</button>`;
     if(!quiz.bestaaet) h += `<button class="btn" data-a="igen">🔁 Prøv igen</button>`;
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
+  } else if(quiz.mode==="general"){
+    if(r>=NIVEAUER[quiz.niveau].krav && (c.badges[quiz.emne]||0)<quiz.niveau && quiz.niveau<=maksMedalje(c)) h += `<button class="btn ${quiz.niveau===3?"gold":""}" data-a="proeve" data-id="${quiz.emne}" data-n="${quiz.niveau}">Tag den rigtige ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøve →</button>`;
+    h += `<button class="btn earth" data-a="igen">🔁 Ny generalprøve</button><button class="btn secondary" data-a="til" data-to="traening">Til træning</button>`;
   } else {
     if(quiz.mode==="uge") h += `<button class="btn earth" data-a="igen">🔁 Prøv ugens udfordring igen</button>`;
     else if(quiz.mode==="moedetraen") h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button><button class="btn secondary" data-a="til" data-to="hytte">🏠 Til spejderhytten</button>`;
     else if(quiz.mode!=="fejl" || fejlAntal(c)) h += `<button class="btn earth" data-a="igen">🔁 Træn igen</button>`;
-    h += `<button class="btn secondary" data-a="traening" data-id="${quiz.emne==="alle"?"":quiz.emne}">${quiz.mode==="fejl"?"Til træning":"Vælg andet emne"}</button>`;
+    h += `<button class="btn secondary" data-a="til" data-to="traening">Til træning</button>`;
   }
   h += `<button class="btn secondary" data-a="til" data-to="profil">Til profilen</button>`;
   h += `<div class="card"><details><summary>📋 Gennemgang af svarene</summary><ul class="review">${quiz.qs.map((q,k)=>`<li class="${quiz.svar[k]?"ok":"bad"}"><b>${esc(q.spm)}</b><span>Svar: ${esc(q.svar[0])}</span></li>`).join("")}</ul></details></div>`;
@@ -6707,11 +6907,16 @@ function startQuiz(mode, emne, niveau){
   let valgte = mode==="moedeakt" ? moede.aktSpg : fast ? ugensSpg(ugen) : vaelgSpg(pool, ANTAL_SPG, c);
   // En knob-prøve har altid mindst én opgave, hvor man skal vise, hvordan der bindes
   const binde = pool.filter(q=>q.type==="raekke");
-  if(mode==="test" && binde.length && !valgte.some(q=>q.type==="raekke")) valgte = shuffle([vaelgSpg(binde,1,c)[0], ...valgte.slice(0, ANTAL_SPG-1)]);
+  if((mode==="test" || mode==="general") && binde.length && !valgte.some(q=>q.type==="raekke")) valgte = shuffle([vaelgSpg(binde,1,c)[0], ...valgte.slice(0, ANTAL_SPG-1)]);
+  koerQuiz(mode, emne, niveau, valgte, { uge: fast ? ugen : null });
+}
+// Fælles start af en quiz (prøver, træning, fejl, ugens udfordring …). ekstra: { titel, genstart, uge }
+function koerQuiz(mode, emne, niveau, valgte, ekstra){
+  const c=cur(); c.seen=c.seen||{}; if(!valgte.length) return;
   valgte.forEach(q => { c.seen[q.id] = (c.seen[q.id]||0) + 1; });
   save();
-  quiz = { mode, emne, niveau, uge: fast ? ugen : null, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
-           done:false, medTimer:!!c.timer, tLeft:opgTid(valgte[0]), tMax:opgTid(valgte[0]),
+  quiz = { mode, emne, niveau, uge:null, i:0, rigtige:0, streak:0, maxStreak:0, point:0, svar:[], answered:false, valgt:null,
+           done:false, medTimer:!!c.timer, tLeft:opgTid(valgte[0]), tMax:opgTid(valgte[0]), ...(ekstra||{}),
            qs: valgte.map(q => q.type==="raekke"
              ? { ...q, rr:{ valgt:[], blandet:shuffle(q.trin.map((_,i)=>i)) } }
              : { ...q, opts: shuffle(q.svar.map((t,i)=>({ t, ok:i===0 }))) }) };
@@ -6723,9 +6928,12 @@ function svar(k, okRaekke){
   const c=cur(), q=quiz.qs[quiz.i], ok = q.type==="raekke" ? (k>=0 && !!okRaekke) : (k>=0 && q.opts[k].ok);
   quiz.answered=true; quiz.valgt=k; quiz.svar[quiz.i]=ok;
   noterFejl(c, q.id, ok);
+  if(["train","fejl","general","test"].includes(quiz.mode)) noterStat(c, q.emne, ok);
+  quiz.dagsmaal = ok && TRAEN_MODES.includes(quiz.mode) && traenRigtig(c);
   if(ok){
     quiz.rigtige++; quiz.streak++; quiz.maxStreak=Math.max(quiz.maxStreak,quiz.streak);
-    const pts = quiz.mode==="moedetraen" ? 0 : 10 + Math.min(quiz.streak-1,5)*2 + (quiz.medTimer ? Math.min(5, Math.ceil(Math.max(0,quiz.tLeft)/4)) : 0);
+    let pts = quiz.mode==="moedetraen" ? 0 : 10 + Math.min(quiz.streak-1,5)*2 + (quiz.medTimer ? Math.min(5, Math.ceil(Math.max(0,quiz.tLeft)/4)) : 0);
+    if(quiz.mode==="general") pts = Math.round(pts/2);   // generalprøven giver halve point
     quiz.point += pts; quiz.sidstePoint = pts; c.point += pts;
     c.bedsteStreak = Math.max(c.bedsteStreak||0, quiz.streak);
     quiz.ros = pick(["Rigtigt! ✅","Flot! ✅","Sådan! ✅","Godt gået! ✅","Korrekt! ✅"]);
@@ -11322,6 +11530,7 @@ function renderFaner(){
   el.hidden=!vis; document.body.classList.toggle("has-tabs", vis);
   if(!vis) return;
   const aktiv = nav.screen==="emne" ? "maerker" : nav.screen;
+  requestAnimationFrame(()=>document.body.style.setProperty("--fanehoejde", el.offsetHeight+"px"));
   el.innerHTML = `<div class="in">${FANER.map(([id,ik,navn])=>`<button class="tab ${aktiv===id?"on":""}" data-fane="${id}"><span>${ik}</span>${navn}</button>`).join("")}</div>`;
 }
 document.getElementById("tabs").addEventListener("click", ev => {
@@ -11366,9 +11575,23 @@ const actions = {
   rediger(){ const c=cur(); draft={ id:c.id, navn:c.navn, look:{...c.look}, badges:c.badges, rank:rankIdx(c), retur:"indst" }; go("editor"); },
   emne(d){ go("emne",{id:d.id}); },
   proeve(d){ const c=cur(), l=c.badges[d.id]||0; if(+d.n>l && (!emneAaben(c,d.id) || +d.n>maksMedalje(c))) return; startQuiz("test", d.id, +d.n); },
-  traening(d){ go("traening",{ emne:d.id||"alle", niveau:0 }); },
-  tvalg(d){ nav.params[d.k] = d.k==="niveau" ? +d.v : d.v; try{ history.replaceState(nav,""); }catch(e){} render(); },
-  tstart(){ startQuiz("train", nav.params.emne, nav.params.niveau); },
+  traening(d){ if(d.id){ const v=traenValg(cur()); v.emner=[d.id]; v.aaben=true; save(); } go("traening"); },
+  tvalg(d){ const v=traenValg(cur()); v[d.k] = d.k==="antal" ? +d.v : d.v; save(); render(); },
+  temne(d){ const v=traenValg(cur()), k=v.emner.indexOf(d.id); if(k<0) v.emner.push(d.id); else v.emner.splice(k,1); save(); render(); },
+  tstart(){ const c=cur(), v=traenValg(c), navne=v.emner.map(id=>EMNE[id].navn);
+    startTraen(`Træning · ${navne.length ? (navne.length>2 ? navne.length+" emner" : navne.join(" og ")) : "Alle åbne emner"}`, traenPool(c, v.emner, v.niv), v.antal, v.emner.length===1 ? v.emner[0] : "alle"); },
+  tanbefalet(){ const c=cur(), a=anbefalet(c); if(!a) return; startTraen(`Anbefalet · ${a.e.navn} · ${NIVEAUER[a.n].navn}`, SPORGSMAL.filter(q=>q.emne===a.e.id && q.niveau===a.n), ANTAL_SPG, a.e.id); },
+  tgeneral(){ const a=anbefalet(cur()); if(a) startQuiz("general", a.e.id, a.n); },
+  thurtig(){ const c=cur(); startTraen("Hurtig runde", traenPool(c, [], "mit"), 5); },
+  tsvage(){ const c=cur(), es=svagesteEmner(c); startTraen(`De svageste emner · ${es.map(e=>e.navn).join(", ")}`, traenPool(c, es.map(e=>e.id), "mit"), ANTAL_SPG); },
+  tbesnoer(){ const c=cur(); startTraen("Besnøringstræner", SPORGSMAL.filter(q=>q.type==="raekke" && emneAaben(c,q.emne)), 5, "knob"); },
+  tbilleder(){ const c=cur(); startTraen("Billedgenkendelse", SPORGSMAL.filter(q=>q.media && q.media.type==="billede" && emneAaben(c,q.emne)), ANTAL_SPG); },
+  tfejlliste(){ go("fejlliste"); },
+  tflash(){ startFlash(); },
+  flashvend(){ flash.vendt=true; render(); },
+  flashsvar(d){ const c=cur(), q=flash.qs[flash.i]; noterFejl(c, q.id, d.v==="1"); if(d.v==="1") flash.kunne++; save(); flash.i++; flash.vendt=false; render(); },
+  tmorse(){ startMorseTr(); }, mtempo(d){ mtr.tempo=+d.v; render(); }, mtjek(){ morseTjek(); }, mnaeste(){ nyMorseOpg(); render(); },
+  tsemafor(){ startSemaforTr(); }, ssvar(d){ semaforSvar(d.v); }, snaeste(){ nySemaforOpg(); render(); },
   svar(d){ svar(+d.k); },
   naeste(){ naeste(); },
   vaelgtrin(d){ const q=quiz.qs[quiz.i]; if(quiz.answered) return; q.rr.valgt.push(+d.t); render(); },
@@ -11381,10 +11604,11 @@ const actions = {
     if(!morseLyd) lydTone(false);
     const b=document.querySelector('[data-a="morselyd"]'); if(b) b.textContent = morseLyd?"🔊 Lyd til":"🔈 Lyd fra";
   },
-  mediaforfra(){ startMedia(nav.screen==="loeb" && loebOpg ? { media:loebOpg.o.media } : quiz.qs[quiz.i]); },
+  mediaforfra(){ startMedia(nav.screen==="morsetr" ? morseTrQ() : nav.screen==="loeb" && loebOpg ? { media:loebOpg.o.media } : quiz.qs[quiz.i]); },
   afbryd(){ askQuit(); },
-  igen(){ startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
+  igen(){ if(quiz.genstart) quiz.genstart(); else startQuiz(quiz.mode, quiz.emne, quiz.niveau); },
   fejlstart(){ startQuiz("fejl", "alle", 0); },
+  vselv(){},
   laesop(){ oplaesQuiz(true); },
   moedestart(){ startMoede(); },
   moedeklar(){ if(akt && akt.hejst) moedeVidere(); },
@@ -11672,10 +11896,14 @@ app.addEventListener("click", ev => {
 });
 app.addEventListener("keydown", ev => {
   if((ev.key==="Enter"||ev.key===" ") && ev.target.matches(".charrow")){ ev.preventDefault(); ev.target.click(); }
+  if(ev.key==="Enter" && ev.target.id==="morseinput"){ ev.preventDefault(); mtr.svar=ev.target.value; morseTjek(); }
 });
+// »Vælg selv« på træningssiden: om den er foldet ud, huskes (og så vises Start-knappen fast nederst)
+app.addEventListener("toggle", ev => { if(ev.target.id==="vselv"){ const v=traenValg(cur()); if(v.aaben!==ev.target.open){ v.aaben=ev.target.open; save(); render(); } } }, true);
 app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.navn = ev.target.value; ev.target.classList.remove("err"); }
   if(ev.target.id==="pnavn" && pdraft){ pdraft.navn = ev.target.value; ev.target.classList.remove("err"); }
-  if(ev.target.dataset.pn!=null && pdraft){ pdraft.navne[+ev.target.dataset.pn] = ev.target.value; ev.target.classList.remove("err"); } });
+  if(ev.target.dataset.pn!=null && pdraft){ pdraft.navne[+ev.target.dataset.pn] = ev.target.value; ev.target.classList.remove("err"); }
+  if(ev.target.id==="morseinput" && mtr) mtr.svar=ev.target.value; });
 app.addEventListener("change", ev => {
   if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); }
   const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes", "ind-doegn":"doegn" }[ev.target.id];
