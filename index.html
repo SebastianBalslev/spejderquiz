@@ -532,6 +532,10 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .celle .tid{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:rgba(42,42,31,.82);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:2px 0;font-variant-numeric:tabular-nums}
 .celle.bygger .ting{opacity:.45;filter:saturate(.4)}
 .celle .stillads{position:absolute;inset:4% 6% 6%;width:auto;height:auto;z-index:2;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
+.flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
+.celle.brud{box-shadow:inset 0 0 0 3px #d62828,0 0 10px rgba(214,40,40,.6)}
+.lejrbund.flytbund button.flytgem{background:#c98a1c;box-shadow:0 4px 0 #8a5c0e,0 6px 16px rgba(0,0,0,.18)}
 .byggetilst{position:absolute;top:-13px;right:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}
 .byggetilst span{font-size:12px;font-weight:800}.byggetilst.on{background:var(--forest);color:#fff}
 .lejrmap{margin-top:16px}
@@ -7646,7 +7650,8 @@ function tidTekst(sek){
 
 function scrLejr(){
   const c=cur(), felter=lejrFelter(c), ledig=lejrPoint(c), antalByg=Object.keys(felter).length;
-  fuldfoerByg(c); tjekArbejde(c); const prod=produktion(c); if(prod.length) setTimeout(()=>prodSvaev(prod), 60); opdaterLejrNiv(c); tilpasLejr(c); delete c.lejrPakTjek; vildVaekst(c);
+  if(c.flytLog && !lejrFlyt) flytFortryd(c, true);   // flytninger, der aldrig blev gemt (fx hvis appen blev lukket), rulles tilbage
+  fuldfoerByg(c); tjekArbejde(c); const prod=produktion(c); if(prod.length) setTimeout(()=>prodSvaev(prod), 60); opdaterLejrNiv(c); if(!lejrFlyt) tilpasLejr(c); delete c.lejrPakTjek; vildVaekst(c);
   const valgt = lejrValg && (lejrValg.type==="ny" ? BYGID[lejrValg.id] : lejrValg.type==="vogn" ? BYGID[(vogn(c)[lejrValg.k]||{}).id] : BYGID[felter[lejrValg.idx]]);
   const l=lager(c);
   let h = `<div class="lejrtop">${lejrSkiltHTML(c)}${guideBarHTML(c)}
@@ -7657,9 +7662,14 @@ function scrLejr(){
       <small>${lejrValg.type==="ny"?valgt.besk+" ":""}Tryk på et felt med hvid ramme${valgt.vedSoe?" lige ved søen":valgt.vand?" på søen":""}.${erStor(valgt)?` ${valgt.navn} fylder ${strTekst(valgt)} – feltet er det øverste venstre hjørne.`:""} ${opg?" Bagefter skal du binde besnøringerne.":""}</small>${regelLinjer(valgt.id).map(t=>`<small class="regeltekst">📏 ${t}</small>`).join("")}</div>
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
+  if(lejrFlyt){ flytBrud = flytNyeBrud(c);
+    const brud=[...new Set(regelBrudKort(c,{ ...felter }).filter(x=>!lejrFlyt.start.has(x.n)).map(x=>x.r.navn))];
+    h += `<div class="card flytbar"><b>✋ Flyt rundt på lejrpladsen</b><small>${lejrFlyt.valgt!=null ? `Tryk på et felt med hvid ramme for at flytte ${BYGID[felter[lejrFlyt.valgt]].navn.toLowerCase()} – eller på en anden bygning af samme størrelse for at bytte plads. Tryk på den igen for at lægge den.` : "Tryk på en bygning for at tage den op."}</small>
+      ${brud.length ? `<small class="flytbrud">🚫 Ret først: ${brud.join(" · ")}</small>` : `<small class="flytok">${lejrFlyt.log ? `${lejrFlyt.log} ${lejrFlyt.log===1?"flytning":"flytninger"} – tryk »Gem«, når du er færdig.` : "Intet er flyttet endnu."}</small>`}</div>`; }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${stierHTML(c, str)}${soeHTML(c, str)}
+    ${lejrFlyt||!Object.keys(felter).length ? "" : `<button class="flytknap" data-a="flytstart" aria-label="Flyt rundt på bygningerne">✋<span>Flyt rundt</span></button>`}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 2 skorstene/bål, flammeskær på højst 2 bål og vajende flag på højst 3 felter
   const liv=lejrLiv(c), dk=lejrDaekket(c), flytFra = lejrValg && lejrValg.type==="flyt" ? lejrValg.idx : null;
@@ -7674,6 +7684,7 @@ function scrLejr(){
     const wire = b && b.id==="svaevebane" && !underByg(c,i) ? (k+2 < str.k ? "wire" : "wireV") : "";
     if(wire) cls += " wire" + (wire==="wireV" ? " spejl" : "");
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
+    if(lejrFlyt){ if(lejrFlyt.valgt===i) cls += " flyttes"; else if(lejrFlyt.valgt!=null && !b && flytMaal(c, lejrFlyt.valgt, i)) cls += " kan"; if(b && flytBrud.has(i)) cls += " brud"; }
     if(lejrNy===i) cls += " ny";
     if(udv && (r>=udv.r || k>=udv.k)) cls += " udvidet";
     const bygger = b && underByg(c,i), niv = b ? lejrNiv(c,i) : 1;
@@ -7688,11 +7699,12 @@ function scrLejr(){
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
     h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
-  h += besoegHTML(c) + spejdereHTML(c, str) + lysHTML(c, str);
+  h += (lejrFlyt ? "" : besoegHTML(c) + spejdereHTML(c, str)) + lysHTML(c, str);
   if((c.badges.fugle||0)>=3 && lejrDoegn()!=="nat") h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
   h += `</div>`;
   lejrNy = null;
   // Knapper i bunden og panelerne, de åbner
+  if(lejrFlyt) return h + `<div class="lejrbund flytbund"><button class="flytgem" data-a="flytgem">💾<span>Gem</span></button><button data-a="flytfortryd">↩️<span>Fortryd</span></button></div>`;
   h += `<div class="lejrbund"><button class="${lejrArk==="byg"?"on":""}" data-a="lejrark" data-v="byg">🏗️<span>Byg</span></button>
     <button class="${lejrArk==="patrulje"?"on":""}" data-a="lejrark" data-v="patrulje">👥<span>Patrulje og opgaver</span>${arbejdere(c).some(m=>!m.job)?`<i class="prik"></i>`:""}</button>
     <button class="${lejrArk==="lager"?"on":""}" data-a="lejrark" data-v="lager">📦<span>Lager</span></button></div>`;
@@ -8066,7 +8078,54 @@ function flytFelt(c,fra,til){
 }
 function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.ting||{}).reduce((s,id)=>s+(INDBOID[id]?INDBOID[id].pris:0),0) : 0; }
 
+/* ---------- Flyt rundt: en tilstand på lejrpladsen, hvor man frit flytter og bytter bygninger og gemmer til sidst ----------
+   Undervejs må reglerne gerne være brudt (bygningerne er røde), men man kan først gemme, når der ikke er nye brud.
+   Hver flytning logges i c.flytLog. »Fortryd« – eller en app, der lukkes uden at gemme – ruller dem tilbage i omvendt rækkefølge,
+   så niveau, byggetid, produktion, telte og fældejob altid følger bygningen. */
+let lejrFlyt = null, flytBrud = new Set();
+const FLYT_DATA = ["lejr","lejrTid","telte","lejrNiv","lejrOpg","lejrInv","lejrRek","traer","prod"];
+function flytStart(){
+  const c=cur(); lejrValg=null; lejrArk=null; c.flytLog=[];
+  lejrFlyt={ valgt:null, log:0, start:new Set(regelBrudKort(c,{ ...lejrFelter(c) }).map(x=>x.n)) }; save(); render();
+}
+// Flyt alt, der hører til feltet fra, over på til (og byt, hvis til er optaget)
+function flytByt(c, a, b){
+  FLYT_DATA.forEach(k=>{ if(!c[k]) return; const x=c[k][a], y=c[k][b]; delete c[k][a]; delete c[k][b]; if(x!=null) c[k][b]=x; if(y!=null) c[k][a]=y; });
+  arbejdere(c).forEach(m=>{ if(m.job && m.job.felt===a) m.job.felt=b; else if(m.job && m.job.felt===b) m.job.felt=a; });
+  if(c.vild){ delete c.vild[a]; delete c.vild[b]; }
+}
+// Kan bygningen på fra stå på til (et tomt felt eller dens egne felter)? Reglerne tjekkes først, når man gemmer.
+function flytMaal(c, fra, til){ const b=BYGID[lejrFelter(c)[fra]]; return !!b && fra!==til && kanStaa(b,til,c) && fodsporFrit(c,b,til,fra); }
+function flytNyeBrud(c){ const ud=new Set(); regelBrudKort(c,{ ...lejrFelter(c) }).forEach(x=>{ if(!lejrFlyt.start.has(x.n)){ ud.add(x.i); if(x.j!=null && lejrFelter(c)[x.j]) ud.add(x.j); } }); return ud; }
+function flytCelle(i){
+  const c=cur(), f=lejrFelter(c), d=lejrDaekket(c), anker=d.has(i)?d.get(i):i, v=lejrFlyt.valgt;
+  if(v==null){ if(f[anker]){ lejrFlyt.valgt=anker; render(); } return; }
+  if(anker===v){ lejrFlyt.valgt=null; render(); return; }
+  if(f[anker]){   // byt plads med en anden bygning af samme størrelse
+    const a=BYGID[f[v]], b=BYGID[f[anker]], sa=bygStr(a), sb=bygStr(b);
+    if(sa.r!==sb.r || sa.k!==sb.k){ lejrToast(`${a.navn} og ${b.navn.toLowerCase()} er ikke lige store, så de kan ikke bytte plads. Flyt den til et tomt felt.`); return; }
+    flytByt(c, v, anker);
+    if(!kanStaa(a,anker,c) || !kanStaa(b,v,c)){ flytByt(c, v, anker); lejrToast(a.vand||b.vand ? "Den ene skal stå på søen og den anden på land – de kan ikke bytte." : "De kan ikke bytte plads her."); return; }
+    c.flytLog.push([v,anker]);
+  } else {
+    if(!flytMaal(c, v, i)){ const b=BYGID[f[v]]; lejrToast(!fodsporPasser(b,i,c)?`Der er ikke plads – ${b.navn.toLowerCase()} fylder ${strTekst(b)}.`:b.vand?`${b.navn} skal stå på søen.`:b.vedSoe?`${b.navn} skal stå på land lige ved søen.`:erVand(i,c)?`${b.navn} kan ikke stå på søen.`:"Feltet er optaget."); return; }
+    flytByt(c, v, i); c.flytLog.push([v,i]);
+  }
+  lejrFlyt.valgt=null; lejrFlyt.log=c.flytLog.length; save(); render(); vibrer(20);
+}
+function flytFortryd(c, stille){
+  (c.flytLog||[]).slice().reverse().forEach(([a,b])=>flytByt(c,a,b)); delete c.flytLog; lejrFlyt=null; save();
+  if(!stille){ render(); lejrToast("↩️ Bygningerne står, som de gjorde før."); }
+}
+function flytGem(){
+  const c=cur(), brud=[...new Set(regelBrudKort(c,{ ...lejrFelter(c) }).filter(x=>!lejrFlyt.start.has(x.n)).map(x=>x.r))];
+  if(brud.length){ lejrToast(`🚫 Ret først: ${brudTekst(brud)}`); return; }
+  const n=(c.flytLog||[]).length; delete c.flytLog; lejrFlyt=null; save(); render();
+  lejrToast(n ? `💾 Lejrpladsen er gemt (${n} ${n===1?"flytning":"flytninger"}).` : "Intet blev flyttet.");
+}
+
 function lejrCelle(i){
+  if(lejrFlyt) return flytCelle(i);
   const c=cur(), felter=lejrFelter(c), her=BYGID[felter[i]];
   if(lejrValg && lejrValg.type==="flyt"){
     const b=BYGID[felter[lejrValg.idx]];
@@ -11550,6 +11609,7 @@ function renderFaner(){
 document.getElementById("tabs").addEventListener("click", ev => {
   const b=ev.target.closest("[data-fane]"); if(!b) return;
   lejrValg=null;
+  if(lejrFlyt && b.dataset.fane!=="lejr") flytFortryd(cur(), true);
   if(b.dataset.fane==="traening") go("traening",{emne:"alle",niveau:0}); else go(b.dataset.fane);
 });
 
@@ -11673,6 +11733,7 @@ const actions = {
   vaelgbyg(d){ vaelgByg(d.id); },
   byginfo(d){ visBygInfo(d.id); },
   celle(d){ lejrCelle(+d.i); },
+  flytstart(){ flytStart(); }, flytgem(){ flytGem(); }, flytfortryd(){ flytFortryd(cur()); },
   lejrannuller(){ lejrValg=null; render(); },
   byggetilstand(){ lejrByggetilstand=!lejrByggetilstand; try{ localStorage.setItem("spq-byggetilstand", lejrByggetilstand?"1":""); }catch(e){} render(); },
   nytjob(d){ visJobValg(d.id); },
