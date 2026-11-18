@@ -7225,14 +7225,16 @@ function konfetti(){
        krav: [emne-id, niveau 1-3] (udelades = alle kan bygge),
        vand: true (kan kun bygges på søen), besk }
    ===================================================================== */
+// Savværk og reberbane: én på lejrniveau 35 og én mere på hvert af de næste niveauer (op til 6 af hver)
+const PROD_EKSTRA = [35, 45, 55, 70, 80, 100];
 const BYG = [
   { id:"telt",        navn:"Telt",              sove:{basis:5,pr5:1}, svg:"telt", ikon:"⛺", pris:30, lejrniv:1,  besk:"Et godt telt til to spejdere." },
   { id:"raftegaard",  navn:"Raftegård",         svg:"raftegaard", pris:40, lejrniv:5, en:true,          besk:"Et stativ, hvor rafterne ligger tørt. Hvert niveau giver mere plads til rafter – hvor meget afhænger af lejrens trin." },
   { id:"materialeskur", navn:"Materialeskur",   svg:"materialeskur", pris:40, lejrniv:5, en:true,        besk:"Et skur til reb, plantefibre og andre materialer. Hvert niveau giver mere plads til reb – hvor meget afhænger af lejrens trin." },
   { id:"aktivitetsplads", navn:"Aktivitetsplads", svg:"aktivitetsplads", pris:150, krav:["ledelse",2], en:true, besk:"Et sted, hvor en fra patruljen leder aktiviteter for andre spejdere. Det tager 2 timer og giver point til byggerier – højere niveau giver flere point." },
   { id:"afgrening",   navn:"Afgreningsstation", svg:"afgrening", pris:120, lejrniv:10, krav:["vaerktoej",3], en:true,           besk:"En savbuk, hvor granstammerne afgrenes til rafter. Giver 1 rafte mere pr. stamme – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
-  { id:"savvaerk",    navn:"Savværk",           svg:"savvaerk", pris:350, lejrniv:35, krav:["vaerktoej",3], en:true,       besk:"Et lille savværk, der af sig selv laver 1 rafte i timen – også når appen er lukket. For hvert 25. niveau laver det 1 rafte mere i timen." },
-  { id:"reberbane",   navn:"Reberbane",         svg:"reberbane", pris:350, lejrniv:35, krav:["knob",3], en:true,           besk:"En lang bane, hvor tovværket slås og takles. Laver af sig selv 1 taklet reb i timen – og 1 mere for hvert 25. niveau." },
+  { id:"savvaerk",    navn:"Savværk",           svg:"savvaerk", pris:350, lejrniv:35, krav:["vaerktoej",3], maksNiv:PROD_EKSTRA, besk:"Et lille savværk, der af sig selv laver 1 rafte i timen – også når appen er lukket. For hvert 25. niveau laver det 1 rafte mere i timen. Du kan bygge et ekstra savværk på lejrniveau 45, 55, 70, 80 og 100." },
+  { id:"reberbane",   navn:"Reberbane",         svg:"reberbane", pris:350, lejrniv:35, krav:["knob",3], maksNiv:PROD_EKSTRA, besk:"En lang bane, hvor tovværket slås og takles. Laver af sig selv 1 taklet reb i timen – og 1 mere for hvert 25. niveau. Du kan bygge en ekstra reberbane på lejrniveau 45, 55, 70, 80 og 100." },
   { id:"takling",     navn:"Taklingsstation",   svg:"takling", pris:120, lejrniv:15, krav:["knob",3], en:true,           besk:"Et arbejdsbord med takkegarn og sejlnål, hvor tovværket takles. Giver 1 reb mere pr. taklet tovværk – og 1 mere på niveau 5, 10, 20, 40, 60, 80 og 99." },
   { id:"rebmaskine",  navn:"Rebslåningsmaskine", svg:"rebmaskine", pris:80, lejrniv:7, krav:["knob",1], en:true, besk:"Et sving med kroge, der snor fibrene til reb. Tovværket snos hurtigere og med færre fibre – og højere niveau giver mere reb." },
   { id:"jordkoeleskab", navn:"Jordkøleskab",  svg:"jordkoeleskab", pris:40, lejrniv:5, en:true,        besk:"Et hul i jorden med låg, hvor maden holder sig kold. Hvert niveau giver mere plads til portioner mad – hvor meget afhænger af lejrens trin." },
@@ -7595,6 +7597,13 @@ function bygEkstra(b){
 function aktKravOk(c,k){ return !k || (c.badges[k[0]]||0) >= k[1]; }
 // Niveauet på en færdig bygning (0 = ikke bygget). En bygning, der opgraderes, tæller med sit nuværende niveau.
 function bygNiv(c,id){ const f=lejrFelter(c); return Math.max(0, ...Object.keys(f).filter(i=>f[i]===id).map(i=>underByg(c,+i) && !c.lejrOpg[i] ? 0 : lejrNiv(c,+i))); }
+// Hvor mange af en bygning man må have: én (en), et antal efter lejrniveau (maksNiv) eller ubegrænset. Materielvognen tæller med.
+function bygMaks(c,b){ return b.maksNiv ? b.maksNiv.filter(n=>lejrNiveau(c)>=n).length : b.en ? 1 : Infinity; }
+function bygAntal(c,b){ return Object.values(lejrFelter(c)).filter(x=>x===b.id).length + vogn(c).filter(v=>v.id===b.id).length; }
+function bygFuld(c,b){ return bygAntal(c,b) >= bygMaks(c,b); }
+function bygNaesteEkstra(c,b){ return b.maksNiv ? b.maksNiv.find(n=>lejrNiveau(c)<n) : null; }
+function bygFuldTekst(c,b){ const n=bygNaesteEkstra(c,b), a=bygAntal(c,b);
+  return b.en ? `${b.navn} er allerede bygget på lejrpladsen. Opgrader den i stedet.` : `Du har ${a} – det er det højeste antal lige nu.${n?` Du kan bygge en mere på lejrniveau ${n}.`:""} Opgrader dem i stedet.`; }
 function harBygget(c,id){ return bygNiv(c,id) > 0; }
 // Alle mærker, en ting kræver: krav og evt. ekstraKrav (fx tømmerflåden: Vand og sejlads og Knob og reb i guld)
 function alleKrav(b){ return b.krav ? [b.krav, ...(b.ekstraKrav||[])] : []; }
@@ -7860,7 +7869,7 @@ function byggelisteHTML(c){
   let h = vognHTML(c) + `${merTekst("Vælg en ting, og tryk på et felt.", `Brug dine point på at bygge. Mange ting kræver et mærke – fx skal du have <b>Knob og reb</b> for at pionere, og så skal du selv binde besnøringerne.`)}
     <div class="katvalg" role="tablist">${[{id:"alle",ikon:"📋",navn:"Alle"},...kats].map(k=>`<button role="tab" aria-selected="${lejrKat===k.id}" class="${lejrKat===k.id?"on":""}" data-a="bygkat" data-v="${k.id}">${k.ikon} ${k.navn}</button>`).join("")}</div>`;
   // Normalt vises kun det, man kan bygge (mærke og lejrniveau i orden, og ikke allerede bygget, hvis man kun må have én)
-  const kanByg = b => harKrav(c,b) && harLejrNiv(c,b) && !(b.en && bygget.has(b.id));
+  const kanByg = b => harKrav(c,b) && harLejrNiv(c,b) && !bygFuld(c,b);
   let skjult=0, vist=0;
   h += `<!--VISLAASTE-->`;
   for(const k of kats){
@@ -7872,8 +7881,8 @@ function byggelisteHTML(c){
   for(const b of synlige){
     const lnOk=harLejrNiv(c,b), ok=harKrav(c,b) && lnOk, raad=ledig>=b.pris, on=lejrValg && lejrValg.type==="ny" && lejrValg.id===b.id, tid=BYGTID[b.id];
     // Ting, man kun kan have én af, viser, at de allerede står på lejrpladsen
-    if(b.en && bygget.has(b.id)){
-      h += `<button class="item bygget" data-a="byginfo" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget</span><span class="meta">Kun én pr. lejr</span></button>`;
+    if(bygAntal(c,b) && bygFuld(c,b)){ const ne=bygNaesteEkstra(c,b);
+      h += `<button class="item bygget" data-a="byginfo" data-id="${b.id}"><span class="ik">${bygIkon(b)}</span><b>${b.navn}</b><span class="byggetmaerke">✓ Bygget${b.en?"":` ${bygAntal(c,b)}`}</span><span class="meta">${b.en?"Kun én pr. lejr":`${ne?`1 mere på niv ${ne}`:"Højeste antal"}`}</span></button>`;
       continue;
     }
     const kravHTML = (lnOk?"":`<span class="krav lejrlaas">${lejrNivTekst(b)}</span>`) + (b.krav ? alleKrav(b).map(k=>{ const har=(c.badges[k[0]]||0)>=k[1]; return `<span class="krav ${har?"ok":""}">${badgeHTML(EMNE[k[0]], har?k[1]:0, "xs")}${har?"✓":NIVEAUER[k[1]].navn}</span>`; }).join("") : lnOk ? `<span class="krav ok">Alle kan bygge</span>` : "");
@@ -7893,7 +7902,7 @@ function byggelisteHTML(c){
 function startLejrUr(){
   clearInterval(lejrUr); lejrUr=null;
   const c=cur(); if(!c || nav.screen!=="lejr") return;
-  if(!Object.keys(c.lejrTid||{}).some(i=>underByg(c,+i)) && !arbejdeAktivt(c) && !signalRest(c) && !Object.keys(PRODUKTION).some(id=>prodFelt(c,id)!=null)) return;
+  if(!Object.keys(c.lejrTid||{}).some(i=>underByg(c,+i)) && !arbejdeAktivt(c) && !signalRest(c) && !prodFelter(c).length) return;
   lejrUr = setInterval(()=>{
     if(nav.screen!=="lejr"){ clearInterval(lejrUr); lejrUr=null; return; }
     if(modalRoot.innerHTML) return;
@@ -7926,15 +7935,19 @@ function lejrToast(t){
    Er lageret fuldt, holder bygningen pause (det, den ville have lavet imens, går tabt). Starttiden gemmes i c.prod. */
 const PRODUKTION = { savvaerk:{ m:"rafter" }, reberbane:{ m:"reb" } }, PROD_INT = 3600e3;
 function prodRate(niv){ return 1 + Math.floor((niv||1)/25); }
-function prodFelt(c, id){ const f=lejrFelter(c); const i=Object.keys(f).map(Number).find(j=>f[j]===id); return i==null || (underByg(c,i) && !c.lejrOpg[i]) ? null : i; }
+// De produktionsbygninger, der er færdigbyggede (en bygning, der opgraderes, producerer videre)
+function prodFelter(c){ const f=lejrFelter(c); return Object.keys(f).map(Number).filter(i=>PRODUKTION[f[i]] && !(underByg(c,i) && !c.lejrOpg[i])); }
 function produktion(c){
-  const nu=Date.now(), ud=[]; c.prod=c.prod||{};
-  for(const [id,P] of Object.entries(PRODUKTION)){
-    const i=prodFelt(c,id);
-    if(i==null){ delete c.prod[id]; continue; }
-    if(!c.prod[id]){ const t=(c.lejrTid||{})[i]; c.prod[id] = t && t<nu ? t : nu; continue; }   // starter, når bygningen er færdig
-    const timer=Math.floor((nu-c.prod[id])/PROD_INT); if(timer<=0) continue;
-    c.prod[id] += timer*PROD_INT;
+  const nu=Date.now(), ud=[], f=lejrFelter(c); c.prod=c.prod||{};
+  // Gemte spil: starttiden lå før under bygningens id (der kunne kun være én) – den flyttes til bygningens felt
+  Object.keys(PRODUKTION).forEach(id=>{ if(c.prod[id]==null) return; const i=Object.keys(f).map(Number).find(j=>f[j]===id); if(i!=null && c.prod[i]==null) c.prod[i]=c.prod[id]; delete c.prod[id]; });
+  const aktive=prodFelter(c);
+  Object.keys(c.prod).forEach(k=>{ if(!aktive.includes(+k)) delete c.prod[k]; });
+  for(const i of aktive){
+    const P=PRODUKTION[f[i]];
+    if(!c.prod[i]){ const t=(c.lejrTid||{})[i]; c.prod[i] = t && t<nu ? t : nu; continue; }   // starter, når bygningen er færdig
+    const timer=Math.floor((nu-c.prod[i])/PROD_INT); if(timer<=0) continue;
+    c.prod[i] += timer*PROD_INT;
     const plads=lagerPlads(c,P.m)-(lager(c)[P.m]||0), n=Math.min(timer*prodRate(lejrNiv(c,i)), Math.max(0,plads));
     if(n>0){ brugMat(c,{ [P.m]:n },1); ud.push({ i, m:P.m, n }); }
   }
@@ -7945,8 +7958,8 @@ function prodSvaev(liste){ liste.forEach(x=>lejrSvaev(x.i, `+${x.n} ${matIkon(x.
 function prodStatus(c, i){
   const id=c.lejr[i], P=PRODUKTION[id]; if(!P) return "";
   const rate=prodRate(lejrNiv(c,i)), mn=rate===1?MAT[P.m]:MATFLERTAL[P.m];
-  if(prodFelt(c,id)==null) return `<p class="sovekap">⚙️ Når ${BYGID[id].navn.toLowerCase()} er bygget, laver den ${rate} ${mn} i timen.</p>`;
-  const rest=PROD_INT-((Date.now()-(c.prod&&c.prod[id]||Date.now()))%PROD_INT);
+  if(!prodFelter(c).includes(i)) return `<p class="sovekap">⚙️ Når ${BYGID[id].navn.toLowerCase()} er bygget, laver den ${rate} ${mn} i timen.</p>`;
+  const rest=PROD_INT-((Date.now()-(c.prod&&c.prod[i]||Date.now()))%PROD_INT);
   return `<p class="sovekap">⚙️ Laver <b>${rate} ${mn} i timen</b> af sig selv.${lagerFuldt(c,P.m)?` <br>📦 Lageret er fuldt – den holder pause, til der er plads.`:` Næste om <b>${Math.max(1,Math.ceil(rest/60000))} min</b>.`}</p>`;
 }
 // En lille tekst, der svæver op fra et felt på lejrpladsen (fx +2 mad, når man plukker bær). Skærmlæsere får en kort besked.
@@ -7963,7 +7976,7 @@ function vaelgByg(id){
   const c=cur(), b=BYGID[id];
   if(!harLejrNiv(c,b)){ lejrToast(`🔒 ${b.navn} låses op, når lejrpladsen når niveau ${b.lejrniv} (${lejrTrin(b.lejrniv).navn}). Tryk på skiltet øverst for at se, hvordan du kommer videre.`); return; }
   if(!harKrav(c,b)){ lejrToast(`🔒 ${b.navn} kræver mærket <b>${kravTekst(b)}</b>. Tag prøven under Mærker.`); return; }
-  if(b.en && Object.values(lejrFelter(c)).includes(b.id)){ lejrToast(`${b.navn} er allerede bygget på lejrpladsen. Opgrader den i stedet.`); return; }
+  if(bygFuld(c,b)){ lejrToast(bygFuldTekst(c,b)); return; }
   const forStor = Object.entries(BYGMAT[b.id]||{}).find(([m,n])=>lagerPlads(c,m)<n);
   if(forStor){ lejrToast(`Lageret har kun plads til ${lagerPlads(c,forStor[0])} ${MATFLERTAL[forStor[0]]}, men ${b.navn} kræver ${forStor[1]}. ${lagerTip(forStor[0])}`); return; }
   if(lejrPoint(c) < b.pris){ lejrToast(`Du mangler ${b.pris-lejrPoint(c)} point til ${b.navn}. Svar på flere spørgsmål!`); return; }
@@ -7982,7 +7995,7 @@ function bygInfoHTML(c, b){
   let status;
   if(!harLejrNiv(c,b)) status=`🔒 Låses op på lejrniveau ${b.lejrniv} (${lejrTrin(b.lejrniv).navn}).`;
   else if(!harKrav(c,b)) status=`🔒 Kræver mærket ${kravTekst(b)}.`;
-  else if(b.en && Object.values(lejrFelter(c)).includes(b.id)) status=`✓ Står allerede på lejrpladsen – du kan kun have én. Tryk på den på pladsen for at opgradere den.`;
+  else if(bygFuld(c,b)) status = b.en ? `✓ Står allerede på lejrpladsen – du kan kun have én. Tryk på den på pladsen for at opgradere den.` : `✓ ${bygFuldTekst(c,b)}`;
   else { const mangler=[]; if(lejrPoint(c)<b.pris) mangler.push(`${b.pris-lejrPoint(c)} point`); if(!harMat(c,mat)) mangler.push(matTekst(manglerMat(c,mat)));
     status = mangler.length ? `Du mangler ${mangler.join(" og ")}.` : `✅ Du kan bygge den nu.`; }
   // Pris og byggeri
@@ -7999,6 +8012,7 @@ function bygInfoHTML(c, b){
   if(fl>1) sted.push(li("📐",`Fylder ${strTekst(b)}.`));
   if(b.id==="svaevebane") sted.push(li("📐","Fylder ét felt, men wiren går hen over 3 felter."));
   if(b.en) sted.push(li("1️⃣","Du kan kun have én på lejrpladsen."));
+  if(b.maksNiv) sted.push(li("🔢",`Du kan have én fra lejrniveau ${b.maksNiv[0]} og én mere på lejrniveau ${ogListe(b.maksNiv.slice(1).map(String)).replace(" eller "," og ")} – nu højst ${bygMaks(c,b)}, og du har ${bygAntal(c,b)}.`));
   regelLinjer(b.id).filter(t=>!t.startsWith("Røde felter")).forEach(t=>sted.push(li("📏",t)));
   // Det kan den
   const kan=[];
@@ -8023,7 +8037,7 @@ function bygInfoHTML(c, b){
 }
 function visBygInfo(id){
   const c=cur(), b=BYGID[id]; if(!b) return;
-  const bygget=b.en && Object.values(lejrFelter(c)).includes(b.id);
+  const bygget=bygFuld(c,b) && bygAntal(c,b)>0;
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal byginfo"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
     ${bygInfoHTML(c,b)}
     ${harNivEffekt(b)?`<button class="btn secondary" id="m-niv">📈 Se, hvad hvert niveau giver</button>`:""}
@@ -8048,7 +8062,7 @@ function flytFelt(c,fra,til){
   f[til]=f[fra]; delete f[fra];
   if(c.lejrTid[fra]){ c.lejrTid[til]=c.lejrTid[fra]; delete c.lejrTid[fra]; }
   if(c.telte[fra]){ c.telte[til]=c.telte[fra]; delete c.telte[fra]; }
-  ["lejrNiv","lejrOpg","lejrInv","lejrRek","traer"].forEach(k=>{ if(c[k] && c[k][fra]!=null){ c[k][til]=c[k][fra]; delete c[k][fra]; } });
+  ["lejrNiv","lejrOpg","lejrInv","lejrRek","traer","prod"].forEach(k=>{ if(c[k] && c[k][fra]!=null){ c[k][til]=c[k][fra]; delete c[k][fra]; } });
 }
 function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.ting||{}).reduce((s,id)=>s+(INDBOID[id]?INDBOID[id].pris:0),0) : 0; }
 
@@ -9850,7 +9864,7 @@ const GAMMEL = { braende:["Brændestabel",20,{braende:4}], sten:["Sten",10], sva
   morselampe:["Morselampe",50], semaforpost:["Semaforpost",120,{rafter:1,reb:1}], stjernetaarn:["Stjernetårn",280,{rafter:8,reb:3}] };
 const FJERNET = ["braende","sten","svampe","blaabaer","hjort","raev"];
 const FLET = { opost:"vejviser", vejrhane:"vejrstation", baare:"forstehjalp", hjertestarter:"forstehjalp", liljeskilt:"port", morselampe:"signalpost", semaforpost:"signalpost", stjernetaarn:"kikkert" };
-const FELT_DATA = ["lejr","lejrTid","telte","lejrNiv","lejrOpg","lejrInv","lejrRek","traer","vild"];
+const FELT_DATA = ["lejr","lejrTid","telte","lejrNiv","lejrOpg","lejrInv","lejrRek","traer","vild","prod"];
 function sletFelt(c,i){ FELT_DATA.forEach(k=>{ if(c[k]) delete c[k][i]; }); }
 /* ---------- Materielvognen ----------
    Et lager uden for pladsen. Bygninger, der ikke kan stå på pladsen (ikke plads, forkert felt eller en brudt regel),
