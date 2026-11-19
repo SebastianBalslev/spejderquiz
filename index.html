@@ -7784,14 +7784,23 @@ function stierHTML(c, str){
   const af=ids=>Object.keys(f).map(Number).filter(i=>ids.includes(f[i]) && land.has(i) && !(underByg(c,i) && !c.lejrOpg[i]));
   const midt=i=>{ const s=bygStr(BYGID[f[i]]); return [feltK(i)+s.k/2, feltR(i)+s.r/2+.18]; };
   const afst=(a,b)=>{ const [x1,y1]=midt(a), [x2,y2]=Array.isArray(b)?b:midt(b); return (x1-x2)**2+(y1-y2)**2; };
-  // Korteste vej mellem to felter over land (8 retninger – på skrå kun, hvis ingen af hjørnerne er vand)
+  // Korteste vej mellem to bygninger over land, uden om andre bygninger (Dijkstra). Et felt med en anden bygning koster meget,
+  // så stien kun går igennem en bygning, hvis der slet ingen anden vej er. På skrå kun, hvis ingen af hjørnerne er vand eller en bygning.
+  const dk=lejrDaekket(c);
   const vej=(fra,til)=>{
-    const forr=new Map([[fra,null]]), kø=[fra];
-    while(kø.length){ const i=kø.shift(); if(i===til) break; const r=feltR(i), k=feltK(i);
-      for(const [dr,dk] of [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]){ const rr=r+dr, kk=k+dk;
+    const egne=new Set([fra,til].flatMap(x=>dk.has(x) ? [...dk.entries()].filter(([,a])=>a===dk.get(x)).map(([j])=>j) : [x]));
+    const optaget=j=>dk.has(j) && !egne.has(j), pris=j=>optaget(j) ? 12 : 1;
+    const dist=new Map([[fra,0]]), forr=new Map([[fra,null]]), aaben=new Set([fra]), faerdig=new Set();
+    while(aaben.size){
+      let i=null; for(const x of aaben) if(i==null || dist.get(x)<dist.get(i)) i=x;
+      aaben.delete(i); faerdig.add(i); if(i===til) break;
+      const r=feltR(i), k=feltK(i);
+      for(const [dr,dc] of [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]){ const rr=r+dr, kk=k+dc;
         if(rr<0||kk<0||rr>=str.r||kk>=str.k) continue; const j=felt(rr,kk);
-        if(forr.has(j) || !land.has(j) || (dr && dk && (!land.has(felt(r,kk)) || !land.has(felt(rr,k))))) continue;
-        forr.set(j,i); kø.push(j); } }
+        if(faerdig.has(j) || !land.has(j)) continue;
+        if(dr && dc){ const h1=felt(r,kk), h2=felt(rr,k); if(!land.has(h1) || !land.has(h2) || optaget(h1) || optaget(h2)) continue; }
+        const ny=dist.get(i) + pris(j)*(dr&&dc ? 1.41 : 1);
+        if(!dist.has(j) || ny<dist.get(j)){ dist.set(j,ny); forr.set(j,i); aaben.add(j); } } }
     if(!forr.has(til)) return null; const ud=[]; for(let i=til;i!=null;i=forr.get(i)) ud.unshift(i); return ud; };
   const par=[], set=new Set(), tilfoej=(a,b,slut)=>{ const n=a<b?a+":"+b:b+":"+a; if(a===b || set.has(n)) return; set.add(n); par.push([a,b,slut]); };
   for(const t of af(STI_TELTE)) for(const grp of [BAAL_IDS,["latrin"],["koekken"]]){
