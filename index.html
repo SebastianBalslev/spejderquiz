@@ -7778,7 +7778,7 @@ function lysHTML(c, str){
 }
 /* Trampestier: slidte stier af trådt græs fra hvert telt til nærmeste bål, latrin og køkken – og fra lejrporten ind til midten.
    Beregnes ud fra placeringen, hver gang pladsen tegnes. Stien går uden om vandet (korteste vej over landfelterne, også på skrå). */
-const STI_TELTE = ["telt","patruljetelt","jamboree"];
+const STI_TELTE = ["telt","patruljetelt","jamboree","hytte"];   // overnatningsbygninger, der får stier til bål, latrin og køkken
 function stierHTML(c, str){
   const f=lejrFelter(c), alle=lejrAlleFelter(c), land=new Set(alle.filter(i=>!erVand(i,c)));
   const af=ids=>Object.keys(f).map(Number).filter(i=>ids.includes(f[i]) && land.has(i) && !(underByg(c,i) && !c.lejrOpg[i]));
