@@ -7270,7 +7270,7 @@ const BYG = [
 
   { id:"pindsvinehus",navn:"Pindsvinehus",      svg:"pindsvinehus", ikon:"🦔", pris:40, lejrniv:10,  krav:["dyr",1],        besk:"Et lunt skjul af grene og blade til vinterhiet." },
 
-  { id:"kongeeg",     navn:"Kæmpeeg",           svg:"eg",       pris:220, lejrniv:26, krav:["planter",3],     besk:"Et ældgammelt egetræ med agern." },
+  { id:"kongeeg",     navn:"Kæmpeeg",           svg:"eg",       pris:220, lejrniv:26, krav:["planter",3],     besk:"Et ældgammelt egetræ med agern. Det kan fældes og giver 2 løvstammer – 1 mere end et løvtræ – men er 40 minutter om at gro op igen." },
 
   { id:"vejviser",    navn:"Vejviser",          svg:"vejviser", pris:90, lejrniv:12,  krav:["orientering",2], besk:"Viser vej til sø, bål og telt – med en orienteringspost, I kan finde med kort og kompas." },
   { id:"kompasrose",  navn:"Kompasrose",        svg:"kompas",   pris:200, lejrniv:18, krav:["orientering",3], besk:"Stor kompasrose lagt med sten." },
@@ -8041,7 +8041,7 @@ function bygInfoHTML(c, b){
   // Job, der hører til bygningen: dem, der kan startes herfra, og dem, der kræver den (fx kløvning på huggepladsen)
   Object.keys(JOB).filter(k=>BYG_JOB[b.id]===k || JOB[k].bygning===b.id || (JOB_STED[k] && JOB_STED[k][0]===b.id && !traeType(b.id))).forEach(k=>{ const j=JOB[k];
     kan.push(li(j.ikon,`Job: <b>${j.navn}</b> – ${j.bruger?`${matTekst(j.bruger)} → `:""}${matTekst(jobGiver(c,k))}${BYG_JOB[b.id]===k?". Kan startes direkte herfra.":"."}`)); });
-  if(traeType(b.id)){ const T=TRAETYPE[traeType(b.id)]; kan.push(li("🪓",`Kan fældes. ${T.besk} Træet gror selv op igen, og højere niveau giver flere stammer.`)); }
+  if(traeType(b.id)){ const T=TRAETYPE[traeType(b.id)]; kan.push(li("🪓",`Kan fældes. ${T.besk} Træet gror selv op igen på ${tidTekst(traeVaekst(b.id))}, og højere niveau giver flere stammer.`)); }
   if(b.sove) kan.push(li("👥",`${b.sove.basis} sovepladser – ${b.sove.pr5} mere for hvert 5. niveau.`));
   const eff=nivEffekt(b,1); if(eff) kan.push(li("📦",eff.charAt(0).toUpperCase()+eff.slice(1)+" (på niveau 1)."));
   if(TELT_IDS.includes(b.id)) kan.push(li("🚪","Du kan gå ind og indrette den."));
@@ -9117,7 +9117,7 @@ function jobGiver(c, jid, felt){
   // Rebslåningsmaskinen: +1 utaklet reb for hvert 5. niveau
   if(jid==="sno") g.rebraa += Math.floor(bygNiv(c,"rebmaskine")/5);
   // Stammer pr. træ afhænger kun af det træ, der fældes
-  if(TRAE_BYG[jid]){ const m=Object.keys(g)[0], f = felt!=null ? felt : ledigtTrae(c, JOB[jid].trae); g[m] = stammerPrTrae(f>=0 ? lejrNiv(c,f) : 1); }
+  if(TRAE_BYG[jid]){ const m=Object.keys(g)[0], f = felt!=null ? felt : ledigtTrae(c, JOB[jid].trae); g[m] = f>=0 ? traeStammer(c,f) : stammerPrTrae(1); }
   return g;
 }
 // Hvad et job bruger: med en rebslåningsmaskine skal der kun 2 fibre til at sno et reb
@@ -9133,7 +9133,11 @@ function lagerEjer(c){ return minPatrulje(c) || c; }
 function lager(c){ const o=lagerEjer(c); return o.lager || (o.lager={}); }
 // Træer på lejrpladsen: Grantræ og Løvtræ er bygninger, der fældes på lejrpladsen og selv vokser op igen.
 // Hvert træs niveau gælder kun for det træ. traer[felt] = { vokser, rek } mens træet vokser op.
-function traeType(id){ return id==="gran" ? "gran" : id==="loevtrae" ? "loev" : null; }
+function traeType(id){ return id==="gran" ? "gran" : id==="loevtrae" || id==="kongeeg" ? "loev" : null; }
+// Træer, der giver flere stammer og gror langsommere end de almindelige: kæmpeegen giver 1 løvstamme mere og er 40 minutter om at gro op igen
+const TRAE_SAER = { kongeeg:{ ekstra:1, vaekst:40*60 } };
+function traeStammer(c, i){ const id=lejrFelter(c)[i]; return stammerPrTrae(i>=0 ? lejrNiv(c,i) : 1) + ((TRAE_SAER[id]||{}).ekstra||0); }
+function traeVaekst(id){ return (TRAE_SAER[id]||{}).vaekst || GENVAEKST; }
 function traeData(c){ return c.traer || (c.traer={}); }
 function traeVokser(c,i){ const x=traeData(c)[i]; return x && x.vokser>Date.now() ? x : null; }
 function traeFaeldes(c,i){ return arbejdere(c).find(m=>m.job && m.job.felt===i); }
@@ -9183,7 +9187,7 @@ function tjekArbejde(c){
       if(m.job.id==="facilitere") c.aktXP = (c.aktXP||0) + Math.max(1, bygNiv(c,"aktivitetsplads"));
       if(j.hold && m.job.point && m.job.id==="flaadetur") giverSaerMaerke(c, "flaade24");
       // Træet vokser automatisk op igen på samme felt, når det er fældet
-      if(m.job.felt!=null && traeType(lejrFelter(c)[m.job.felt])) tr[m.job.felt] = { vokser: m.job.slut + GENVAEKST*1000 };
+      if(m.job.felt!=null && traeType(lejrFelter(c)[m.job.felt])) tr[m.job.felt] = { vokser: m.job.slut + traeVaekst(lejrFelter(c)[m.job.felt])*1000 };
       beskeder.push(`${esc(m.navn)}: ${j.navn.toLowerCase()} – færdig! +${m.job.point ? m.job.point+" point" : matTekst(giver)}`);
       delete m.job;
     }
@@ -9505,6 +9509,7 @@ function nivEffekt(b, L){
   if(PRODUKTION[b.id]){ const m=PRODUKTION[b.id].m, n=prodRate(L); t.push(`${n} ${n===1?MAT[m]:MATFLERTAL[m]} i timen`); }
   if(b.id==="huggeplads") t.push(`${JOB.kloev.giver.braende+Math.floor((L-1)/2)} brænde pr. kløvning · ${Math.min(50,(L-1)*2)} % hurtigere`);
   if(b.id==="gran") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"granstamme":"granstammer"} pr. fældet grantræ`);
+  if(b.id==="kongeeg") t.push(`${stammerPrTrae(L)+TRAE_SAER.kongeeg.ekstra} løvstammer pr. fældet kæmpeeg`);
   if(b.id==="loevtrae") t.push(`${stammerPrTrae(L)} ${stammerPrTrae(L)===1?"løvstamme":"løvstammer"} pr. fældet løvtræ`);
   if(b.id==="takling") t.push(`${JOB.takle.giver.reb+1+AFGREN_NIV.filter(x=>L>=x).length} reb pr. taklet tovværk`);
   if(b.id==="afgrening") t.push(`${JOB.afgren.giver.rafter+1+AFGREN_NIV.filter(x=>L>=x).length} rafter pr. granstamme`);
