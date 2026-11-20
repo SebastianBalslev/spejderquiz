@@ -490,6 +490,10 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .celle .ting{position:absolute;inset:0;display:grid;place-items:center;z-index:1;pointer-events:none}
 .celle .ting>svg{width:90%;height:90%}
 .celle.hoej .ting{transform:scale(1.32);transform-origin:50% 94%}
+/* Skrå udsigt: jorden trykkes sammen (rækkerne er lavere end brede), men tingene står op i fuld højde, stillet på feltets bund */
+.lejrmap.skraa .celle{aspect-ratio:1/.7}.lejrmap.skraa .celle.stor{aspect-ratio:auto}
+.lejrmap.skraa .celle .ting{top:auto;bottom:2%;height:auto;aspect-ratio:var(--ak,1)/var(--ar,1)}
+.lejrmap.skraa .celle .skygge{bottom:2%;height:26%}
 .celle .skygge{position:absolute;left:16%;right:16%;bottom:5%;height:20%;border-radius:50%;background:radial-gradient(closest-side,rgba(28,48,12,.42),rgba(28,48,12,0));z-index:0;pointer-events:none}
 .celle.hoej .skygge{left:10%;right:10%;bottom:3%;height:22%}
 .celle.vand .skygge{background:radial-gradient(closest-side,rgba(10,50,80,.35),rgba(10,50,80,0))}
@@ -7014,7 +7018,7 @@ function infoBox(html){
 }
 
 /* ---------- Indstillinger (gemmes pr. spejder) ---------- */
-const INDST = { lyd:true, stor:false, oplaes:false, doegn:true };
+const INDST = { lyd:true, stor:false, oplaes:false, doegn:true, skraa:false };
 function indst(c){ return { ...INDST, ...(c && c.indst || {}) }; }
 const kanOplaese = () => "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 // Indstillinger: udseende, lyd/tekst/oplæsning og backup
@@ -7035,7 +7039,8 @@ function indstKort(c){
     ${t("ind-stor", "🔠 Større tekst", "Gør spørgsmål og svar lettere at læse", v.stor)}
     ${t("ind-oplaes", "🗣️ Læs højt", kanOplaese() ? "Telefonen læser spørgsmål og svar op på dansk" : "Din browser kan desværre ikke læse op", v.oplaes && kanOplaese(), !kanOplaese())}</div>
     <div class="card indst"><b>⛺ Lejrpladsen</b>
-    ${t("ind-doegn", "🌗 Dag og nat", "Lejrpladsen følger telefonens ur: morgentåge, aftenlys og nat med stjerner. Slå fra, så er det altid dag", v.doegn)}</div>`;
+    ${t("ind-doegn", "🌗 Dag og nat", "Lejrpladsen følger telefonens ur: morgentåge, aftenlys og nat med stjerner. Slå fra, så er det altid dag", v.doegn)}
+    ${t("ind-skraa", "🎥 Skrå udsigt", "Se lejrpladsen lidt skråt forfra, så bygninger og træer står op, og de forreste står foran de bagerste", v.skraa)}</div>`;
 }
 function saetIndst(k, paa){
   const c = cur(); if(!c) return;
@@ -7693,7 +7698,7 @@ function scrLejr(){
     h += `<div class="card flytbar"><b>✋ Flyt rundt på lejrpladsen</b><small>${lejrFlyt.valgt!=null ? `Tryk på et felt med hvid ramme for at flytte ${BYGID[felter[lejrFlyt.valgt]].navn.toLowerCase()} – eller på en anden bygning af samme størrelse for at bytte plads. Tryk på den igen for at lægge den.` : lejrFlyt.vand!=null ? "Tryk på et græsfelt med hvid ramme for at flytte vandet dertil. Tryk på vandet igen for at lægge det." : "Tryk på en bygning – eller et vandfelt – for at tage den op."}</small>
       ${brud.length ? `<small class="flytbrud">🚫 Ret først: ${brud.join(" · ")}</small>` : `<small class="flytok">${lejrFlyt.log ? `${lejrFlyt.log} ${lejrFlyt.log===1?"flytning":"flytninger"} – tryk »Gem«, når du er færdig.` : "Intet er flyttet endnu."}</small>`}</div>`; }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
-  h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
+  h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}${indst(c).skraa?" skraa":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${stierHTML(c, str)}${soeHTML(c, str)}
     ${lejrFlyt||!Object.keys(felter).length ? "" : `<button class="flytknap" data-a="flytstart" aria-label="Flyt rundt på bygningerne">✋<span>Flyt rundt</span></button>`}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
@@ -7723,7 +7728,7 @@ function scrLejr(){
     if(liv.vaj.has(i)) cls += " vaj";
     const livHTML = (liv.glod.has(i)?`<i class="glod lev" aria-hidden="true"></i>`:"") + (liv.roeg.has(i)?`<span class="roeg lev" aria-hidden="true"><i></i><i></i><i></i></span>`:"");
     // Rækkerne tegnes oppefra og ned: en række længere nede ligger over rækken ovenover, så høje ting kan rage op over den
-    h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
+    h += `<button class="celle ${cls}" style="grid-row:${r+1} / span ${st.r};grid-column:${k+1} / span ${st.k};z-index:${10+2*r+(wire?1:0)};--ak:${wire?3:st.k};--ar:${st.r}" data-a="celle" data-i="${i}" aria-label="${b?b.navn+(niv>1?` niveau ${niv}`:"")+(bygger?" (bygges)":voks?" (vokser op)":""):vild?`Vilde ${vild.navn} – tryk for at plukke`:erVand(i)?"Sø":"Græs"}">${b?`<i class="skygge" aria-hidden="true"></i><span class="ting">${voks?UNG_SVG:bygIkon(b,niv,wire||(st.k>st.r?"bred":""))}</span>${livHTML}`:vild?`<span class="vild">${vild.ikon}</span>`:""}${faeld?`<span class="okse">${OKSE_SVG}</span>`:""}${voks?`<span class="tid" data-voks="${i}">${TID_SVG.voks} ${fmtTid(voks.vokser-Date.now())}</span>`:""}${niv>1&&!bygger?`<span class="nivtal t${nivTrin(niv)}">${niv}</span>`:""}${bygger?`${STILLADS}<span class="tid" data-tid="${i}">${c.lejrOpg[i]?TID_SVG.opg:TID_SVG.byg} ${fmtTid(restTid(c,i))}</span>`:""}</button>`;
   }
   h += (lejrFlyt ? "" : besoegHTML(c) + spejdereHTML(c, str)) + lysHTML(c, str);
   if((c.badges.fugle||0)>=3 && lejrDoegn()!=="nat") h += `<div class="fugle lev" aria-hidden="true">${[["#2b3a4a",12,0],["#f4f1e6",38,-5],["#4a5a7a",62,-9]].map(([f,y,d])=>`<span style="top:${y}%;animation-delay:${d}s">${FUGL_SVG(f)}</span>`).join("")}</div>`;
@@ -12050,7 +12055,7 @@ app.addEventListener("input", ev => { if(ev.target.id==="navn" && draft){ draft.
   if(ev.target.id==="morseinput" && mtr) mtr.svar=ev.target.value; });
 app.addEventListener("change", ev => {
   if(ev.target.id==="timer"){ const c=cur(); c.timer=ev.target.checked; save(); }
-  const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes", "ind-doegn":"doegn" }[ev.target.id];
+  const k = { "ind-lyd":"lyd", "ind-stor":"stor", "ind-oplaes":"oplaes", "ind-doegn":"doegn", "ind-skraa":"skraa" }[ev.target.id];
   if(k) saetIndst(k, ev.target.checked);
 });
 
