@@ -568,6 +568,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 #msokse{transform-box:view-box;transform-origin:232px 54px;transform:rotate(-38deg);transition:transform .14s ease-in}#msokse.hug{transform:rotate(0)}
 #msstk .hl,#msstk .hr{transform-box:fill-box;transform-origin:50% 100%;transition:transform .35s ease-out}#msstk.kloev .hl{transform:translate(-16px,6px) rotate(-14deg)}#msstk.kloev .hr{transform:translate(16px,6px) rotate(14deg)}
 #msstk.skaev{animation:msryst .3s}
+.mspadl .btn{min-height:72px;font-size:18px}#msbaad.bump{animation:msblink .32s}@keyframes msblink{50%{opacity:.35}}.msdyr{cursor:pointer}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -12125,7 +12126,7 @@ function samlStatus(c, saml){ const S=SAMLINGER[saml], alle=S.arter(), har=alle.
 function visSamling(saml){
   const c=cur(), S=SAMLINGER[saml]; if(!S) return; const har=c[saml]||{};
   modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
-    <h2>${S.ikon} ${S.navn}</h2><p class="muted psmall">${S.besk} ${c.samlingXP && c.samlingXP[saml] ? "✅ Komplet – lejr-XP er givet." : `Komplet samling: +${S.xp} lejr-XP.`}</p>
+    <h2>${S.ikon} ${S.navn}</h2><p class="muted psmall" style="text-align:left">${S.besk} ${c.samlingXP && c.samlingXP[saml] ? "✅ Komplet – lejr-XP er givet." : `Komplet samling: +${S.xp} lejr-XP.`}</p>
     <div class="samling">${S.arter().map(x=>har[x.id] ? `<div class="samlpost"><span class="samlik">${x.ikon}</span><span><b>${esc(x.navn)}</b><small>${esc(x.fakta||"")}</small></span></div>`
       : `<div class="samlpost ukendt"><span class="samlik">❓</span><span><b>Ikke fundet endnu</b><small>${esc(x.hint||"")}</small></span></div>`).join("")}</div></div></div>`;
   document.getElementById("m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
@@ -12447,6 +12448,121 @@ function hugSVG(st, forside){
       <g id="msmark" transform="translate(${40+240*st.pos} 0)"><path d="M0 12 V40" stroke="#2a2a1f" stroke-width="3"/><path d="M-6 44 H6 L0 37Z" fill="#2a2a1f"/></g>`}
     <g id="msfig">${st.fig.map((f,k)=>hugFigHTML(f,k)).join("")}</g>
     ${st.del==="cirkel" && !forside ? `<text x="160" y="232" text-anchor="middle" font-size="13" font-weight="800" fill="#7a1a1a">Blodcirklen</text>` : ""}</svg>`;
+}
+
+/* ---------- Naturdagbogen: dyr og fugle, man har set i minispillene (c.dagbog) ----------
+   sted: hvor dyret kan ses (soe = fra kanoen, taarn = fugletårnet, fugl = fuglekassen, have = pindsvinehuset)
+   tid: "nat" = kun når det er mørkt efter telefonens ur, "dag" = kun om dagen. aar: årstider, hvor det kan ses (ellers hele året) */
+const DAGBOG = [
+  { id:"knopsvane", ikon:"🦢", navn:"Knopsvane", sted:["soe","taarn"], fakta:"Danmarks nationalfugl. Den kan veje over 10 kg og hvæser, hvis man kommer for tæt på ungerne." },
+  { id:"graaand", ikon:"🦆", navn:"Gråand", sted:["soe","taarn"], fakta:"Hannen har et grønt, skinnende hoved. Hunnen er brunspættet, så hun er godt skjult på reden." },
+  { id:"fiskehejre", ikon:"🪶", navn:"Fiskehejre", sted:["soe","taarn"], fakta:"Står musestille i vandkanten og spidder fisk og frøer med sit lange næb." },
+  { id:"isfugl", ikon:"🐦", navn:"Isfugl", sted:["soe","taarn"], tid:"dag", fakta:"Lysende blå og orange. Den dykker lodret ned efter små fisk fra en gren over vandet." },
+  { id:"skarv", ikon:"🐦", navn:"Skarv", sted:["taarn"], fakta:"Sidder med udbredte vinger for at tørre dem efter dykket – fjerene er ikke vandtætte." },
+  { id:"musvaage", ikon:"🦅", navn:"Musvåge", sted:["taarn"], tid:"dag", fakta:"Danmarks almindeligste rovfugl. Den svæver i cirkler og siger »pi-jæh«." },
+  { id:"froe", ikon:"🐸", navn:"Grøn frø", sted:["soe"], aar:["foraar","sommer"], fakta:"Frøer kan trække vejret gennem huden og går i dvale i mudderet om vinteren." },
+  { id:"gedde", ikon:"🐟", navn:"Gedde", sted:["soe"], fakta:"Et rovdyr i søen, der ligger stille mellem sivene og snupper fisk med et lynhurtigt ryk." },
+  { id:"odder", ikon:"🦦", navn:"Odder", sted:["soe"], tid:"nat", fakta:"Odderen er fredet og jager mest om natten. Dens tætte pels holder den tør og varm." },
+  { id:"baever", ikon:"🦫", navn:"Bæver", sted:["soe"], tid:"nat", fakta:"Bæveren fælder træer med tænderne og bygger dæmninger. Den er sat ud igen i Danmark." },
+  { id:"musvit", ikon:"🐦", navn:"Musvit", sted:["fugl"], fakta:"Gul bug med sort slips. Flytter tit ind i fuglekasser med et hul på 3 cm." },
+  { id:"blaamejse", ikon:"🐦", navn:"Blåmejse", sted:["fugl"], fakta:"Mindre end musvitten og med blå kalot. Den kan hænge med hovedet nedad og pille insekter." },
+  { id:"roedhals", ikon:"🐦", navn:"Rødhals", sted:["fugl","have"], fakta:"Synger også om vinteren – og følger gerne efter, når man graver, for at finde orme." },
+  { id:"solsort", ikon:"🐦", navn:"Solsort", sted:["fugl","have"], fakta:"Hannen er kulsort med gult næb. Den synger fra tagrygningen tidligt om morgenen." },
+  { id:"flagspaette", ikon:"🐦", navn:"Stor flagspætte", sted:["fugl"], tid:"dag", fakta:"Trommer på træstammer for at markere sit område og hakker huller efter insekter." },
+  { id:"natugle", ikon:"🦉", navn:"Natugle", sted:["fugl"], tid:"nat", fakta:"Siger »huu-hu-huuu« om natten. Den kan dreje hovedet næsten hele vejen rundt." },
+  { id:"flagermus", ikon:"🦇", navn:"Flagermus", sted:["fugl","have"], tid:"nat", aar:["foraar","sommer","efteraar"], fakta:"Finder vej i mørket med ekko – den kan spise tusindvis af myg på én nat." },
+  { id:"pindsvin", ikon:"🦔", navn:"Pindsvin", sted:["have"], tid:"nat", aar:["foraar","sommer","efteraar"], fakta:"Pindsvinet er fredet og går i vinterhi. Giv det aldrig mælk – kun vand." },
+  { id:"mus", ikon:"🐭", navn:"Skovmus", sted:["have"], fakta:"Skovmusen har store øjne og ører og kan springe langt på bagbenene." },
+  { id:"snegl", ikon:"🐌", navn:"Vinbjergsnegl", sted:["have"], aar:["foraar","sommer","efteraar"], fakta:"Danmarks største landsnegl. Den lukker sit hus med et kalklåg om vinteren." },
+  { id:"mariehoene", ikon:"🐞", navn:"Mariehøne", sted:["have"], aar:["foraar","sommer"], tid:"dag", fakta:"En mariehøne kan spise over 50 bladlus om dagen – en god ven i haven." },
+  { id:"graevling", ikon:"🦡", navn:"Grævling", sted:["have"], tid:"nat", fakta:"Bor i store grave med mange gange, som kan være hundreder af år gamle." },
+  { id:"raev", ikon:"🦊", navn:"Ræv", sted:["have","soe"], tid:"nat", fakta:"Ræven hører en mus under sneen og springer ned på den i et højt hop." },
+  { id:"egern", ikon:"🐿️", navn:"Egern", sted:["have","fugl"], tid:"dag", fakta:"Gemmer nødder og agern om efteråret – og glemmer nogle, som så bliver til nye træer." },
+  { id:"raadyr", ikon:"🦌", navn:"Rådyr", sted:["soe","have"], fakta:"Rålammet har hvide pletter og ligger stille i græsset, mens moren finder mad." },
+  { id:"sommerfugl", ikon:"🦋", navn:"Dagpåfugleøje", sted:["have"], aar:["sommer"], tid:"dag", fakta:"Øjepletterne på vingerne skræmmer fugle væk. Den overvintrer i skure og hulrum." },
+  { id:"humlebi", ikon:"🐝", navn:"Humlebi", sted:["have"], aar:["foraar","sommer"], tid:"dag", fakta:"Humlebien kan flyve, når det er koldt – den varmer sig op ved at ryste flyvemusklerne." },
+];
+SAMLINGER.dagbog = { navn:"Naturdagbogen", ikon:"📔", xp:300, arter:()=>DAGBOG,
+  besk:"Dyr og fugle, du har set fra kanoen og tømmerflåden, ved fuglekassen, i fugletårnet og ved pindsvinehuset. Nogle ses kun om natten (efter telefonens ur) eller i bestemte årstider." };
+DAGBOG.forEach(x=>{ const st={ soe:"fra kanoen", taarn:"fra fugletårnet", fugl:"ved fuglekassen", have:"ved pindsvinehuset" };
+  x.hint = `Ses ${x.sted.map(s=>st[s]).join(" eller ")}${x.tid==="nat"?" · om natten":x.tid==="dag"?" · om dagen":""}${x.aar?" · "+x.aar.map(a=>({foraar:"forår",sommer:"sommer",efteraar:"efterår",vinter:"vinter"}[a])).join("/"):""}`; });
+function naturAarstid(){ const m=new Date().getMonth(); return m>=2&&m<=4 ? "foraar" : m>=5&&m<=7 ? "sommer" : m>=8&&m<=10 ? "efteraar" : "vinter"; }
+function naturMoerkt(){ const t=new Date().getHours(); return t>=21 || t<5; }   // efter telefonens ur – ikke indstillingen for dag og nat
+function dagbogArter(sted){ const aar=naturAarstid(), nat=naturMoerkt(); return DAGBOG.filter(x=>x.sted.includes(sted) && (!x.aar || x.aar.includes(aar)) && (!x.tid || (x.tid==="nat")===nat)); }
+
+/* ---------- Minispil: Kanotur (kanoen og tømmerflåden) ----------
+   Padl uden om sten og siv i 45 sekunder. Tryk på dyrene undervejs – de kommer i naturdagbogen. Tømmerflåden er langsommere og tungere. */
+msNyt("kano", { navn:"Kanotur", ikon:"🛶", byg:["kano","sejlbaad"], knap:b=>b==="sejlbaad"?"🪵 Minispil: Styr flåden":"🛶 Minispil: Styr kanoen", point:15,
+  varianter:[
+    { navn:"Kanotur", rt:true, besk:"Padl uden om sten og siv i 45 sekunder. Tryk i venstre eller højre side af søen (eller på knapperne) for at padle – hold nede for at blive ved. Tryk på dyrene, du ser – så kommer de i naturdagbogen." },
+    { navn:"Med strømmen", rt:true, besk:"Der er strøm i vandet, som trækker båden til siden. Hold kursen!" },
+    { navn:"Tåge over søen", rt:true, besk:"Morgentågen ligger over søen, så stenene dukker først op i sidste øjeblik." },
+  ],
+  start(st){ const tung=st.bid==="sejlbaad";
+    Object.assign(st, { rnd:msTilfaeldig(Date.now()), x:160, vx:0, t:0, ting:[], hit:0, dyr:0, nye:[], spawn:.6, tung, scroll:0, strom:0, sidst:null });
+  },
+  forside(st){ return kanoSVG({ x:160, ting:[{ type:"sten", x:110, y:90, r:14 },{ type:"siv", x:230, y:60, r:16 },{ type:"dyr", x:40, y:140, d:DAGBOG[0] }], scroll:0, tung:st.bid==="sejlbaad", v:0 }); },
+  tegn(st){ return kanoSVG(st); },
+  status(st){ return `⏱️ ${Math.max(0,Math.ceil(45-st.t))} sek · 💥 ${st.hit} · ${st.bid==="sejlbaad"?"🪵":"🛶"} ${st.dyr} dyr set`; },
+  kontrol(st){ return `<div class="row mspadl"><button class="btn earth mshold" id="msvenstre">⬅️ Padl</button><button class="btn earth mshold" id="mshoejre">Padl ➡️</button></div>`; },
+  efter(st, c){
+    const tung=st.tung, kraft=tung?42:70, traeg=tung?1.1:2.4, fart=(tung?46:68)*st.sv*(MS_ROLIG?.7:1);
+    let hold=0, holdT=0;
+    const padl=s=>{ st.vx+=s*kraft; vibrer(6); };
+    const bane=document.getElementById("msbane");
+    bane && bane.addEventListener("pointerdown", ev=>{ ev.preventDefault();
+      const d=ev.target.closest("[data-d]");
+      if(d){ const o=st.ting[+d.dataset.d]; if(o && o.type==="dyr" && !o.set){ o.set=true; st.dyr++; const ny=samlTilfoej(c,"dagbog",o.d.id); if(ny) st.nye.push(o.d.id);
+        msStatus(`${o.d.ikon} ${ny?"<b>Nyt i dagbogen:</b> ":""}${esc(o.d.navn)}`); vibrer(20); } return; }
+      const r=bane.getBoundingClientRect(); const s=ev.clientX<r.left+r.width/2?-1:1; padl(s); hold=s; holdT=0; });
+    const slip=()=>{ hold=0; }; ["pointerup","pointercancel","pointerleave"].forEach(e=>bane && bane.addEventListener(e, slip));
+    msHold(document.getElementById("msvenstre"), ()=>{ padl(-1); hold=-1; holdT=0; }, slip);
+    msHold(document.getElementById("mshoejre"), ()=>{ padl(1); hold=1; holdT=0; }, slip);
+    const g=document.getElementById("msting"), baad=document.getElementById("msbaad"), bred=document.getElementById("msbred");
+    msLoop(dt=>{
+      st.t+=dt; if(hold){ holdT+=dt; if(holdT>.32){ holdT=0; padl(hold); } }
+      // strøm og bevægelse
+      if(st.v===1){ st.strom = Math.sin(st.t*.5)*26*st.sv; }
+      st.vx += st.strom*dt*(tung?.6:1); st.vx *= Math.max(0, 1-traeg*dt); st.x += st.vx*dt;
+      if(st.x<44){ st.x=44; st.vx=Math.abs(st.vx)*.3; } if(st.x>276){ st.x=276; st.vx=-Math.abs(st.vx)*.3; }
+      st.scroll=(st.scroll+fart*dt)%40;
+      // nye ting
+      st.spawn-=dt; if(st.spawn<=0){ const r=st.rnd;
+        st.spawn = (tung?1.25:.95)/st.sv*(.7+r(60)/100);
+        if(r(100)<13){ const arter=dagbogArter("soe"); if(arter.length){ const side=r(2); st.ting.push({ type:"dyr", x:side?292:28, y:-20, d:arter[r(arter.length)] }); } }
+        else st.ting.push({ type:r(100)<55?"sten":"siv", x:56+r(208), y:-20, r:r(100)<30?18:13 }); }
+      st.ting.forEach(o=>{ o.y+=fart*dt;
+        if((o.type==="sten"||o.type==="siv") && !o.ramt && Math.abs(o.x-st.x)<o.r+(tung?20:11) && Math.abs(o.y-196)<o.r+(tung?18:24)){
+          o.ramt=true; st.hit++; vibrer([60,30,60]); st.vx += (st.x<o.x?-1:1)*40; if(baad){ baad.classList.add("bump"); msTid(()=>baad.classList.remove("bump"), 320); } msStatus(MS.kano.status(st)); } });
+      st.ting=st.ting.filter(o=>o.y<270);
+      if(g) g.innerHTML=kanoTing(st);
+      if(baad) baad.setAttribute("transform", `translate(${st.x} 196) rotate(${Math.max(-14,Math.min(14,st.vx/6))})`);
+      if(bred) bred.setAttribute("transform", `translate(0 ${st.scroll})`);
+      const sek=Math.ceil(45-st.t); if(sek!==st.sidst){ st.sidst=sek; msStatus(MS.kano.status(st)); }
+      if(st.t>=45){ kanoSlut(st, c); return false; } });
+  },
+});
+function kanoSlut(st, c){
+  const stj = st.hit<=1 ? 3 : st.hit<=3 ? 2 : st.hit<=6 ? 1 : 0, nye=st.nye.map(id=>DAGBOG.find(x=>x.id===id));
+  msSlut(st, { stjerner:stj, score:Math.max(0, 100-st.hit*12)+Math.min(st.dyr,10)*2, tekst:`${st.hit===0?"Ingen":st.hit} ${st.hit===1?"påsejling":"påsejlinger"} og ${st.dyr} dyr set undervejs.`,
+    ekstra: nye.length ? nye.map(samlNyHTML).join("") : "",
+    laer: st.tung ? "En tømmerflåde er tung og langsom at dreje – begynd at styre i god tid. Alle om bord skal have svømmevest på." : "I en kano padler man i siden, man vil væk fra: padl i venstre side, så drejer kanoen til højre. Svømmevest på – altid." });
+}
+function kanoTing(st){
+  return st.ting.map((o,k)=>{
+    if(o.type==="sten") return `<g transform="translate(${o.x} ${o.y})"><ellipse rx="${o.r}" ry="${o.r*.75}" fill="${o.ramt?"#8d7f72":"#7d8a91"}" stroke="#56616a" stroke-width="2"/><ellipse cx="-${o.r*.3}" cy="-${o.r*.25}" rx="${o.r*.35}" ry="${o.r*.2}" fill="#a9b4ba"/></g>`;
+    if(o.type==="siv") return `<g transform="translate(${o.x} ${o.y})" stroke="#4d7a32" stroke-width="3" stroke-linecap="round"><path d="M-8 8 L-11 -12 M-3 8 L-3 -16 M3 8 L5 -14 M8 8 L11 -10"/><path d="M-3 -16 v-6 M5 -14 v-6" stroke="#7a4e2a" stroke-width="5"/></g>`;
+    return `<g data-d="${k}" class="msdyr${o.set?" set":""}"><circle cx="${o.x}" cy="${o.y}" r="22" fill="${o.set?"rgba(255,255,255,.5)":"rgba(255,255,255,.18)"}"/><text x="${o.x}" y="${o.y+10}" font-size="28" text-anchor="middle">${o.d.ikon}</text>${o.set?`<text x="${o.x+16}" y="${o.y-10}" font-size="14">✅</text>`:""}</g>`;
+  }).join("");
+}
+function kanoSVG(st){
+  const baad = st.tung ? `<rect x="-24" y="-20" width="48" height="40" rx="4" fill="#a06a3a" stroke="#6b4626" stroke-width="2"/><path d="M-24 -10 H24 M-24 0 H24 M-24 10 H24" stroke="#6b4626" stroke-width="1.5"/><circle cx="-8" cy="-2" r="7" fill="#f1c9a5"/><circle cx="9" cy="4" r="7" fill="#e0b48f"/>`
+    : `<path d="M0 -30 C10 -18 11 18 0 30 C-11 18 -10 -18 0 -30Z" fill="#c62828" stroke="#7a1a1a" stroke-width="2"/><circle cx="0" cy="-8" r="6" fill="#f1c9a5"/><circle cx="0" cy="10" r="6" fill="#e0b48f"/><path class="aare" d="M-16 2 L16 -6" stroke="#8b5a2b" stroke-width="3" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#3d8fc4"/>
+    <g id="msbred" transform="translate(0 ${st.scroll||0})">${[-40,0,40,80,120,160,200,240].map(y=>`<path d="M0 ${y} h${28+(y%80?6:0)} v40 h-${28+(y%80?6:0)}Z M320 ${y} h-${30-(y%80?6:0)} v40 h${30-(y%80?6:0)}Z" fill="#6f9a45"/><path d="M60 ${y+14} q10 -5 20 0 M200 ${y+30} q10 -5 20 0" stroke="#bfe4f7" stroke-width="2" fill="none" opacity=".6"/>`).join("")}</g>
+    <g id="msting">${kanoTing(st)}</g>
+    <g id="msbaad" transform="translate(${st.x} 196)">${baad}</g>
+    ${st.v===2?`<rect width="320" height="150" fill="url(#mstaage)"/><defs><linearGradient id="mstaage" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8eef0" stop-opacity=".97"/><stop offset=".7" stop-color="#e8eef0" stop-opacity=".85"/><stop offset="1" stop-color="#e8eef0" stop-opacity="0"/></linearGradient></defs>`:""}</svg>`;
 }
 
 /* MINISPIL-SLUT */
