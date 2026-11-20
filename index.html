@@ -12819,6 +12819,69 @@ function baalSVG2(st, forside){
       <text id="msvind" x="60" y="70" font-size="20" font-weight="800" fill="#cfe3f5" style="display:${st.vind?"":"none"}">💨 Vindstød!</text>`}`:""}</svg>`;
 }
 
+/* ---------- Minispil: Svævebanen – sikkerhedstjek og »brems i tide« ----------
+   Først sikkerhedstjekket i rækkefølge, så 3 ture, hvor man bremser i tide før enden. Højere niveau = længere wire og mere fart. */
+const SVAEVE_TJEK = ["Tag selen på, og stram den", "Tag hjelmen på, og spænd hageremmen", "Hægt karabinen i wiren", "Skru karabinen i lås – og få den tjekket af en voksen", "Råb »Klar!« og vent på »Kør!«"];
+msNyt("svaeve", { navn:"Svævebanen", ikon:"🎢", byg:["svaevebane"], knap:"🎢 Minispil: Sikkerhedstjek og brems", point:15,
+  varianter:[
+    { navn:"Tjek og brems", besk:"Først sikkerhedstjekket: tryk på trinene i den rigtige rækkefølge. Så 3 ture: hold »Brems« nede (og slip igen for at trille videre), så du stopper i den grønne zone lige før enden – bremser du for sent, rammer du stolpen, og bremser du for tidligt, hænger du midt på wiren." },
+    { navn:"Uden markering", besk:"Nu er bremsezonen ikke tegnet. Brems, så du stopper lige før stolpen for enden." },
+    { navn:"Med rygsæk", besk:"Med tung rygsæk får du mere fart, og bremsen tager længere tid om at virke." },
+  ],
+  start(st, c){ const L=1+Math.min(1,(st.niv-1)/40);
+    Object.assign(st, { rnd:msTilfaeldig(Date.now()), del:"tjek", r:msRaekke(SVAEVE_TJEK), tur:0, s:0, fart:0, brems:false, stop:null, ture:[], L, a:0 }); },
+  forside(st){ return svaeveSVG({ s:.35, v:0, del:"tur", L:1 }, true); },
+  tegn(st){ return svaeveSVG(st); },
+  status(st){ return st.del==="tjek" ? `Sikkerhedstjek · ${st.r.naeste} af ${st.r.trin.length}${st.r.fejl?` · ❌ ${st.r.fejl}`:""}` : `Tur ${Math.min(3,st.tur+1)} af 3${st.ture.length?" · "+st.ture.map(x=>x==="perfekt"?"🎯":x==="god"?"🙂":x==="hård"?"💥":"🪢").join(""):""}`; },
+  kontrol(st){
+    if(st.del==="tjek") return msRaekkeHTML(st.r);
+    if(st.del==="klar") return `<button class="btn gold" data-a="msk" data-k="koer">🎢 Kør!</button>`;
+    return `<button class="btn earth mshold" id="msbrems">✋ Hold nede: brems</button><p class="muted center psmall">Slip for at trille videre – stop lige før stolpen.</p>`;
+  },
+  tryk(st, k, d){
+    if(k==="r" && st.del==="tjek"){ msRaekkeTryk(st.r, +d.t); if(st.r.naeste>=st.r.trin.length) st.del="klar"; render(); }
+    if(k==="koer" && st.del==="klar"){ st.del="tur"; st.s=0; st.fart=0; st.brems=false; st.a=(.16+st.rnd(10)/100)*st.sv*(st.v===2?1.25:1)/st.L; render(); }
+  },
+  efter(st){
+    if(st.del!=="tur") return;
+    const decel = (st.v===2?.55:.75)/st.L;
+    msHold(document.getElementById("msbrems"), ()=>{ st.brems=true; vibrer(15); }, ()=>{ st.brems=false; });
+    msLoop(dt=>{
+      if(!st.brems){ st.fart+=st.a*dt*(MS_ROLIG?.8:1); }
+      else { st.fart=Math.max(0, st.fart-decel*dt); }
+      st.s+=st.fart*dt;
+      if(st.s>=1){ st.s=1; return svaeveTur(st, "hård"); }
+      if(st.brems && st.fart<=0 && st.s>.2){ st.fart=0; const e=1-st.s; return svaeveTur(st, e<=.07?"perfekt":e<=.16?"god":"tidlig"); }
+      const g=document.getElementById("msgondol"), p=svaeveP(st.s); if(g) g.setAttribute("transform", `translate(${p[0]} ${p[1]})`);
+    });
+  },
+});
+function svaeveP(s){ return [36+s*246, 46+s*136]; }
+function svaeveTur(st, res){
+  st.ture.push(res); st.tur++; vibrer(res==="hård"?[90,40,90]:25);
+  msStatus({ perfekt:"🎯 Perfekt stop lige før stolpen!", god:"🙂 Godt bremset", tidlig:"🪢 For tidligt – du hænger midt på wiren og må trække dig ind", hård:"💥 Av! Du ramte stolpen for hårdt" }[res]);
+  msTid(()=>{ if(st.tur>=3) return svaeveSlut(st); st.del="klar"; render(); }, 1100);
+  return false;
+}
+function svaeveSlut(st){
+  const p={ perfekt:25, god:17, tidlig:6, hård:0 }, ture=st.ture.reduce((n,x)=>n+p[x],0), tjek=Math.max(0, 25-st.r.fejl*8), sc=ture+tjek;
+  let stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0; if(st.ture.includes("hård")) stj=Math.min(stj,2);
+  msSlut(st, { stjerner:stj, score:sc, tekst:`Sikkerhedstjek med ${st.r.fejl} ${st.r.fejl===1?"fejl":"fejl"}. Ture: ${st.ture.map(x=>({perfekt:"perfekt",god:"god",tidlig:"for tidligt",hård:"for hårdt"}[x])).join(", ")}.`,
+    laer:"På en svævebane har man altid sele og hjelm på, og karabinen skal være skruet i lås, før man kører. En voksen tjekker udstyret. For enden bremser en stopblok eller en bremse, så man ikke rammer stolpen." });
+}
+function svaeveSVG(st, forside){
+  const p=svaeveP(st.s||0), zone=svaeveP(.93), slut=svaeveP(1), m=st.v===1;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="${st.v===1?"#46557a":"#bfe0f2"}"/><ellipse cx="160" cy="260" rx="230" ry="80" fill="#86b25a"/>
+    <path d="M0 150 l14 -30 14 30 12 -24 16 -38 16 38 10 -18 14 -30 14 30 12 -24 18 -40 18 40 10 -20 14 -30 14 30 12 -24 16 -34 16 34 10 -16 14 -28 14 28 L320 130 V200 H0Z" fill="#3f6e35" opacity=".8"/>
+    <g stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"><path d="M14 236 L36 40 M58 236 L36 40 M36 236 V40"/><path d="M270 236 L286 178 M302 236 L286 178"/></g>
+    <rect x="284" y="168" width="18" height="22" rx="4" fill="#c62828"/>
+    <path d="M36 44 L${slut[0]+4} ${slut[1]+2}" stroke="#444" stroke-width="2"/>
+    ${!m && !forside ? `<path d="M${zone[0]} ${zone[1]} L${slut[0]} ${slut[1]}" stroke="#4caf50" stroke-width="7" stroke-linecap="round" opacity=".85"/>` : ""}
+    ${st.L>1.05?`<text x="40" y="226" font-size="12" font-weight="800" fill="#2f4a2b">Wire: ${Math.round(st.L*30)} m</text>`:""}
+    <g id="msgondol" transform="translate(${p[0]} ${p[1]})"><circle r="4" fill="#666"/><path d="M0 0 V22" stroke="#c62828" stroke-width="3"/>${figur(cur().look,0,36,44)}<path d="M-12 30 L0 22 L12 30" stroke="#f2c94c" stroke-width="2.5" fill="none"/>${st.v===2?`<rect x="10" y="34" width="12" height="16" rx="3" fill="#2f6fb0"/>`:""}</g>
+  </svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
