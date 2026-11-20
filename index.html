@@ -569,6 +569,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 #msstk .hl,#msstk .hr{transform-box:fill-box;transform-origin:50% 100%;transition:transform .35s ease-out}#msstk.kloev .hl{transform:translate(-16px,6px) rotate(-14deg)}#msstk.kloev .hr{transform:translate(16px,6px) rotate(14deg)}
 #msstk.skaev{animation:msryst .3s}
 .mspadl .btn{min-height:72px;font-size:18px}#msbaad.bump{animation:msblink .32s}@keyframes msblink{50%{opacity:.35}}.msdyr{cursor:pointer}
+.msgem{cursor:pointer}.msgemt{transform-box:fill-box;transform-origin:50% 100%;transform:translateY(22px);opacity:0;transition:transform .18s ease-out,opacity .18s}.msgemt.op{transform:translateY(-24px);opacity:1}.msgemt.fanget{transform:translateY(-36px) scale(1.35)}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -12137,7 +12138,7 @@ function samlNyHTML(x){ return `<div class="samlny"><span class="samlik">${x.iko
 /* ---------- Skærmen for et minispil ---------- */
 function scrSpil(){
   const c=cur(), a=nav.params.a, id=msId(a), spec=MS[id], i=nav.params.i, b=BYGID[c.lejr[i]], niv=lejrNiv(c,i);
-  if(!akt || akt.a!==a) akt={ a, besked:"" };
+  if(!akt || akt.a!==a || akt.i!==i) akt={ a, i, besked:"" };   // samme spil ved en anden bygning starter forfra
   if(!akt.ms){ const aabne=spec.varianter.filter((_,k)=>niv>=msVarNiv(k)).length; akt.ms={ id, fase:"intro", v:Math.min(aabne-1, (msData(c,id).sidstV||0)), bid:b.id, niv, sv:msSvaer(niv) }; }
   const st=akt.ms, d=msData(c,id), V=spec.varianter[st.v];
   let h=`<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${spec.ikon} ${esc(spec.navn)}</h1><span class="spacer"></span><button class="iconbtn" data-a="til" data-to="minispil" aria-label="Alle minispil">🎮</button></div>`;
@@ -12563,6 +12564,77 @@ function kanoSVG(st){
     <g id="msting">${kanoTing(st)}</g>
     <g id="msbaad" transform="translate(${st.x} 196)">${baad}</g>
     ${st.v===2?`<rect width="320" height="150" fill="url(#mstaage)"/><defs><linearGradient id="mstaage" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8eef0" stop-opacity=".97"/><stop offset=".7" stop-color="#e8eef0" stop-opacity=".85"/><stop offset="1" stop-color="#e8eef0" stop-opacity="0"/></linearGradient></defs>`:""}</svg>`;
+}
+
+/* ---------- Minispil: Find dyret (pindsvinehuset, fuglekassen og fugletårnet) ----------
+   Dyrene dukker kort op fra deres skjul – tryk på dem, før de forsvinder. Hvilke dyr der kommer, afhænger af bygningen,
+   årstiden og om det er mørkt efter telefonens ur (dagbogArter). Nye arter kommer i naturdagbogen med fakta. */
+const FIND_STED = { pindsvinehus:"have", fuglekasse:"fugl", fugletaarn:"taarn" };
+const FIND_SKJUL = {
+  have:[[60,170,"busk"],[150,190,"bunke"],[250,175,"busk"],[105,120,"busk"],[215,125,"stub"],[290,215,"blade"],[30,220,"blade"]],
+  fugl:[[160,96,"kasse"],[92,70,"gren"],[232,58,"gren"],[70,140,"gren"],[250,130,"gren"],[160,210,"busk"],[285,200,"busk"]],
+  taarn:[[50,190,"siv"],[150,205,"siv"],[270,195,"siv"],[100,150,"vand"],[220,155,"vand"],[80,50,"luft"],[240,40,"luft"]],
+};
+function findPulje(st){ const sted=FIND_STED[st.bid]; let p=dagbogArter(sted); if(!p.length) p=DAGBOG.filter(x=>x.sted.includes(sted)); return p; }
+msNyt("find", { navn:"Find dyret", ikon:"👀", byg:["pindsvinehus","fuglekasse","fugletaarn"], knap:b=>b==="pindsvinehus"?"🦔 Minispil: Find dyrene":"🐦 Minispil: Find fuglene", point:12,
+  varianter:[
+    { navn:"Find dyret", rt:true, besk:"Dyrene kigger kort frem fra deres skjul. Tryk på dem, før de forsvinder igen – du har 30 sekunder. Hvilke dyr der kommer, afhænger af årstiden, og om det er mørkt (efter telefonens ur). Nye arter kommer i naturdagbogen." },
+    { navn:"Sky dyr", rt:true, besk:"Dyrene er sky og forsvinder hurtigere. Vær klar!" },
+    { navn:"Find kun …", rt:true, besk:"Du får at vide, hvilken art du skal finde. Tryk kun på den – de andre skal have lov at være i fred (et forkert tryk koster point)." },
+  ],
+  start(st){ const p=findPulje(st), r=msTilfaeldig(Date.now());
+    Object.assign(st, { rnd:r, t:0, ude:{}, fanget:0, vist:0, fejl:0, nye:[], spawn:.8, maal: st.v===2 ? p[r(p.length)] : null, sidst:null }); },
+  forside(st){ return findSVG(st, true); },
+  tegn(st){ return findSVG(st); },
+  status(st){ return `⏱️ ${Math.max(0,Math.ceil(30-st.t))} sek · Fundet: ${st.fanget}${st.maal?` · Find kun: ${st.maal.ikon} ${esc(st.maal.navn)}`:""}${st.fejl?` · ❌ ${st.fejl}`:""}`; },
+  kontrol(st){ return `<p class="muted center psmall">${st.maal?`Find kun <b>${st.maal.ikon} ${esc(st.maal.navn)}</b> – lad de andre være.`:"Tryk på dyrene, når de kigger frem."}${naturMoerkt()?" 🌙 Det er mørkt nu – så kommer nattens dyr frem.":""}</p>`; },
+  efter(st, c){
+    const skjul=FIND_SKJUL[FIND_STED[st.bid]], synlig=(st.v===1?1.15:1.7)/st.sv*(MS_ROLIG?1.4:1), pulje=findPulje(st);
+    const vis=(k, d)=>{ const el=document.querySelector(`[data-s="${k}"] .msgemt`); if(!el) return; el.textContent=d?d.ikon:""; el.classList.toggle("op", !!d); };
+    document.getElementById("msbane").addEventListener("pointerdown", ev=>{ const g=ev.target.closest("[data-s]"); if(!g) return; ev.preventDefault();
+      const k=+g.dataset.s, u=st.ude[k]; if(!u || u.fanget) return;
+      if(st.maal && u.d.id!==st.maal.id){ st.fejl++; vibrer([50,30,50]); msStatus(`❌ Det var ${u.d.ikon} ${esc(u.d.navn)} – find kun ${st.maal.ikon} ${esc(st.maal.navn)}`); delete st.ude[k]; vis(k,null); return; }
+      u.fanget=true; st.fanget++; vibrer(20); const ny=samlTilfoej(c,"dagbog",u.d.id); if(ny) st.nye.push(u.d.id);
+      msStatus(`${u.d.ikon} ${ny?"<b>Nyt i dagbogen:</b> ":""}${esc(u.d.navn)}`); const el=g.querySelector(".msgemt"); if(el) el.classList.add("fanget");
+      msTid(()=>{ delete st.ude[k]; vis(k,null); if(el) el.classList.remove("fanget"); }, 350); });
+    msLoop(dt=>{ st.t+=dt;
+      Object.keys(st.ude).forEach(k=>{ const u=st.ude[k]; if(u.fanget) return; u.tid-=dt; if(u.tid<=0){ delete st.ude[k]; vis(k,null); } });
+      st.spawn-=dt;
+      if(st.spawn<=0 && st.t<29){ st.spawn=(1.05/st.sv)*(.7+st.rnd(60)/100);
+        const frie=skjul.map((_,k)=>k).filter(k=>!st.ude[k]);
+        if(frie.length && Object.keys(st.ude).length<2){ const k=frie[st.rnd(frie.length)];
+          let d = st.maal && st.rnd(100)<45 ? st.maal : pulje[st.rnd(pulje.length)];
+          st.ude[k]={ d, tid:synlig }; if(!st.maal || d.id===st.maal.id) st.vist++; vis(k,d); } }
+      const sek=Math.ceil(30-st.t); if(sek!==st.sidst){ st.sidst=sek; msStatus(MS.find.status(st)); }
+      if(st.t>=30){ findSlut(st); return false; } });
+  },
+});
+function findSlut(st){
+  const andel=st.vist ? st.fanget/st.vist : 0; let stj = andel>=.8 ? 3 : andel>=.6 ? 2 : andel>=.35 ? 1 : 0; if(st.fejl>=3) stj=Math.max(0,stj-1);
+  const nye=st.nye.map(id=>DAGBOG.find(x=>x.id===id));
+  msSlut(st, { stjerner:stj, score:Math.max(0, st.fanget*10-st.fejl*5), tekst:`Du fandt ${st.fanget} af ${st.vist} ${st.maal?`${st.maal.navn.toLowerCase()}`:"dyr"}${st.fejl?` og trykkede forkert ${st.fejl} ${st.fejl===1?"gang":"gange"}`:""}.`,
+    ekstra: nye.length ? nye.map(samlNyHTML).join("") : "",
+    laer: st.bid==="fugletaarn" ? "Gå stille op i tårnet og tal lavt. En kikkert med 8 ganges forstørrelse er let at holde rolig." : st.bid==="fuglekasse" ? "Kig på fuglekassen på afstand – kommer man for tæt på, tør forældrene ikke fodre ungerne." : "Mange dyr er mest fremme i skumringen og om natten. Sid stille, og lad dem være i fred." });
+}
+function findSkjul(type){
+  if(type==="busk") return `<ellipse cx="0" cy="4" rx="34" ry="20" fill="#3f7a35"/><circle cx="-16" cy="-4" r="15" fill="#4f8c3f"/><circle cx="12" cy="-6" r="17" fill="#4a8a3a"/><circle cx="2" cy="6" r="14" fill="#5b9a48"/>`;
+  if(type==="bunke") return `<path d="M-40 14 Q-30 -26 0 -28 Q30 -26 40 14Z" fill="#7a5a34"/><path d="M-34 10 L20 -22 M-20 12 L30 -14 M-10 -20 L34 8 M-36 0 L10 12" stroke="#5c3a20" stroke-width="3"/><path d="M-12 14 a12 12 0 0 1 24 0Z" fill="#2a1e12"/>`;
+  if(type==="stub") return `<rect x="-20" y="-14" width="40" height="28" fill="#8b5a2b"/><ellipse cx="0" cy="-14" rx="20" ry="7" fill="#c49a63"/><ellipse cx="0" cy="-14" rx="10" ry="3.5" fill="none" stroke="#8b5a2b"/>`;
+  if(type==="blade") return `<ellipse cx="0" cy="6" rx="30" ry="12" fill="#c77a2a"/><ellipse cx="-12" cy="2" rx="12" ry="6" fill="#d9952f"/><ellipse cx="12" cy="4" rx="12" ry="5" fill="#a85f22"/>`;
+  if(type==="kasse") return `<rect x="-17" y="-22" width="34" height="40" rx="2" fill="#b07a45" stroke="#6b4626" stroke-width="2"/><path d="M-21 -22 L0 -34 L21 -22Z" fill="#7a4e2a"/><circle cx="0" cy="-6" r="6" fill="#2a1e12"/>`;
+  if(type==="gren") return `<path d="M-36 6 Q0 -4 36 4" stroke="#6b4626" stroke-width="7" stroke-linecap="round" fill="none"/><ellipse cx="-24" cy="-2" rx="12" ry="7" fill="#4f8c3f"/><ellipse cx="22" cy="-3" rx="13" ry="7" fill="#5b9a48"/>`;
+  if(type==="siv") return `<g stroke="#4d7a32" stroke-width="4" stroke-linecap="round"><path d="M-24 14 L-28 -26 M-12 14 L-12 -34 M0 14 L4 -30 M12 14 L14 -36 M24 14 L28 -22"/></g><path d="M-12 -34 v-8 M14 -36 v-8" stroke="#7a4e2a" stroke-width="6" stroke-linecap="round"/>`;
+  if(type==="vand") return `<ellipse cx="0" cy="8" rx="30" ry="8" fill="#5aa5d6" opacity=".7"/><path d="M-20 8 q10 -5 20 0 t20 0" stroke="#d6effa" stroke-width="2" fill="none"/>`;
+  return `<ellipse cx="0" cy="8" rx="26" ry="10" fill="#fff" opacity=".85"/><ellipse cx="14" cy="2" rx="18" ry="11" fill="#fff" opacity=".9"/>`;   // luft: en sky
+}
+function findSVG(st, forside){
+  const sted=FIND_STED[st.bid], nat=naturMoerkt(), skjul=FIND_SKJUL[sted];
+  const bag = sted==="have" ? `<rect width="320" height="240" fill="#a9d18e"/><rect y="95" width="320" height="145" fill="#86b25a"/><path d="M0 100 l14 -30 14 30 12 -24 16 -38 16 38 10 -18 14 -30 14 30 12 -24 18 -40 18 40 10 -20 14 -30 14 30 12 -24 16 -34 16 34 10 -16 14 -28 14 28 L320 80 V100Z" fill="#3f6e35"/>`
+    : sted==="fugl" ? `<rect width="320" height="240" fill="#bfe0f2"/><rect y="200" width="320" height="40" fill="#86b25a"/><rect x="146" y="20" width="28" height="200" fill="#7a4e2a"/><path d="M160 60 L92 70 M160 60 L232 58 M160 130 L70 140 M160 125 L250 130" stroke="#7a4e2a" stroke-width="9" stroke-linecap="round"/>`
+    : `<rect width="320" height="240" fill="#bfe0f2"/><rect y="120" width="320" height="120" fill="#3d8fc4"/><path d="M0 120 l12 -20 12 20 10 -16 14 -26 14 26 10 -12 12 -20 12 20 L320 112 V120Z" fill="#3f6e35"/><rect x="280" y="40" width="34" height="90" fill="#8b5a2b" opacity=".7"/>`;
+  return `<svg viewBox="0 0 320 240" class="aktsvg">${bag}${nat?`<rect width="320" height="240" fill="#0d1630" opacity=".42"/><circle cx="292" cy="24" r="11" fill="#f4f1d0"/>`:""}
+    ${skjul.map(([x,y,t],k)=>`<g data-s="${k}" transform="translate(${x} ${y})" class="msgem"><rect x="-36" y="-50" width="72" height="72" fill="transparent"/><text class="msgemt${forside&&k===1?" op":""}" x="0" y="${t==="kasse"?-2:4}" font-size="30" text-anchor="middle">${forside&&k===1?findPulje(st)[0].ikon:""}</text>${findSkjul(t)}</g>`).join("")}
+</svg>`;
 }
 
 /* MINISPIL-SLUT */
