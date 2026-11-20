@@ -536,6 +536,35 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .celle .tid{position:absolute;left:2px;right:2px;bottom:2px;z-index:2;background:rgba(42,42,31,.82);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:2px 0;font-variant-numeric:tabular-nums}
 .celle.bygger .ting{opacity:.45;filter:saturate(.4)}
 .celle .stillads{position:absolute;inset:4% 6% 6%;width:auto;height:auto;z-index:2;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+/* ---------- Lejrens minispil ---------- */
+.msbane{position:relative;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.msned{position:absolute;inset:0;display:grid;place-items:center;font-size:88px;font-weight:900;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.35);background:rgba(20,30,15,.35);animation:msned .6s ease-out;pointer-events:none}
+@keyframes msned{from{transform:scale(1.5);opacity:0}to{transform:none;opacity:1}}
+.msstatus{text-align:center;font-weight:800;font-size:15px;color:var(--forest);margin:2px 0 8px;font-variant-numeric:tabular-nums;min-height:22px}
+.msvar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0 4px}.msvar .chip{min-height:40px;font-size:14px;padding:6px 12px}
+.msintro{text-align:left}
+.msrek{text-align:center;color:var(--muted);font-size:14px;margin:4px 0 10px}
+.msstj{font-size:46px;letter-spacing:4px;color:#e0a81e;line-height:1}.msstj .tom{color:#d8cfb7}.msstj.lille{font-size:17px;letter-spacing:1px}
+.msres{text-align:center}.msres h2{margin:8px 0 4px}.msscore{font-size:17px}.msny{color:#c98a16;font-weight:800}.msbel{margin-top:6px}
+.btn.mslille{min-height:44px;padding:8px 14px;font-size:15px;margin-top:10px}
+.mshold{user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none}.mshold.nede,.mstryk:active{transform:translateY(3px);filter:brightness(1.1)}
+.btn.mshold,.btn.mstryk{min-height:76px;font-size:19px}
+#msbryst{transform-box:fill-box;transform-origin:50% 50%;transition:transform .1s}#msbryst.ned{transform:scale(1,.88)}#msbryst.ind{transform:scale(1.04,1.1);transition:transform .9s}
+.mspuls{animation:mspuls .545s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}@keyframes mspuls{0%,100%{opacity:.35}15%{opacity:1}}
+.trinknap.ryst{animation:msryst .35s;border-color:#d62828}@keyframes msryst{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.msraekke .valgt{margin-bottom:8px}
+.msrad{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--paper);border:none;border-radius:16px;padding:10px 12px;margin:0 0 8px;box-shadow:0 2px 0 var(--line);font:inherit;color:inherit;cursor:pointer}
+.msrad.laast{opacity:.75;background:var(--paper2)}.msrad .msik{font-size:28px;width:38px;text-align:center;flex:none}
+.msrad .mstxt{flex:1;min-width:0}.msrad .mstxt b{display:block}.msrad .mstxt small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
+.msrad .msst{text-align:right;white-space:nowrap;flex:none}.msrad .msst small{display:block;color:var(--muted);font-size:12px}
+.msrad .msbar{flex:none;width:70px;height:10px;border-radius:5px;background:var(--line);overflow:hidden}.msrad .msbar i{display:block;height:100%;background:var(--moss)}
+.mstop b{display:block;font-size:18px}.mstop small{display:block;color:var(--muted);margin-top:3px}
+.mshead{margin:14px 4px 8px;color:var(--forest)}
+.samling{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow:auto}
+.samlpost,.samlny{display:flex;gap:10px;align-items:center;background:var(--paper2);border-radius:12px;padding:8px 10px;text-align:left}.samlpost.ukendt{opacity:.6}
+.samlpost small,.samlny small{display:block;color:var(--muted);font-size:13px;line-height:1.3}.samlik{font-size:28px;flex:none;width:36px;text-align:center}
+.samlny{background:#fff7d6;border:2px solid #e2c56b;margin-top:8px}
+.spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
 .celle.brud{box-shadow:inset 0 0 0 3px #d62828,0 0 10px rgba(214,40,40,.6)}
@@ -6327,7 +6356,7 @@ function render(){
   if(s==="telt" && !(cur() && cur().lejr && TELT_IDS.includes(cur().lejr[nav.params.i]) && !underByg(cur(),nav.params.i))) s = "lejr";
   nav.screen = s;
   const fn = { vaelg:scrVaelg, editor:scrEditor, profil:scrProfil, maerker:scrMaerker, emne:scrEmne,
-               traening:scrTraening, fejlliste:scrFejlliste, flash:scrFlash, morsetr:scrMorseTr, semafortr:scrSemaforTr, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
+               traening:scrTraening, fejlliste:scrFejlliste, flash:scrFlash, morsetr:scrMorseTr, semafortr:scrSemaforTr, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, minispil:scrMinispil, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   document.body.classList.toggle("lejrskaerm", s==="lejr");
   app.innerHTML = `<div class="screen">${fn()}</div>`;
@@ -7700,6 +7729,7 @@ function scrLejr(){
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}${indst(c).skraa?" skraa":""}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
     ${stierHTML(c, str)}${soeHTML(c, str)}
+    ${lejrFlyt ? "" : `<button class="spilknap" data-a="til" data-to="minispil" aria-label="Lejrens minispil">🎮<span>Minispil</span></button>`}
     ${lejrFlyt||!Object.keys(felter).length ? "" : `<button class="flytknap" data-a="flytstart" aria-label="Flyt rundt på bygningerne">✋<span>Flyt rundt</span></button>`}
     <button class="byggetilst ${lejrByggetilstand?"on":""}" data-a="byggetilstand" aria-pressed="${lejrByggetilstand}" aria-label="${lejrByggetilstand?"Skjul niveauer og rammer":"Vis niveauer og rammer (byggetilstand)"}"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 14 V2 L14 14Z M5 11 V8.4 L7.6 11Z" fill="#f2c94c" stroke="#a8790c" stroke-width="1" fill-rule="evenodd"/><path d="M2 5 h2 M2 8 h1.5 M2 11 h2" stroke="#a8790c" stroke-width=".9"/></svg><span>${lejrByggetilstand?"Skjul niveauer":"Niveauer"}</span></button>`;
   // Liv på pladsen – men kun få animerede ting ad gangen: røg fra højst 2 skorstene/bål, flammeskær på højst 2 bål og vajende flag på højst 3 felter
@@ -8756,6 +8786,7 @@ function aktDel(c, a, b){
   return { titel, scene, knapper };
 }
 function scrAkt(){
+  if(msId(nav.params.a)) return scrSpil();   // lejrens minispil har deres egen skærm
   const c=cur(), a=nav.params.a, b=BYGID[c.lejr[nav.params.i]];
   if(!akt || akt.a!==a) akt={ a, ild:2, besked:"" };
   const { titel, scene, knapper } = aktDel(c, a, b);
@@ -8782,9 +8813,10 @@ function ristFarve(p, ret){
 }
 function aktBesked(html){ akt.besked=html; const el=document.getElementById("aktbesked"); if(el){ el.innerHTML=html; el.classList.remove("tom"); el.style.animation="none"; void el.offsetWidth; el.style.animation=""; } }
 function aktEfterRender(){
-  clearInterval(aktUr); aktUr=null;
+  clearInterval(aktUr); aktUr=null; msStop();
   const her = nav.screen;
   if(!["akt","moede"].includes(her) || !akt) return;
+  if(msId(akt.a)){ msEfter(); return; }
   if(akt.a==="signal"){ signalBlink(); return; }
   if(akt.a==="baal" || akt.a==="koekken"){
     aktUr=setInterval(()=>{ if(nav.screen!==her){ clearInterval(aktUr); return; }
@@ -12036,6 +12068,298 @@ const actions = {
   teltfarve(d){ const c=cur(); teltData(c,nav.params.i).farve=+d.k; save(); render(); },
   async installer(){ if(!installPrompt) return; installPrompt.prompt(); try{ await installPrompt.userChoice; }catch(e){} installPrompt=null; render(); },
 };
+
+/* =====================================================================
+   LEJRENS MINISPIL – en fælles motor for minispillene ved bygningerne
+   Hvert spil står i MS (oprettes med msNyt) og kommer automatisk i AKT_FOR (knappen på bygningen) og AKT_NY (aktiviteten "ms_<id>").
+   Et spil: { navn, ikon, byg:[bygninger], knap, point, varianter:[{ navn, besk, rt }], start(st,c), tegn(st,c), status(st,c),
+              kontrol(st,c), efter(st,c), tryk(st,k,d,c), forside(st,c) }
+   - rt:true = et spil i realtid, som starter med en nedtælling (3-2-1).
+   - Spillet slutter med msSlut(st, { stjerner:0-3, score, tekst, laer, mat }).
+   - Resultatet gemmes i c.minispil[id] = { stjerner, rekord, gange, v:{ variant:{ s, r } } }.
+   - Belønningen gives med belon() – dagligt loft AKT_LOFT pr. spil og bygning. Bygningens niveau gør spillet lidt sværere (msSvaer)
+     og giver lidt flere point (her og i belon), og hvert 5. niveau åbner en ny variant (msVarNiv).
+   ===================================================================== */
+const MS = {};
+const MS_ROLIG = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);   // færre og langsommere bevægelser
+let msUr = [], msRaf = null;
+function msStop(){ msUr.forEach(t=>{ clearTimeout(t); clearInterval(t); }); msUr=[]; if(msRaf) cancelAnimationFrame(msRaf); msRaf=null; }
+function msTid(fn, ms){ const t=setTimeout(fn, ms); msUr.push(t); return t; }
+function msInterval(fn, ms){ const t=setInterval(fn, ms); msUr.push(t); return t; }
+// Én løkke pr. billede, så længe spillet er i gang: fn(dt, tid) med sekunder. Returnerer fn false, stopper løkken.
+function msLoop(fn){
+  const st=akt && akt.ms; let t0=null, sidst=null;
+  const trin=ts=>{ msRaf=null; if(!akt || akt.ms!==st || st.fase!=="spil" || nav.screen!=="akt") return;
+    if(t0==null){ t0=ts; sidst=ts; } const dt=Math.min(.05,(ts-sidst)/1000); sidst=ts;
+    if(fn(dt,(ts-t0)/1000)===false) return; msRaf=requestAnimationFrame(trin); };
+  msRaf=requestAnimationFrame(trin);
+}
+function msAkt(id){ return "ms_"+id; }
+function msId(a){ return a && a.startsWith("ms_") && MS[a.slice(3)] ? a.slice(3) : null; }
+function msData(c, id){ c.minispil=c.minispil||{}; return c.minispil[id] || (c.minispil[id]={ stjerner:0, rekord:0, gange:0 }); }
+function msVarNiv(k){ return k===0 ? 1 : k*5; }   // variant 2 åbner på niveau 5, variant 3 på niveau 10 osv.
+function msSvaer(niv){ return Math.min(1.5, 1 + (Math.max(1,niv)-1)/100); }   // 1,00 på niveau 1 → 1,50 fra niveau 51
+function msTaeller(id, bid){ return "ms:"+id+":"+bid; }
+function msStjHTML(n, max){ max=max||3; let s=""; for(let k=0;k<max;k++) s+=`<span class="${k<n?"":"tom"}">★</span>`; return s; }
+function msTilfaeldig(seed){ let r=seed>>>0||1; return n=>{ r=(r*1103515245+12345)>>>0; return Math.floor((r/4294967296)*n); }; }
+function msNyt(id, spec){
+  MS[id]=spec; spec.id=id; const a=msAkt(id);
+  spec.byg.forEach(bid=>{ (AKT_FOR[bid]=AKT_FOR[bid]||[]).push([a, typeof spec.knap==="function" ? spec.knap(bid) : spec.knap, spec.krav]); });
+  AKT_NY[a]=()=>({ titel:spec.navn, scene:"", knapper:"" });   // skærmen tegnes af scrSpil
+}
+function msByg(st){ return BYGID[st.bid] || { navn:"" }; }
+
+/* ---------- Samlinger: dyr og fugle set, spor og stjernebilleder. En komplet samling giver lejr-XP én gang ---------- */
+const SAMLINGER = {};
+function samlTilfoej(c, saml, id){
+  const S=SAMLINGER[saml]; if(!S) return false; c[saml]=c[saml]||{}; if(c[saml][id]) return false;
+  c[saml][id]=Date.now(); c.samlingXP=c.samlingXP||{};
+  if(!c.samlingXP[saml] && S.arter().every(x=>c[saml][x.id])){ c.samlingXP[saml]=1; c.aktXP=(c.aktXP||0)+S.xp; setTimeout(()=>{ lejrToast(`${S.ikon} ${S.navn} er komplet! +${S.xp} lejr-XP`); konfettiLille(); }, 400); }
+  save(); return true;
+}
+function samlStatus(c, saml){ const S=SAMLINGER[saml], alle=S.arter(), har=alle.filter(x=>(c[saml]||{})[x.id]).length; return { har, alle:alle.length }; }
+function visSamling(saml){
+  const c=cur(), S=SAMLINGER[saml]; if(!S) return; const har=c[saml]||{};
+  modalRoot.innerHTML = `<div class="overlay"><div class="card modal"><button class="lukx" id="m-luk" aria-label="Luk">✕</button>
+    <h2>${S.ikon} ${S.navn}</h2><p class="muted psmall">${S.besk} ${c.samlingXP && c.samlingXP[saml] ? "✅ Komplet – lejr-XP er givet." : `Komplet samling: +${S.xp} lejr-XP.`}</p>
+    <div class="samling">${S.arter().map(x=>har[x.id] ? `<div class="samlpost"><span class="samlik">${x.ikon}</span><span><b>${esc(x.navn)}</b><small>${esc(x.fakta||"")}</small></span></div>`
+      : `<div class="samlpost ukendt"><span class="samlik">❓</span><span><b>Ikke fundet endnu</b><small>${esc(x.hint||"")}</small></span></div>`).join("")}</div></div></div>`;
+  document.getElementById("m-luk").onclick=()=>{ modalRoot.innerHTML=""; };
+}
+// En ny post i en samling vises som en lille boks med fakta
+function samlNyHTML(x){ return `<div class="samlny"><span class="samlik">${x.ikon}</span><span><b>Ny i samlingen: ${esc(x.navn)}</b><small>${esc(x.fakta||"")}</small></span></div>`; }
+
+/* ---------- Skærmen for et minispil ---------- */
+function scrSpil(){
+  const c=cur(), a=nav.params.a, id=msId(a), spec=MS[id], i=nav.params.i, b=BYGID[c.lejr[i]], niv=lejrNiv(c,i);
+  if(!akt || akt.a!==a) akt={ a, besked:"" };
+  if(!akt.ms){ const aabne=spec.varianter.filter((_,k)=>niv>=msVarNiv(k)).length; akt.ms={ id, fase:"intro", v:Math.min(aabne-1, (msData(c,id).sidstV||0)), bid:b.id, niv, sv:msSvaer(niv) }; }
+  const st=akt.ms, d=msData(c,id), V=spec.varianter[st.v];
+  let h=`<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${spec.ikon} ${esc(spec.navn)}</h1><span class="spacer"></span><button class="iconbtn" data-a="til" data-to="minispil" aria-label="Alle minispil">🎮</button></div>`;
+  if(st.fase==="intro"){
+    const tid=msTaeller(id,b.id), brugt=Math.min(AKT_LOFT, dagens(c).akt[tid]||0), naeste=spec.varianter.findIndex((_,k)=>niv<msVarNiv(k)), dv=(d.v||{})[st.v];
+    h += `<div class="aktscene msbane">${spec.forside ? spec.forside(st,c) : msForside(spec)}</div>
+      ${spec.varianter.length>1 ? `<div class="msvar">${spec.varianter.map((x,k)=>niv>=msVarNiv(k) ? `<button class="chip ${k===st.v?"on":""}" data-a="msvar" data-k="${k}">${esc(x.navn)}</button>`
+        : `<button class="chip" disabled>🔒 ${esc(x.navn)} · niv ${msVarNiv(k)}</button>`).join("")}</div>` : ""}
+      <div class="aktopg msintro"><b>${esc(V.navn)}</b><br>${V.besk}</div>
+      <div class="msrek"><span class="msstj lille">${msStjHTML(dv?dv.s:0)}</span> ${dv ? `Rekord: <b>${dv.r}</b> · ` : ""}Spillet ${d.gange||0} ${d.gange===1?"gang":"gange"}</div>
+      <button class="btn gold" data-a="msstart">▶️ Start</button>
+      <p class="muted center psmall">Point i dag: ${brugt} af ${AKT_LOFT} · ${b.navn} niveau ${niv}${niv>1?` – spillet er ${Math.round((st.sv-1)*100)} % sværere og giver lidt flere point`:" – opgrader for et sværere spil med flere point"}${naeste>0?`. Ny variant på niveau ${msVarNiv(naeste)}`:""}.</p>`;
+  }
+  else if(st.fase==="klar" || st.fase==="spil"){
+    h += `<div class="aktscene msbane" id="msbane">${spec.tegn(st,c)}${st.fase==="klar"?`<div class="msned" id="msned">${st.ned}</div>`:""}</div>
+      <div class="msstatus" id="msstatus">${spec.status ? spec.status(st,c) : ""}</div>
+      <div id="mskontrol">${spec.kontrol ? spec.kontrol(st,c) : ""}</div>
+      <button class="btn secondary mslille" data-a="msstop">✖ Stop spillet</button>`;
+  }
+  else if(st.fase==="slut"){
+    const r=st.res;
+    h += `<div class="card msres"><div class="msstj">${msStjHTML(r.stjerner)}</div>
+      <h2>${r.titel || ["Øv – prøv igen!","Godt gået!","Flot klaret!","Perfekt!"][r.stjerner]}</h2>
+      ${r.tekst?`<p>${r.tekst}</p>`:""}
+      <p class="msscore">Score: <b>${r.score}</b>${r.nyRek?` · <span class="msny">🏆 Ny rekord!</span>`:""}</p>
+      <div class="msbel">${r.belon}</div>${r.ekstra||""}</div>
+      ${r.laer?`<div class="aktopg msintro">💡 ${r.laer}</div>`:""}
+      <button class="btn gold" data-a="msigen">🔁 Spil igen</button>
+      <div class="row"><button class="btn secondary" data-a="msintro">🎚️ Vælg variant</button><button class="btn secondary" data-a="til" data-to="lejr">⛺ Lejrpladsen</button></div>`;
+  }
+  return h;
+}
+function msForside(spec){ return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#cfe6c0"/><ellipse cx="160" cy="250" rx="220" ry="80" fill="#86b25a"/><text x="160" y="150" font-size="90" text-anchor="middle">${spec.ikon}</text></svg>`; }
+// Kaldes efter hver tegning af skærmen
+function msEfter(){
+  const st=akt && akt.ms; if(!st) return; const spec=MS[st.id], c=cur();
+  if(st.fase==="klar"){
+    msTid(function tael(){ if(!akt || akt.ms!==st || st.fase!=="klar") return; st.ned--;
+      const el=document.getElementById("msned");
+      if(st.ned<=0){ st.fase="spil"; st.t0=Date.now(); render(); return; }
+      if(el){ el.textContent=st.ned; el.style.animation="none"; void el.offsetWidth; el.style.animation=""; }
+      msTid(tael, 700); }, 700);
+    return;
+  }
+  if(st.fase==="spil" && spec.efter) spec.efter(st,c);
+}
+function msStatus(html){ const el=document.getElementById("msstatus"); if(el) el.innerHTML=html; }
+// Slut på spillet: gem resultatet og giv belønningen
+function msSlut(st, res){
+  if(!st || (st.fase!=="spil" && st.fase!=="klar")) return; msStop();
+  const c=cur(), spec=MS[st.id], d=msData(c,st.id), stj=Math.max(0,Math.min(3,res.stjerner|0)), sc=Math.max(0,Math.round(res.score||0));
+  const nyRek = d.gange>0 && sc>(d.rekord||0);
+  d.gange=(d.gange||0)+1; d.rekord=Math.max(d.rekord||0, sc); d.stjerner=Math.max(d.stjerner||0, stj); d.sidstV=st.v;
+  d.v=d.v||{}; const dv=d.v[st.v]||(d.v[st.v]={ s:0, r:0 }); dv.s=Math.max(dv.s,stj); dv.r=Math.max(dv.r,sc);
+  let bel;
+  if(stj>0){
+    const tid=msTaeller(st.id, st.bid), n=dagens(c).akt[tid]||0;
+    bel = belon(c, tid, Math.round((spec.point||12)*stj/3*st.sv));
+    if(n<AKT_LOFT && res.mat){ const giv={};
+      Object.entries(res.mat).forEach(([m,x])=>{ const g=Math.min(x, Math.max(0, lagerPlads(c,m)-(lager(c)[m]||0))); if(g>0) giv[m]=g; });
+      if(Object.keys(giv).length){ brugMat(c,giv,+1); save(); bel += ` <b class="plus">+${matTekst(giv)}</b>`; }
+      else if(Object.values(res.mat).some(x=>x>0)) bel += `<br><small class="muted">Lageret er fuldt – ${lagerTip(Object.keys(res.mat)[0])}</small>`; }
+  } else bel = `<small class="muted">Ingen stjerner denne gang – så giver det ingen point. Prøv igen!</small>`;
+  st.res={ ...res, stjerner:stj, score:sc, nyRek, belon:bel }; st.fase="slut"; save(); render();
+  if(stj===3 && !MS_ROLIG) konfettiLille(); vibrer(stj?30:[60,40,60]);
+}
+// Rækkefølge-opgaver (stabilt sideleje, sikkerhedstjek, bålet …): tryk på trinene i den rigtige rækkefølge
+function msRaekke(trin){ return { trin, bland:shuffle(trin.map((_,k)=>k)), naeste:0, fejl:0, ryst:null }; }
+function msRaekkeHTML(r, k){
+  return `<div class="raekke msraekke"><ol class="valgt">${r.naeste ? r.trin.slice(0,r.naeste).map((t,p)=>`<li><div class="trinknap valgt ok"><span class="nr">${p+1}</span><span>${esc(t)}</span></div></li>`).join("") : `<li class="tomtrin">Tryk på det, der skal gøres først.</li>`}</ol>
+    <div class="trinliste">${r.bland.filter(t=>t>=r.naeste).map(t=>`<button class="trinknap ${r.ryst===t?"ryst":""}" data-a="msk" data-k="${k||"r"}" data-t="${t}"><span class="nr">?</span><span>${esc(r.trin[t])}</span></button>`).join("")}</div></div>`;
+}
+function msRaekkeTryk(r, t){ if(t===r.naeste){ r.naeste++; r.ryst=null; vibrer(15); return true; } r.fejl++; r.ryst=t; vibrer([50,30,50]); return false; }
+function msRaekkeStj(r){ return r.fejl===0 ? 3 : r.fejl<=2 ? 2 : r.fejl<=4 ? 1 : 0; }
+// Hold-knapper (indblæsning, køling, pust …): ned(ev) og op(sekunder) kaldes
+function msHold(el, ned, op){
+  if(!el) return; let t0=null;
+  const start=ev=>{ ev.preventDefault(); if(t0!=null) return; t0=performance.now(); el.classList.add("nede"); ned && ned(); };
+  const slut=ev=>{ if(t0==null) return; const s=(performance.now()-t0)/1000; t0=null; el.classList.remove("nede"); op && op(s); };
+  el.addEventListener("pointerdown", start); ["pointerup","pointercancel","pointerleave"].forEach(e=>el.addEventListener(e, slut));
+  el.addEventListener("contextmenu", e=>e.preventDefault());
+}
+
+/* ---------- Siden »Lejrens minispil« ---------- */
+function scrMinispil(){
+  const c=cur(); lejrFelter(c); const alle=Object.values(MS);
+  const sumStj=alle.reduce((n,s)=>n+((c.minispil||{})[s.id]||{stjerner:0}).stjerner,0);
+  const rad=spec=>{
+    const felter=bygFelter(c, spec.byg).filter(i=>!underByg(c,i)).sort((x,y)=>lejrNiv(c,y)-lejrNiv(c,x)), d=(c.minispil||{})[spec.id];
+    const navne=[...new Set(spec.byg.map(x=>BYGID[x].navn))].join(" / ");
+    if(felter.length){ const i=felter[0], niv=lejrNiv(c,i), nv=spec.varianter.filter((_,k)=>niv>=msVarNiv(k)).length;
+      return `<button class="msrad" data-a="msgaa" data-i="${i}" data-id="${spec.id}"><span class="msik">${spec.ikon}</span><span class="mstxt"><b>${esc(spec.navn)}</b><small>${navne} · niv ${niv} · ${nv} af ${spec.varianter.length} ${spec.varianter.length===1?"variant":"varianter"}</small></span><span class="msst"><span class="msstj lille">${msStjHTML(d?d.stjerner:0)}</span><small>${d&&d.gange?`Rekord ${d.rekord}`:"Ikke spillet"}</small></span></button>`; }
+    const b=spec.byg.map(x=>BYGID[x]).sort((x,y)=>(x.lejrniv||1)-(y.lejrniv||1))[0], bygges=bygFelter(c,spec.byg).length>0;
+    return `<button class="msrad laast" data-a="msbyginfo" data-id="${b.id}"><span class="msik">${spec.ikon}</span><span class="mstxt"><b>🔒 ${esc(spec.navn)}</b><small>${bygges?`⏳ ${navne} bygges`:`Byg ${navne.toLowerCase()} – fra lejrniveau ${b.lejrniv||1}${b.krav?`, ${EMNE[b.krav[0]].navn} i ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`:""}`}</small></span><span class="msst"><small>Se mere ›</small></span></button>`;
+  };
+  const aabne=alle.filter(s=>bygFelter(c,s.byg).some(i=>!underByg(c,i)));
+  return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>🎮 Lejrens minispil</h1><span class="spacer"></span></div>
+    <div class="card mstop"><b>⭐ ${sumStj} af ${alle.length*3} stjerner</b><small>${aabne.length} af ${alle.length} spil er åbne. Byg flere ting på lejrpladsen for at åbne resten – og opgrader dem for nye varianter (hvert 5. niveau).</small></div>
+    ${Object.keys(SAMLINGER).length ? `<h3 class="mshead">📚 Samlinger</h3><div class="mssaml">${Object.entries(SAMLINGER).map(([k,S])=>{ const s=samlStatus(c,k);
+      return `<button class="msrad" data-a="mssaml" data-k="${k}"><span class="msik">${S.ikon}</span><span class="mstxt"><b>${S.navn}</b><small>${s.har} af ${s.alle}${s.har>=s.alle?" · ✅ komplet":""}</small></span><span class="msbar"><i style="width:${Math.round(100*s.har/s.alle)}%"></i></span></button>`; }).join("")}</div>` : ""}
+    <h3 class="mshead">Åbne spil</h3>${aabne.length ? aabne.map(rad).join("") : `<p class="muted">Ingen endnu – byg fx en førstehjælpsstation eller en huggeplads.</p>`}
+    ${alle.length>aabne.length ? `<h3 class="mshead">Låste spil</h3>${alle.filter(s=>!aabne.includes(s)).map(rad).join("")}` : ""}`;
+}
+
+const MS_ACTIONS = {
+  msvar(d){ const st=akt&&akt.ms; if(!st||st.fase!=="intro") return; st.v=+d.k; render(); },
+  msstart(){ const st=akt&&akt.ms; if(!st) return; const spec=MS[st.id], V=spec.varianter[st.v]; msStop();
+    Object.keys(st).forEach(k=>{ if(!["id","fase","v","bid","niv","sv"].includes(k)) delete st[k]; });
+    spec.start(st, cur()); st.ned=3; st.fase = V.rt ? "klar" : "spil"; st.t0=Date.now(); render(); window.scrollTo(0,0); },
+  msigen(){ MS_ACTIONS.msstart(); },
+  msintro(){ const st=akt&&akt.ms; if(!st) return; msStop(); st.fase="intro"; render(); },
+  msstop(){ const st=akt&&akt.ms; if(!st) return; msStop(); st.fase="intro"; render(); },
+  msk(d){ const st=akt&&akt.ms; if(!st||st.fase!=="spil") return; const spec=MS[st.id]; if(spec.tryk) spec.tryk(st, d.k, d, cur()); },
+  msgaa(d){ go("akt",{ i:+d.i, a:msAkt(d.id) }); },
+  msbyginfo(d){ visBygInfo(d.id); },
+  mssaml(d){ visSamling(d.k); },
+};
+Object.assign(actions, MS_ACTIONS);
+
+/* ---------- Minispil: Førstehjælp (førstehjælpsstationen) ----------
+   Hjertelungeredning: 30 tryk i takt (100-120 i minuttet) og 2 indblæsninger, 3 runder. Fra niv 5 stabilt sideleje, fra niv 10 forbrænding. */
+const HLR_SIDELEJE = ["Tjek, om personen trækker vejret normalt", "Læg den nærmeste arm i en ret vinkel op ad", "Læg den fjerneste hånd mod den nærmeste kind",
+  "Bøj det fjerneste knæ op", "Rul personen om på siden ind mod dig – træk i knæet", "Læg det øverste ben i en ret vinkel ved hoften",
+  "Bøj hovedet bagover, så luftvejen er fri", "Ring 112, og bliv hos personen"];
+const HLR_BRAND = { spm:"En spejder har brændt hånden på gryden. Hvad gør du først?", svar:["Køler med lunkent vand i 20 minutter","Lægger is direkte på","Smører smør eller creme på","Lader være med at røre den"],
+  fk:"Køl straks med lunkent vand (ca. 20 grader) i 20 minutter. Is og koldt vand kan skade huden mere, og smør holder varmen inde. Tag ringe og ure af, før hånden hæver." };
+function hlrTol(st){ return Math.max(0, Math.round(8-(st.sv-1)*16)); }   // niveau 1: 92-128 tæller som i takt – niveau 51: præcis 100-120
+function hlrX(bpm){ return 40 + (Math.max(60,Math.min(160,bpm))-60)*2.4; }
+msNyt("hlr", { navn:"Førstehjælp", ikon:"❤️", byg:["forstehjalp"], knap:"❤️ Minispil: Førstehjælp", point:15,
+  varianter:[
+    { navn:"Hjertelungeredning", rt:true, besk:"Giv hjertemassage på øvelsesdukken: tryk i takt – 100 til 120 tryk i minuttet – 30 gange. Hold derefter knappen nede for at give 2 indblæsninger (ca. 1 sekund hver). 3 runder." },
+    { navn:"Stabilt sideleje", besk:"En spejder er bevidstløs, men trækker vejret. Tryk på trinene i den rigtige rækkefølge for at lægge hende i stabilt sideleje." },
+    { navn:"Forbrænding", rt:true, besk:"Vælg den rigtige behandling – og køl så forbrændingen i 20 minutter. Her går ét minut på ét sekund. Hold knappen nede hele tiden, og slip ikke for tidligt!" },
+  ],
+  start(st){
+    if(st.v===0) Object.assign(st, { runde:1, tryk:0, gode:0, ialt:0, sidst:0, bpm:0, del:"tryk", blaes:0, blaesGode:0 });
+    if(st.v===1) st.r=msRaekke(HLR_SIDELEJE);
+    if(st.v===2) Object.assign(st, { del:"valg", valg:shuffle(HLR_BRAND.svar.map((t,k)=>({ t, ok:k===0 }))), valgOk:null, min:0, slip:0, holder:false });
+  },
+  forside(st, c){ return hlrDukke(0, 0, true); },
+  tegn(st, c){
+    if(st.v===0) return hlrDukke(st.bpm, hlrTol(st), false, st);
+    if(st.v===1){ const n=st.r.naeste, sl=n>=5;
+      return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#a9cf86"/><rect x="20" y="30" width="280" height="180" rx="16" fill="#8fbf6a"/>
+        ${sl ? `<g transform="translate(160 125)"><circle cx="-78" cy="-6" r="20" fill="#f1c9a5"/><path d="M-60 -18 C-20 -34 30 -30 60 -14 L64 14 C30 24 -20 24 -58 10Z" fill="#2f6fb0"/>
+          <path d="M60 -10 L104 -32 M62 8 L110 2" stroke="#3b4a5a" stroke-width="13" stroke-linecap="round"/><path d="M-44 10 L-70 38 M-30 -20 L-60 -40" stroke="#f1c9a5" stroke-width="9" stroke-linecap="round"/></g>`
+        : `<g transform="translate(160 125)"><circle cx="-92" cy="0" r="20" fill="#f1c9a5"/><rect x="-70" y="-24" width="120" height="48" rx="16" fill="#2f6fb0"/>
+          <path d="M50 -12 H118 M50 12 H118" stroke="#3b4a5a" stroke-width="13" stroke-linecap="round"/>
+          <path d="M-50 -24 ${n>=2?"L-60 -62":"L-40 -50"} M-50 24 ${n>=3?"L-82 6":"L-40 50"}" stroke="#f1c9a5" stroke-width="9" stroke-linecap="round"/>${n>=4?`<path d="M110 12 L88 38" stroke="#3b4a5a" stroke-width="13" stroke-linecap="round"/>`:""}</g>`}
+        <text x="160" y="26" text-anchor="middle" font-size="15" font-weight="800" fill="#2f4a2b">Trin ${n} af ${st.r.trin.length}</text>${n>=8?`<text x="250" y="70" font-size="34">📞</text>`:""}</svg>`; }
+    // Forbrænding
+    const p=Math.min(1, st.min/20);
+    return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#d9ecf5"/><rect y="170" width="320" height="70" fill="#b7c7cf"/>
+      <path d="M120 20 H200 V44 H170 V70 H150 V44 H120Z" fill="#9aa7ae"/><rect x="148" y="70" width="24" height="10" fill="#7d8a91"/>
+      <path id="msstraale" d="M154 80 V150 M160 80 V156 M166 80 V150" stroke="#5fb0e0" stroke-width="5" stroke-linecap="round" opacity=".85" style="display:${st.holder?"":"none"}"/>
+      <g transform="translate(160 160)"><path d="M-70 10 C-40 -14 10 -16 40 -6 L70 -2 C78 0 78 12 70 14 L30 18 C0 24 -40 26 -70 24Z" fill="#f1c9a5" stroke="#c99a7a" stroke-width="2"/>
+      <ellipse cx="0" cy="2" rx="16" ry="8" fill="rgb(${Math.round(230-50*p)},${Math.round(90+110*p)},${Math.round(80+90*p)})" opacity=".8"/></g>
+      <rect x="40" y="208" width="240" height="16" rx="8" fill="#fff" stroke="#7d8a91"/><rect id="msbar" x="40" y="208" width="${240*p}" height="16" rx="8" fill="#3d8fc4"/>
+      <text x="160" y="202" text-anchor="middle" font-size="14" font-weight="800" fill="#2a3a44" id="msmin">${Math.floor(st.min)} af 20 minutter</text></svg>`;
+  },
+  status(st){
+    if(st.v===0) return `Runde ${st.runde} af 3 · ${st.del==="tryk"?`Tryk ${st.tryk} af 30`:`Indblæsning ${st.blaes} af 2`} · I takt: ${st.ialt?Math.round(100*st.gode/st.ialt):0} %`;
+    if(st.v===1) return st.r.fejl ? `Forkerte tryk: ${st.r.fejl}` : "Ingen fejl endnu";
+    return st.del==="valg" ? "Hvad gør du?" : `Sluppet i ${st.slip.toFixed(1).replace(".",",")} sek.`;
+  },
+  kontrol(st){
+    if(st.v===0) return st.del==="tryk" ? `<button class="btn gold mstryk" id="mstryk">💪 Tryk på brystet</button><p class="muted center psmall">Tryk på knappen eller på dukken i takt${st.runde===1?" – hjertet blinker i det rigtige tempo i første runde":""}.</p>`
+      : `<button class="btn earth mshold" id="msblaes">💨 Hold nede: indblæsning</button><p class="muted center psmall">Hold ca. 1 sekund, og se brystkassen hæve sig.</p>`;
+    if(st.v===1) return msRaekkeHTML(st.r);
+    return st.del==="valg" ? `<div class="aktopg">${esc(HLR_BRAND.spm)}</div>${st.valg.map((o,k)=>`<button class="btn secondary" data-a="msk" data-k="valg" data-t="${k}">${esc(o.t)}</button>`).join("")}`
+      : `<button class="btn gold mshold" id="mskoel">🚿 Hold nede for at køle</button>`;
+  },
+  tryk(st, k, d){
+    if(k==="r" && st.v===1){ msRaekkeTryk(st.r, +d.t);
+      if(st.r.naeste>=st.r.trin.length){ const stj=msRaekkeStj(st.r); msSlut(st, { stjerner:stj, score:Math.round(100*Math.max(0,8-st.r.fejl)/8), tekst:st.r.fejl?`${st.r.fejl} forkerte tryk undervejs.`:"Alle trin i rigtig rækkefølge i første forsøg!",
+        laer:"I stabilt sideleje kan tungen ikke falde bagover, og opkast kan løbe ud af munden. Bliv hos personen, og tjek vejrtrækningen, til hjælpen kommer." }); }
+      else render(); }
+    if(k==="valg" && st.v===2){ st.valgOk=st.valg[+d.t].ok; st.del="koel"; vibrer(st.valgOk?20:[60,40,60]);
+      lejrToast(st.valgOk ? "✅ Rigtigt – køl med lunkent vand!" : "❌ Køl med lunkent vand i 20 minutter."); render(); }
+  },
+  efter(st){
+    if(st.v===0){
+      const tryk=ev=>{ if(ev) ev.preventDefault(); if(st.del!=="tryk") return; const nu=performance.now(), tol=hlrTol(st);
+        if(st.sidst){ const bpm=60000/(nu-st.sidst); st.bpm = st.bpm ? st.bpm*.4+bpm*.6 : bpm; st.ialt++; if(bpm>=100-tol && bpm<=120+tol) st.gode++; }
+        st.sidst=nu; st.tryk++; vibrer(8);
+        const b=document.getElementById("msbryst"); if(b){ b.classList.add("ned"); msTid(()=>b.classList.remove("ned"), 110); }
+        const n=document.getElementById("msnaal"); if(n && st.bpm) n.setAttribute("transform", `translate(${hlrX(st.bpm)} 0)`);
+        const t=document.getElementById("msbpm"); if(t) t.textContent = st.bpm ? Math.round(st.bpm)+" / min" : "";
+        if(st.tryk>=30){ st.del="blaes"; st.blaes=0; render(); } else msStatus(MS.hlr.status(st)); };
+      const bane=document.getElementById("msbane"); if(bane) bane.addEventListener("pointerdown", tryk);
+      const k=document.getElementById("mstryk"); if(k) k.addEventListener("pointerdown", tryk);
+      msHold(document.getElementById("msblaes"), ()=>{ const b=document.getElementById("msbryst"); if(b) b.classList.add("ind"); },
+        s=>{ const b=document.getElementById("msbryst"); if(b) b.classList.remove("ind"); st.blaes++; if(s>=.6 && s<=2.5){ st.blaesGode++; lejrToast("💨 God indblæsning"); } else lejrToast(s<.6?"For kort – hold ca. 1 sekund":"For lang – ca. 1 sekund er nok");
+          if(st.blaes>=2){ if(st.runde>=3) return hlrSlut(st); st.runde++; st.del="tryk"; st.tryk=0; st.sidst=0; st.bpm=0; render(); } else msStatus(MS.hlr.status(st)); });
+    }
+    if(st.v===2 && st.del==="koel"){
+      const vand=v=>{ st.holder=v; const s=document.getElementById("msstraale"); if(s) s.style.display=v?"":"none"; };
+      msHold(document.getElementById("mskoel"), ()=>vand(true), ()=>vand(false));
+      msLoop(dt=>{ if(st.holder) st.min+=dt; else if(st.min>0) st.slip+=dt;
+        const bar=document.getElementById("msbar"), m=document.getElementById("msmin"); if(bar) bar.setAttribute("width", 240*Math.min(1,st.min/20)); if(m) m.textContent=`${Math.floor(st.min)} af 20 minutter`;
+        if(!st.holder) msStatus(MS.hlr.status(st));
+        if(st.min>=20){ const slip=st.slip*st.sv, stj=(st.valgOk?1:0)+(slip<1.5?2:slip<4?1:0);
+          msSlut(st, { stjerner:stj, score:Math.round(100*20/(20+slip*2)*(st.valgOk?1:.6)), tekst:`Du kølede i 20 minutter${st.slip>0.05?` og slap i ${st.slip.toFixed(1).replace(".",",")} sekunder`:" uden at slippe"}.${st.valgOk?"":" Men første valg var forkert."}`, laer:HLR_BRAND.fk });
+          return false; } });
+    }
+  },
+});
+function hlrSlut(st){
+  const pct=st.ialt?Math.round(100*st.gode/st.ialt):0; let stj = pct>=85 ? 3 : pct>=65 ? 2 : pct>=40 ? 1 : 0; if(st.blaesGode<4 && stj>0) stj--;
+  msSlut(st, { stjerner:stj, score:pct, tekst:`${pct} % af trykkene var i rigtigt tempo, og ${st.blaesGode} af 6 indblæsninger var gode.`,
+    laer:"Ved hjertestop: Ring 112, giv 30 tryk midt på brystet (5-6 cm ned, 100-120 i minuttet) og 2 indblæsninger – og få fat i en hjertestarter. Fortsæt, til hjælpen kommer." });
+}
+function hlrDukke(bpm, tol, forside, st){
+  const zone=`<rect x="${hlrX(100-tol)}" y="16" width="${hlrX(120+tol)-hlrX(100-tol)}" height="14" fill="#cfe8b8"/><rect x="${hlrX(100)}" y="16" width="${hlrX(120)-hlrX(100)}" height="14" fill="#4caf50"/>`;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#a9cf86"/><rect x="18" y="64" width="284" height="160" rx="12" fill="#3f6fa0" opacity=".85"/>
+    ${forside?"":`<rect x="40" y="16" width="240" height="14" rx="7" fill="#fff"/>${zone}<g id="msnaal" transform="translate(${hlrX(bpm||60)} 0)"><path d="M0 10 V36" stroke="#c62828" stroke-width="3"/><path d="M-5 38 H5 L0 32Z" fill="#c62828"/></g>
+      <text x="40" y="48" font-size="11" fill="#2f4a2b">60</text><text x="160" y="48" font-size="12" font-weight="800" fill="#2f4a2b" text-anchor="middle">100-120 i minuttet</text><text x="268" y="48" font-size="11" fill="#2f4a2b">160</text>
+      <text x="282" y="80" font-size="13" font-weight="800" fill="#fff" text-anchor="end" id="msbpm">${bpm?Math.round(bpm)+" / min":""}</text>`}
+    <circle cx="66" cy="146" r="24" fill="#f1c9a5"/><path d="M52 138 h6 M74 138 h6 M58 156 q8 5 16 0" stroke="#7a5a44" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <g id="msbryst"><rect x="92" y="112" width="140" height="68" rx="22" fill="#c62828"/><path d="M110 118 L92 96 M110 174 L92 196" stroke="#f1c9a5" stroke-width="12" stroke-linecap="round"/>
+      <ellipse cx="150" cy="146" rx="18" ry="13" fill="#f1c9a5" stroke="#c99a7a" stroke-width="2"/><ellipse cx="150" cy="140" rx="15" ry="11" fill="#f5d3b4" stroke="#c99a7a" stroke-width="2"/></g>
+    <path d="M232 128 H296 M232 164 H296" stroke="#2b3a55" stroke-width="18" stroke-linecap="round"/>
+    ${!forside && st && st.runde===1 && st.del==="tryk" ? `<text x="270" y="108" font-size="22" class="mspuls">❤️</text>` : ""}
+    ${!forside && st && st.del==="blaes" ? `<text x="20" y="118" font-size="22">💨</text>` : ""}</svg>`;
+}
+
+/* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
   if(!el || el.disabled) return;

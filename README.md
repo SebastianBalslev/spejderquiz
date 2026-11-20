@@ -147,6 +147,17 @@ Aktiviteterne står i `AKT_NY` (scene og knapper) og i `AKT_FOR` (knappen på by
 - **Fyrtårn** (niv 90, Koder guld, ved søen): »Natsignaler« – send dagens ord i morse til skibet på søen. Fyret er tændt fra kl. 17 til 7.
 - **Lande** (`LANDE`, 32 lande): navn, flag og et spørgsmål med det rigtige svar først og en forklaring. Bruges af jamboreen, flagalléen og lejrradioen. Milepælen til Verdensjamboree kræver en komplet flagallé med alle landes flag.
 
+### Lejrens minispil
+Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`, `msSlut` i `index.html`). Hvert spil oprettes med `msNyt(id, {...})` og kommer derved automatisk i `AKT_FOR` (knappen »Minispil: …« i bygningens menu) og `AKT_NY` (aktiviteten `ms_<id>`). Alt er SVG, CSS og touch – ingen biblioteker.
+- **Forløb:** forside med varianter, beskrivelse, stjerner og rekord → nedtælling 3-2-1 (kun spil i realtid, `rt:true`) → spillet → resultat med 1-3 stjerner, score, »🏆 Ny rekord!«, belønning og et lærings-tip. »Stop spillet« går tilbage til forsiden.
+- **Gemt:** `c.minispil[id] = { stjerner, rekord, gange, sidstV, v:{ variant:{ s, r } } }` – bedste stjerner og score i alt og pr. variant. Gamle gemte spil uden feltet virker som før.
+- **Belønning:** point via `belon()` (højst `AKT_LOFT` = 5 gange om dagen pr. spil og bygning, tæller `ms:<id>:<bygning>`): `point × stjerner/3 × sværhed`, plus `belon`s niveaubonus. Ingen stjerner = ingen point. Nogle spil giver også materialer (højst den ledige lagerplads, og kun mens dagens loft ikke er nået). Point fra minispil tæller som lejr-XP ligesom de andre aktiviteter.
+- **Bygningsniveau:** spillet bliver lidt sværere (`msSvaer`: +1 % pr. niveau, højst +50 % fra niveau 51) og giver lidt flere point. Hvert 5. niveau åbner en ny variant (`msVarNiv`: variant 2 på niveau 5, variant 3 på niveau 10 …).
+- **Samlinger** (`SAMLINGER`, `samlTilfoej`): `c.dagbog` (dyr og fugle set), `c.sporsamling` og `c.stjerneatlas`. En komplet samling giver lejr-XP én gang (`c.samlingXP`).
+- **Siden »🎮 Lejrens minispil«** (knappen midt over lejrpladsen, `scrMinispil`): alle minispil som åbne eller låste, med stjerner, rekord, bygningens niveau og antal åbne varianter. Tryk på et åbent spil for at gå til bygningen, og på et låst spil for at se bygningens infoside. Samlingerne vises øverst.
+- `prefers-reduced-motion` respekteres: konfetti og pynt-animationer slås fra (`MS_ROLIG`), og spil med bevægelse går langsommere.
+- **❤️ Førstehjælp** (førstehjælpsstationen, `hlr`): *Hjertelungeredning* – 30 tryk i takt med en tempomåler (grøn zone 100-120 i minuttet; på lave niveauer tæller lidt mere med, `hlrTol`) og 2 indblæsninger, hvor man holder knappen nede ca. 1 sekund. 3 runder, og i første runde blinker et hjerte i det rigtige tempo. Stjerner efter, hvor stor en del af trykkene var i rigtigt tempo (85/65/40 %), og én mindre ved under 4 gode indblæsninger. Fra niveau 5 *Stabilt sideleje* (8 trin i rækkefølge, `HLR_SIDELEJE`), fra niveau 10 *Forbrænding* (vælg behandlingen, og hold vandet på i 20 »minutter« – 1 sekund pr. minut – uden at slippe).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).
