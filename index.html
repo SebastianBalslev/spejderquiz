@@ -576,6 +576,10 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .kfelt.start{box-shadow:inset 0 0 0 3px #f2c94c;background:#fff3c4}.kfelt.maal{box-shadow:inset 0 0 0 3px #2e7d32;background:#d8f0c8}.kfelt.forkert{box-shadow:inset 0 0 0 3px #c62828;background:#f6d0c8}
 .ksti{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);pointer-events:none}.krose{position:absolute;right:10px;top:10px;width:46px;height:46px;background:rgba(255,255,255,.8);border-radius:50%;pointer-events:none}
 #msgnist circle{opacity:0}#msgnist.slag circle{animation:msgnist .55s ease-out}@keyframes msgnist{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(10px,-34px)}}
+.memgrid{display:grid;gap:6px;padding:8px;background:#e3cf9f}
+.memkort{aspect-ratio:3/4;border:none;border-radius:10px;background:#8a5a35;box-shadow:0 3px 0 #5c3a20;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;font:inherit;min-width:0;overflow:hidden;transition:transform .15s}
+.memkort.op{background:#fbf7ec;color:var(--ink);box-shadow:0 3px 0 #c9b98f}.memkort.fundet{box-shadow:inset 0 0 0 3px #4caf50,0 3px 0 #2e7d32}.memkort:active{transform:scale(.96)}
+.memspor{width:82%;height:auto}.memdyr{font-size:30px;line-height:1}.memkort small{font-size:11px;line-height:1.15;text-align:center}.memmrk{font-size:18px;line-height:1}.memkort .memtekst{font-size:9.5px;line-height:1.15}.membag{font-size:26px;opacity:.55}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -777,7 +781,7 @@ small.mangler{color:var(--bad);display:block;margin-bottom:8px}
 @keyframes badgepop{0%{opacity:0;transform:scale(0) rotate(-240deg)}70%{opacity:1;transform:scale(1.15) rotate(12deg)}100%{transform:scale(1) rotate(0)}}
 @keyframes glow{50%{filter:drop-shadow(0 0 22px rgba(255,220,110,.95))}}
 @keyframes fall{to{transform:translateY(112vh) rotate(var(--r,720deg))}}
-.screen{animation:fadein .2s}
+.screen{animation:fadein .2s}.screen.stille{animation:none}
 @media (max-width:360px){.qtext{font-size:18px}.ans{font-size:16px}.grid{gap:8px}.bcell .badge{width:64px;height:64px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
@@ -6350,6 +6354,7 @@ window.addEventListener("popstate", ev => {
   else go(cur() ? "profil" : "vaelg", {}, false);
 });
 
+let renderSidst = null, renderSidstMs = null;
 function render(){
   let s = nav.screen;
   if(!cur() && !["vaelg","pedit"].includes(s) && !(s==="editor" && draft && draft.retur==="pedit")) s = "vaelg";
@@ -6371,7 +6376,10 @@ function render(){
                traening:scrTraening, fejlliste:scrFejlliste, flash:scrFlash, morsetr:scrMorseTr, semafortr:scrSemaforTr, quiz:scrQuiz, resultat:scrResultat, lejr:scrLejr, indst:scrIndst, byg:scrByg, telt:scrTelt, akt:scrAkt, minispil:scrMinispil, patrulje:scrPatrulje, pedit:scrPedit, pquiz:scrPquiz, presultat:scrPresultat, hytte:scrHytte, moede:scrMoede, loeb:scrLoeb, loebroller:scrLoebRoller, loebmaal:scrLoebMaal }[s];
   document.body.classList.toggle("stortekst", !!(cur() && indst(cur()).stor));
   document.body.classList.toggle("lejrskaerm", s==="lejr");
-  app.innerHTML = `<div class="screen">${fn()}</div>`;
+  // I et minispil tegnes skærmen tit om (fx ved hvert vendt kort) – så skal den ikke tones ind hver gang
+  const stille = s==="akt" && renderSidst==="akt" && akt && akt.ms && akt.ms.fase!=="intro" && renderSidstMs===akt.ms;
+  renderSidst = s; renderSidstMs = akt && akt.ms;
+  app.innerHTML = `<div class="screen${stille?" stille":""}">${fn()}</div>`;
   if(s==="quiz"){ startTimer(); startMedia(quiz.qs[quiz.i]); oplaesQuiz(); } else { stopMedia(); stopOplaes(); }
   if(s==="morsetr" && mtr && !mtr.res) startMedia(morseTrQ());
   if(s==="loeb" && loebOpg && loebOpg.trin==="svar" && loebOpg.o.media && !loebOpg.svaret) startMedia({ media:loebOpg.o.media });
@@ -12096,6 +12104,7 @@ const MS = {};
 const MS_ROLIG = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);   // færre og langsommere bevægelser
 let msUr = [], msRaf = null;
 function msStop(){ msUr.forEach(t=>{ clearTimeout(t); clearInterval(t); }); msUr=[]; if(msRaf) cancelAnimationFrame(msRaf); msRaf=null; }
+// NB: render() stopper alle timere (aktEfterRender → msStop) – sæt derfor timere efter et kald til render()
 function msTid(fn, ms){ const t=setTimeout(fn, ms); msUr.push(t); return t; }
 function msInterval(fn, ms){ const t=setInterval(fn, ms); msUr.push(t); return t; }
 // Én løkke pr. billede, så længe spillet er i gang: fn(dt, tid) med sekunder. Returnerer fn false, stopper løkken.
@@ -12110,6 +12119,9 @@ function msAkt(id){ return "ms_"+id; }
 function msId(a){ return a && a.startsWith("ms_") && MS[a.slice(3)] ? a.slice(3) : null; }
 function msData(c, id){ c.minispil=c.minispil||{}; return c.minispil[id] || (c.minispil[id]={ stjerner:0, rekord:0, gange:0 }); }
 function msVarNiv(k){ return k===0 ? 1 : k*5; }   // variant 2 åbner på niveau 5, variant 3 på niveau 10 osv.
+// En variant er åben, når bygningen har niveauet – og spejderen har mærket, hvis varianten har et krav ([emne, niveau])
+function msVarAaben(c, spec, k, niv){ const V=spec.varianter[k]; return niv>=msVarNiv(k) && aktKravOk(c, V.krav); }
+function msVarLaast(c, spec, k, niv){ const V=spec.varianter[k]; return niv<msVarNiv(k) ? `niv ${msVarNiv(k)}` : `kræver ${EMNE[V.krav[0]].navn} i ${NIVEAUER[V.krav[1]].navn.toLowerCase()}`; }
 function msSvaer(niv){ return Math.min(1.5, 1 + (Math.max(1,niv)-1)/100); }   // 1,00 på niveau 1 → 1,50 fra niveau 51
 function msTaeller(id, bid){ return "ms:"+id+":"+bid; }
 function msStjHTML(n, max){ max=max||3; let s=""; for(let k=0;k<max;k++) s+=`<span class="${k<n?"":"tom"}">★</span>`; return s; }
@@ -12145,18 +12157,18 @@ function samlNyHTML(x){ return `<div class="samlny"><span class="samlik">${x.iko
 function scrSpil(){
   const c=cur(), a=nav.params.a, id=msId(a), spec=MS[id], i=nav.params.i, b=BYGID[c.lejr[i]], niv=lejrNiv(c,i);
   if(!akt || akt.a!==a || akt.i!==i) akt={ a, i, besked:"" };   // samme spil ved en anden bygning starter forfra
-  if(!akt.ms){ const aabne=spec.varianter.filter((_,k)=>niv>=msVarNiv(k)).length; akt.ms={ id, fase:"intro", v:Math.min(aabne-1, (msData(c,id).sidstV||0)), bid:b.id, niv, sv:msSvaer(niv) }; }
+  if(!akt.ms){ const sv=msData(c,id).sidstV||0; akt.ms={ id, fase:"intro", v:msVarAaben(c,spec,sv,niv) ? sv : 0, bid:b.id, niv, sv:msSvaer(niv) }; }
   const st=akt.ms, d=msData(c,id), V=spec.varianter[st.v];
   let h=`<div class="topbar"><button class="iconbtn" data-a="til" data-to="lejr" aria-label="Tilbage til lejrpladsen">←</button><h1>${spec.ikon} ${esc(spec.navn)}</h1><span class="spacer"></span><button class="iconbtn" data-a="til" data-to="minispil" aria-label="Alle minispil">🎮</button></div>`;
   if(st.fase==="intro"){
     const tid=msTaeller(id,b.id), brugt=Math.min(AKT_LOFT, dagens(c).akt[tid]||0), naeste=spec.varianter.findIndex((_,k)=>niv<msVarNiv(k)), dv=(d.v||{})[st.v];
     h += `<div class="aktscene msbane">${spec.forside ? spec.forside(st,c) : msForside(spec)}</div>
-      ${spec.varianter.length>1 ? `<div class="msvar">${spec.varianter.map((x,k)=>niv>=msVarNiv(k) ? `<button class="chip ${k===st.v?"on":""}" data-a="msvar" data-k="${k}">${esc(x.navn)}</button>`
-        : `<button class="chip" disabled>🔒 ${esc(x.navn)} · niv ${msVarNiv(k)}</button>`).join("")}</div>` : ""}
+      ${spec.varianter.length>1 ? `<div class="msvar">${spec.varianter.map((x,k)=>msVarAaben(c,spec,k,niv) ? `<button class="chip ${k===st.v?"on":""}" data-a="msvar" data-k="${k}">${esc(x.navn)}</button>`
+        : `<button class="chip" disabled>🔒 ${esc(x.navn)} · ${msVarLaast(c,spec,k,niv)}</button>`).join("")}</div>` : ""}
       <div class="aktopg msintro"><b>${esc(V.navn)}</b><br>${V.besk}</div>
       <div class="msrek"><span class="msstj lille">${msStjHTML(dv?dv.s:0)}</span> ${dv ? `Rekord: <b>${dv.r}</b> · ` : ""}Spillet ${d.gange||0} ${d.gange===1?"gang":"gange"}</div>
       <button class="btn gold" data-a="msstart">▶️ Start</button>
-      <p class="muted center psmall">Point i dag: ${brugt} af ${AKT_LOFT} · ${b.navn} niveau ${niv}${niv>1?` – spillet er ${Math.round((st.sv-1)*100)} % sværere og giver lidt flere point`:" – opgrader for et sværere spil med flere point"}${naeste>0?`. Ny variant på niveau ${msVarNiv(naeste)}`:""}.</p>`;
+      <p class="muted center psmall">Point i dag: ${brugt} af ${AKT_LOFT} · ${b.navn} niveau ${niv}${niv>1?(spec.svaer===false?" – giver lidt flere point":` – spillet er ${Math.round((st.sv-1)*100)} % sværere og giver lidt flere point`):(spec.svaer===false?" – opgrader for flere point":" – opgrader for et sværere spil med flere point")}${naeste>0?`. Ny variant på niveau ${msVarNiv(naeste)}`:""}.</p>`;
   }
   else if(st.fase==="klar" || st.fase==="spil"){
     h += `<div class="aktscene msbane" id="msbane">${spec.tegn(st,c)}${st.fase==="klar"?`<div class="msned" id="msned">${st.ned}</div>`:""}</div>
@@ -12235,7 +12247,7 @@ function scrMinispil(){
   const rad=spec=>{
     const felter=bygFelter(c, spec.byg).filter(i=>!underByg(c,i)).sort((x,y)=>lejrNiv(c,y)-lejrNiv(c,x)), d=(c.minispil||{})[spec.id];
     const navne=[...new Set(spec.byg.map(x=>BYGID[x].navn))].join(" / ");
-    if(felter.length){ const i=felter[0], niv=lejrNiv(c,i), nv=spec.varianter.filter((_,k)=>niv>=msVarNiv(k)).length;
+    if(felter.length){ const i=felter[0], niv=lejrNiv(c,i), nv=spec.varianter.filter((_,k)=>msVarAaben(c,spec,k,niv)).length;
       return `<button class="msrad" data-a="msgaa" data-i="${i}" data-id="${spec.id}"><span class="msik">${spec.ikon}</span><span class="mstxt"><b>${esc(spec.navn)}</b><small>${navne} · niv ${niv} · ${nv} af ${spec.varianter.length} ${spec.varianter.length===1?"variant":"varianter"}</small></span><span class="msst"><span class="msstj lille">${msStjHTML(d?d.stjerner:0)}</span><small>${d&&d.gange?`Rekord ${d.rekord}`:"Ikke spillet"}</small></span></button>`; }
     const b=spec.byg.map(x=>BYGID[x]).sort((x,y)=>(x.lejrniv||1)-(y.lejrniv||1))[0], bygges=bygFelter(c,spec.byg).length>0;
     return `<button class="msrad laast" data-a="msbyginfo" data-id="${b.id}"><span class="msik">${spec.ikon}</span><span class="mstxt"><b>🔒 ${esc(spec.navn)}</b><small>${bygges?`⏳ ${navne} bygges`:`Byg ${navne.toLowerCase()} – fra lejrniveau ${b.lejrniv||1}${b.krav?`, ${EMNE[b.krav[0]].navn} i ${NIVEAUER[b.krav[1]].navn.toLowerCase()}`:""}`}</small></span><span class="msst"><small>Se mere ›</small></span></button>`;
@@ -12664,7 +12676,7 @@ function kompasRute(st, c){
   }
   return null;
 }
-msNyt("kompas", { navn:"Kompasløb", ikon:"🧭", byg:["kompasrose","vejviser"], knap:"🧭 Minispil: Kompasløb", point:15,
+msNyt("kompas", { navn:"Kompasløb", ikon:"🧭", byg:["kompasrose","vejviser"], knap:"🧭 Minispil: Kompasløb", point:15, svaer:false,
   varianter:[
     { navn:"Kompasløb", besk:"Kompasløb på din egen lejrplads. Nord (0°) er opad på kortet, øst (90°) til højre, syd (180°) nedad og vest (270°) til venstre. Ét felt er ét skridt på kortet. Følg kursen fra startbygningen, og tryk på den bygning, du ender ved. 5 opgaver." },
     { navn:"Skrå kurser", besk:"Nu kommer også 45°, 135°, 225° og 315° – på skrå gennem felterne – og kurserne står kun i grader." },
@@ -12951,6 +12963,77 @@ function flagSVG(st){
     ${st.v===1?`<path d="M150 ${flagY(.5)+22} H240" stroke="#f2c94c" stroke-width="3" stroke-dasharray="6 4"/><text x="244" y="${flagY(.5)+26}" font-size="11" font-weight="800" fill="#7a5a10">halv stang</text>`:""}
     <g id="msflaget" transform="translate(0 ${flagY(st.h||0)})"><rect x="163" y="0" width="64" height="44" fill="#c8102e"/><rect x="183" y="0" width="9" height="44" fill="#fff"/><rect x="163" y="17.5" width="64" height="9" fill="#fff"/></g>
     ${figur(cur().look,118,206,64)}</svg>`;
+}
+
+/* ---------- Minispil: Spor-memory (sporkassen) – par spor og dyr. Med Spor i sølv også ekskrementer og gnav. Fylder c.sporsamling ---------- */
+const SPOR_SVG = {
+  pote(t, pad, klo){ return `<ellipse cx="${pad[0]}" cy="${pad[1]}" rx="${pad[2]}" ry="${pad[3]}" fill="#5c3a20"/>${t.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#5c3a20"/>${klo?`<path d="M${x} ${y-r} l0 -${klo}" stroke="#5c3a20" stroke-width="1.6" stroke-linecap="round"/>`:""}`).join("")}`; },
+  klov(b, h, bi){ return `<path d="M29 ${30-h} C${29-b} ${34-h*.6} ${29-b} ${30+h*.7} ${29-b*.6} ${30+h} L29 ${30+h}Z M31 ${30-h} C${31+b} ${34-h*.6} ${31+b} ${30+h*.7} ${31+b*.6} ${30+h} L31 ${30+h}Z" fill="#5c3a20"/>${bi?`<ellipse cx="18" cy="${32+h}" rx="3" ry="4" fill="#5c3a20"/><ellipse cx="42" cy="${32+h}" rx="3" ry="4" fill="#5c3a20"/>`:""}`; },
+};
+const SPOR = [
+  { id:"raev", ikon:"🦊", navn:"Ræv", type:"spor", tegn:()=>SPOR_SVG.pote([[25,19,4.5],[35,19,4.5],[18,31,4],[42,31,4]],[30,41,8,7],3), fakta:"Rævens spor er ovalt, og de to forreste tæer sidder langt fremme. Sporene ligger næsten på en lige linje – som en snor." },
+  { id:"kat", ikon:"🐈", navn:"Kat", type:"spor", tegn:()=>SPOR_SVG.pote([[19,27,4.5],[26,20,4.5],[34,20,4.5],[41,27,4.5]],[30,40,10,8],0), fakta:"Katten trækker kløerne ind, når den går – derfor er der ingen klomærker i sporet, og det er rundt." },
+  { id:"pindsvin", ikon:"🦔", navn:"Pindsvin", type:"spor", tegn:()=>SPOR_SVG.pote([[16,30,3.5],[21,21,3.5],[30,18,3.5],[39,21,3.5],[44,30,3.5]],[30,38,9,7],2), fakta:"Pindsvinets spor har fem tæer og ligner en lille hånd." },
+  { id:"graevling", ikon:"🦡", navn:"Grævling", type:"spor", tegn:()=>SPOR_SVG.pote([[16,25,3.5],[23,23,3.5],[30,22,3.5],[37,23,3.5],[44,25,3.5]],[30,39,14,8],7), fakta:"Grævlingen har fem tæer på række og lange kløer til at grave med – sporet ligner en lille bjørnepote." },
+  { id:"raadyr", ikon:"🦌", navn:"Rådyr", type:"spor", tegn:()=>SPOR_SVG.klov(7,16,false), fakta:"Rådyrets spor er to smalle, spidse klove, der tilsammen ligner et hjerte." },
+  { id:"vildsvin", ikon:"🐗", navn:"Vildsvin", type:"spor", tegn:()=>SPOR_SVG.klov(11,13,true), fakta:"Vildsvinet har brede klove og to biklove bagved, som tit kan ses i sporet." },
+  { id:"hare", ikon:"🐇", navn:"Hare", type:"spor", tegn:()=>`<ellipse cx="22" cy="15" rx="5" ry="10" fill="#5c3a20"/><ellipse cx="38" cy="15" rx="5" ry="10" fill="#5c3a20"/><ellipse cx="30" cy="36" rx="4" ry="6" fill="#5c3a20"/><ellipse cx="30" cy="51" rx="4" ry="6" fill="#5c3a20"/>`, fakta:"Haren hopper: de lange bagben lander foran forbenene, så de to store spor ligger forrest." },
+  { id:"egern", ikon:"🐿️", navn:"Egern", type:"spor", tegn:()=>`<ellipse cx="18" cy="16" rx="5" ry="8" fill="#5c3a20"/><ellipse cx="42" cy="16" rx="5" ry="8" fill="#5c3a20"/><circle cx="24" cy="40" r="4" fill="#5c3a20"/><circle cx="36" cy="40" r="4" fill="#5c3a20"/>${[14,18,22].map(x=>`<circle cx="${x}" cy="6" r="1.6" fill="#5c3a20"/><circle cx="${x+24}" cy="6" r="1.6" fill="#5c3a20"/>`).join("")}`, fakta:"Egernet hopper som haren, men forbenene lander side om side – og sporene ender ofte ved et træ." },
+  { id:"and", ikon:"🦆", navn:"Gråand", type:"spor", tegn:()=>`<path d="M30 50 L15 18 Q30 26 45 18Z" fill="#a07a50" opacity=".5"/><path d="M30 50 L15 18 M30 50 L30 12 M30 50 L45 18" stroke="#5c3a20" stroke-width="3.5" stroke-linecap="round"/>`, fakta:"Andens tre tæer er forbundet med svømmehud, så sporet ligner en trekant." },
+  { id:"krage", ikon:"🐦", navn:"Krage", type:"spor", tegn:()=>`<path d="M30 34 L18 10 M30 34 L30 7 M30 34 L42 10 M30 34 L30 54" stroke="#5c3a20" stroke-width="3" stroke-linecap="round"/>`, fakta:"Fugle som kragen har tre tæer fremad og én bagud. Kragen går – den hopper ikke som spurven." },
+  { id:"mus", ikon:"🐭", navn:"Mus", type:"spor", tegn:()=>`<path d="M30 4 Q24 30 32 56" stroke="#5c3a20" stroke-width="1.2" fill="none"/>${[[20,12],[38,14],[20,34],[38,36]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3" fill="#5c3a20"/><circle cx="${x+4}" cy="${y+5}" r="2.2" fill="#5c3a20"/>`).join("")}`, fakta:"Musens spor er bittesmå og ligger parvis – tit med en tynd streg fra halen." },
+  { id:"hjort", ikon:"🦌", navn:"Kronhjort", type:"spor", tegn:()=>SPOR_SVG.klov(10,20,false), fakta:"Kronhjortens klovspor ligner rådyrets, men er meget større – op til 9 cm langt." },
+  // Med Spor i sølv: ekskrementer og gnav
+  { id:"g_egern", ikon:"🐿️", navn:"Egern", type:"gnav", mrk:"🌲", tekst:"Grankogle gnavet, så der sidder flossede skæl tilbage", fakta:"Egernet river skællene af koglen for at nå frøene – der sidder trevler tilbage langs stilken." },
+  { id:"g_mus", ikon:"🐭", navn:"Skovmus", type:"gnav", mrk:"🌲", tekst:"Grankogle gnavet glat og pæn hele vejen rundt", fakta:"Mus gnaver koglen meget pænt, så stilken er glat. Egern efterlader flossede rester." },
+  { id:"g_spaette", ikon:"🐦", navn:"Stor flagspætte", type:"gnav", mrk:"🪵", tekst:"Kogler kilet ind i en sprække i et træ – og mange tomme kogler nedenunder", fakta:"Spætten bruger en sprække som skruestik (en »spættesmedje«), mens den hakker frøene ud." },
+  { id:"g_baever", ikon:"🦫", navn:"Bæver", type:"gnav", mrk:"🪵", tekst:"Træstub gnavet spids som en blyant", fakta:"Bæveren fælder træer med sine store fortænder og bygger dæmninger af dem." },
+  { id:"e_raev", ikon:"🦊", navn:"Ræv", type:"ekskr", mrk:"💩", tekst:"Pølseformet med hår og knoglestumper og snoet spids – lagt på en sten", fakta:"Ræven lægger sine efterladenskaber på sten og tuer for at markere sit område." },
+  { id:"e_raadyr", ikon:"🦌", navn:"Rådyr", type:"ekskr", mrk:"💩", tekst:"Små, sorte og blanke kugler i en lille bunke", fakta:"Rådyrets ekskrementer er små aflange kugler, der ligger samlet i en bunke." },
+  { id:"e_hare", ikon:"🐇", navn:"Hare", type:"ekskr", mrk:"💩", tekst:"Runde, lidt flade gulbrune kugler af plantetrævler", fakta:"Harens kugler er lavet af græs og plantedele – man kan se trævlerne, hvis man brækker en over." },
+  { id:"e_ugle", ikon:"🦉", navn:"Natugle", type:"ekskr", mrk:"🦴", tekst:"Grå klump af hår og små knogler under et træ", fakta:"Det er en gylp: uglen kaster hår og knogler op, som den ikke kan fordøje. I gylpen kan man finde musekranier." },
+];
+SAMLINGER.sporsamling = { navn:"Sporsamlingen", ikon:"🐾", xp:250, arter:()=>SPOR.map(x=>({ ...x, navn:x.type==="spor"?`${x.navn} – spor`:x.type==="gnav"?`${x.navn} – gnav`:`${x.navn} – efterladenskaber`, hint:x.type==="spor"?"Spor-memory ved sporkassen":"Kræver Spor i sølv – ved sporkassen" })),
+  besk:"Spor, gnav og efterladenskaber, du har parret med det rigtige dyr ved sporkassen." };
+function sporKort(o, side){
+  if(side==="dyr") return `<span class="memdyr">${o.ikon}</span><small>${esc(o.navn)}</small>`;
+  if(o.type==="spor") return `<svg viewBox="0 0 60 60" class="memspor">${o.tegn()}</svg>`;
+  return `<span class="memmrk">${o.mrk}</span><small class="memtekst">${esc(o.tekst)}</small>`;
+}
+msNyt("spor", { navn:"Spor-memory", ikon:"🐾", byg:["sporkasse"], knap:"🐾 Minispil: Spor-memory", point:12, svaer:false,
+  varianter:[
+    { navn:"Spor-memory", besk:"Find parrene: et spor i sandet og dyret, der har sat det. Vend to kort ad gangen. Jo færre forsøg, jo flere stjerner. Hvert par, du finder, kommer i sporsamlingen." },
+    { navn:"Gnav og efterladenskaber", krav:["spor",2], besk:"Nu er der også gnavede kogler, gylp og efterladenskaber – hvem har været her?" },
+    { navn:"Stor sporkasse", besk:"8 par i stedet for 6 – med Spor i sølv også gnav og efterladenskaber." },
+  ],
+  start(st, c){ const r=msTilfaeldig(Date.now()), solv=(c.badges.spor||0)>=2, n=st.v===2?8:6;
+    const spor=shuffle(SPOR.filter(x=>x.type==="spor")), andet=shuffle(SPOR.filter(x=>x.type!=="spor"));
+    let valg = st.v===1 ? andet.slice(0,4).concat(spor.slice(0,2)) : st.v===2 && solv ? andet.slice(0,3).concat(spor.slice(0,5)) : spor.slice(0,n);
+    // ingen to af samme dyr (fx rådyrets spor og efterladenskaber), så parrene er entydige
+    const set=new Set(); valg=valg.filter(x=>!set.has(x.ikon+x.navn) && set.add(x.ikon+x.navn)); for(const x of spor){ if(valg.length>=n) break; if(!set.has(x.ikon+x.navn)){ set.add(x.ikon+x.navn); valg.push(x); } }
+    const kort=shuffle(valg.flatMap(o=>[{ id:o.id, side:"spor" },{ id:o.id, side:"dyr" }]));
+    Object.assign(st, { kort, op:[], fundet:[], forsoeg:0, laas:false, n:valg.length, nye:[] }); },
+  forside(){ return `<div class="memgrid" style="grid-template-columns:repeat(4,1fr)">${["raev","raadyr","hare","and"].map(id=>{ const o=SPOR.find(x=>x.id===id); return `<div class="memkort op">${sporKort(o,"spor")}</div><div class="memkort op">${sporKort(o,"dyr")}</div>`; }).join("")}</div>`; },
+  tegn(st){ const kol=4;
+    return `<div class="memgrid" style="grid-template-columns:repeat(${kol},1fr)">${st.kort.map((k,i)=>{ const o=SPOR.find(x=>x.id===k.id), vis=st.op.includes(i)||st.fundet.includes(k.id);
+      return `<button class="memkort ${vis?"op":""} ${st.fundet.includes(k.id)?"fundet":""}" data-a="msk" data-k="vend" data-t="${i}" aria-label="${vis?esc(o.navn):"Skjult kort"}">${vis?sporKort(o,k.side):`<span class="membag">🐾</span>`}</button>`; }).join("")}</div>`; },
+  status(st){ return `Par: ${st.fundet.length} af ${st.n} · Forsøg: ${st.forsoeg}`; },
+  kontrol(st){ const sidst=st.sidst && SPOR.find(x=>x.id===st.sidst); return sidst ? `<div class="aktopg msintro">${sidst.ikon} <b>${esc(sidst.navn)}</b>: ${esc(sidst.fakta)}</div>` : `<p class="muted center psmall">Vend to kort – et spor og et dyr, der passer sammen.</p>`; },
+  tryk(st, k, d, c){
+    if(k!=="vend" || st.laas) return; const i=+d.t, kk=st.kort[i]; if(st.op.includes(i) || st.fundet.includes(kk.id)) return;
+    st.op.push(i); vibrer(8);
+    if(st.op.length===2){ st.forsoeg++; const [a,b]=st.op.map(j=>st.kort[j]);
+      if(a.id===b.id && a.side!==b.side){ st.fundet.push(a.id); st.op=[]; st.sidst=a.id; vibrer(25); if(samlTilfoej(c,"sporsamling",a.id)) st.nye.push(a.id);
+        if(st.fundet.length>=st.n){ render(); return msTid(()=>sporSlut(st), 700); } }
+      else { st.laas=true; render(); msTid(()=>{ st.op=[]; st.laas=false; render(); }, 900); return; } }   // timeren sættes efter render (render stopper alle spillets timere)
+    render();
+  },
+});
+function sporSlut(st){
+  const ekstra=st.forsoeg-st.n, stj = ekstra<=3 ? 3 : ekstra<=st.n ? 2 : ekstra<=st.n*2 ? 1 : 0;
+  const nye=st.nye.map(id=>SAMLINGER.sporsamling.arter().find(x=>x.id===id));
+  msSlut(st, { stjerner:stj, score:Math.max(0, 100-ekstra*6), tekst:`Alle ${st.n} par fundet på ${st.forsoeg} forsøg.`, ekstra: nye.length ? nye.map(samlNyHTML).join("") : "",
+    laer:"Spor ses bedst i sne, mudder og fint sand – og tidligt om morgenen, når solen står lavt og laver skygger i sporene. Mål sporet, og se, om det ligger på en linje, i par eller i grupper." });
 }
 
 /* MINISPIL-SLUT */
