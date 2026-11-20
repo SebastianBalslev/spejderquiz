@@ -570,6 +570,11 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 #msstk.skaev{animation:msryst .3s}
 .mspadl .btn{min-height:72px;font-size:18px}#msbaad.bump{animation:msblink .32s}@keyframes msblink{50%{opacity:.35}}.msdyr{cursor:pointer}
 .msgem{cursor:pointer}.msgemt{transform-box:fill-box;transform-origin:50% 100%;transform:translateY(22px);opacity:0;transition:transform .18s ease-out,opacity .18s}.msgemt.op{transform:translateY(-24px);opacity:1}.msgemt.fanget{transform:translateY(-36px) scale(1.35)}
+.kkort{position:relative;background:#86b25a;padding:8px}.kgrid{display:grid;gap:2px;width:100%}
+.kfelt{border:none;border-radius:6px;background:rgba(255,255,255,.13);padding:0;display:grid;place-items:center;min-width:0;min-height:0;color:inherit;font:inherit}.kfelt:disabled{opacity:1}
+.kfelt.vand{background:#5aa5d6}.kfelt.byg{background:rgba(255,255,255,.32);cursor:pointer}.kfelt svg{width:88%;height:88%}
+.kfelt.start{box-shadow:inset 0 0 0 3px #f2c94c;background:#fff3c4}.kfelt.maal{box-shadow:inset 0 0 0 3px #2e7d32;background:#d8f0c8}.kfelt.forkert{box-shadow:inset 0 0 0 3px #c62828;background:#f6d0c8}
+.ksti{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);pointer-events:none}.krose{position:absolute;right:10px;top:10px;width:46px;height:46px;background:rgba(255,255,255,.8);border-radius:50%;pointer-events:none}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -12635,6 +12640,81 @@ function findSVG(st, forside){
   return `<svg viewBox="0 0 320 240" class="aktsvg">${bag}${nat?`<rect width="320" height="240" fill="#0d1630" opacity=".42"/><circle cx="292" cy="24" r="11" fill="#f4f1d0"/>`:""}
     ${skjul.map(([x,y,t],k)=>`<g data-s="${k}" transform="translate(${x} ${y})" class="msgem"><rect x="-36" y="-50" width="72" height="72" fill="transparent"/><text class="msgemt${forside&&k===1?" op":""}" x="0" y="${t==="kasse"?-2:4}" font-size="30" text-anchor="middle">${forside&&k===1?findPulje(st)[0].ikon:""}</text>${findSkjul(t)}</g>`).join("")}
 </svg>`;
+}
+
+/* ---------- Minispil: Kompasløb på din egen lejrplads (kompasrosen og vejviseren) ----------
+   »Gå 90° i 3 felter, så 180° i 2«. Man starter ved en bygning og vælger den bygning, man ender ved. Ruterne bliver altid på pladsen. 5 opgaver. */
+const KOMPAS_RET = { 0:[-1,0,"nord"], 45:[-1,1,"nordøst"], 90:[0,1,"øst"], 135:[1,1,"sydøst"], 180:[1,0,"syd"], 225:[1,-1,"sydvest"], 270:[0,-1,"vest"], 315:[-1,-1,"nordvest"] };
+function kompasRute(st, c){
+  const s=lejrStr(c), dk=lejrDaekket(c), f=lejrFelter(c), r=st.rnd;
+  const ankre=[...new Set([...dk.values()])].filter(i=>BYGID[f[i]]);
+  if(ankre.length<3) return null;
+  const vinkler = st.v===0 ? [0,90,180,270] : [0,45,90,135,180,225,270,315], ben = st.v===2 ? 3 : 2;
+  for(let forsoeg=0; forsoeg<400; forsoeg++){
+    const start=ankre[r(ankre.length)]; let rr=feltR(start), kk=feltK(start), ok=true; const leg=[];
+    for(let b=0;b<ben;b++){ let v; do { v=vinkler[r(vinkler.length)]; } while(leg.length && (Math.abs(v-leg[leg.length-1][0])===180 || v===leg[leg.length-1][0]));
+      const n=1+r(st.v===0?3:4), [dr,dc]=KOMPAS_RET[v];
+      for(let t=0;t<n;t++){ rr+=dr; kk+=dc; if(rr<0||kk<0||rr>=s.r||kk>=s.k){ ok=false; break; } }
+      if(!ok) break; leg.push([v,n]); }
+    if(!ok) continue;
+    const slut=felt(rr,kk), a=dk.get(slut);
+    if(a==null || a===start || st.brugt.includes(start+":"+a)) continue;
+    st.brugt.push(start+":"+a); return { start, leg, slut:a, felt:slut };
+  }
+  return null;
+}
+msNyt("kompas", { navn:"Kompasløb", ikon:"🧭", byg:["kompasrose","vejviser"], knap:"🧭 Minispil: Kompasløb", point:15,
+  varianter:[
+    { navn:"Kompasløb", besk:"Kompasløb på din egen lejrplads. Nord (0°) er opad på kortet, øst (90°) til højre, syd (180°) nedad og vest (270°) til venstre. Ét felt er ét skridt på kortet. Følg kursen fra startbygningen, og tryk på den bygning, du ender ved. 5 opgaver." },
+    { navn:"Skrå kurser", besk:"Nu kommer også 45°, 135°, 225° og 315° – på skrå gennem felterne – og kurserne står kun i grader." },
+    { navn:"Tre ben", besk:"Ruter med tre ben og skrå kurser. Regn hele vejen, før du trykker!" },
+  ],
+  start(st, c){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), nr:0, rigtige:0, brugt:[], svar:null }); st.rute=kompasRute(st, c); },
+  forside(){ return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#a6d38e"/>${kompasRose(160,120,92)}</svg>`; },
+  tegn(st, c){
+    if(!st.rute) return `<div class="aktopg">Byg mindst 3 ting på lejrpladsen – så kan kompasløbet finde ruter mellem dem.</div>`;
+    const s=lejrStr(c), f=lejrFelter(c), dk=lejrDaekket(c), R=st.rute, rS=feltR(R.start);
+    // Udsnit af pladsen: rutens rækker med 2 rækker ekstra hver vej (mindst 8 rækker), så kortet kan ses sammen med opgaven
+    let lo=rS, hi=rS, rr=rS; R.leg.forEach(([v,n])=>{ rr+=KOMPAS_RET[v][0]*n; lo=Math.min(lo,rr); hi=Math.max(hi,rr); });
+    let r0=Math.max(0, lo-2), r1=Math.min(s.r-1, hi+2); while(r1-r0<7 && (r0>0 || r1<s.r-1)){ if(r0>0) r0--; if(r1-r0<7 && r1<s.r-1) r1++; }
+    const rows=r1-r0+1;
+    let celler="";
+    for(let r=r0;r<=r1;r++) for(let k=0;k<s.k;k++){ const i=felt(r,k), a=dk.get(i), b=a!=null?BYGID[f[a]]:null, anker=a===i;
+      if(b && !anker && feltR(a)>=r0) continue;   // store bygninger tegnes én gang over alle deres felter
+      const sp=b&&anker?bygStr(b):{ r:1, k:1 };
+      const cls=[b?"byg":"", erVand(i,c)?"vand":"", a===R.start?"start":"", st.svar!=null&&a===R.slut?"maal":"", st.svar!=null&&a===st.svar&&st.svar!==R.slut?"forkert":""].join(" ");
+      celler += `<button class="kfelt ${cls}" ${b&&st.svar==null&&a!==R.start?`data-a="msk" data-k="svar" data-t="${a}"`:"disabled"} style="grid-row:${r-r0+1} / span ${Math.min(sp.r, r1-r+1)};grid-column:${k+1} / span ${sp.k}" aria-label="${b?esc(b.navn):erVand(i,c)?"Sø":"Græs"}">${b?bygIkon(b,1,sp.k>sp.r?"bred":""):""}</button>`; }
+    let sti="";
+    if(st.svar!=null){ let rr=feltR(R.start)-r0+.5, kk=feltK(R.start)+.5; const pts=[[kk,rr]];
+      R.leg.forEach(([v,n])=>{ rr+=KOMPAS_RET[v][0]*n; kk+=KOMPAS_RET[v][1]*n; pts.push([kk,rr]); });
+      sti=`<svg class="ksti" viewBox="0 0 ${s.k} ${rows}" preserveAspectRatio="none"><polyline points="${pts.map(p=>p.join(",")).join(" ")}" fill="none" stroke="#c62828" stroke-width="4" stroke-dasharray="7 5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r=".14" fill="#c62828"/></svg>`; }
+    return `<div class="kkort"><div class="kgrid" style="grid-template-columns:repeat(${s.k},1fr);grid-template-rows:repeat(${rows},1fr);aspect-ratio:${s.k}/${rows}">${celler}</div>${sti}
+      <svg class="krose" viewBox="0 0 60 60">${kompasRose(30,30,26,true)}</svg></div>`;
+  },
+  status(st){ return `Opgave ${Math.min(5,st.nr+1)} af 5 · Rigtige: ${st.rigtige}`; },
+  kontrol(st, c){
+    const R=st.rute; if(!R) return "";
+    const b=BYGID[lejrFelter(c)[R.start]], navn=v=>st.v===0?` (${KOMPAS_RET[v][2]})`:"";
+    const kurs=R.leg.map(([v,n],k)=>`${k?"så ":""}<b>${v}°</b>${navn(v)} i <b>${n} ${n===1?"felt":"felter"}</b>`).join(", ");
+    if(st.svar==null) return `<div class="aktopg msintro">📍 Start ved <b>${esc(b.navn)}</b> (den gule ramme). Gå ${kurs}. Hvor ender du? Tryk på bygningen.</div>`;
+    const ok=st.svar===R.slut, mb=BYGID[lejrFelter(c)[R.slut]];
+    return `<div class="aktopg msintro">${ok?"✅ Rigtigt!":"❌ Ikke helt."} Ruten ender ved <b>${esc(mb.navn)}</b> – se den røde streg.</div><button class="btn gold" data-a="msk" data-k="naeste">${st.nr>=4?"🏁 Se resultatet":"➡️ Næste opgave"}</button>`;
+  },
+  tryk(st, k, d, c){
+    if(k==="svar" && st.svar==null){ st.svar=+d.t; const ok=st.svar===st.rute.slut; if(ok) st.rigtige++; vibrer(ok?25:[60,40,60]); render(); }
+    if(k==="naeste" && st.svar!=null){ st.nr++;
+      if(st.nr>=5){ const stj=st.rigtige>=5?3:st.rigtige>=4?2:st.rigtige>=3?1:0;
+        return msSlut(st, { stjerner:stj, score:st.rigtige*20, tekst:`${st.rigtige} af 5 ruter rigtige.`,
+          laer:"På et kompas er nord 0° (og 360°), øst 90°, syd 180° og vest 270°. Mellem dem ligger 45°, 135°, 225° og 315°. Når man går en kurs, tæller man skridt for at vide, hvor langt man er kommet." }); }
+      st.svar=null; st.rute=kompasRute(st, c); if(!st.rute){ st.brugt=[]; st.rute=kompasRute(st, c); } render(); window.scrollTo(0,0); }
+  },
+});
+function kompasRose(cx, cy, r, lille){
+  const t=(v,l)=>{ const a=v*Math.PI/180, x=cx+Math.sin(a)*(r+(lille?0:4)), y=cy-Math.cos(a)*(r+(lille?0:4)); return `<text x="${x}" y="${y+ (lille?3:6)}" text-anchor="middle" font-size="${lille?9:16}" font-weight="800" fill="${v===0?"#c62828":"#2f4a2b"}">${l}</text>`; };
+  const spids=v=>{ const a=v*Math.PI/180, L=r*(v%90?.55:.82), w=r*.13, px=Math.cos(a)*w, py=Math.sin(a)*w;
+    return `<path d="M${cx+Math.sin(a)*L} ${cy-Math.cos(a)*L} L${cx+px} ${cy+py} L${cx-px} ${cy-py}Z" fill="${v===0?"#c62828":v%90?"#9aa7ae":"#2f4a2b"}"/>`; };
+  return `${lille?"":`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f3ead2" stroke="#8b5a2b" stroke-width="3"/>`}${[45,135,225,315,0,90,180,270].map(spids).join("")}<circle cx="${cx}" cy="${cy}" r="${r*.07+1}" fill="#f2c94c"/>
+    ${lille ? t(0,"N") : [[0,"N 0°"],[90,"Ø 90°"],[180,"S 180°"],[270,"V 270°"]].map(([v,l])=>t(v*1,l)).join("")}`;
 }
 
 /* MINISPIL-SLUT */
