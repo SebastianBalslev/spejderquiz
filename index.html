@@ -564,6 +564,10 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .samlpost,.samlny{display:flex;gap:10px;align-items:center;background:var(--paper2);border-radius:12px;padding:8px 10px;text-align:left}.samlpost.ukendt{opacity:.6}
 .samlpost small,.samlny small{display:block;color:var(--muted);font-size:13px;line-height:1.3}.samlik{font-size:28px;flex:none;width:36px;text-align:center}
 .samlny{background:#fff7d6;border:2px solid #e2c56b;margin-top:8px}
+.msfig{cursor:pointer;transition:opacity .4s}.msfig.vaek{opacity:0;pointer-events:none}
+#msokse{transform-box:view-box;transform-origin:232px 54px;transform:rotate(-38deg);transition:transform .14s ease-in}#msokse.hug{transform:rotate(0)}
+#msstk .hl,#msstk .hr{transform-box:fill-box;transform-origin:50% 100%;transition:transform .35s ease-out}#msstk.kloev .hl{transform:translate(-16px,6px) rotate(-14deg)}#msstk.kloev .hr{transform:translate(16px,6px) rotate(14deg)}
+#msstk.skaev{animation:msryst .3s}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -12357,6 +12361,92 @@ function hlrDukke(bpm, tol, forside, st){
     <path d="M232 128 H296 M232 164 H296" stroke="#2b3a55" stroke-width="18" stroke-linecap="round"/>
     ${!forside && st && st.runde===1 && st.del==="tryk" ? `<text x="270" y="108" font-size="22" class="mspuls">❤️</text>` : ""}
     ${!forside && st && st.del==="blaes" ? `<text x="20" y="118" font-size="22">💨</text>` : ""}</svg>`;
+}
+
+/* ---------- Minispil: Kløv brænde (huggepladsen) ----------
+   Før hvert stykke: tjek blodcirklen og send dem væk, der står inden for. Så hug, når markøren er i midten. 5 stykker.
+   +1 brænde pr. 2 gode hug (højst den ledige lagerplads). Niv 5: knudrede stammer (hug langs revnen), niv 10: travl huggeplads. */
+const HUG_FIG = ["🧒","👧","🧑","🐕","🐈","🦆","🐿️"];
+function hugV(x, y){ return ((x-160)/118)**2 + ((y-10-172)/48)**2; }   // y er emojiens grundlinje – midten ligger ca. 10 højere
+function hugInde(x, y){ return hugV(x,y) < 1; }
+function hugNytStk(st){
+  const r=st.rnd, n=r(3), fig=[];
+  const plads=(inde)=>{ for(let f=0; f<40; f++){ const x=24+r(272), y=112+r(112); if((inde ? hugV(x,y)<.7 : hugV(x,y)>1.3) && Math.abs(x-160)>(inde?36:0) && fig.every(o=>Math.abs(o.x-x)+Math.abs(o.y-y)>40)) return [x,y]; } return null; };
+  for(let k=0;k<n;k++){ const p=plads(true); if(p) fig.push({ e:HUG_FIG[r(HUG_FIG.length)], x:p[0], y:p[1] }); }
+  for(let k=0;k<1+r(2);k++){ const p=plads(false); if(p) fig.push({ e:HUG_FIG[r(HUG_FIG.length)], x:p[0], y:p[1] }); }
+  const w=.17/st.sv;
+  Object.assign(st, { del:"cirkel", fig, pos:0, dir:1, zone:{ c: st.v===1 ? .22+r(57)/100 : .5, w }, hugget:null, ind:null, indTid: st.v===2 ? .8+r(20)/10 : null });
+}
+msNyt("hugge", { navn:"Kløv brænde", ikon:"🪓", byg:["huggeplads"], knap:"🪓 Minispil: Kløv brænde", point:15,
+  varianter:[
+    { navn:"Kløv brænde", rt:true, besk:"Før hvert hug: tjek <b>blodcirklen</b> – så langt som armen og øksen rækker. Tryk på dem, der står inden for den røde cirkel, så de går væk. Tryk så »Hug!«, når markøren er i det grønne felt. 5 stykker brænde. Hver 2. gode hug giver 1 brænde på lageret." },
+    { navn:"Knudrede stammer", rt:true, besk:"Stammerne har knaster, så de skal kløves langs revnen. Det grønne felt flytter sig fra stykke til stykke – hug, hvor revnen er." },
+    { navn:"Travl huggeplads", rt:true, besk:"Mens du sigter, kan nogen gå ind i blodcirklen. Stop og send dem væk, før du hugger – ellers er det en sikkerhedsfejl." },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), stk:0, gode:0, perfekt:0, sikFejl:0, fejl:0 }); hugNytStk(st); },
+  forside(){ return hugSVG({ fig:[{e:"🧒",x:70,y:150},{e:"🐕",x:250,y:200}], zone:{c:.5,w:.17}, pos:.5, del:"cirkel", v:0, stk:0 }, true); },
+  tegn(st){ return hugSVG(st); },
+  status(st){ return `Stykke ${Math.min(5,st.stk+1)} af 5 · Gode hug: ${st.gode}${st.sikFejl?` · ⚠️ Sikkerhedsfejl: ${st.sikFejl}`:""}`; },
+  kontrol(st){
+    if(st.del==="cirkel") return `<div class="aktopg">🔴 Står der nogen inden for blodcirklen? Tryk på dem – og tryk så her:</div><button class="btn earth" data-a="msk" data-k="fri">✅ Blodcirklen er fri</button>`;
+    return `<button class="btn gold mstryk" id="mshug">🪓 Hug!</button>`;
+  },
+  tryk(st, k){
+    if(k==="fri" && st.del==="cirkel"){
+      if(st.fig.some(f=>!f.vaek && hugInde(f.x,f.y))){ st.sikFejl++; vibrer([80,40,80]); lejrToast("⚠️ Stop! Der står stadig nogen i blodcirklen."); msStatus(MS.hugge.status(st)); return; }
+      st.del="hug"; render();
+    }
+  },
+  efter(st){
+    const bane=document.getElementById("msbane");
+    if(bane) bane.addEventListener("pointerdown", ev=>{ const t=ev.target.closest("[data-f]"); if(!t) return; ev.preventDefault();
+      const f=st.fig[+t.dataset.f]; if(!f || f.vaek) return;
+      if(hugInde(f.x,f.y) || f.gaar){ f.vaek=true; f.gaar=false; t.classList.add("vaek"); vibrer(15); if(st.ind===f) st.ind=null; }
+      else { st.fejl++; lejrToast("Den står uden for blodcirklen – der er den sikker."); } });
+    if(st.del!=="hug") return;
+    const knap=document.getElementById("mshug"), mark=document.getElementById("msmark"), fart=(.85+.9*(st.sv-1))*(MS_ROLIG?.6:1);
+    let laast=false, t=0;
+    knap && knap.addEventListener("pointerdown", ev=>{ ev.preventDefault(); if(laast) return;
+      const inde=st.fig.find(f=>!f.vaek && (hugInde(f.x,f.y)));
+      if(inde){ st.sikFejl++; vibrer([80,40,80]); lejrToast("⚠️ Stop! Der er nogen i blodcirklen – send dem væk først."); msStatus(MS.hugge.status(st)); return; }
+      laast=true; const afst=Math.abs(st.pos-st.zone.c), god=afst<=st.zone.w/2, perf=afst<=st.zone.w/6;
+      if(god){ st.gode++; if(perf) st.perfekt++; }
+      const o=document.getElementById("msokse"); if(o) o.classList.add("hug");
+      msTid(()=>{ const s=document.getElementById("msstk"); if(s) s.classList.add(god?"kloev":"skaev"); vibrer(god?25:[40,30,40]); msStatus(perf?"🎯 Perfekt hug!":god?"✅ Godt hug!":"❌ Øksen ramte skævt – stykket blev ikke kløvet"); }, 140);
+      msTid(()=>{ st.stk++; if(st.stk>=5) return hugSlut(st); hugNytStk(st); render(); }, 950); });
+    msLoop(dt=>{ if(laast) return;
+      st.pos+=st.dir*fart*dt; if(st.pos>1){ st.pos=1; st.dir=-1; } if(st.pos<0){ st.pos=0; st.dir=1; }
+      if(mark) mark.setAttribute("transform", `translate(${40+240*st.pos} 0)`);
+      // Travl huggeplads: efter et øjeblik går nogen ind mod blodcirklen
+      t+=dt; if(st.indTid!=null && t>st.indTid && !st.ind && !st.indSket){ st.indSket=true; const fra=st.rnd(2)?-10:330;
+        const f={ e:HUG_FIG[st.rnd(HUG_FIG.length)], x:fra, y:176+st.rnd(30), gaar:true, maal:fra<0?118:202 }; st.fig.push(f); st.ind=f;
+        const g=document.getElementById("msfig"); if(g) g.insertAdjacentHTML("beforeend", hugFigHTML(f, st.fig.length-1)); }
+      const f=st.ind; if(f && f.gaar && !f.vaek){ const d=f.maal-f.x; if(Math.abs(d)>1){ f.x+=Math.sign(d)*Math.min(Math.abs(d), 55*st.sv*dt*(MS_ROLIG?.6:1)); const el=document.querySelector(`[data-f="${st.fig.indexOf(f)}"]`); if(el) el.setAttribute("x", f.x); } } });
+  },
+});
+function hugSlut(st){
+  let stj = st.gode>=5 ? 3 : st.gode>=4 ? 2 : st.gode>=2 ? 1 : 0; if(st.sikFejl) stj=Math.min(stj, st.sikFejl>1?1:2);
+  msSlut(st, { stjerner:stj, score:Math.max(0, st.gode*18+st.perfekt*2-st.sikFejl*15-st.fejl*3), mat:{ braende:Math.floor(st.gode/2) },
+    tekst:`${st.gode} af 5 stykker blev kløvet${st.perfekt?` (${st.perfekt} perfekte)`:""}.${st.sikFejl?` ⚠️ ${st.sikFejl} ${st.sikFejl===1?"sikkerhedsfejl":"sikkerhedsfejl"} med blodcirklen.`:" Ingen sikkerhedsfejl!"}`,
+    laer:"Blodcirklen er så langt, som din arm og øksen rækker – strakt ud og hele vejen rundt. Ingen må være inden for den, når du hugger. Hug altid ned mod huggeblokken, og stå med benene spredt." });
+}
+function hugFigHTML(f, k){ return `<text data-f="${k}" class="msfig${f.vaek?" vaek":""}" x="${f.x}" y="${f.y}" font-size="30" text-anchor="middle">${f.e}</text>`; }
+function hugSVG(st, forside){
+  const z=st.zone, rev=146+z.c*28;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#a6d38e"/>
+    <path d="M0 108 l14 -34 14 34 10 -22 16 -42 16 42 10 -18 14 -32 14 32 12 -26 18 -44 18 44 10 -20 14 -34 14 34 12 -26 16 -38 16 38 10 -16 14 -32 14 32 12 -22 L320 86 V110 H0Z" fill="#3f6e35"/>
+    <rect y="104" width="320" height="136" fill="#8fbf5f"/>
+    <ellipse cx="160" cy="172" rx="118" ry="48" fill="rgba(198,40,40,.10)" stroke="#c62828" stroke-width="3" stroke-dasharray="9 6"/>
+    <g fill="#c9a26c">${[[110,196],[200,200],[132,206],[186,150],[214,184]].map(([x,y])=>`<rect x="${x}" y="${y}" width="7" height="3" rx="1" transform="rotate(${x%40} ${x} ${y})"/>`).join("")}</g>
+    <ellipse cx="160" cy="190" rx="30" ry="10" fill="#6b4626"/><rect x="130" y="162" width="60" height="28" fill="#9a6232"/><ellipse cx="160" cy="162" rx="30" ry="10" fill="#c08a52"/>
+    <g id="msstk"><g class="hl"><rect x="146" y="120" width="${rev-146}" height="42" fill="#b07a45"/><ellipse cx="${(146+rev)/2}" cy="120" rx="${(rev-146)/2}" ry="5" fill="#e3c08a"/></g>
+      <g class="hr"><rect x="${rev}" y="120" width="${174-rev}" height="42" fill="#a06a3a"/><ellipse cx="${(rev+174)/2}" cy="120" rx="${(174-rev)/2}" ry="5" fill="#dcb47c"/></g>
+      ${st.v===1?`<path d="M${rev} 116 L${rev-2} 124 L${rev+2} 132" stroke="#5c3a20" stroke-width="2" fill="none"/><circle cx="${rev<160?168:152}" cy="140" r="4" fill="#7a4e2a"/>`:""}</g>
+    <g id="msokse"><path d="M232 54 L186 108" stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"/><path d="M176 98 L196 92 L204 116 L188 118Z" fill="#9aa7ae" stroke="#5f6b72" stroke-width="2"/></g>
+    ${forside?"":`<rect x="40" y="18" width="240" height="16" rx="8" fill="#fff" stroke="#7d8a91"/><rect x="${40+240*(z.c-z.w/2)}" y="18" width="${240*z.w}" height="16" fill="#7cc06a"/><rect x="${40+240*(z.c-z.w/6)}" y="18" width="${240*z.w/3}" height="16" fill="#2e7d32"/>
+      <g id="msmark" transform="translate(${40+240*st.pos} 0)"><path d="M0 12 V40" stroke="#2a2a1f" stroke-width="3"/><path d="M-6 44 H6 L0 37Z" fill="#2a2a1f"/></g>`}
+    <g id="msfig">${st.fig.map((f,k)=>hugFigHTML(f,k)).join("")}</g>
+    ${st.del==="cirkel" && !forside ? `<text x="160" y="232" text-anchor="middle" font-size="13" font-weight="800" fill="#7a1a1a">Blodcirklen</text>` : ""}</svg>`;
 }
 
 /* MINISPIL-SLUT */
