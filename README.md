@@ -178,6 +178,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **📦 Find cachen** (geocachen, `geo`, ved siden af den gamle »Find geocachen«): cachen er gemt på et felt på spejderens egen lejrplads – også under en bygning, men aldrig på søen. Kortet viser et udsnit med rækkenumre (oppefra) og kolonnenumre (fra venstre), og man trykker på feltet. 5 cacher, og samme felt bruges ikke to gange i et spil. Stjerner ved 5/4/3 fundne. Fra niveau 5 *Kurs og skridt* (start ved en bygning, fx »30 skridt mod 90° og så 20 skridt mod 180°«, hvor ét felt er 10 skridt), fra niveau 10 *Gåde-koordinater* (fx »række = 2 × 2 + 1«).
 
+- **📡 Send selv** (signalposten, `morse`): man sender selv morse med lampen. Et kort tryk (under 2 enheder) er en prik, et langt tryk er en streg. Lampen lyser, og der kommer en tone, hvis lyd er slået til (`msTone`). Efter hvert tegn får man feedback på takten: en prik bør højst være 1,6 enheder, en streg 2,2-4,6 enheder. Det forkerte tegn starter bogstavet forfra. Enheden er 0,22 sek. og bliver lidt kortere med niveauet. Stjerner: 3 uden fejl og med mindst 80 % god takt, 2 med højst 2 fejl og 60 %, ellers 1. *Send bogstaver* (5 bogstaver), fra niveau 5 *Send et ord* (`SIGNALORD`), fra niveau 10 *Uden snydeark* (tegnene vises ikke, og takten er hurtigere).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

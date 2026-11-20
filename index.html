@@ -582,6 +582,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .memspor{width:82%;height:auto}.memdyr{font-size:30px;line-height:1}.memkort small{font-size:11px;line-height:1.15;text-align:center}.memmrk{font-size:18px;line-height:1}.memkort .memtekst{font-size:9.5px;line-height:1.15}.membag{font-size:26px;opacity:.55}
 .gkort{display:grid;gap:2px;padding:8px 8px 8px 4px;background:#86b25a}.glab{font-size:11px;font-weight:800;color:#fff;display:grid;place-items:center;text-shadow:0 1px 0 rgba(0,0,0,.3)}
 .gkort .kfelt{aspect-ratio:1;position:relative}.gcache{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
+#mslampe.taendt{fill:#fff6b0;filter:drop-shadow(0 0 14px #ffe680)}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13093,6 +13094,59 @@ msNyt("geo", { navn:"Find cachen", ikon:"📦", byg:["geocache"], knap:"📦 Min
       st.svar=null; st.o=geoOpg(st, c); render(); window.scrollTo(0,0); }
   },
 });
+
+/* ---------- Minispil: Send selv (signalposten) – morse med korte og lange tryk og feedback på takten ----------
+   Et kort tryk (ca. 1 enhed) er et prik, et langt (ca. 3 enheder) en streg. Forkert tegn = bogstavet startes forfra. */
+let msLydCtx=null, msOsc=null;
+function msTone(paa){
+  try{
+    if(paa){ if(!indst(cur()).lyd) return; msLydCtx = msLydCtx || new (window.AudioContext||window.webkitAudioContext)();
+      if(msOsc) return; msOsc=msLydCtx.createOscillator(); const g=msLydCtx.createGain(); g.gain.value=.1; msOsc.frequency.value=650; msOsc.connect(g); g.connect(msLydCtx.destination); msOsc.start(); }
+    else if(msOsc){ msOsc.stop(); msOsc=null; }
+  }catch(e){ msOsc=null; }
+}
+const MORSE_LET = ["E","T","A","N","I","M","S","O","K","R","U","D","G","W","H"];
+msNyt("morse", { navn:"Send selv", ikon:"📡", byg:["signalpost"], knap:"📡 Minispil: Send selv i morse", point:15,
+  varianter:[
+    { navn:"Send bogstaver", besk:"Send 5 bogstaver i morse med lampen. Et <b>kort tryk</b> er et prik (·), et <b>langt tryk</b> (ca. 3 gange så langt) er en streg (–). Tegnene står over lampen, og du får at vide, om takten passer." },
+    { navn:"Send et ord", besk:"Send et helt ord – bogstav for bogstav. Hold samme takt hele vejen." },
+    { navn:"Uden snydeark", besk:"Nu står morsetegnene ikke på skærmen, og takten er hurtigere. Kan du alfabetet udenad?" },
+  ],
+  start(st){ const r=msTilfaeldig(Date.now()), ok=o=>[...o].every(t=>MORSE[t]);
+    const tekst = st.v===0 ? Array.from({length:5},()=>MORSE_LET[r(MORSE_LET.length)]).join("") : (()=>{ const l=SIGNALORD.filter(ok); return l[r(l.length)]; })();
+    Object.assign(st, { tekst, b:0, tegn:"", fejl:0, symboler:0, takt:0, enhed:(st.v===2?.16:.22)/Math.sqrt(st.sv), sidste:null }); },
+  forside(){ return morseSVG({ tekst:"SOS", b:0, tegn:"", v:0 }, false); },
+  tegn(st){ return morseSVG(st, false); },
+  status(st){ return `Bogstav ${Math.min(st.tekst.length,st.b+1)} af ${st.tekst.length} · ❌ ${st.fejl} · Takt ${st.symboler?Math.round(100*st.takt/st.symboler):100} %`; },
+  kontrol(st){ return `<button class="btn gold mshold" id="msnoegle">📡 Morsenøgle – kort tryk = prik, langt = streg</button><p class="muted center psmall" id="mstakt">${st.sidste||"Et prik er et kort blink – en streg er tre gange så lang."}</p>`; },
+  efter(st){
+    msHold(document.getElementById("msnoegle"), ()=>{ const l=document.getElementById("mslampe"); if(l) l.classList.add("taendt"); msTone(true); },
+      sek=>{ const l=document.getElementById("mslampe"); if(l) l.classList.remove("taendt"); msTone(false);
+        const e=sek/st.enhed, tegn = e<2 ? "·" : "–", maal=MORSE[st.tekst[st.b]], forv=maal[st.tegn.length];
+        const god = tegn==="·" ? e<=1.6 : e>=2.2 && e<=4.6;
+        let besked;
+        if(tegn!==forv){ st.fejl++; st.tegn=""; vibrer([60,40,60]); besked=`❌ Det blev en ${tegn==="·"?"prik":"streg"} – der skulle være en ${forv==="·"?"prik":"streg"}. Start bogstavet forfra.`; }
+        else { st.symboler++; if(god) st.takt++; st.tegn+=tegn; vibrer(10);
+          besked = god ? `✅ ${tegn==="·"?"Prik":"Streg"} – god takt` : tegn==="·" ? "🙂 Prik – men lidt for lang" : e<2.2 ? "🙂 Streg – men lidt for kort" : "🙂 Streg – men for lang";
+          if(st.tegn===maal){ st.b++; st.tegn=""; besked += ` · <b>${st.tekst[st.b-1]}</b> er sendt!`; } }
+        st.sidste=besked;
+        if(st.b>=st.tekst.length){ render(); return morseSlut(st); }
+        render(); });
+  },
+});
+function morseSlut(st){
+  const takt=st.symboler?st.takt/st.symboler:0, stj = st.fejl===0 && takt>=.8 ? 3 : st.fejl<=2 && takt>=.6 ? 2 : 1;
+  msSlut(st, { stjerner:stj, score:Math.max(0, Math.round(takt*100)-st.fejl*10), tekst:`Du sendte <b>${st.tekst}</b> (${morse(st.tekst)}) med ${st.fejl} ${st.fejl===1?"fejl":"fejl"} og ${Math.round(takt*100)} % af tegnene i god takt.`,
+    laer:"I morse er en streg tre gange så lang som en prik. Mellem tegnene i et bogstav holder man en kort pause (1 enhed), mellem bogstaver 3 enheder og mellem ord 7 enheder." });
+}
+function morseSVG(st){
+  const maal=MORSE[st.tekst[st.b]]||"", vis=st.v!==2;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#1a2440"/>${stjernehimmel(30,9)}<ellipse cx="160" cy="260" rx="220" ry="70" fill="#22351f"/>
+    <text x="160" y="40" text-anchor="middle" font-size="26" font-weight="900" letter-spacing="6" fill="#f3e6c8">${[...st.tekst].map((t,k)=>`<tspan fill="${k<st.b?"#7cc06a":k===st.b?"#f2c94c":"#f3e6c8"}">${t}</tspan>`).join("")}</text>
+    ${vis?`<text x="160" y="76" text-anchor="middle" font-size="30" font-weight="900" letter-spacing="8" fill="#f2c94c">${[...maal].map((t,k)=>`<tspan fill="${k<st.tegn.length?"#7cc06a":"#f2c94c"}">${t}</tspan>`).join("")}</text>`
+      :`<text x="160" y="76" text-anchor="middle" font-size="22" font-weight="900" letter-spacing="8" fill="#7cc06a">${st.tegn||"&#160;"}</text>`}
+    <path d="M160 150 V232" stroke="#8b5a2b" stroke-width="8"/><rect x="110" y="96" width="100" height="70" rx="12" fill="#2a2a24"/><circle id="mslampe" cx="160" cy="131" r="26" fill="#4a4636"/></svg>`;
+}
 
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
