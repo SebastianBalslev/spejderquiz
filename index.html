@@ -7843,7 +7843,8 @@ function stierHTML(c, str){
   if(!d) return "";
   return `<svg class="stier" viewBox="0 0 ${str.k} ${str.r}" preserveAspectRatio="none" aria-hidden="true"><path class="kant" d="${d}"/><path class="midte" d="${d}"/></svg>`;
 }
-/* Søen og åen tegnes som én sammenhængende flade under felterne (felterne på vandet er gennemsigtige).
+/* Søen og åen tegnes som én sammenhængende flade under felterne. Kanten gøres blød og lidt bugtet med et SVG-filter (soekant):
+   en svag støjforskydning, en sløring og en skarp kant bagefter – så både ud- og indadgående hjørner bliver runde. (felterne på vandet er gennemsigtige).
    Hvert lag er felternes firkanter, der rækker helt ind til nabovandet og holder afstand til land – med runde kanter (stroke-linejoin).
    Lag: sandbred → lavt vand → dybt vand. Ovenpå: siv ved bredden, åkander, få krusninger og strøm i åen. */
 function soeHTML(c, str){
@@ -7851,7 +7852,9 @@ function soeHTML(c, str){
   const f=lejrFelter(c), W=(r,k)=>r<0||k<0||r>=str.r||k>=str.k||V.has(felt(r,k));
   const h=(i,s)=>{ let x=(i*2654435761 ^ s*40503)>>>0; x=(x^(x>>>13))>>>0; return (x%1000)/1000; };   // fast "tilfældighed" pr. felt
   const lag=(ind,rad)=>[...V].map(i=>{ const r=feltR(i), k=feltK(i);
-    const x0=k+(W(r,k-1)?0:ind+rad), x1=k+1-(W(r,k+1)?0:ind+rad), y0=r+(W(r-1,k)?0:ind+rad), y1=r+1-(W(r+1,k)?0:ind+rad);
+    // Mod pladsens kant går vandet et stykke ud under skoven, så den bløde kant ikke efterlader en stribe græs
+    const ud=(rr,kk)=>rr<0||kk<0||rr>=str.r||kk>=str.k ? -.6 : 0;
+    const x0=k+(W(r,k-1)?ud(r,k-1):ind+rad), x1=k+1-(W(r,k+1)?ud(r,k+1):ind+rad), y0=r+(W(r-1,k)?ud(r-1,k):ind+rad), y1=r+1-(W(r+1,k)?ud(r+1,k):ind+rad);
     return `<rect x="${x0.toFixed(3)}" y="${y0.toFixed(3)}" width="${(x1-x0).toFixed(3)}" height="${(y1-y0).toFixed(3)}"/>`; }).join("");
   // Åen er det vand, der ikke hænger sammen med søen i hjørnet øverst til højre – der er strøm i den
   const soe=new Set(), kø=[felt(0,str.k-1)];
@@ -7871,7 +7874,12 @@ function soeHTML(c, str){
   }
   const strom = aa.length ? `<g class="strom lev">${aa.map(i=>`<path d="M${feltK(i)+.38} ${feltR(i)} v1 M${feltK(i)+.62} ${feltR(i)+.2} v.8"/>`).join("")}</g>` : "";
   return `<svg class="soe" viewBox="0 0 ${str.k} ${str.r}" preserveAspectRatio="none" aria-hidden="true">
-    <g class="sand">${lag(-.07,.2)}</g><g class="lavt">${lag(.05,.18)}</g><g class="dybt">${lag(.17,.14)}</g>${strom}${pynt}</svg>`;
+    <defs><filter id="soekant" filterUnits="userSpaceOnUse" x="-1" y="-1" width="${str.k+2}" height="${str.r+2}" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="stoej"/>
+      <feDisplacementMap in="SourceGraphic" in2="stoej" scale=".22" xChannelSelector="R" yChannelSelector="G" result="bugtet"/>
+      <feGaussianBlur in="bugtet" stdDeviation=".17" result="blod"/>
+      <feColorMatrix in="blod" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 16 -7"/></filter></defs>
+    <g class="sand" filter="url(#soekant)">${lag(-.07,.2)}</g><g class="lavt" filter="url(#soekant)">${lag(.05,.18)}</g><g class="dybt" filter="url(#soekant)">${lag(.17,.14)}</g>${strom}${pynt}</svg>`;
 }
 // Stillads over en ting, der bygges eller opgraderes (i stedet for en ramme)
 const STILLADS = `<svg class="stillads" viewBox="0 0 40 40" aria-hidden="true"><g stroke="#8b5a2b" stroke-width="1.8" stroke-linecap="round" fill="none">
