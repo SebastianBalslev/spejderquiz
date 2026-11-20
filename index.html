@@ -575,6 +575,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .kfelt.vand{background:#5aa5d6}.kfelt.byg{background:rgba(255,255,255,.32);cursor:pointer}.kfelt svg{width:88%;height:88%}
 .kfelt.start{box-shadow:inset 0 0 0 3px #f2c94c;background:#fff3c4}.kfelt.maal{box-shadow:inset 0 0 0 3px #2e7d32;background:#d8f0c8}.kfelt.forkert{box-shadow:inset 0 0 0 3px #c62828;background:#f6d0c8}
 .ksti{position:absolute;left:8px;top:8px;width:calc(100% - 16px);height:calc(100% - 16px);pointer-events:none}.krose{position:absolute;right:10px;top:10px;width:46px;height:46px;background:rgba(255,255,255,.8);border-radius:50%;pointer-events:none}
+#msgnist circle{opacity:0}#msgnist.slag circle{animation:msgnist .55s ease-out}@keyframes msgnist{0%{opacity:1;transform:none}100%{opacity:0;transform:translate(10px,-34px)}}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -12715,6 +12716,107 @@ function kompasRose(cx, cy, r, lille){
     return `<path d="M${cx+Math.sin(a)*L} ${cy-Math.cos(a)*L} L${cx+px} ${cy+py} L${cx-px} ${cy-py}Z" fill="${v===0?"#c62828":v%90?"#9aa7ae":"#2f4a2b"}"/>`; };
   return `${lille?"":`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#f3ead2" stroke="#8b5a2b" stroke-width="3"/>`}${[45,135,225,315,0,90,180,270].map(spids).join("")}<circle cx="${cx}" cy="${cy}" r="${r*.07+1}" fill="#f2c94c"/>
     ${lille ? t(0,"N") : [[0,"N 0°"],[90,"Ø 90°"],[180,"S 180°"],[270,"V 270°"]].map(([v,l])=>t(v*1,l)).join("")}`;
+}
+
+/* ---------- Minispil: Tænd bålet (bålpladsen) ----------
+   Læg tænder, pindebrænde og brænde i rigtig rækkefølge, stryg ildstålet (swipe), pust, hvis bålet er ved at gå ud (hold nede),
+   og rist så 3 skumfiduser med vindstød og en tydelig perfekt-zone. */
+const BAAL_LAG = ["Tænder – birkebark og tørt græs", "Pindebrænde – tynde, tørre kviste", "Brænde – tykkere kløvede stykker"];
+const BAAL_LAG5 = ["Tænder – birkebark og tørt græs", "Tynde kviste, tynde som en tændstik", "Pindebrænde, tykt som en blyant", "Brænde, tykt som en tommelfinger", "Kløvet brænde, tykt som et håndled"];
+function baalZone(st){ const w=.13/st.sv; return [.66-w/2, .66+w/2]; }
+msNyt("baal", { navn:"Tænd bålet", ikon:"🔥", byg:["baal"], knap:"🔥 Minispil: Tænd bålet", point:15,
+  varianter:[
+    { navn:"Tænd bålet", besk:"1) Læg bålet: tryk på det, der skal lægges først. 2) Stryg ildstålet: swipe hurtigt hen over bålet for at slå gnister. 3) Går bålet ud, så hold »Pust« nede. 4) Rist 3 skumfiduser: hold nede, og slip i den grønne zone – pas på vindstødene!" },
+    { navn:"Vådt brænde", besk:"Brændet er fugtigt efter regnen. Der skal flere gnister til, og bålet skal have mere luft, før det brænder af sig selv." },
+    { navn:"Bålmester", besk:"Fem slags brænde skal lægges i den rigtige rækkefølge, og vinden er hård, mens du rister." },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), del:"laeg", r:msRaekke(st.v===2?BAAL_LAG5:BAAL_LAG), slag:0, forkertSlag:0, ild:0, ude:0, pust:0, rist:0, nr:0, perfekt:0, ok:0, braendt:0, vind:0, holder:false }); },
+  forside(st){ return baalSVG2({ del:"rist", r:{ naeste:3, trin:BAAL_LAG }, ild:1, rist:.5, v:0, sv:1, vind:0 }, true); },
+  tegn(st){ return baalSVG2(st); },
+  status(st){
+    if(st.del==="laeg") return `Læg bålet · ${st.r.naeste} af ${st.r.trin.length}${st.r.fejl?` · ❌ ${st.r.fejl}`:""}`;
+    if(st.del==="staal") return `Gnister: ${st.slag} af ${baalSlag(st)}`;
+    if(st.del==="pust") return st.ild<.35 ? "💨 Bålet er ved at gå ud – pust!" : st.ild<.7 ? "🔥 Det fænger …" : "🔥 Nu brænder det!";
+    return `Skumfidus ${Math.min(3,st.nr+1)} af 3 · 🎯 ${st.perfekt}${st.braendt?` · 🔥 brændt: ${st.braendt}`:""}`;
+  },
+  kontrol(st){
+    if(st.del==="laeg") return msRaekkeHTML(st.r);
+    if(st.del==="staal") return `<div class="aktopg">🔥 Stryg ildstålet: <b>swipe hurtigt</b> hen over bålet – fra den ene side til den anden.</div>`;
+    if(st.del==="pust") return `<button class="btn earth mshold" id="mspust">💨 Hold nede for at puste</button>`;
+    return `<button class="btn gold mshold" id="msrist">🍡 Hold nede for at riste</button><p class="muted center psmall">Slip, når markøren er i det grønne felt.</p>`;
+  },
+  tryk(st, k, d){
+    if(k==="r" && st.del==="laeg"){ msRaekkeTryk(st.r, +d.t); if(st.r.naeste>=st.r.trin.length){ st.del="staal"; } render(); }
+  },
+  efter(st){
+    const bane=document.getElementById("msbane");
+    if(st.del==="staal"){ let x0=null, t0=0;
+      bane.style.touchAction="none";
+      bane.addEventListener("pointerdown", ev=>{ ev.preventDefault(); try{ bane.setPointerCapture(ev.pointerId); }catch(e){} x0=[ev.clientX, ev.clientY]; t0=performance.now(); });
+      const slut=ev=>{ if(!x0) return; const dx=ev.clientX-x0[0], dy=ev.clientY-x0[1], d=Math.hypot(dx,dy), dt=performance.now()-t0; x0=null;
+        if(d<40){ msStatus("Stryg – træk fingeren hen over bålet"); return; }
+        if(dt>450){ st.forkertSlag++; msStatus("For langsomt – stryg hurtigere!"); return; }
+        st.slag++; vibrer(15); const g=document.getElementById("msgnist"); if(g){ g.classList.remove("slag"); void g.getBoundingClientRect(); g.classList.add("slag"); }
+        if(st.slag>=baalSlag(st)){ st.del="pust"; st.ild=.22; msTid(()=>render(), 350); } else msStatus(MS.baal.status(st)); };
+      bane.addEventListener("pointerup", slut); bane.addEventListener("pointercancel", ()=>{ x0=null; });
+      return; }
+    if(st.del==="pust"){
+      const graense = st.v===1 ? .5 : .35;
+      msHold(document.getElementById("mspust"), ()=>{ st.holder=true; }, s=>{ st.holder=false; st.pust+=s; });
+      msLoop(dt=>{ st.ild += ((st.ild-graense)*.55 + (st.holder?.55:0))*dt; st.ild=Math.min(1.05, st.ild);
+        if(st.ild<=0){ st.ude++; st.ild=0; st.del="staal"; st.slag=Math.max(0, baalSlag(st)-2); vibrer([80,40,80]); lejrToast("💨 Bålet gik ud – slå nye gnister!"); render(); return false; }
+        baalTegnIld(st.ild); msStatus(MS.baal.status(st));
+        if(st.ild>=1){ st.del="rist"; st.holder=false; msTid(()=>render(), 300); return false; } });
+      return; }
+    if(st.del==="rist"){
+      const z=baalZone(st); let vindT=1.5+st.rnd(20)/10;
+      const naeste=()=>{ st.nr++; st.rist=0; if(st.nr>=3) return baalSlut(st); baalTegnRist(st); msStatus(MS.baal.status(st)); };
+      msHold(document.getElementById("msrist"), ()=>{ st.holder=true; }, ()=>{ st.holder=false; const p=st.rist;
+        if(p>=.92){ st.braendt++; msStatus("🔥 Den brændte! Pust den ud, og prøv en ny."); vibrer([60,40,60]); }
+        else if(p>=z[0] && p<=z[1]){ st.perfekt++; msStatus("🎯 Perfekt gylden!"); vibrer(30); }
+        else if(p>=z[0]-.12 && p<.92){ st.ok++; msStatus(p<z[0]?"🙂 Lidt for lys – men god":"🙂 Lidt for mørk – men god"); }
+        else msStatus("Den er næsten ikke ristet");
+        msTid(naeste, 650); });
+      msLoop(dt=>{ vindT-=dt; if(vindT<=0){ st.vind = st.vind ? 0 : (st.v===2?1.6:1.2); vindT = st.vind ? 1+st.rnd(10)/10 : 1.4+st.rnd(25)/10;
+          const v=document.getElementById("msvind"); if(v) v.style.display=st.vind?"":"none"; }
+        if(st.holder){ st.rist=Math.min(1, st.rist + (.32*st.sv + st.vind*.35)*dt*(MS_ROLIG?.8:1)); if(st.rist>=1){ st.holder=false; } baalTegnRist(st); } });
+    }
+  },
+});
+function baalSlag(st){ return st.v===1 ? 5 : 3; }
+function baalSlut(st){
+  const lag=Math.max(0, 30-st.r.fejl*10), taend=Math.max(0, 30-st.ude*15-Math.min(10,st.forkertSlag*2)), rist=st.perfekt*13+st.ok*6;
+  const sc=lag+taend+rist, stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`Bålet blev lagt med ${st.r.fejl?`${st.r.fejl} fejl`:"0 fejl"}${st.ude?`, gik ud ${st.ude} ${st.ude===1?"gang":"gange"}`:" og gik aldrig ud"}. Skumfiduser: ${st.perfekt} perfekte, ${st.ok} gode${st.braendt?` og ${st.braendt} brændte`:""}.`,
+    laer:"Et bål skal have varme, brændsel og ilt (bål-trekanten). Start med tænder, så tynde kviste og til sidst tykkere brænde – lægger man det tykke på for tidligt, kvæles flammerne. Rist over gløderne, ikke i flammerne." });
+}
+function baalTegnIld(ild){ const g=document.getElementById("msild"); if(g) g.setAttribute("transform", `translate(160 176) scale(${Math.max(.05,Math.min(1.1,ild))}) translate(-160 -176)`); }
+function baalTegnRist(st){ const r=document.getElementById("msret"), m=document.getElementById("msmark");
+  if(r) r.setAttribute("fill", ristFarve(st.rist,"skum")); if(m) m.setAttribute("transform", `translate(${40+240*st.rist} 0)`); }
+function baalSVG2(st, forside){
+  const n=st.r.naeste, lag=st.r.trin.length, z=st.sv?baalZone(st):[.6,.72];
+  const tegnet = st.del==="laeg" ? n : lag;
+  const del=(k)=>tegnet>k;   // hvor mange lag der ligger
+  const har5=lag===5, iTaender=0, iPinde=har5?2:1, iBraende=har5?4:2;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><defs><radialGradient id="msgl"><stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient></defs>
+    <rect width="320" height="240" fill="#26334f"/>${stjernehimmel(30,11)}<path d="M0 120 l14 -30 14 30 10 -22 16 -40 16 40 10 -18 14 -30 14 30 12 -24 18 -40 18 40 10 -20 14 -30 14 30 12 -24 16 -34 16 34 10 -16 14 -28 14 28 L320 100 V130 H0Z" fill="#14231a"/>
+    <ellipse cx="160" cy="200" rx="190" ry="60" fill="#2f4a2b"/>
+    ${[0,1,2,3,4,5,6,7].map(k=>{ const a=k/8*Math.PI*2; return `<ellipse cx="${160+Math.cos(a)*52}" cy="${186+Math.sin(a)*18}" rx="13" ry="9" fill="#8a8378" stroke="#5f5a52" stroke-width="2"/>`; }).join("")}
+    ${(st.ild||0)>.05?`<circle cx="160" cy="160" r="${60+60*(st.ild||0)}" fill="url(#msgl)" opacity="${.3+.5*Math.min(1,st.ild)}"/>`:""}
+    ${del(iBraende)?`<g stroke-linecap="round"><path d="M128 190 L150 132 M192 190 L170 132 M140 194 L168 128 M182 194 L154 130" stroke="#6b4626" stroke-width="9"/></g>`:""}
+    ${har5&&del(3)?`<path d="M134 190 L156 140 M186 190 L164 140" stroke="#7a4e2a" stroke-width="6" stroke-linecap="round"/>`:""}
+    ${del(iPinde)?`<g stroke="#a0703f" stroke-width="3" stroke-linecap="round"><path d="M142 188 L158 146 M178 188 L162 146 M150 190 L160 144 M170 190 L160 144 M160 190 L160 142"/></g>`:""}
+    ${har5&&del(1)?`<g stroke="#b8894f" stroke-width="1.6"><path d="M148 188 L160 160 M172 188 L160 160 M156 190 L162 158"/></g>`:""}
+    ${del(iTaender)?`<ellipse cx="160" cy="184" rx="14" ry="6" fill="#e9d79a"/><path d="M150 184 q4 -8 8 0 q4 -8 8 0" stroke="#f3e6c8" stroke-width="2" fill="none"/>`:""}
+    <g id="msild" transform="translate(160 176) scale(${Math.max(.05,Math.min(1.1,st.ild||0))}) translate(-160 -176)" style="${(st.ild||0)>0?"":"display:none"}">
+      <path class="flamme" d="M160 100 C174 122 190 132 186 154 C183 170 172 178 160 178 C148 178 136 170 136 154 C136 136 150 128 152 112 C156 124 158 130 158 136 C164 124 162 112 160 100Z" fill="#f4772e"/>
+      <path class="flamme b" d="M160 124 C168 136 176 144 173 158 C171 169 166 176 160 176 C153 176 147 169 147 159 C147 147 156 142 157 132 C159 138 160 141 160 145 C163 138 162 131 160 124Z" fill="#f9b233"/></g>
+    ${st.del==="staal"?`<g id="msgnist">${[0,1,2,3,4,5,6].map(k=>`<circle cx="${130+k*10}" cy="${170-k%3*8}" r="2.5" fill="#ffe28a"/>`).join("")}</g>
+      <g transform="translate(236 150) rotate(-25)"><rect x="-6" y="-40" width="12" height="60" rx="3" fill="#3a3a3a"/><rect x="-8" y="16" width="16" height="22" rx="4" fill="#8b5a2b"/></g><text x="160" y="232" text-anchor="middle" font-size="13" font-weight="800" fill="#f3e6c8">⟵ swipe hurtigt ⟶</text>`:""}
+    ${st.del==="rist"?`<path d="M300 236 L176 128" stroke="#8b5a2b" stroke-width="4" stroke-linecap="round"/><rect id="msret" x="166" y="114" width="18" height="20" rx="6" fill="${ristFarve(st.rist||0,"skum")}" transform="rotate(-40 175 124)"/>
+      ${forside?"":`<rect x="40" y="16" width="240" height="16" rx="8" fill="#fff"/><rect x="${40+240*z[0]}" y="16" width="${240*(z[1]-z[0])}" height="16" fill="#4caf50"/><rect x="${40+240*.92}" y="16" width="${240*.08}" height="16" rx="0" fill="#3a2a1a"/>
+      <g id="msmark" transform="translate(${40+240*(st.rist||0)} 0)"><path d="M0 10 V38" stroke="#fff" stroke-width="3"/><path d="M-6 42 H6 L0 35Z" fill="#fff"/></g>
+      <text id="msvind" x="60" y="70" font-size="20" font-weight="800" fill="#cfe3f5" style="display:${st.vind?"":"none"}">💨 Vindstød!</text>`}`:""}</svg>`;
 }
 
 /* MINISPIL-SLUT */
