@@ -7616,7 +7616,33 @@ function harKrav(c,b){ return alleKrav(b).every(k=>(c.badges[k[0]]||0) >= k[1]);
 function harLejrNiv(c,b){ return !b.lejrniv || lejrNiveau(c) >= b.lejrniv; }
 function lejrNivTekst(b){ return `🔒 ${lejrTrin(b.lejrniv).navn} (niv ${b.lejrniv})`; }
 function kravTekst(b){ return alleKrav(b).map(k=>`${EMNE[k[0]].navn} – ${NIVEAUER[k[1]].navn.toLowerCase()}`).join(" og "); }
-function erVand(i, c){ c=c||cur(); return vandSaet(lejrStr(c)).has(feltR(i)+","+feltK(i)) || (!!c && soeVand(c).includes(i)); }
+function erVand(i, c){ c=c||cur(); const eg=vandEgne(c); if(eg) return eg.has(i); return vandSaet(lejrStr(c)).has(feltR(i)+","+feltK(i)) || (!!c && soeVand(c).includes(i)); }
+/* Egen vandplacering: når spejderen har flyttet vandfelter (Flyt rundt), ligger vandet i c.vandEgne (en liste af felter).
+   Antallet følger trinnet: kræver et nyt trin mere vand, lægges det ved det vand, der allerede er (ikke på bygninger eller ved telte og latrin). */
+const VAND_EGNE_CACHE = new WeakMap();
+function vandEgne(c){
+  if(!c || !c.vandEgne) return null;
+  const s=lejrStr(c), t=lejrTrin(c.lejrNivMax||1);
+  let l=c.vandEgne.filter(i=>feltR(i)<s.r && feltK(i)<s.k);
+  if(l.length<t.vand) l=vandVoks(c, l, t.vand);
+  if(l.length!==c.vandEgne.length) c.vandEgne=l;
+  const gl=VAND_EGNE_CACHE.get(c);
+  if(gl && gl.arr===c.vandEgne) return gl.set;
+  const set=new Set(c.vandEgne); VAND_EGNE_CACHE.set(c,{ arr:c.vandEgne, set }); return set;
+}
+function vandVoks(c, l, n){
+  const s=lejrStr(c), f=c.lejr||{}, dk=lejrDaekket(c,f), vand=new Set(l), ingen=new Set([...TELTE,"latrin"]);
+  const ortho=i=>{ const r=feltR(i), k=feltK(i); return [[r-1,k],[r+1,k],[r,k-1],[r,k+1]].filter(([a,b])=>a>=0&&b>=0&&a<s.r&&b<s.k).map(([a,b])=>felt(a,b)); };
+  const ok=i=>!vand.has(i) && !dk.has(i) && !naboer(i,c).some(j=>dk.has(j) && ingen.has(f[dk.get(j)]));
+  const alle=lejrAlleFelter(c), afst=i=>(feltR(i)-0.5)**2+(feltK(i)-(s.k-1.5))**2;
+  while(vand.size<n){
+    let kand=alle.filter(i=>ok(i) && ortho(i).some(j=>vand.has(j))).sort((a,b)=>afst(a)-afst(b)||a-b);
+    if(!kand.length) kand=alle.filter(i=>!vand.has(i) && !dk.has(i)).sort((a,b)=>b-a);
+    if(!kand.length) break;
+    vand.add(kand[0]); if(c.vild) delete c.vild[kand[0]];
+  }
+  return [...vand];
+}
 function kanStaa(b,i,c){ if(!iPladsen(i,c) || !fodsporPasser(b,i,c)) return false; return b.vedSoe ? !erVand(i,c) && naboVand(i,c) : fodspor(b,i).every(j=>!!b.vand === erVand(j,c)); }
 /* Store bygninger fylder flere felter (str i BYG, fx hytten 1 × 2). Bygningen gemmes på sit øverste venstre felt (ankeret),
    og de andre felter er dækket af den. Placering, flytning, regler og nabotjek tæller alle felterne. */
@@ -7663,8 +7689,8 @@ function scrLejr(){
       <button class="btn secondary" data-a="lejrannuller">Fortryd</button></div>`;
   }
   if(lejrFlyt){ flytBrud = flytNyeBrud(c);
-    const brud=[...new Set(regelBrudKort(c,{ ...felter }).filter(x=>!lejrFlyt.start.has(x.n)).map(x=>x.r.navn))];
-    h += `<div class="card flytbar"><b>✋ Flyt rundt på lejrpladsen</b><small>${lejrFlyt.valgt!=null ? `Tryk på et felt med hvid ramme for at flytte ${BYGID[felter[lejrFlyt.valgt]].navn.toLowerCase()} – eller på en anden bygning af samme størrelse for at bytte plads. Tryk på den igen for at lægge den.` : "Tryk på en bygning for at tage den op."}</small>
+    const brud=flytFejlTekster(c);
+    h += `<div class="card flytbar"><b>✋ Flyt rundt på lejrpladsen</b><small>${lejrFlyt.valgt!=null ? `Tryk på et felt med hvid ramme for at flytte ${BYGID[felter[lejrFlyt.valgt]].navn.toLowerCase()} – eller på en anden bygning af samme størrelse for at bytte plads. Tryk på den igen for at lægge den.` : lejrFlyt.vand!=null ? "Tryk på et græsfelt med hvid ramme for at flytte vandet dertil. Tryk på vandet igen for at lægge det." : "Tryk på en bygning – eller et vandfelt – for at tage den op."}</small>
       ${brud.length ? `<small class="flytbrud">🚫 Ret først: ${brud.join(" · ")}</small>` : `<small class="flytok">${lejrFlyt.log ? `${lejrFlyt.log} ${lejrFlyt.log===1?"flytning":"flytninger"} – tryk »Gem«, når du er færdig.` : "Intet er flyttet endnu."}</small>`}</div>`; }
   const str=lejrStr(c), udv=lejrUdvid; lejrUdvid=null;
   h += `<div class="lejrmap k${str.k} ${lejrByggetilstand?"byggetilstand":""} tid-${lejrDoegn()}" id="lejrmap" style="position:relative;grid-template-columns:repeat(${str.k},1fr)">
@@ -7684,7 +7710,7 @@ function scrLejr(){
     const wire = b && b.id==="svaevebane" && !underByg(c,i) ? (k+2 < str.k ? "wire" : "wireV") : "";
     if(wire) cls += " wire" + (wire==="wireV" ? " spejl" : "");
     if(lejrValg && lejrValg.type==="flyt" && lejrValg.idx===i) cls += " flyttes";
-    if(lejrFlyt){ if(lejrFlyt.valgt===i) cls += " flyttes"; else if(lejrFlyt.valgt!=null && !b && flytMaal(c, lejrFlyt.valgt, i)) cls += " kan"; if(b && flytBrud.has(i)) cls += " brud"; }
+    if(lejrFlyt){ if(lejrFlyt.valgt===i || lejrFlyt.vand===i) cls += " flyttes"; else if(lejrFlyt.valgt!=null && !b && flytMaal(c, lejrFlyt.valgt, i)) cls += " kan"; else if(lejrFlyt.vand!=null && !dk.has(i) && !erVand(i)) cls += " kan"; if(b && flytBrud.has(i)) cls += " brud"; }
     if(lejrNy===i) cls += " ny";
     if(udv && (r>=udv.r || k>=udv.k)) cls += " udvidet";
     const bygger = b && underByg(c,i), niv = b ? lejrNiv(c,i) : 1;
@@ -7830,7 +7856,7 @@ function soeHTML(c, str){
   // Åen er det vand, der ikke hænger sammen med søen i hjørnet øverst til højre – der er strøm i den
   const soe=new Set(), kø=[felt(0,str.k-1)];
   while(kø.length){ const i=kø.pop(); if(soe.has(i) || !V.has(i)) continue; soe.add(i); const r=feltR(i), k=feltK(i); if(r>0) kø.push(felt(r-1,k)); if(r<str.r-1) kø.push(felt(r+1,k)); if(k>0) kø.push(felt(r,k-1)); if(k<str.k-1) kø.push(felt(r,k+1)); }
-  const aa=[...V].filter(i=>!soe.has(i));
+  const aa=c.vandEgne ? [] : [...V].filter(i=>!soe.has(i));
   let pynt="", krus=0;
   for(const i of V){ const r=feltR(i), k=feltK(i), fri=!f[i];
     // Siv på bredden mod land (venstre eller nederst)
@@ -8094,8 +8120,8 @@ function indboVaerdi(c,i){ const t=(c.telte||{})[i]; return t ? Object.values(t.
 let lejrFlyt = null, flytBrud = new Set();
 const FLYT_DATA = ["lejr","lejrTid","telte","lejrNiv","lejrOpg","lejrInv","lejrRek","traer","prod"];
 function flytStart(){
-  const c=cur(); lejrValg=null; lejrArk=null; c.flytLog=[];
-  lejrFlyt={ valgt:null, log:0, start:new Set(regelBrudKort(c,{ ...lejrFelter(c) }).map(x=>x.n)) }; save(); render();
+  const c=cur(); lejrValg=null; lejrArk=null; c.flytLog=[]; c.flytVandFoer = c.vandEgne ? [...c.vandEgne] : 0;
+  lejrFlyt={ valgt:null, vand:null, log:0, start:new Set(regelBrudKort(c,{ ...lejrFelter(c) }).map(x=>x.n)) }; save(); render();
 }
 // Flyt alt, der hører til feltet fra, over på til (og byt, hvis til er optaget)
 function flytByt(c, a, b){
@@ -8105,10 +8131,28 @@ function flytByt(c, a, b){
 }
 // Kan bygningen på fra stå på til (et tomt felt eller dens egne felter)? Reglerne tjekkes først, når man gemmer.
 function flytMaal(c, fra, til){ const b=BYGID[lejrFelter(c)[fra]]; return !!b && fra!==til && kanStaa(b,til,c) && fodsporFrit(c,b,til,fra); }
-function flytNyeBrud(c){ const ud=new Set(); regelBrudKort(c,{ ...lejrFelter(c) }).forEach(x=>{ if(!lejrFlyt.start.has(x.n)){ ud.add(x.i); if(x.j!=null && lejrFelter(c)[x.j]) ud.add(x.j); } }); return ud; }
+function flytNyeBrud(c){ const ud=new Set(); regelBrudKort(c,{ ...lejrFelter(c) }).forEach(x=>{ if(!lejrFlyt.start.has(x.n)){ ud.add(x.i); if(x.j!=null && lejrFelter(c)[x.j]) ud.add(x.j); } });
+  flytStaarIkke(c).forEach(i=>ud.add(i)); return ud; }
+// Bygninger, der ikke kan stå, hvor de står, efter at vandet er flyttet (fx en vandrutsjebane, der ikke længere står ved vandet)
+function flytStaarIkke(c){ const f=lejrFelter(c); return Object.keys(f).map(Number).filter(i=>BYGID[f[i]] && !kanStaa(BYGID[f[i]],i,c)); }
+function flytFejlTekster(c){ const f=lejrFelter(c);
+  return [...new Set(regelBrudKort(c,{ ...f }).filter(x=>!lejrFlyt.start.has(x.n)).map(x=>x.r.navn)),
+          ...new Set(flytStaarIkke(c).map(i=>{ const b=BYGID[f[i]]; return b.vedSoe?`${b.navn} skal stå ved vandet`:b.vand?`${b.navn} skal stå på vandet`:`${b.navn} kan ikke stå på vandet`; }))]; }
+// Et tomt vandfelt flyttes til et tomt græsfelt (og det gamle bliver græs)
+function flytVand(c, fra, til){
+  if(!c.vandEgne) c.vandEgne=lejrAlleFelter(c).filter(i=>erVand(i,c));
+  c.vandEgne=c.vandEgne.map(i=>i===fra?til:i); if(c.vild) delete c.vild[til];
+}
 function flytCelle(i){
   const c=cur(), f=lejrFelter(c), d=lejrDaekket(c), anker=d.has(i)?d.get(i):i, v=lejrFlyt.valgt;
-  if(v==null){ if(f[anker]){ lejrFlyt.valgt=anker; render(); } return; }
+  const vv=lejrFlyt.vand;
+  if(vv!=null){   // et vandfelt er taget op
+    if(i===vv){ lejrFlyt.vand=null; render(); return; }
+    if(!f[anker] && erVand(i,c)){ lejrFlyt.vand=i; render(); return; }
+    if(d.has(i)){ lejrToast("Vandet kan kun flyttes til et tomt græsfelt."); return; }
+    flytVand(c, vv, i); c.flytLog.push(["v",vv,i]); lejrFlyt.vand=null; lejrFlyt.log=c.flytLog.length; save(); render(); vibrer(20); return;
+  }
+  if(v==null){ if(f[anker]){ lejrFlyt.valgt=anker; render(); } else if(erVand(i,c)){ lejrFlyt.vand=i; render(); } return; }
   if(anker===v){ lejrFlyt.valgt=null; render(); return; }
   if(f[anker]){   // byt plads med en anden bygning af samme størrelse
     const a=BYGID[f[v]], b=BYGID[f[anker]], sa=bygStr(a), sb=bygStr(b);
@@ -8123,13 +8167,16 @@ function flytCelle(i){
   lejrFlyt.valgt=null; lejrFlyt.log=c.flytLog.length; save(); render(); vibrer(20);
 }
 function flytFortryd(c, stille){
-  (c.flytLog||[]).slice().reverse().forEach(([a,b])=>flytByt(c,a,b)); delete c.flytLog; lejrFlyt=null; save();
+  (c.flytLog||[]).slice().reverse().forEach(e=>{ if(e[0]!=="v") flytByt(c,e[0],e[1]); });
+  if(c.flytVandFoer!==undefined){ if(c.flytVandFoer) c.vandEgne=c.flytVandFoer; else delete c.vandEgne; delete c.flytVandFoer; }   // vandet, som det var
+  delete c.flytLog; lejrFlyt=null; save();
   if(!stille){ render(); lejrToast("↩️ Bygningerne står, som de gjorde før."); }
 }
 function flytGem(){
   const c=cur(), brud=[...new Set(regelBrudKort(c,{ ...lejrFelter(c) }).filter(x=>!lejrFlyt.start.has(x.n)).map(x=>x.r))];
   if(brud.length){ lejrToast(`🚫 Ret først: ${brudTekst(brud)}`); return; }
-  const n=(c.flytLog||[]).length; delete c.flytLog; lejrFlyt=null; save(); render();
+  const staar=flytFejlTekster(c).filter(t=>/ skal stå | kan ikke stå /.test(t)); if(staar.length){ lejrToast(`🚫 Ret først: ${staar.join(" · ")}.`); return; }
+  const n=(c.flytLog||[]).length; delete c.flytLog; delete c.flytVandFoer; lejrFlyt=null; save(); render();
   lejrToast(n ? `💾 Lejrpladsen er gemt (${n} ${n===1?"flytning":"flytninger"}).` : "Intet blev flyttet.");
 }
 
