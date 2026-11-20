@@ -171,6 +171,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **🎢 Svævebanen** (`svaeve`, ved siden af den gamle »Tag en tur«): først sikkerhedstjekket i rækkefølge (`SVAEVE_TJEK`: sele, hjelm, karabin i wiren, karabin i lås og tjekket, »Klar!«), så 3 ture. Man trækker sig selv frem ved at holde »Brems« nede og slippe igen og skal stoppe i den grønne zone lige før stolpen: højst 7 % før stolpen er perfekt, højst 16 % er godt, før det er for tidligt, og ved stolpen er det for hårdt. Wiren bliver længere med niveauet (op til dobbelt længde, vist i meter), så man får mere fart. Stjerner ved 85/60/35 point, og højst 2 stjerner, hvis man rammer stolpen. Fra niveau 5 *Uden markering*, fra niveau 10 *Med rygsæk* (mere fart, og bremsen er længere om at virke).
 
+- **🇩🇰 Flaghejsning** (flagstangen, `flag`, ved siden af den gamle »Hejs flaget«): tryk i et jævnt, roligt tempo – hvert tryk hejser flaget et stykke (16 tryk). Jævnheden måles ud fra, hvor meget tiden mellem trykkene svinger (`flagJaevn`, strengere på højere niveau). Bagefter et spørgsmål om flagreglerne (`FLAG_REGLER`: hvornår flaget hejses og tages ned, halv stang, flaget må ikke røre jorden, tempo, slidte flag, langfredag). Score = jævnhed (50) + spørgsmål (30) + 20. Fra niveau 5 *Halv stang* (hejs helt op, fir ned, og stop ved den gule streg), fra niveau 10 *Nedhaling* (fir ned i solnedgangen, og grib flaget, før det rører jorden).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

@@ -12882,6 +12882,77 @@ function svaeveSVG(st, forside){
   </svg>`;
 }
 
+/* ---------- Minispil: Hejs flaget i jævnt tempo (flagstangen) + ét spørgsmål om flagregler ---------- */
+const FLAG_REGLER = [
+  { spm:"Hvornår må Dannebrog tidligst hejses?", svar:["Kl. 8 – eller ved solopgang, hvis den er senere","Kl. 6","Så snart man står op","Kl. 12"], fk:"Flaget hejses tidligst kl. 8 – om vinteren ved solopgang, hvis solen står senere op." },
+  { spm:"Hvornår skal flaget tages ned?", svar:["Ved solnedgang","Kl. 22","Kl. 18 hele året","Ved midnat"], fk:"Flaget nedhales ved solnedgang – og senest kl. 22, hvis solen går ned senere om sommeren." },
+  { spm:"Hvordan flager man på halv stang?", svar:["Man hejser helt op først og firer så ned på halv stang","Man hejser kun halvt op","Man binder flaget fast halvvejs","Man hænger flaget omvendt"], fk:"Ved halv stang hejses flaget først helt til tops og fires derefter ned. Om aftenen hejses det helt op igen, før det tages ned." },
+  { spm:"Hvad må Dannebrog ikke?", svar:["Røre jorden","Blafre i vinden","Være vådt","Hejses om søndagen"], fk:"Flaget må ikke røre jorden. Når det tages ned, griber man det og folder det pænt." },
+  { spm:"I hvilket tempo hejses flaget?", svar:["I et jævnt, roligt tempo","Så hurtigt som muligt","I ryk – lidt ad gangen","Det er lige meget"], fk:"Flaget hejses og nedhales i et jævnt, værdigt tempo." },
+  { spm:"Hvad gør man med et slidt og flænset flag?", svar:["Brænder det på en værdig måde","Smider det i skraldespanden","Klipper det til klude","Hænger det op alligevel"], fk:"Et udtjent flag brændes på en værdig måde – det bliver ikke smidt ud." },
+  { spm:"Hvordan flager man langfredag?", svar:["På halv stang hele dagen","På hel stang","Man flager ikke","Halv stang til kl. 12"], fk:"Langfredag flages der på halv stang hele dagen." },
+];
+msNyt("flag", { navn:"Flaghejsning", ikon:"🇩🇰", byg:["flag"], knap:"🇩🇰 Minispil: Hejs i takt", point:12,
+  varianter:[
+    { navn:"Hejs flaget", besk:"Tryk i et jævnt, roligt tempo – hvert tryk hejser flaget et stykke. Det gælder om at holde den samme takt hele vejen op. Bagefter et spørgsmål om flagreglerne." },
+    { navn:"Halv stang", besk:"Hejs flaget helt til tops i jævnt tempo – og fir det så ned, og stop præcis ved halv stang (den gule streg)." },
+    { navn:"Nedhaling", besk:"Det er solnedgang. Fir flaget ned i et jævnt tempo – og grib det, før det rører jorden." },
+  ],
+  start(st){ const n=st.v===1?12:16;
+    Object.assign(st, { rnd:msTilfaeldig(Date.now()), del:"hejs", n, tryk:0, tider:[], h: st.v===2 ? 1 : 0, ned:0, halvFejl:null, greb:null, q:FLAG_REGLER[Math.floor(Math.random()*FLAG_REGLER.length)], svarOk:null });
+    st.valg=shuffle(st.q.svar.map((t,k)=>({ t, ok:k===0 }))); },
+  forside(st){ return flagSVG({ h:.8, v:0 }); },
+  tegn(st){ return flagSVG(st); },
+  status(st){
+    if(st.del==="spm") return "Spørgsmål om flaget";
+    if(st.del==="halv") return "Fir ned – og stop ved halv stang";
+    if(st.del==="grib") return "🙌 Grib flaget!";
+    return `${st.tryk} af ${st.n} · Jævnhed: ${Math.round(100*flagJaevn(st))} %`;
+  },
+  kontrol(st){
+    if(st.del==="spm") return `<div class="aktopg">${esc(st.q.spm)}</div>${st.valg.map((o,k)=>`<button class="btn secondary" data-a="msk" data-k="svar" data-t="${k}">${esc(o.t)}</button>`).join("")}`;
+    if(st.del==="halv") return `<div class="row"><button class="btn earth" data-a="msk" data-k="fir">⬇️ Fir ned</button><button class="btn gold" data-a="msk" data-k="halvok">✔️ Halv stang</button></div>`;
+    if(st.del==="grib") return `<button class="btn gold mstryk" id="msgrib">🙌 Grib flaget!</button>`;
+    return `<button class="btn gold mstryk" id="mshejs">${st.v===2?"⬇️ Fir ned":"⬆️ Hejs"}</button><p class="muted center psmall">Tryk i en rolig, jævn takt – omtrent ét tryk i sekundet.</p>`;
+  },
+  tryk(st, k, d){
+    if(k==="fir" && st.del==="halv"){ st.h=Math.max(0, st.h-.05); flagTegn(st); vibrer(8); }
+    if(k==="halvok" && st.del==="halv"){ st.halvFejl=Math.abs(st.h-.5); msStatus(st.halvFejl<.03?"🎯 Præcis halv stang!":st.halvFejl<.08?"🙂 Tæt på halv stang":"❌ Det er ikke halv stang"); st.del="spm"; msTid(()=>render(), 700); }
+    if(k==="svar" && st.del==="spm"){ st.svarOk=st.valg[+d.t].ok; vibrer(st.svarOk?25:[60,40,60]); flagSlut(st); }
+  },
+  efter(st){
+    if(st.del==="hejs"){
+      document.getElementById("mshejs").addEventListener("pointerdown", ev=>{ ev.preventDefault(); if(st.del!=="hejs") return;
+        st.tider.push(performance.now()); st.tryk++; vibrer(8);
+        st.h = st.v===2 ? 1-st.tryk/st.n : st.tryk/st.n; flagTegn(st); msStatus(MS.flag.status(st));
+        if(st.tryk>=st.n){ st.del = st.v===1 ? "halv" : st.v===2 ? "grib" : "spm"; msTid(()=>render(), 300); } });
+    }
+    if(st.del==="grib"){ const t0=performance.now(), vindue=1.3/st.sv*(MS_ROLIG?1.4:1);
+      document.getElementById("msgrib").addEventListener("pointerdown", ev=>{ ev.preventDefault(); if(st.greb!=null) return; st.greb=(performance.now()-t0)/1000<=vindue; msStatus(st.greb?"🙌 Grebet – flaget rørte ikke jorden!":"😬 For sent – flaget rørte jorden"); st.del="spm"; msTid(()=>render(), 700); });
+      msTid(()=>{ if(st.greb==null){ st.greb=false; msStatus("😬 Flaget rørte jorden!"); vibrer([80,40,80]); st.del="spm"; msTid(()=>render(), 700); } }, vindue*1000);
+    }
+  },
+});
+function flagJaevn(st){ const t=st.tider; if(t.length<3) return 1; const d=t.slice(1).map((x,k)=>x-t[k]), m=d.reduce((a,b)=>a+b,0)/d.length;
+  const sd=Math.sqrt(d.reduce((a,b)=>a+(b-m)**2,0)/d.length); return Math.max(0, 1-(sd/m)*1.6*st.sv); }
+function flagSlut(st){
+  const j=flagJaevn(st), ekstra = st.v===1 ? (st.halvFejl<.03?20:st.halvFejl<.08?12:0) : st.v===2 ? (st.greb?20:0) : 20;
+  const sc=Math.round(j*50 + (st.svarOk?30:0) + ekstra), stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`Jævnhed: ${Math.round(j*100)} %. Spørgsmålet: ${st.svarOk?"✅ rigtigt":"❌ forkert"}.${st.v===1?` Halv stang: ${st.halvFejl<.03?"præcis":st.halvFejl<.08?"tæt på":"ikke ramt"}.`:st.v===2?` Flaget blev ${st.greb?"grebet":"ikke grebet"}.`:""}`,
+    laer:`${st.svarOk?"":`<b>${esc(st.q.svar[0])}</b>. `}${esc(st.q.fk)}` });
+}
+function flagTegn(st){ const g=document.getElementById("msflaget"); if(g) g.setAttribute("transform", `translate(0 ${flagY(st.h)})`); }
+function flagY(h){ return 176 - h*156; }
+function flagSVG(st){
+  const aften=st.v===2;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><defs><linearGradient id="msaften" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a261"/><stop offset="1" stop-color="#fde2b8"/></linearGradient></defs>
+    <rect width="320" height="240" fill="${aften?"url(#msaften)":"#bfe0f2"}"/>${aften?`<circle cx="250" cy="200" r="26" fill="#f77f00" opacity=".8"/>`:`<circle cx="60" cy="46" r="18" fill="#ffd166"/>`}<ellipse cx="160" cy="262" rx="220" ry="70" fill="#86b25a"/>
+    <path d="M160 232 V16" stroke="#ddd6c4" stroke-width="5"/><circle cx="160" cy="14" r="5" fill="#f2c94c"/><path d="M164 18 V226" stroke="#7d8a91" stroke-width="1"/>
+    ${st.v===1?`<path d="M150 ${flagY(.5)+22} H240" stroke="#f2c94c" stroke-width="3" stroke-dasharray="6 4"/><text x="244" y="${flagY(.5)+26}" font-size="11" font-weight="800" fill="#7a5a10">halv stang</text>`:""}
+    <g id="msflaget" transform="translate(0 ${flagY(st.h||0)})"><rect x="163" y="0" width="64" height="44" fill="#c8102e"/><rect x="183" y="0" width="9" height="44" fill="#fff"/><rect x="163" y="17.5" width="64" height="9" fill="#fff"/></g>
+    ${figur(cur().look,118,206,64)}</svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
