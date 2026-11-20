@@ -580,6 +580,8 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .memkort{aspect-ratio:3/4;border:none;border-radius:10px;background:#8a5a35;box-shadow:0 3px 0 #5c3a20;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;font:inherit;min-width:0;overflow:hidden;transition:transform .15s}
 .memkort.op{background:#fbf7ec;color:var(--ink);box-shadow:0 3px 0 #c9b98f}.memkort.fundet{box-shadow:inset 0 0 0 3px #4caf50,0 3px 0 #2e7d32}.memkort:active{transform:scale(.96)}
 .memspor{width:82%;height:auto}.memdyr{font-size:30px;line-height:1}.memkort small{font-size:11px;line-height:1.15;text-align:center}.memmrk{font-size:18px;line-height:1}.memkort .memtekst{font-size:9.5px;line-height:1.15}.membag{font-size:26px;opacity:.55}
+.gkort{display:grid;gap:2px;padding:8px 8px 8px 4px;background:#86b25a}.glab{font-size:11px;font-weight:800;color:#fff;display:grid;place-items:center;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.gkort .kfelt{aspect-ratio:1;position:relative}.gcache{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13035,6 +13037,62 @@ function sporSlut(st){
   msSlut(st, { stjerner:stj, score:Math.max(0, 100-ekstra*6), tekst:`Alle ${st.n} par fundet på ${st.forsoeg} forsøg.`, ekstra: nye.length ? nye.map(samlNyHTML).join("") : "",
     laer:"Spor ses bedst i sne, mudder og fint sand – og tidligt om morgenen, når solen står lavt og laver skygger i sporene. Mål sporet, og se, om det ligger på en linje, i par eller i grupper." });
 }
+
+/* ---------- Minispil: Find cachen (geocachen) på din egen lejrplads ----------
+   Koordinater (række, kolonne) – fra niv 5 kurs og skridt (1 felt = 10 skridt) – fra niv 10 koordinater som regnestykker. 5 cacher. */
+function geoOpg(st, c){
+  const s=lejrStr(c), r=st.rnd, felter=lejrAlleFelter(c).filter(i=>!erVand(i,c)), dk=lejrDaekket(c), f=lejrFelter(c);
+  for(let n=0;n<300;n++){
+    const maal=felter[r(felter.length)]; if(st.brugt.includes(maal)) continue;
+    if(st.v===1){ const ankre=[...new Set([...dk.values()])].filter(i=>BYGID[f[i]] && i!==maal); if(!ankre.length) break;
+      const fra=ankre[r(ankre.length)], dr=feltR(maal)-feltR(fra), dc=feltK(maal)-feltK(fra);
+      if((!dr && !dc) || Math.abs(dr)>5 || Math.abs(dc)>4) continue;
+      const ben=[]; if(dc) ben.push([dc>0?90:270, Math.abs(dc)*10]); if(dr) ben.push([dr>0?180:0, Math.abs(dr)*10]); if(r(2)) ben.reverse();
+      st.brugt.push(maal); return { maal, fra, ben }; }
+    st.brugt.push(maal);
+    const rr=feltR(maal)+1, kk=feltK(maal)+1;
+    if(st.v===2){ const a=rr>=2 ? 1+r(Math.floor(rr/2)) : 0, b=rr-a*2; const kr=`${a} × 2 + ${b}`; const x=kk+2+r(5); return { maal, gaade:[`række = ${kr}`, `kolonne = ${x} − ${x-kk}`] }; }
+    return { maal };
+  }
+  return { maal:felter[0] };
+}
+msNyt("geo", { navn:"Find cachen", ikon:"📦", byg:["geocache"], knap:"📦 Minispil: Find cachen", point:12, svaer:false,
+  varianter:[
+    { navn:"Koordinater", besk:"Cachen er gemt et sted på din lejrplads. Rækkerne er nummereret oppefra og kolonnerne fra venstre. Tryk på feltet med koordinaterne. 5 cacher." },
+    { navn:"Kurs og skridt", besk:"Start ved en bygning, og gå kursen: ét felt er 10 skridt. 0° er nord (op), 90° øst, 180° syd og 270° vest. Tryk, hvor cachen ligger." },
+    { navn:"Gåde-koordinater", besk:"Koordinaterne er gemt i regnestykker. Regn dem ud, og find cachen." },
+  ],
+  start(st, c){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), nr:0, rigtige:0, brugt:[], svar:null }); st.o=geoOpg(st, c); },
+  forside(){ return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#a6d38e"/><g opacity=".5" stroke="#fff">${[1,2,3,4,5].map(k=>`<path d="M${k*53} 0 V240 M0 ${k*40} H320"/>`).join("")}</g><text x="160" y="150" font-size="80" text-anchor="middle">📦</text><text x="160" y="200" text-anchor="middle" font-size="16" font-weight="800" fill="#2f4a2b">Række 4 · kolonne 3</text></svg>`; },
+  tegn(st, c){
+    const s=lejrStr(c), f=lejrFelter(c), dk=lejrDaekket(c), o=st.o, rM=feltR(o.maal), rF=o.fra!=null?feltR(o.fra):rM;
+    let r0=Math.max(0, Math.min(rM,rF)-1-st.rnd(2)), r1=Math.min(s.r-1, Math.max(rM,rF)+1+st.rnd(2)); while(r1-r0<7 && (r0>0||r1<s.r-1)){ if(r0>0) r0--; if(r1-r0<7 && r1<s.r-1) r1++; }
+    if(st.vindue && st.vindue.o===o){ r0=st.vindue.r0; r1=st.vindue.r1; } else st.vindue={ o, r0, r1 };
+    const rows=r1-r0+1; let h=`<div class="gkort" style="grid-template-columns:22px repeat(${s.k},1fr);grid-template-rows:20px repeat(${rows},1fr)"><span></span>`;
+    for(let k=0;k<s.k;k++) h+=`<span class="glab">${k+1}</span>`;
+    for(let r=r0;r<=r1;r++){ h+=`<span class="glab" style="grid-row:${r-r0+2};grid-column:1">${r+1}</span>`;
+      for(let k=0;k<s.k;k++){ const i=felt(r,k), a=dk.get(i), b=a!=null?BYGID[f[a]]:null, vand=erVand(i,c);
+        const cls=[b?"byg":"", vand?"vand":"", o.fra!=null&&a===o.fra?"start":"", st.svar!=null&&i===o.maal?"maal":"", st.svar!=null&&i===st.svar&&i!==o.maal?"forkert":""].join(" ");
+        h+=`<button class="kfelt ${cls}" style="grid-row:${r-r0+2};grid-column:${k+2}" ${st.svar==null&&!vand?`data-a="msk" data-k="svar" data-t="${i}"`:"disabled"} aria-label="Række ${r+1}, kolonne ${k+1}">${b&&a===i?bygIkon(b,1,""):""}${st.svar!=null&&i===o.maal?`<span class="gcache">📦</span>`:""}</button>`; } }
+    return h+`</div>`;
+  },
+  status(st){ return `Cache ${Math.min(5,st.nr+1)} af 5 · Fundet: ${st.rigtige}`; },
+  kontrol(st, c){
+    const o=st.o, R=feltR(o.maal)+1, K=feltK(o.maal)+1;
+    if(st.svar!=null) return `<div class="aktopg msintro">${st.svar===o.maal?"✅ Du fandt cachen! Skriv dit navn i logbogen.":`❌ Cachen lå i række ${R}, kolonne ${K}.`}</div><button class="btn gold" data-a="msk" data-k="naeste">${st.nr>=4?"🏁 Se resultatet":"➡️ Næste cache"}</button>`;
+    if(st.v===1){ const b=BYGID[lejrFelter(c)[o.fra]]; return `<div class="aktopg msintro">📍 Start ved <b>${esc(b.navn)}</b> (gul ramme). Gå ${o.ben.map(([v,n],k)=>`${k?"og så ":""}<b>${n} skridt</b> mod <b>${v}°</b>`).join(" ")}. Hvor ligger cachen?</div>`; }
+    if(st.v===2) return `<div class="aktopg msintro">🧩 Cachen ligger i <b>${o.gaade[0]}</b> og <b>${o.gaade[1]}</b>.</div>`;
+    return `<div class="aktopg msintro">📦 Cachen ligger i <b>række ${R}, kolonne ${K}</b>.</div>`;
+  },
+  tryk(st, k, d, c){
+    if(k==="svar" && st.svar==null){ st.svar=+d.t; const ok=st.svar===st.o.maal; if(ok) st.rigtige++; vibrer(ok?25:[60,40,60]); render(); }
+    if(k==="naeste" && st.svar!=null){ st.nr++;
+      if(st.nr>=5){ const stj=st.rigtige>=5?3:st.rigtige>=4?2:st.rigtige>=3?1:0;
+        return msSlut(st, { stjerner:stj, score:st.rigtige*20, tekst:`Du fandt ${st.rigtige} af 5 cacher.`,
+          laer:"En GPS viser koordinater: breddegrad (nord-syd) og længdegrad (øst-vest) – ligesom rækker og kolonner på et kort. Find cachen, skriv i logbogen, og læg den tilbage præcis, hvor den lå." }); }
+      st.svar=null; st.o=geoOpg(st, c); render(); window.scrollTo(0,0); }
+  },
+});
 
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
