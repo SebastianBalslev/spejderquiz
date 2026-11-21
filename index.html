@@ -583,6 +583,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .gkort{display:grid;gap:2px;padding:8px 8px 8px 4px;background:#86b25a}.glab{font-size:11px;font-weight:800;color:#fff;display:grid;place-items:center;text-shadow:0 1px 0 rgba(0,0,0,.3)}
 .gkort .kfelt{aspect-ratio:1;position:relative}.gcache{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
 #mslampe.taendt{fill:#fff6b0;filter:drop-shadow(0 0 14px #ffe680)}
+.opvbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px}.opvbtn .btn{margin:0;min-height:64px;font-size:17px}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13225,6 +13226,57 @@ function stjSVG(st, forside){
     return `<g opacity=".9"><rect x="${238-ai*70}" y="192" width="48" height="44" rx="6" fill="rgba(255,255,255,.12)"/>${a.l.map(([p,q])=>`<path d="M${P[p][0]} ${P[p][1]} L${P[q][0]} ${P[q][1]}" stroke="#9ecbff" stroke-width="1.5"/>`).join("")}${P.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff"/>`).join("")}</g>`; }).join("") : "";
   return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#0d1630"/>${msSkov(214,"#14231a")}
     <g id="mshimmel">${stjIndhold(st, forside)}</g>${mini}</svg>`;
+}
+
+/* ---------- Minispil: Opvask i tre baljer (pionerbordet) – skyl af, vask, skyl, tørrestativ ---------- */
+const OPVASK_TING = [["🍽️","tallerken"],["☕","krus"],["🍴","bestik"],["🥣","skål"],["🍳","pande"],["🍲","gryde"]];
+const OPVASK_BALJER = ["Skyl af","Vask","Skyl","Tørrestativ"];
+msNyt("opvask", { navn:"Opvask", ikon:"🧽", byg:["bord"], knap:"🧽 Minispil: Opvask i tre baljer", point:12,
+  varianter:[
+    { navn:"Opvask", rt:true, besk:"Tag opvasken i tre baljer: 1) skyl madresterne af i koldt vand, 2) vask i varmt sæbevand – tryk flere gange for at skrubbe, til det er rent – 3) skyl i rent vand, og stil det i tørrestativet. Nå så meget som muligt på 40 sekunder." },
+    { navn:"Fedtede gryder", rt:true, besk:"Gryder og pander med fastbrændt mad – der skal skrubbes meget mere." },
+    { navn:"Rent vand", rt:true, besk:"Opvaskevandet bliver beskidt og koldt. Når det er gråt, skal du skifte vand, før du vasker videre." },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), t:0, faerdig:0, fejl:0, vandSnavs:0, sidst:null }); opvaskNy(st); },
+  forside(){ return opvaskSVG({ ting:OPVASK_TING[0], pos:1, snavs:2, vandSnavs:0, v:0 }); },
+  tegn(st){ return opvaskSVG(st); },
+  status(st){ return `⏱️ ${Math.max(0,Math.ceil(40-st.t))} sek · Rent i stativet: ${st.faerdig}${st.fejl?` · ❌ ${st.fejl}`:""}`; },
+  kontrol(st){ return `<div class="opvbtn">${OPVASK_BALJER.map((n,k)=>`<button class="btn ${k===3?"earth":"secondary"}" data-a="msk" data-k="balje" data-t="${k}">${k<3?`${k+1} · `:"🧺 "}${n}${k===1&&st.pos===1&&st.snavs>0?` (${st.snavs})`:""}</button>`).join("")}</div>
+    ${st.v===2?`<button class="btn mslille ${st.vandSnavs>=4?"gold":"secondary"}" data-a="msk" data-k="skift">🚿 Skift opvaskevandet${st.vandSnavs>=4?" – det er beskidt!":""}</button>`:""}`; },
+  tryk(st, k, d){
+    if(k==="skift"){ st.vandSnavs=0; st.t+=1.5; render(); return; }   // det tager lidt tid at skifte vand
+    if(k!=="balje") return; const b=+d.t;
+    if(b===1 && st.pos===1){   // skrub
+      if(st.v===2 && st.vandSnavs>=4){ st.fejl++; vibrer([50,30,50]); lejrToast("Opvaskevandet er for beskidt – skift det først!"); return render(); }
+      if(st.snavs>0){ st.snavs--; vibrer(8); return render(); } }
+    const naeste=st.pos+1;
+    if(b!==naeste){ st.fejl++; vibrer([50,30,50]); lejrToast(st.pos===1&&st.snavs>0 ? "Den er ikke ren endnu – bliv ved med at skrubbe i sæbevandet." : `Næste skridt er: ${OPVASK_BALJER[naeste]}.`); return render(); }
+    if(st.pos===1 && st.snavs>0){ st.fejl++; lejrToast("Den er ikke ren endnu – skrub videre."); return render(); }
+    st.pos=b; vibrer(12);
+    if(b===1 && st.v===2) st.vandSnavs++;
+    if(b===3){ st.faerdig++; opvaskNy(st); }
+    render();
+  },
+  efter(st){ msLoop(dt=>{ st.t+=dt; const sek=Math.ceil(40-st.t); if(sek!==st.sidst){ st.sidst=sek; msStatus(MS.opvask.status(st)); }
+    if(st.t>=40){ opvaskSlut(st); return false; } }); },
+});
+function opvaskNy(st){ const tung=st.v===1; const t = tung && st.rnd(2) ? OPVASK_TING[4+st.rnd(2)] : OPVASK_TING[st.rnd(OPVASK_TING.length)];
+  st.ting=t; st.pos=-1; st.snavs = (t[1]==="gryde"||t[1]==="pande" ? 4 : 2) + (tung?3:0) + Math.round((st.sv-1)*4); }
+function opvaskSlut(st){
+  const n=st.faerdig, krav=st.v===1?.7:1, stj = n>=10*krav && st.fejl<=2 ? 3 : n>=6*krav && st.fejl<=5 ? 2 : n>=3*krav ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:Math.max(0, n*8-st.fejl*4), tekst:`${n} ${n===1?"ting":"ting"} kom rene i tørrestativet${st.fejl?` – med ${st.fejl} fejl`:""}.`,
+    laer:"Tre baljer: først koldt vand, så madresterne ikke brænder fast, så varmt sæbevand og til sidst rent skyllevand. Vask det reneste først (krus og bestik) og gryderne til sidst – og skift vandet, når det bliver gråt." });
+}
+function opvaskSVG(st){
+  const x=[60,140,220,290], tingX = st.pos<0 ? 20 : x[st.pos], tingY = st.pos===3 ? 112 : 118, vand=["#bfe4f7", st.vandSnavs>=4?"#a39a7c":st.vandSnavs>=2?"#c9d6c9":"#e7f4fb", "#bfe4f7"];
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#cfe6c0"/>${msSkov(118,"#5b8f4a")}<rect y="118" width="320" height="122" fill="#86b25a"/>
+    <rect x="10" y="168" width="300" height="12" rx="3" fill="#c49a63" stroke="#8b5a2b"/><g stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"><path d="M30 180 L20 236 M30 180 L44 236 M290 180 L276 236 M290 180 L304 236"/></g>
+    ${[0,1,2].map(k=>`<path d="M${x[k]-34} 136 L${x[k]-28} 168 H${x[k]+28} L${x[k]+34} 136Z" fill="#9aa7ae" stroke="#5f6b72" stroke-width="2"/><ellipse cx="${x[k]}" cy="138" rx="32" ry="7" fill="${vand[k]}"/>
+      <text x="${x[k]}" y="200" text-anchor="middle" font-size="12" font-weight="800" fill="#2f4a2b">${k+1}. ${OPVASK_BALJER[k]}</text>`).join("")}
+    ${[0,1,2,3,4].map(k=>`<circle cx="${x[1]-20+k*10}" cy="${134-(k%2)*6}" r="${3+(k%3)}" fill="#fff" opacity=".85"/>`).join("")}
+    <g stroke="#8b5a2b" stroke-width="3"><path d="M270 168 V118 M310 168 V118 M270 130 H310 M270 150 H310"/></g><text x="290" y="200" text-anchor="middle" font-size="12" font-weight="800" fill="#2f4a2b">Stativ</text>
+    <g transform="translate(${tingX} ${tingY})"><text x="0" y="0" font-size="34" text-anchor="middle">${st.ting[0]}</text>${Array.from({length:Math.min(6,st.snavs||0)},(_,k)=>`<circle cx="${-10+(k*7)%20}" cy="${-22+(k*5)%14}" r="3" fill="#7a4e2a" opacity=".85"/>`).join("")}</g>
+  </svg>`;
 }
 
 /* MINISPIL-SLUT */
