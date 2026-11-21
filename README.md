@@ -198,6 +198,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **🛌 Pak til natten** (shelteret og træhytten, `nat`): 3 nætter med hver sin temperatur (`NAT_TEMP`). Man vælger sovepose (`NAT_POSE`: sommer, 3-sæsons og vinter med komforttemperatur), underlag (`NAT_UNDER`: tyndt, liggeunderlag eller to oven på hinanden) og tøj til natten (`NAT_TOEJ`: uldundertøj, fleece, hue, uldsokker og dunjakke giver varme, mens bomulds-T-shirt og cowboybukser trækker fra). Bagefter fortæller natten, hvordan det gik (`natSov`): frøs man, svedte man, kom kulden nedefra, var der bomuld med? Hver nat giver op til 3 point, og stjerner ved 8/6/3 af 9. Fra niveau 5 *Frostnætter* (ned til −6 °C), fra niveau 10 *Let oppakning* (højst 3,5 kg – udstyret har vægt).
 
+- **💧 Rent vand** (vandstationen, `vand`): byg et flaskefilter ved at lægge lagene i nedefra (`VAND_LAG`: klud/vat, trækul, sand, grus, sten). Hold »Hæld« nede, så det brune vand løber klart ud i krukken – men det er ikke rent endnu. Til sidst koges vandet: hold »Fyr op« nede for at give ilden mere varme, og hold vandet på 100 °C med bobler i 6 sekunder (svarer til ét minuts rullende kog). Bliver varmen for høj, koger det over (minus point). Score = filter (40) + kogning (40) + 20. Fra niveau 5 *Vælg vandet* (først det bedste vandsted, `VAND_KILDER`: rindende vand oppe fra strømmen), fra niveau 10 *Svag ild* (ilden dør hurtigere, og vandet skal koge i 9 sekunder).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

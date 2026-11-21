@@ -13771,6 +13771,72 @@ function natSVG(st){
     ${frost?`<text x="40" y="190" font-size="20">❄️</text><text x="196" y="210" font-size="16">❄️</text>`:""}</svg>`;
 }
 
+/* ---------- Minispil: Rent vand (vandstationen) – byg et filter i en flaske, og kog vandet ---------- */
+const VAND_LAG = ["Klud eller vat i bunden","Trækul","Fint sand","Grus","Sten øverst"];
+const VAND_LAGFARVE = ["#f3ead2","#2a2a2a","#e3cf9f","#a8957a","#7d8a91"];
+const VAND_KILDER = [["🏞️","Rindende vand fra en bæk – oppe fra strømmen",true],["🟤","En vandpyt på stien",false],["🦆","Stille vand ved andesøen, hvor dyrene drikker",false],["🌾","En grøft ved en mark",false]];
+msNyt("vand", { navn:"Rent vand", ikon:"💧", byg:["vandstation"], knap:"💧 Minispil: Rens og kog vandet", point:12,
+  varianter:[
+    { navn:"Filter og kog", besk:"Byg et vandfilter i en afskåret flaske: læg lagene i <b>nedefra</b>. Hæld det beskidte vand igennem – og kog det så: hold »Fyr op« nede, så vandet koger, og hold det kogende i ét minut (her 6 sekunder). Lad det ikke koge over!" },
+    { navn:"Vælg vandet", besk:"Først skal du vælge det bedste sted at hente vand. Så filter og kog." },
+    { navn:"Svag ild", besk:"Ilden er svær at holde gående, og vandet skal koge længere. Pas på – det koger hurtigt over." },
+  ],
+  start(st){ Object.assign(st, { r:msRaekke(VAND_LAG), del: st.v===1 ? "kilde" : "lag", kildeOk:null, renhed:0, temp:20, varme:0, kog:0, over:0, holder:false, kogTid: st.v===2 ? 9 : 6, kilder:shuffle(VAND_KILDER.slice()) }); },
+  forside(){ return vandSVG({ r:{ naeste:5 }, del:"kog", renhed:1, temp:100, varme:.6, kog:0 }); },
+  tegn(st){ return vandSVG(st); },
+  status(st){ if(st.del==="kilde") return "Hvor henter du vand?"; if(st.del==="lag") return `Filter · lag ${st.r.naeste} af 5${st.r.fejl?` · ❌ ${st.r.fejl}`:""}`; if(st.del==="haeld") return "Hæld vandet igennem filtret";
+    return `🌡️ ${Math.round(Math.min(100,st.temp))} °C · Kogt: ${st.kog.toFixed(1).replace(".",",")} af ${st.kogTid} sek${st.over?` · 💦 kogt over: ${st.over}`:""}`; },
+  kontrol(st){
+    if(st.del==="kilde") return `<div class="aktopg msintro">💧 Du skal hente vand til lejren. Hvor er vandet bedst?</div>${st.kilder.map((k,i)=>`<button class="btn secondary" data-a="msk" data-k="kilde" data-t="${i}">${k[0]} ${esc(k[1])}</button>`).join("")}`;
+    if(st.del==="lag") return `<p class="muted center psmall">Læg lagene i flasken nedefra og op – det, der skal i bunden, først.</p>`+msRaekkeHTML(st.r);
+    if(st.del==="haeld") return `<button class="btn earth mshold" id="mshaeld">🫗 Hold nede: hæld vandet igennem</button>`;
+    return `<button class="btn gold mshold" id="msfyr">🔥 Hold nede: fyr op</button><p class="muted center psmall">Hold vandet kogende – men slip, før det koger over.</p>`;
+  },
+  tryk(st, k, d){
+    if(k==="kilde" && st.del==="kilde"){ st.kildeOk=st.kilder[+d.t][2]; vibrer(st.kildeOk?20:[50,30,50]); lejrToast(st.kildeOk?"✅ Rindende vand oppe fra strømmen er bedst":"Rindende vand fra en bæk er bedst – stillestående vand har flere bakterier"); st.del="lag"; render(); }
+    if(k==="r" && st.del==="lag"){ msRaekkeTryk(st.r, +d.t); if(st.r.naeste>=5) st.del="haeld"; render(); }
+  },
+  efter(st){
+    if(st.del==="haeld"){ let holder=false;
+      msHold(document.getElementById("mshaeld"), ()=>{ holder=true; }, ()=>{ holder=false; });
+      msLoop(dt=>{ if(holder){ st.renhed=Math.min(1, st.renhed+dt*.45); const v=document.getElementById("msrent"); if(v) v.setAttribute("height", 46*st.renhed), v.setAttribute("y", 216-46*st.renhed); }
+        if(st.renhed>=1){ st.del="kog"; msStatus("💧 Vandet er klart – men ikke rent! Bakterierne er der stadig. Kog det."); msTid(()=>render(), 900); return false; } });
+      return; }
+    if(st.del==="kog"){
+      msHold(document.getElementById("msfyr"), ()=>{ st.holder=true; }, ()=>{ st.holder=false; });
+      let overNu=false;
+      msLoop(dt=>{ st.varme = Math.max(0, Math.min(1.25, st.varme + (st.holder ? .55 : -(st.v===2?.32:.22))*dt));
+        st.temp += ((20+st.varme*110) - st.temp)*dt*.9;
+        if(st.temp>=99){ st.kog+=dt; }
+        if(st.varme>1.05){ if(!overNu){ overNu=true; st.over++; vibrer([60,30,60]); msStatus("💦 Det koger over! Slip lidt."); } } else overNu=false;
+        const b=document.getElementById("msbobler"), f=document.getElementById("msild2"), t=document.getElementById("mstemp");
+        if(b) b.style.opacity = st.temp>=99 ? 1 : st.temp>80 ? .4 : 0; if(f) f.setAttribute("transform", `translate(160 206) scale(${.3+st.varme*.7}) translate(-160 -206)`); if(t) t.setAttribute("height", Math.max(0,(st.temp-20)/80*60));
+        if(!overNu && Math.floor(st.kog*4)!==Math.floor((st.kog-dt)*4) || Math.floor(st.temp/10)!==Math.floor((st.temp-dt*10)/10)) msStatus(MS.vand.status(st));
+        if(st.kog>=st.kogTid){ vandSlut(st); return false; } });
+    }
+  },
+});
+function vandSlut(st){
+  const sc = Math.max(0, 40-st.r.fejl*10) + Math.max(0, 40-st.over*12) + (st.v===1 ? (st.kildeOk?20:0) : 20), stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`Filtret blev bygget med ${st.r.fejl} ${st.r.fejl===1?"fejl":"fejl"}, og vandet kogede${st.over?` over ${st.over} ${st.over===1?"gang":"gange"}`:" uden at koge over"}.${st.v===1?` Vandstedet: ${st.kildeOk?"✅ godt valgt":"❌ ikke det bedste"}.`:""}`,
+    laer:"Et filter fjerner jord og partikler, så vandet bliver klart – men ikke bakterier. Kog vandet i mindst ét minut (et rullende kog), så er det sikkert at drikke. Hent helst rindende vand oppe fra strømmen, ikke fra stillestående vand." });
+}
+function vandSVG(st){
+  const n=st.del==="lag"||st.del==="kilde" ? st.r.naeste : 5, kog=st.del==="kog";
+  const lag=Array.from({length:n},(_,k)=>`<rect x="58" y="${200-k*22}" width="44" height="22" fill="${VAND_LAGFARVE[k]}"/>${k===4?[0,1,2].map(j=>`<circle cx="${66+j*14}" cy="${189-k*22+22}" r="6" fill="#9aa7ae" stroke="#5f6b72"/>`).join(""):k===3?`<g fill="#8a7a62">${[0,1,2,3,4].map(j=>`<circle cx="${62+j*9}" cy="${211-k*22}" r="2.5"/>`).join("")}</g>`:""}`).join("");
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#cfe6c0"/>${msSkov(130,"#5b8f4a")}<rect y="130" width="320" height="110" fill="#86b25a"/>
+    ${kog ? `<g transform="translate(0 0)"><path d="M120 206 L200 206" stroke="#5c3a20" stroke-width="8" stroke-linecap="round"/><g id="msild2" transform="translate(160 206) scale(${.3+(st.varme||0)*.7}) translate(-160 -206)"><path d="M160 150 C174 170 186 180 182 196 C179 206 170 210 160 210 C150 210 140 206 138 196 C136 180 150 170 152 160 C156 170 158 174 158 180 C164 170 162 160 160 150Z" fill="#f4772e"/></g>
+        <path d="M118 120 H202 L196 172 H124Z" fill="#5f6b72"/><ellipse cx="160" cy="120" rx="42" ry="8" fill="#9ec9e6"/><g id="msbobler" style="opacity:${(st.temp||0)>=99?1:0}">${[0,1,2,3,4].map(k=>`<circle cx="${132+k*14}" cy="${118-(k%2)*4}" r="${3+k%2}" fill="#fff"/>`).join("")}<path d="M140 104 q6 -10 0 -20 M164 100 q6 -10 0 -20 M186 104 q6 -10 0 -20" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/></g></g>
+        <g transform="translate(262 100)"><rect x="-8" y="-6" width="16" height="72" rx="8" fill="#fff" stroke="#9aa7ae" stroke-width="2"/><rect id="mstemp" x="-4" y="0" width="8" height="${Math.max(0,((st.temp||20)-20)/80*60)}" fill="#c62828" transform="rotate(180 0 33)"/><circle cy="70" r="10" fill="#c62828"/><text x="16" y="4" font-size="10" font-weight="800" fill="#2f4a2b">100°</text></g>`
+      : `<path d="M50 90 L110 90 L104 222 L56 222Z" fill="rgba(255,255,255,.35)" stroke="#9aa7ae" stroke-width="2"/>${lag}
+        <path d="M66 222 L94 222 L88 234 L72 234Z" fill="#cfd8dc"/><rect x="170" y="170" width="70" height="56" rx="6" fill="rgba(255,255,255,.4)" stroke="#9aa7ae" stroke-width="2"/>
+        <rect id="msrent" x="172" y="${216-46*(st.renhed||0)}" width="66" height="${46*(st.renhed||0)}" fill="#8fd0f0"/>
+        <rect x="172" y="174" width="66" height="10" fill="#8a6a3a" opacity="${st.del==="haeld"?.6:0}"/>
+        ${st.del==="kilde"?`<text x="205" y="120" font-size="40" text-anchor="middle">🏞️</text>`:""}
+        ${st.del==="haeld"?`<path d="M80 60 q0 20 0 30" stroke="#8a6a3a" stroke-width="6" stroke-linecap="round"/><text x="80" y="52" font-size="26" text-anchor="middle">🫗</text><path d="M80 234 Q130 250 170 200" stroke="#8fd0f0" stroke-width="3" fill="none"/>`:""}
+        <text x="80" y="82" text-anchor="middle" font-size="11" font-weight="800" fill="#2f4a2b">Flaskefilter</text>`}</svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
