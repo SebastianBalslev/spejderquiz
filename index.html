@@ -12134,6 +12134,8 @@ function msNyt(id, spec){
   spec.byg.forEach(bid=>{ (AKT_FOR[bid]=AKT_FOR[bid]||[]).push([a, typeof spec.knap==="function" ? spec.knap(bid) : spec.knap, spec.krav]); });
   AKT_NY[a]=()=>({ titel:spec.navn, scene:"", knapper:"" });   // skærmen tegnes af scrSpil
 }
+// En lav trærække langs bunden af en scene (toppene går op og ned igen, så den ikke stiger)
+function msSkov(y, farve){ let d=`M0 ${y}`, x=0, k=0; while(x<320){ const h=12+((k*7)%5)*4, b=14+(k%3)*3; d+=` l${b/2} -${h} l${b/2} ${h}`; x+=b; k++; } return `<path d="${d} V240 H0Z" fill="${farve}"/>`; }
 function msByg(st){ return BYGID[st.bid] || { navn:"" }; }
 
 /* ---------- Samlinger: dyr og fugle set, spor og stjernebilleder. En komplet samling giver lejr-XP én gang ---------- */
@@ -12217,7 +12219,7 @@ function msSlut(st, res){
   let bel;
   if(stj>0){
     const tid=msTaeller(st.id, st.bid), n=dagens(c).akt[tid]||0;
-    bel = belon(c, tid, Math.round((spec.point||12)*stj/3*st.sv));
+    bel = belon(c, tid, Math.round((spec.point||12)*stj/3*st.sv*(res.bonus||1)));   // bonus: fx mørkebonus ved stjernekikkerten
     if(n<AKT_LOFT && res.mat){ const giv={};
       Object.entries(res.mat).forEach(([m,x])=>{ const g=Math.min(x, Math.max(0, lagerPlads(c,m)-(lager(c)[m]||0))); if(g>0) giv[m]=g; });
       if(Object.keys(giv).length){ brugMat(c,giv,+1); save(); bel += ` <b class="plus">+${matTekst(giv)}</b>`; }
@@ -13146,6 +13148,83 @@ function morseSVG(st){
     ${vis?`<text x="160" y="76" text-anchor="middle" font-size="30" font-weight="900" letter-spacing="8" fill="#f2c94c">${[...maal].map((t,k)=>`<tspan fill="${k<st.tegn.length?"#7cc06a":"#f2c94c"}">${t}</tspan>`).join("")}</text>`
       :`<text x="160" y="76" text-anchor="middle" font-size="22" font-weight="900" letter-spacing="8" fill="#7cc06a">${st.tegn||"&#160;"}</text>`}
     <path d="M160 150 V232" stroke="#8b5a2b" stroke-width="8"/><rect x="110" y="96" width="100" height="70" rx="12" fill="#2a2a24"/><circle id="mslampe" cx="160" cy="131" r="26" fill="#4a4636"/></svg>`;
+}
+
+/* ---------- Minispil: Tegn stjernebilledet (stjernekikkerten) – fylder c.stjerneatlas ----------
+   Tryk stjernerne i rækkefølge, så linjerne tegnes. Et tryk på en stjerne, man allerede har besøgt, flytter blyanten uden en linje.
+   Bonus, når det er mørkt efter telefonens ur. */
+const ATLAS = [
+  { id:"karl", ikon:"🐻", navn:"Karlsvognen", s:2.6, p:H_KARL.map(([x,y])=>[x+20,y-55]), l:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]], fakta:"Karlsvognen er en del af Store Bjørn. Forlænger man linjen gennem de to bageste stjerner i vognkassen ca. 5 gange, rammer man Nordstjernen." },
+  { id:"kass", ikon:"👑", navn:"Kassiopeia", s:3, p:H_KASS.map(([x,y])=>[x,y+48]), l:[[0,1],[1,2],[2,3],[3,4]], fakta:"Kassiopeia ligner et W eller et M. Den står på den modsatte side af Nordstjernen i forhold til Karlsvognen." },
+  { id:"lillebjoern", ikon:"🧸", navn:"Lille Bjørn", s:2.6, p:[[0,-22],[4,-14],[8,-7],[10,1],[18,5],[22,-2],[14,-5]], l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]], fakta:"Nordstjernen sidder yderst i halen på Lille Bjørn (Lille Karlsvogn). Den står næsten stille, mens himlen drejer om den." },
+  { id:"orion", ikon:"🏹", navn:"Orion", s:2.2, p:H_EKSTRA.orion.p, l:H_EKSTRA.orion.l, fakta:"Orion – jægeren – ses om vinteren. De tre stjerner på rad er hans bælte." },
+  { id:"svanen", ikon:"🦢", navn:"Svanen", s:2.4, p:H_EKSTRA.svanen.p, l:H_EKSTRA.svanen.l, fakta:"Svanen flyver langs Mælkevejen om sommeren og ligner et stort kors. Deneb sidder i halen." },
+  { id:"lyren", ikon:"🎵", navn:"Lyren", s:3, p:H_EKSTRA.lyren.p.map(([x,y])=>[x-10,y-2]), l:H_EKSTRA.lyren.l, fakta:"Lyren er lille, men har Vega – en af de klareste stjerner på sommerhimlen." },
+  { id:"loeven", ikon:"🦁", navn:"Løven", s:2.2, p:H_EKSTRA.loeven.p, l:H_EKSTRA.loeven.l, fakta:"Løven ses om foråret. Hovedet ligner et spejlvendt spørgsmålstegn, og den klare stjerne Regulus sidder ved forbenet." },
+  { id:"pegasus", ikon:"🐴", navn:"Pegasus-firkanten", s:2.4, p:[[-15,-14],[15,-15],[16,14],[-14,15],[-30,-24]], l:[[0,1],[1,2],[2,3],[3,0],[0,4]], fakta:"Pegasus' store firkant ses om efteråret. Hjørnestjernen deler den med Andromeda." },
+  { id:"tyren", ikon:"🐂", navn:"Tyren", s:2.3, p:[[0,0],[-8,-6],[-16,-12],[-6,5],[-14,11],[-26,-20],[-24,20]], l:[[0,1],[1,2],[2,5],[0,3],[3,4],[4,6]], fakta:"Tyrens hoved er et V af stjerner med den orange Aldebaran som øje. Syvstjernen sidder på tyrens ryg." },
+];
+SAMLINGER.stjerneatlas = { navn:"Stjerneatlasset", ikon:"✨", xp:250, arter:()=>ATLAS.map(x=>({ ...x, hint:"Tegn det i stjernekikkerten" })),
+  besk:"Stjernebilleder, du har tegnet i stjernekikkerten." };
+function stjNyHimmel(st, n){
+  const r=st.rnd, valgt=[];
+  const pulje=ATLAS.filter(a=>!st.brugt.includes(a.id));
+  for(let k=0;k<n;k++){ const a=pulje.splice(r(pulje.length),1)[0]; st.brugt.push(a.id); valgt.push(a); }
+  const stj=[], linjer=[];
+  valgt.forEach((a,ai)=>{ const vink=(r(50)-25)*Math.PI/180, cx = n===1 ? 160+(r(40)-20) : ai===0 ? 92 : 230, cy=104+(r(30)-15), s=a.s*(n===1?1:.8);
+    const start=stj.length;
+    a.p.forEach(([x,y])=>{ const X=x*s, Y=y*s; stj.push({ x:cx+X*Math.cos(vink)-Y*Math.sin(vink), y:cy+X*Math.sin(vink)+Y*Math.cos(vink), a:a.id, r:2.2+r(10)/10 }); });
+    a.l.forEach(([p,q])=>linjer.push({ a:a.id, p:start+p, q:start+q, tegnet:false })); });
+  // svage stjerner imellem (lokkestjerner)
+  const antal = st.v===0 ? 18 : 30;
+  for(let k=0, f=0; k<antal && f<600; f++){ const x=14+r(292), y=14+r(176); if(stj.every(o=>Math.hypot(o.x-x,o.y-y)>18)){ stj.push({ x, y, a:null, r:1+r(14)/10 }); k++; } }
+  Object.assign(st, { himmel:valgt, stj, linjer, pen:null, besoegt:[] });
+}
+msNyt("stjerne", { navn:"Tegn stjernebilledet", ikon:"✨", byg:["kikkert"], knap:"✨ Minispil: Tegn stjernebilledet", point:15, svaer:false,
+  varianter:[
+    { navn:"Tegn stjernebilledet", besk:"Tegn 3 stjernebilleder: tryk på stjernerne i rækkefølge, så linjerne tegnes mellem dem. Formen står i hjørnet. Tryk du på en stjerne, du allerede har brugt, flytter du blyanten uden at tegne. Det er mørkt? Så giver det bonus!" },
+    { navn:"Uden tegning", besk:"Nu står formen ikke i hjørnet – kun navnet og et tip. Og der er flere svage stjerner imellem." },
+    { navn:"To på én gang", besk:"To stjernebilleder på samme himmel. Tegn dem begge." },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), runde:0, fejl:0, brugt:[], nye:[] }); stjNyHimmel(st, st.v===2?2:1); },
+  forside(){ const st={ rnd:msTilfaeldig(3), brugt:[], v:0 }; stjNyHimmel(st,1); st.linjer.forEach(l=>l.tegnet=true); return stjSVG(st, true); },
+  tegn(st){ return stjSVG(st); },
+  status(st){ const ialt=st.linjer.length, t=st.linjer.filter(l=>l.tegnet).length; return `Himmel ${st.runde+1} af ${st.v===2?2:3} · Linjer ${t} af ${ialt}${st.fejl?` · ❌ ${st.fejl}`:""}${naturMoerkt()?" · 🌙 bonus":""}`; },
+  kontrol(st){ return `<div class="aktopg msintro">${st.himmel.map(a=>`${a.ikon} <b>${esc(a.navn)}</b>${st.v===1?` – ${esc((H_EKSTRA[a.id]||{}).hint || a.fakta.split(".")[0]+".")}`:""}`).join("<br>")}</div>`; },
+  efter(st, c){
+    document.getElementById("msbane").addEventListener("pointerdown", ev=>{ const t=ev.target.closest("[data-st]"); if(!t) return; ev.preventDefault();
+      const i=+t.dataset.st, o=st.stj[i];
+      if(!o.a){ st.fejl++; vibrer([50,30,50]); msStatus("❌ Den stjerne hører ikke til stjernebilledet"); return; }
+      if(st.pen==null){ st.pen=i; st.besoegt.push(i); vibrer(10); return stjOpdater(st); }
+      const l=st.linjer.find(l=>!l.tegnet && ((l.p===st.pen && l.q===i) || (l.q===st.pen && l.p===i)));
+      if(l){ l.tegnet=true; st.pen=i; if(!st.besoegt.includes(i)) st.besoegt.push(i); vibrer(15); }
+      else if(st.besoegt.includes(i) || st.stj[st.pen].a!==o.a){ st.pen=i; if(!st.besoegt.includes(i)) st.besoegt.push(i); }   // flyt blyanten (til en brugt stjerne eller et andet stjernebillede)
+      else { st.fejl++; vibrer([50,30,50]); msStatus("❌ Der er ingen linje mellem de to stjerner"); return; }
+      stjOpdater(st);
+      if(st.linjer.every(l=>l.tegnet)){
+        st.himmel.forEach(a=>{ if(samlTilfoej(c,"stjerneatlas",a.id)) st.nye.push(a.id); });
+        msStatus(`✨ ${st.himmel.map(a=>a.navn).join(" og ")} – flot tegnet!`); vibrer(30);
+        msTid(()=>{ st.runde++; if(st.runde>=(st.v===2?2:3)) return stjSlut(st); stjNyHimmel(st, st.v===2?2:1); render(); }, 1100); }
+    });
+  },
+});
+function stjOpdater(st){ const g=document.getElementById("mshimmel"); if(g) g.innerHTML=stjIndhold(st); msStatus(MS.stjerne.status(st)); }
+function stjSlut(st){
+  const stj = st.fejl<=1 ? 3 : st.fejl<=4 ? 2 : 1, moerkt=naturMoerkt(), nye=st.nye.map(id=>ATLAS.find(a=>a.id===id));
+  msSlut(st, { stjerner:stj, score:Math.max(0,100-st.fejl*8), bonus:moerkt?1.25:1, tekst:`Alle stjernebilleder tegnet med ${st.fejl} ${st.fejl===1?"fejl":"fejl"}.${moerkt?" 🌙 Det er mørkt nu – +25 % point i mørkebonus!":""}`,
+    ekstra: nye.length ? nye.map(samlNyHTML).join("") : "",
+    laer:"Gå ud, når det er mørkt, og lad øjnene vænne sig til mørket i 15-20 minutter. Brug en rød lommelygte – så bevarer du nattesynet." });
+}
+function stjIndhold(st, forside){
+  return st.linjer.filter(l=>l.tegnet).map(l=>{ const a=st.stj[l.p], b=st.stj[l.q]; return `<path d="M${a.x} ${a.y} L${b.x} ${b.y}" stroke="#9ecbff" stroke-width="2" opacity=".85"/>`; }).join("")
+    + st.stj.map((o,i)=>`<g data-st="${i}" class="msstj"><circle cx="${o.x}" cy="${o.y}" r="13" fill="transparent"/>${st.pen===i?`<circle cx="${o.x}" cy="${o.y}" r="8" fill="none" stroke="#f2c94c" stroke-width="2"/>`:""}<circle cx="${o.x}" cy="${o.y}" r="${o.r}" fill="${st.besoegt&&st.besoegt.includes(i)?"#ffe9a0":"#fff"}"/></g>`).join("");
+}
+function stjSVG(st, forside){
+  const mini = st.v===0 && !forside ? st.himmel.map((a,ai)=>{ const xs=a.p.map(p=>p[0]), ys=a.p.map(p=>p[1]), mx=(Math.min(...xs)+Math.max(...xs))/2, my=(Math.min(...ys)+Math.max(...ys))/2, sk=34/Math.max(20, Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys));
+    const P=a.p.map(([x,y])=>[262-ai*70+(x-mx)*sk, 214+(y-my)*sk]);
+    return `<g opacity=".9"><rect x="${238-ai*70}" y="192" width="48" height="44" rx="6" fill="rgba(255,255,255,.12)"/>${a.l.map(([p,q])=>`<path d="M${P[p][0]} ${P[p][1]} L${P[q][0]} ${P[q][1]}" stroke="#9ecbff" stroke-width="1.5"/>`).join("")}${P.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#fff"/>`).join("")}</g>`; }).join("") : "";
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#0d1630"/>${msSkov(214,"#14231a")}
+    <g id="mshimmel">${stjIndhold(st, forside)}</g>${mini}</svg>`;
 }
 
 /* MINISPIL-SLUT */
