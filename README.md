@@ -194,6 +194,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **🐝 Bestøvning** (bistadet og insekthotellet, `bi`): en blomstereng med gule, lilla og røde blomster (`BI_BLOMST`). Man trækker biens vej med fingeren fra blomst til blomst og skal besøge alle blomster af den slags, der står øverst (blomstertroskab). Rører man en anden slags, blander bien pollen, og det er en fejl. 3 runder med hver sin slags. Ved **bistadet** kommer man derefter til honningslyngen: drej håndsvinget rundt med fingeren i 10 sekunder, og for hver 5 omgange (lidt flere på højere niveau) bliver en krukke fyldt. Højst 3 krukker, og hver giver 1 portion mad (højst den ledige plads i jordkøleskabet). Stjerner efter fejl og tid. Fra niveau 5 *Tæt blomstereng* (16 blomster), fra niveau 10 *Edderkoppespind* (flyv uden om spindene).
 
+- **📏 Egens alder** (kæmpeegen, `eg`): 3 træer. Først et spørgsmål om, hvor man måler (brysthøjde, 1,3 m). Så holder man knappen nede, og målebåndet går rundt om stammen fra den røde prik. Man slipper, når enderne mødes – inden for 3 % er en præcis måling (`egBaandSti`). Til sidst regner man alderen ud med tommelfingerreglen: et fritstående træ vokser ca. 2,5 cm i omkreds om året (`egAlder`). Score = 20 pr. rigtig alder + 10 pr. præcis måling + 3 pr. rigtig målehøjde. Fra niveau 5 *Skov eller eng* (træer i skoven vokser kun ca. 1,25 cm om året), fra niveau 10 *Regn præcist* (svarmulighederne ligger tæt).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

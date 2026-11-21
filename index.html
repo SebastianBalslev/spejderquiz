@@ -13650,6 +13650,63 @@ function honningSVG(st){
     <text x="262" y="186" text-anchor="middle" font-size="22">🍯</text><text id="msglas" x="262" y="174" text-anchor="middle" font-size="12" font-weight="800" fill="#7a5a10" dy="-14">× ${st.glas}</text></svg>`;
 }
 
+/* ---------- Minispil: Hvor gammel er egen? (kæmpeegen) – mål omkredsen med målebåndet, og regn alderen ud ----------
+   Tommelfingerregel: et fritstående træ vokser ca. 2,5 cm i omkreds om året – et træ i skoven ca. 1,25 cm. */
+function egNyt(st){ const r=st.rnd; st.C = 160+r(36)*10; st.skov = st.v>=1 && !!r(2); st.maalt=null; st.p=0; st.del="hoejde"; st.alderSvar=null; st.hoejdeOk=null; }
+function egAlder(st){ return Math.round(st.maalt/(st.skov?1.25:2.5)); }
+function egValg(st){ const a=egAlder(st), d = st.v===2 ? [4,8,12,-6,-10] : [Math.round(a*.5), a*2, Math.round(a*.75), a+40, Math.round(st.maalt/10)];
+  const v=[a]; shuffle(d.map(x=> st.v===2 ? a+x : x)).forEach(x=>{ if(v.length<4 && x>0 && !v.includes(x)) v.push(x); }); return shuffle(v); }
+msNyt("eg", { navn:"Egens alder", ikon:"🌳", byg:["kongeeg"], knap:"📏 Minispil: Hvor gammel er egen?", point:12,
+  varianter:[
+    { navn:"Mål egen", besk:"Mål omkredsen i brysthøjde med målebåndet: hold knappen nede, så båndet går rundt om stammen, og slip, når enderne mødes. Regn så alderen ud: et fritstående træ vokser ca. <b>2,5 cm</b> i omkreds om året. 3 træer." },
+    { navn:"Skov eller eng", besk:"Nogle træer står i skoven – de vokser kun ca. <b>1,25 cm</b> om året, fordi de skal dele lys og vand. Hold øje med, hvor træet står." },
+    { navn:"Regn præcist", besk:"Svarmulighederne ligger tæt – regn omhyggeligt." },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), nr:0, praecis:0, rigtige:0, hoejder:0 }); egNyt(st); },
+  forside(){ return egSVG({ C:300, p:.6, del:"maal", skov:false, v:0 }); },
+  tegn(st){ return egSVG(st); },
+  status(st){ return `Træ ${st.nr+1} af 3 · ${st.skov?"🌲 i skoven":"🌾 fritstående"}${st.maalt?` · Omkreds: ${st.maalt} cm`:""}`; },
+  kontrol(st){
+    if(st.del==="hoejde") return `<div class="aktopg msintro">📏 I hvilken højde måler man omkredsen af et træ?</div><div class="aktvalg">${["30 cm","1,3 m","2 m","Helt nede ved jorden"].map(t=>`<button class="btn secondary" data-a="msk" data-k="hoejde" data-t="${t}">${t}</button>`).join("")}</div>`;
+    if(st.del==="maal") return `${st.hoejdeOk===false?`<div class="aktopg msintro">Man måler i <b>brysthøjde – 1,3 m</b> over jorden. Så er alle målinger ens.</div>`:""}<button class="btn gold mshold" id="msbaand">📏 Hold nede: læg målebåndet rundt</button><p class="muted center psmall">Slip, når enderne af båndet mødes.</p>`;
+    if(st.del==="alder") return `<div class="aktopg msintro">Du målte <b>${st.maalt} cm</b>. Træet står ${st.skov?"<b>i skoven</b> (ca. 1,25 cm om året)":"<b>frit på engen</b> (ca. 2,5 cm om året)"}. Hvor gammelt er det cirka?</div><div class="aktvalg">${st.valg.map(a=>`<button class="btn secondary" data-a="msk" data-k="alder" data-t="${a}">${a} år</button>`).join("")}</div>`;
+    const ok=st.alderSvar===egAlder(st);
+    return `<div class="aktopg msintro">${ok?"✅ Rigtigt!":"❌ Ikke helt."} ${st.maalt} cm ÷ ${st.skov?"1,25":"2,5"} cm om året ≈ <b>${egAlder(st)} år</b>. Det rigtige mål var ${st.C} cm.</div><button class="btn gold" data-a="msk" data-k="naeste">${st.nr>=2?"🏁 Se resultatet":"➡️ Næste træ"}</button>`;
+  },
+  tryk(st, k, d){
+    if(k==="hoejde" && st.del==="hoejde"){ st.hoejdeOk=d.t==="1,3 m"; if(st.hoejdeOk) st.hoejder++; vibrer(st.hoejdeOk?20:[50,30,50]); st.del="maal"; render(); }
+    if(k==="alder" && st.del==="alder"){ st.alderSvar=+d.t; if(st.alderSvar===egAlder(st)) st.rigtige++; vibrer(st.alderSvar===egAlder(st)?25:[60,40,60]); st.del="vis"; render(); }
+    if(k==="naeste" && st.del==="vis"){ st.nr++; if(st.nr>=3) return egSlut(st); egNyt(st); render(); window.scrollTo(0,0); }
+  },
+  efter(st){
+    if(st.del!=="maal") return; let holder=false;
+    msHold(document.getElementById("msbaand"), ()=>{ holder=true; }, ()=>{ holder=false; st.maalt=Math.round(st.C*st.p); const af=Math.abs(st.p-1);
+      if(af<=.03) st.praecis++; msStatus(af<=.03?"🎯 Præcis – enderne mødes":st.p<1?"Båndet nåede ikke helt rundt":"Båndet gik for langt rundt"); vibrer(af<=.03?25:15);
+      st.valg=egValg(st); st.del="alder"; msTid(()=>render(), 700); });
+    msLoop(dt=>{ if(holder){ st.p=Math.min(1.3, st.p+dt*(.42*st.sv)*(MS_ROLIG?.8:1)); egTegnBaand(st); } });
+  },
+});
+function egTegnBaand(st){ const b=document.getElementById("msbaandsti"), t=document.getElementById("mscm"); if(b) b.setAttribute("d", egBaandSti(st.p)); if(t) t.textContent=Math.round(st.C*st.p)+" cm"; }
+// Båndet går rundt om stammen: forfra fra venstre mod højre, så bag om (stiplet) og frem igen
+function egBaandSti(p){ const cx=160, cy=150, rx=44, ry=10, n=Math.max(2, Math.round(p*60)); let d="";
+  for(let k=0;k<=n;k++){ const a=Math.PI + (k/60)*2*Math.PI, x=cx+Math.cos(a)*rx*-1, y=cy+Math.sin(a)*ry*-1; d += (k?" L":"M")+x.toFixed(1)+" "+y.toFixed(1); } return d; }
+function egSlut(st){
+  const sc=st.rigtige*20+st.praecis*10+st.hoejder*3, stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`${st.rigtige} af 3 aldre rigtige, ${st.praecis} præcise målinger og ${st.hoejder} af 3 rigtige målehøjder.`,
+    laer:"Mål omkredsen i brysthøjde, 1,3 m over jorden. Et fritstående træ vokser ca. 2,5 cm i omkreds om året, et træ i skoven ca. 1,25 cm. Den rigtige alder kan man kun se ved at tælle årringene – men så skal træet fældes." });
+}
+function egSVG(st){
+  const skov=st.skov, n=Math.max(0,Math.min(1.3,st.p||0));
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#bfe0f2"/>${skov?`${[20,60,250,295].map(x=>`<rect x="${x}" y="40" width="16" height="170" fill="#6b4626"/><circle cx="${x+8}" cy="40" r="34" fill="#3f7a35"/>`).join("")}`:msSkov(170,"#5b8f4a")}
+    <rect y="200" width="320" height="40" fill="#86b25a"/>
+    <path d="M60 60 Q160 -10 260 60 Q300 90 250 110 Q160 130 70 110 Q20 90 60 60Z" fill="#4f8c3f"/>
+    <path d="M116 216 L124 110 Q160 96 196 110 L204 216Z" fill="#7a4e2a"/><path d="M140 120 Q144 170 138 210 M176 116 Q170 160 182 212" stroke="#5c3a20" stroke-width="2" fill="none"/>
+    <path d="M100 150 H116 M204 150 H222" stroke="#2f4a2b" stroke-width="1.5" stroke-dasharray="3 3"/><text x="226" y="154" font-size="10" font-weight="800" fill="#2f4a2b">1,3 m</text>
+    <circle cx="204" cy="150" r="5" fill="#c62828"/><path id="msbaandsti" d="${egBaandSti(n)}" stroke="#f2c94c" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <text id="mscm" x="160" y="180" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" stroke="#5c3a20" stroke-width=".6">${st.del==="maal"?Math.round(st.C*n)+" cm":""}</text>
+    ${figur(cur().look,70,214,60)}</svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
