@@ -196,6 +196,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **📏 Egens alder** (kæmpeegen, `eg`): 3 træer. Først et spørgsmål om, hvor man måler (brysthøjde, 1,3 m). Så holder man knappen nede, og målebåndet går rundt om stammen fra den røde prik. Man slipper, når enderne mødes – inden for 3 % er en præcis måling (`egBaandSti`). Til sidst regner man alderen ud med tommelfingerreglen: et fritstående træ vokser ca. 2,5 cm i omkreds om året (`egAlder`). Score = 20 pr. rigtig alder + 10 pr. præcis måling + 3 pr. rigtig målehøjde. Fra niveau 5 *Skov eller eng* (træer i skoven vokser kun ca. 1,25 cm om året), fra niveau 10 *Regn præcist* (svarmulighederne ligger tæt).
 
+- **🛌 Pak til natten** (shelteret og træhytten, `nat`): 3 nætter med hver sin temperatur (`NAT_TEMP`). Man vælger sovepose (`NAT_POSE`: sommer, 3-sæsons og vinter med komforttemperatur), underlag (`NAT_UNDER`: tyndt, liggeunderlag eller to oven på hinanden) og tøj til natten (`NAT_TOEJ`: uldundertøj, fleece, hue, uldsokker og dunjakke giver varme, mens bomulds-T-shirt og cowboybukser trækker fra). Bagefter fortæller natten, hvordan det gik (`natSov`): frøs man, svedte man, kom kulden nedefra, var der bomuld med? Hver nat giver op til 3 point, og stjerner ved 8/6/3 af 9. Fra niveau 5 *Frostnætter* (ned til −6 °C), fra niveau 10 *Let oppakning* (højst 3,5 kg – udstyret har vægt).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

@@ -585,6 +585,10 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 #mslampe.taendt{fill:#fff6b0;filter:drop-shadow(0 0 14px #ffe680)}
 .opvbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px}.opvbtn .btn{margin:0;min-height:64px;font-size:17px}
 .msblomst .pollen{opacity:0;transition:opacity .2s}.msblomst.besoegt .pollen{opacity:1;stroke:#ffe066}
+.natgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.nathead{margin:10px 2px 6px;font-size:15px;color:var(--forest)}
+.natkort{border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:inherit;min-height:80px;min-width:0}
+.natkort span{font-size:22px;line-height:1}.natkort b{font-size:12.5px;line-height:1.15;text-align:center}.natkort small{font-size:11px;color:var(--muted);text-align:center;line-height:1.15}
+.natkort.on{border-color:var(--forest);background:#eef4e2;box-shadow:inset 0 0 0 2px var(--forest)}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13705,6 +13709,66 @@ function egSVG(st){
     <circle cx="204" cy="150" r="5" fill="#c62828"/><path id="msbaandsti" d="${egBaandSti(n)}" stroke="#f2c94c" stroke-width="5" fill="none" stroke-linecap="round"/>
     <text id="mscm" x="160" y="180" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" stroke="#5c3a20" stroke-width=".6">${st.del==="maal"?Math.round(st.C*n)+" cm":""}</text>
     ${figur(cur().look,70,214,60)}</svg>`;
+}
+
+/* ---------- Minispil: Pak til natten (shelteret og træhytten) – lag-på-lag, sovepose og underlag efter nattens temperatur ---------- */
+const NAT_POSE = { sommer:["☀️","Sommersovepose","komfort ca. 12 °C",12,1.0], tre:["🍂","3-sæsons sovepose","komfort ca. 2 °C",2,1.4], vinter:["❄️","Vintersovepose","komfort ca. −8 °C",-8,2.2] };
+const NAT_UNDER = { tynd:["🟫","Tyndt skumunderlag","til lune nætter (over 8 °C)",8,.3], liggeunderlag:["🟩","Liggeunderlag","ned til ca. −2 °C",-2,.7], dobbelt:["🟦","To underlag oven på hinanden","til frost",-15,1.0] };
+const NAT_TOEJ = { uld:["🧦","Uldundertøj",3,.3], fleece:["🧥","Fleecetrøje",3,.5], hue:["🧢","Hue",2,.1], sokker:["🧦","Tørre uldsokker",1,.1], dun:["🧥","Dunjakke",4,.6], bomuld:["👕","Bomulds-T-shirt",-2,.2], jeans:["👖","Cowboybukser",-2,.8] };
+const NAT_TEMP = [[14,8,3],[6,-2,-6],[10,1,-4]];
+msNyt("nat", { navn:"Pak til natten", ikon:"🛌", byg:["shelter","traehytte"], knap:"🛌 Minispil: Pak til natten", point:12, svaer:false,
+  varianter:[
+    { navn:"Pak til natten", besk:"Vælg sovepose, underlag og tøj efter nattens temperatur. Du skal være varm – men ikke svede. Husk, at bomuld bliver fugtigt og koldt, og at kulden også kommer nedefra. 3 nætter." },
+    { navn:"Frostnætter", besk:"Nu bliver det frost – helt ned til −6 °C. Underlaget er lige så vigtigt som soveposen!" },
+    { navn:"Let oppakning", besk:"Du må højst bære <b>3,5 kg</b>. Hvert stykke udstyr vejer noget – vælg klogt." },
+  ],
+  start(st){ Object.assign(st, { nr:0, temps:NAT_TEMP[st.v], pose:null, under:null, toej:{}, nres:null, point:0, perfekt:0 }); },
+  forside(){ return natSVG({ temps:[4], nr:0, v:0 }); },
+  tegn(st){ return natSVG(st); },
+  status(st){ return `Nat ${st.nr+1} af 3 · 🌡️ ${st.temps[st.nr]} °C${st.v===2?` · 🎒 ${natVaegt(st).toFixed(1).replace(".",",")} af 3,5 kg`:""}`; },
+  kontrol(st){
+    if(st.nres) return `<div class="aktopg msintro">${st.nres}</div><button class="btn gold" data-a="msk" data-k="naeste">${st.nr>=2?"🏁 Se resultatet":"➡️ Næste nat"}</button>`;
+    const kort=(k,o,valgt,type,ekstra)=>`<button class="natkort ${valgt?"on":""}" data-a="msk" data-k="${type}" data-t="${k}"><span>${o[0]}</span><b>${o[1]}</b><small>${ekstra}</small></button>`;
+    const kg=v=>st.v===2?` · ${String(v).replace(".",",")} kg`:"";
+    return `<h3 class="nathead">Sovepose</h3><div class="natgrid">${Object.entries(NAT_POSE).map(([k,o])=>kort(k,o,st.pose===k,"pose",o[2]+kg(o[4]))).join("")}</div>
+      <h3 class="nathead">Underlag</h3><div class="natgrid">${Object.entries(NAT_UNDER).map(([k,o])=>kort(k,o,st.under===k,"under",o[2]+kg(o[4]))).join("")}</div>
+      <h3 class="nathead">Tøj til natten</h3><div class="natgrid">${Object.entries(NAT_TOEJ).map(([k,o])=>kort(k,o,!!st.toej[k],"toej",st.v===2?kg(o[3]).slice(3):"")).join("")}</div>
+      <button class="btn gold" data-a="msk" data-k="seng" ${st.pose&&st.under?"":"disabled"}>🌙 Gå i seng</button>`;
+  },
+  tryk(st, k, d){
+    if(st.nres && k!=="naeste") return;
+    if(k==="pose") st.pose=d.t; if(k==="under") st.under=d.t; if(k==="toej") st.toej[d.t]=!st.toej[d.t];
+    if(k==="seng" && st.pose && st.under) natSov(st);
+    if(k==="naeste"){ st.nr++; st.nres=null; if(st.nr>=3) return natSlut(st); st.pose=null; st.under=null; st.toej={}; window.scrollTo(0,0); }
+    render();
+  },
+});
+function natVaegt(st){ return (st.pose?NAT_POSE[st.pose][4]:0)+(st.under?NAT_UNDER[st.under][4]:0)+Object.keys(st.toej).filter(k=>st.toej[k]).reduce((n,k)=>n+NAT_TOEJ[k][3],0); }
+function natSov(st){
+  const T=st.temps[st.nr], toej=Object.keys(st.toej).filter(k=>st.toej[k]), varme=toej.reduce((n,k)=>n+NAT_TOEJ[k][2],0);
+  const komfort=NAT_POSE[st.pose][3]-varme, margin=T-komfort, underOk=T>=NAT_UNDER[st.under][3], bomuld=toej.some(k=>NAT_TOEJ[k][2]<0), tung=st.v===2 && natVaegt(st)>3.51;
+  let p=3, t=[];
+  if(margin<0){ p -= margin<-6 ? 3 : margin<-3 ? 2 : 1; t.push(`🥶 Du frøs – soveposen og tøjet var ${-Math.round(margin)} grader for koldt.`); }
+  else if(margin>14){ p--; t.push("🥵 Du svedte – det var alt for varmt, og fugten gør dig kold senere."); }
+  if(!underOk){ p--; t.push("🧊 Kulden kom nedefra – underlaget var for tyndt."); }
+  if(bomuld){ p--; t.push("👕 Bomuld bliver fugtigt af sved og holder ikke på varmen."); }
+  if(tung){ p--; t.push("🎒 Oppakningen var for tung."); }
+  p=Math.max(0,p); st.point+=p; if(p===3) st.perfekt++;
+  st.nres = p===3 ? `😴 Du sov godt hele natten ved ${T} °C! ${t.join(" ")}` : `${["😩 En hård nat.","😕 Ikke den bedste nat.","🙂 Det gik nogenlunde."][p]} ${t.join(" ")}`;
+  vibrer(p===3?25:[50,30,50]);
+}
+function natSlut(st){
+  const sc=Math.round(st.point/9*100), stj = st.point>=8 ? 3 : st.point>=6 ? 2 : st.point>=3 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`${st.perfekt} af 3 nætter sov du helt godt (${st.point} af 9 point).`,
+    laer:"Lag-på-lag: uld eller fleece tæt på kroppen, ingen bomuld. Sov med tørre sokker og hue. Vælg soveposen efter komforttemperaturen – og husk et godt underlag, for jorden trækker varmen ud af dig. Tag dunjakken over soveposen eller i den, hvis det bliver koldt." });
+}
+function natSVG(st){
+  const T=st.temps[st.nr], frost=T<=0;
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="${frost?"#1d2a4a":"#24345a"}"/>${stjernehimmel(40,6)}<circle cx="268" cy="36" r="13" fill="#f4f1d0"/>${msSkov(160,"#14231a")}<rect y="160" width="320" height="80" fill="${frost?"#dfe8ee":"#2f4a2b"}"/>
+    <path d="M70 200 L130 120 L190 200Z" fill="#8b5a2b"/><path d="M80 200 L130 134 L180 200Z" fill="#3f6e35"/><path d="M96 200 L130 156 L164 200Z" fill="#1c1a12"/>
+    <g transform="translate(240 150)"><rect x="-10" y="-60" width="20" height="80" rx="10" fill="#fff" stroke="#9aa7ae" stroke-width="2"/><circle cy="24" r="14" fill="#c62828"/><rect x="-5" y="${-50+Math.max(0,Math.min(60,(16-T)*2.5))}" width="10" height="${74-Math.max(0,Math.min(60,(16-T)*2.5))}" fill="#c62828"/>
+      <text x="0" y="62" text-anchor="middle" font-size="18" font-weight="900" fill="${frost?"#1d2a4a":"#fff"}">${T} °C</text></g>
+    ${frost?`<text x="40" y="190" font-size="20">❄️</text><text x="196" y="210" font-size="16">❄️</text>`:""}</svg>`;
 }
 
 /* MINISPIL-SLUT */
