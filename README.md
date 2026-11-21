@@ -184,6 +184,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **🧽 Opvask** (pionerbordet, `opvask`): opvask i tre baljer på 40 sekunder. Hver ting (tallerken, krus, bestik, skål, pande og gryde, `OPVASK_TING`) skal 1) skylles af, 2) vaskes – man trykker flere gange for at skrubbe snavset af (gryder og pander er mere snavsede, og der er mere snavs på højere niveau) – 3) skylles og 4) stilles i tørrestativet. Et tryk i forkert rækkefølge er en fejl. Stjerner ved 10/6/3 rene ting (højst 2/5 fejl). Fra niveau 5 *Fedtede gryder* (meget mere at skrubbe, kravet er 30 % lavere), fra niveau 10 *Rent vand* (opvaskevandet bliver gråt efter 4 ting og skal skiftes, før man vasker videre – det koster 1,5 sekund).
 
+- **⛺ Slå teltet op** (teltet og patruljeteltet, `telt`): regnskyen driver ind over himlen (42 sek., kortere på højere niveau). For hver pløk trækker man den med fingeren, så den hælder 45° væk fra teltet (den stiplede linje), og slipper (højst 8° fra er perfekt, strengere med niveauet). Så holder man »Stram barduner« nede og slipper, når snoren er i det grønne felt – det røde felt er for stramt. 4 pløkke. Kommer regnen, før teltet står, giver det højst 1 stjerne. Fra niveau 5 *Patruljeteltet* (6 pløkke), fra niveau 10 *Blæsevejr* (snoren hopper, og der er mindre tid).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

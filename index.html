@@ -13279,6 +13279,76 @@ function opvaskSVG(st){
   </svg>`;
 }
 
+/* ---------- Minispil: Slå teltet op (teltet) – træk pløkkerne til 45° væk fra teltet, og stram barduner, før regnen kommer ---------- */
+function msSvgPunkt(svg, ev){ const p=svg.createSVGPoint(); p.x=ev.clientX; p.y=ev.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+msNyt("telt", { navn:"Slå teltet op", ikon:"⛺", byg:["telt","patruljetelt"], knap:"⛺ Minispil: Slå teltet op", point:12,
+  varianter:[
+    { navn:"Slå teltet op", rt:true, besk:"Regnen er på vej! Træk hver pløk, så den hælder 45° <b>væk fra teltet</b> (den stiplede linje), og slip. Hold derefter »Stram barduner« nede, og slip, når snoren er i det grønne felt – ikke slap og ikke for stram. 4 pløkke, før regnskyen når frem." },
+    { navn:"Patruljeteltet", rt:true, besk:"Et stort telt med 6 pløkke – og regnen kommer lige så hurtigt." },
+    { navn:"Blæsevejr", rt:true, besk:"Det blæser! Snoren hopper, når du strammer, og der er mindre tid." },
+  ],
+  start(st){ const n=st.v===1?6:4; Object.assign(st, { n, nr:0, del:"vinkel", vinkel:10, stram:0, holder:false, pl:[], t:0, tid:(st.v===2?38:st.v===1?55:42)/st.sv, regn:false }); },
+  forside(st){ return teltSVG({ n:4, nr:1, del:"vinkel", vinkel:45, stram:.7, t:0, tid:40, v:0 }, true); },
+  tegn(st){ return teltSVG(st); },
+  status(st){ return `Pløk ${Math.min(st.n,st.nr+1)} af ${st.n} · 🌧️ ${Math.max(0,Math.ceil(st.tid-st.t))} sek${st.pl.length?" · "+st.pl.map(r=>r.v==="dårlig"||r.s==="dårlig"?"❌":r.v==="god"&&r.s!=="ok"?"✅":"🙂").join(""):""}`; },
+  kontrol(st){ return st.del==="vinkel" ? `<p class="muted center psmall">👉 Træk i den lyse pløk, så den hælder 45° væk fra teltet – og slip.</p>`
+    : `<button class="btn gold mshold" id="msstram">🪢 Hold nede: stram barduner</button><p class="muted center psmall">Slip, når snoren er i det grønne felt.</p>`; },
+  efter(st){
+    const bane=document.getElementById("msbane"), svg=bane.querySelector("svg");
+    msLoop(dt=>{ st.t+=dt;
+      if(st.del==="stram" && st.holder){ st.stram=Math.min(1.05, st.stram+(.5*st.sv)*dt + (st.v===2 ? Math.sin(st.t*9)*.012 : 0)); teltTegnStram(st); }
+      const sky=document.getElementById("mssky"); if(sky) sky.setAttribute("transform", `translate(${Math.min(1,st.t/st.tid)*150} 0)`);
+      if(Math.floor(st.t*2)!==Math.floor((st.t-dt)*2)) msStatus(MS.telt.status(st));
+      if(st.t>=st.tid){ st.regn=true; teltSlut(st); return false; } });
+    if(st.del==="vinkel"){
+      bane.style.touchAction="none"; let traek=false;
+      const side = st.nr%2===0 ? -1 : 1, base=teltPlok(st.nr);
+      const flyt=ev=>{ const p=msSvgPunkt(svg, ev); const dx=(p.x-base[0])*side, dy=base[1]-p.y; st.vinkel=Math.max(-30, Math.min(90, Math.atan2(dx, Math.max(4,dy))*180/Math.PI)); teltTegnPlok(st); };
+      bane.addEventListener("pointerdown", ev=>{ ev.preventDefault(); traek=true; try{ bane.setPointerCapture(ev.pointerId); }catch(e){} flyt(ev); });
+      bane.addEventListener("pointermove", ev=>{ if(traek) flyt(ev); });
+      const slip=()=>{ if(!traek) return; traek=false; const af=Math.abs(st.vinkel-45), tol=8/st.sv;
+        const v = af<=tol ? "god" : af<=tol*2.3 ? "ok" : "dårlig"; st.pl.push({ v, s:null, vinkel:st.vinkel }); vibrer(v==="god"?25:v==="ok"?15:[50,30,50]);
+        msStatus(v==="god"?`✅ ${Math.round(st.vinkel)}° – perfekt!`:v==="ok"?`🙂 ${Math.round(st.vinkel)}° – tæt på`:`❌ ${Math.round(st.vinkel)}° – ${st.vinkel<45?"for stejl – pløkken trækkes op":"for flad – den holder ikke"}`);
+        st.del="stram"; st.stram=0; msTid(()=>render(), 450); };
+      bane.addEventListener("pointerup", slip); bane.addEventListener("pointercancel", slip);
+    }
+    if(st.del==="stram"){
+      msHold(document.getElementById("msstram"), ()=>{ st.holder=true; }, ()=>{ st.holder=false; const s=st.stram, r=st.pl[st.pl.length-1];
+        r.s = s>=.6 && s<=.82 ? "god" : s>=.45 && s<=.95 ? "ok" : "dårlig";
+        msStatus(r.s==="god"?"✅ Snoren er stram":s<.6?"🙂 Lidt for slap":s>.95?"❌ For stramt – teltdugen spænder":"🙂 Lidt for stram");
+        st.nr++; if(st.nr>=st.n) return msTid(()=>teltSlut(st), 500);
+        st.del="vinkel"; st.vinkel=10; msTid(()=>render(), 500); });
+    }
+  },
+});
+function teltPlok(nr){ const side = nr%2===0 ? -1 : 1, k=Math.floor(nr/2); return [160+side*(78+k*22), 196]; }
+function teltTegnPlok(st){ const g=document.getElementById("msplok"); if(!g) return; const b=teltPlok(st.nr), side=st.nr%2===0?-1:1; g.setAttribute("transform", `translate(${b[0]} ${b[1]}) rotate(${st.vinkel*side})`); const l=document.getElementById("mssnor"); if(l) l.setAttribute("d", teltSnor(st, 0)); }
+function teltTegnStram(st){ const m=document.getElementById("msstr"), l=document.getElementById("mssnor");
+  if(m) m.setAttribute("transform", `translate(${40+240*Math.min(1,st.stram)} 0)`); if(l) l.setAttribute("d", teltSnor(st, st.stram)); }
+// Barduneren går fra teltet til pløkkens hoved (pløkken hælder vinkel° væk fra teltet)
+function teltHoved(nr, vinkel){ const b=teltPlok(nr), side=nr%2===0?-1:1, a=vinkel*Math.PI/180; return [b[0]+side*30*Math.sin(a), b[1]-30*Math.cos(a)]; }
+function teltSnor(st, s){ const side=st.nr%2===0?-1:1, h=teltHoved(st.nr, st.del==="vinkel"?st.vinkel:(st.pl[st.nr]||{}).vinkel||45), top=[160+side*13, 128], mx=(top[0]+h[0])/2, my=(top[1]+h[1])/2 + (1-Math.min(1,s))*28; return `M${top[0]} ${top[1]} Q${mx} ${my} ${h[0]} ${h[1]}`; }
+function teltSlut(st){
+  if(st.fase!=="spil") return;
+  const p={ god:12.5, ok:7, dårlig:0 }, sc=Math.round(st.pl.reduce((n,r)=>n+p[r.v]+(r.s?p[r.s]:0),0)*(8/(st.n*2))*1.0);
+  let stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0; if(st.regn) stj=Math.min(stj,1);
+  msSlut(st, { stjerner:stj, score:sc, tekst: st.regn ? `🌧️ Regnen kom, før teltet stod – ${st.nr} af ${st.n} pløkke nåede at komme i.` : `Teltet står! ${st.pl.filter(r=>r.v==="god").length} af ${st.n} pløkke i perfekt vinkel og ${st.pl.filter(r=>r.s==="god").length} barduner perfekt strammet.`,
+    laer:"Pløkkene skal hælde ca. 45° væk fra teltet, så barduneren trækker vinkelret på pløkken – så holder den bedst. Barduneren skal være stram, men ikke så stram, at teltdugen spænder. Stram dem igen, hvis det regner – dugen strækker sig, når den bliver våd." });
+}
+function teltSVG(st, forside){
+  const side=st.nr%2===0?-1:1, b=teltPlok(st.nr), z=[.6,.82];
+  const faerdige=Array.from({length:st.nr},(_,k)=>{ const bb=teltPlok(k), sd=k%2===0?-1:1, top=[160+sd*13,128], v=(st.pl&&st.pl[k]&&st.pl[k].vinkel)||45, h=teltHoved(k,v); return `<path d="M${top[0]} ${top[1]} L${h[0]} ${h[1]}" stroke="#e8e0c8" stroke-width="1.6"/><g transform="translate(${bb[0]} ${bb[1]}) rotate(${v*sd})"><rect x="-3" y="-30" width="6" height="34" rx="2" fill="#9aa7ae"/></g>`; }).join("");
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#bcd3e0"/><g id="mssky"><ellipse cx="-30" cy="40" rx="60" ry="24" fill="#6f7f8c"/><ellipse cx="10" cy="34" rx="44" ry="22" fill="#7d8c98"/><g stroke="#5b8fc4" stroke-width="2">${[0,1,2,3,4].map(k=>`<path d="M${-60+k*18} 66 l-4 12"/>`).join("")}</g></g>
+    ${msSkov(150,"#5b8f4a")}<rect y="150" width="320" height="90" fill="#86b25a"/><path d="M0 196 H320" stroke="#6f9a45" stroke-width="2"/>
+    <path d="M100 196 L160 108 L220 196Z" fill="#e76f51" stroke="#a5482f" stroke-width="2"/><path d="M160 108 L160 196" stroke="#a5482f" stroke-width="2"/><path d="M146 196 L160 150 L174 196Z" fill="#7a3a26"/>
+    ${faerdige}
+    ${!forside && st.nr<st.n ? `${st.del==="vinkel"?`<path d="M${b[0]} ${b[1]} l${side*40*Math.sin(Math.PI/4)} ${-40*Math.cos(Math.PI/4)}" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/><text x="${b[0]+side*34}" y="${b[1]-36}" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">45°</text>`:""}
+      <path id="mssnor" d="${teltSnor(st, st.del==="stram"?st.stram:0)}" stroke="#f3ead2" stroke-width="2" fill="none" ${st.del==="vinkel"?'stroke-dasharray="3 4" opacity=".6"':""}/>
+      <g id="msplok" transform="translate(${b[0]} ${b[1]}) rotate(${(st.del==="vinkel"?st.vinkel:(st.pl[st.nr]||{}).vinkel||45)*side})"><rect x="-4" y="-34" width="8" height="40" rx="2" fill="${st.del==="vinkel"?"#ffe28a":"#9aa7ae"}" stroke="#5f6b72" stroke-width="1.5"/><path d="M-6 -34 H6" stroke="#5f6b72" stroke-width="3"/></g>` : ""}
+    ${!forside && st.del==="stram" ? `<rect x="40" y="208" width="240" height="14" rx="7" fill="#fff"/><rect x="${40+240*z[0]}" y="208" width="${240*(z[1]-z[0])}" height="14" fill="#4caf50"/><rect x="${40+240*.95}" y="208" width="${240*.05}" height="14" fill="#c62828"/>
+      <g id="msstr" transform="translate(${40+240*Math.min(1,st.stram)} 0)"><path d="M0 204 V226" stroke="#2a2a1f" stroke-width="3"/></g>` : ""}</svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");
