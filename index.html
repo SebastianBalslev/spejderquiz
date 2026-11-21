@@ -13349,6 +13349,80 @@ function teltSVG(st, forside){
       <g id="msstr" transform="translate(${40+240*Math.min(1,st.stram)} 0)"><path d="M0 204 V226" stroke="#2a2a1f" stroke-width="3"/></g>` : ""}</svg>`;
 }
 
+/* ---------- Minispil: Livredning (badebroen) – vælg række, kaste, ro eller gå, og kast redningskransen (vinkel + kraft) ---------- */
+const BRO_METODE = { raekke:["🪵","Række","Ræk ud med en stage, en gren eller et håndklæde – du bliver selv på broen."], kaste:["🛟","Kaste","Kast noget, der flyder – en redningskrans eller en fyldt dunk."], ro:["🚣","Ro","Ro ud i en båd, og lad personen holde fast i båden."], gaa:["🚶","Gå","Gå ud, hvor det er lavt – kun hvis du kan bunde, og vandet er roligt."] };
+const BRO_SITU = { raekke:"En spejder er faldet i vandet <b>lige ved broen</b> – en armslængde væk.", kaste:"En svømmer råber om hjælp <b>et stykke ude</b> – for langt til at række ud.", ro:"En person er i vanskeligheder <b>langt ude på søen</b> – for langt til at kaste.", gaa:"Et lille barn er faldet i, hvor det er <b>lavt</b> – vandet når kun til knæene." };
+function broX(st){ return st.situ==="raekke" ? 92 : st.situ==="ro" ? 300 : st.situ==="gaa" ? 120 : st.maal; }
+msNyt("bro", { navn:"Livredning", ikon:"🛟", byg:["badebro"], knap:"🛟 Minispil: Livredning", point:15,
+  varianter:[
+    { navn:"Livredning", besk:"Lær livredningens rækkefølge: <b>række, kaste, ro, gå</b> – du skal selv blive i sikkerhed. Vælg den rigtige måde at hjælpe på. Skal der kastes, så tryk for at låse vinklen og tryk igen for at låse kraften. 4 situationer." },
+    { navn:"Vind og bølger", besk:"Vinden skubber til redningskransen, og personen driver. Sigt efter det!" },
+    { navn:"Længere ude", besk:"Personerne er længere ude, og du skal ramme mere præcist." },
+  ],
+  start(st){ const r=msTilfaeldig(Date.now()), typer=shuffle(["kaste","kaste", ...shuffle(["raekke","ro","gaa"]).slice(0,2)]);
+    Object.assign(st, { rnd:r, typer, nr:0, rigtige:0, ramt:0, kast:0 }); broNy(st); },
+  forside(st){ return broSVG({ situ:"kaste", maal:200, del:"vaelg", v:0 }); },
+  tegn(st){ return broSVG(st); },
+  status(st){ return `Situation ${Math.min(4,st.nr+1)} af 4 · ✅ ${st.rigtige} · 🛟 ramt ${st.ramt} af ${st.kast}`; },
+  kontrol(st){
+    if(st.del==="vaelg") return `<div class="aktopg msintro">${BRO_SITU[st.situ]} Hvad gør du?</div><div class="aktvalg">${Object.entries(BRO_METODE).map(([k,m])=>`<button class="btn secondary" data-a="msk" data-k="metode" data-t="${k}">${m[0]} ${m[1]}</button>`).join("")}</div>`;
+    if(st.del==="vinkel"||st.del==="kraft") return `<button class="btn gold mstryk" id="mslaas">${st.del==="vinkel"?"🎯 Lås vinklen":"💪 Lås kraften"}</button>`;
+    if(st.del==="vis") return `<div class="aktopg msintro">${st.besked}</div><button class="btn gold" data-a="msk" data-k="naeste">${st.nr>=3?"🏁 Se resultatet":"➡️ Næste situation"}</button>`;
+    return `<p class="muted center psmall">🛟 …</p>`;
+  },
+  tryk(st, k, d){
+    if(k==="metode" && st.del==="vaelg"){ const ok=d.t===st.situ, m=BRO_METODE[st.situ]; vibrer(ok?25:[60,40,60]);
+      if(ok) st.rigtige++;
+      if(ok && st.situ==="kaste"){ st.del="vinkel"; st.vink=20; st.vdir=1; st.kraft=0; st.kdir=1; return render(); }
+      st.besked = ok ? `✅ Rigtigt – <b>${m[1]}</b>! ${m[2]}` : `❌ Her skal du <b>${m[1].toLowerCase()}</b>: ${m[2]}`;
+      if(!ok && st.situ==="kaste") st.kast++;
+      st.del="vis"; render(); }
+    if(k==="naeste" && st.del==="vis"){ st.nr++; if(st.nr>=4) return broSlut(st); broNy(st); render(); }
+  },
+  efter(st){
+    if(st.del==="vinkel"||st.del==="kraft"){
+      document.getElementById("mslaas").addEventListener("pointerdown", ev=>{ ev.preventDefault();
+        if(st.del==="vinkel"){ st.del="kraft"; vibrer(12); return render(); }
+        st.del="flyv"; vibrer(12); render(); });
+      const fart=MS_ROLIG?.6:1;
+      msLoop(dt=>{
+        if(st.del==="vinkel"){ st.vink+=st.vdir*70*dt*fart*st.sv; if(st.vink>75){ st.vink=75; st.vdir=-1; } if(st.vink<15){ st.vink=15; st.vdir=1; }
+          const p=document.getElementById("mssigte"); if(p) p.setAttribute("transform", `rotate(${-st.vink} 60 128)`); }
+        else { st.kraft+=st.kdir*1.1*dt*fart*st.sv; if(st.kraft>1){ st.kraft=1; st.kdir=-1; } if(st.kraft<0){ st.kraft=0; st.kdir=1; }
+          const m=document.getElementById("mskraft"); if(m) m.setAttribute("width", 100*st.kraft); } });
+    }
+    if(st.del==="flyv"){
+      const a=st.vink*Math.PI/180, v=100+235*st.kraft, g=400, vind=st.v===1?st.vind:0; let x=60, y=128, vx=v*Math.cos(a), vy=-v*Math.sin(a); const m0=st.maal;
+      msLoop(dt=>{ vx+=vind*dt; vy+=g*dt; x+=vx*dt; y+=vy*dt; if(st.v===1) st.maal+=st.drift*dt;
+        const r=document.getElementById("msring"), p=document.getElementById("msperson"); if(r) r.setAttribute("transform", `translate(${x} ${y})`); if(p) p.setAttribute("transform", `translate(${st.maal-m0} 0)`);
+        if(y>=160 || x>330){ const af=Math.abs(x-st.maal), tol=(st.v===2?13:18)/st.sv, ramt=af<=tol; st.kast++; if(ramt) st.ramt++;
+          st.besked = ramt ? "🛟 Ramt! Personen griber redningskransen, og du trækker hende ind til broen." : `💦 ${x<st.maal?"For kort":"For langt"} – ${Math.round(af/4)} m ved siden af. Hal kransen ind, og kast igen næste gang.`;
+          vibrer(ramt?30:[60,40,60]); st.del="vis"; render(); return false; } });
+    }
+  },
+});
+function broNy(st){ const r=st.rnd; st.situ=st.typer[st.nr]; st.del="vaelg"; st.maal = st.v===2 ? 210+r(70) : 140+r(110); st.vind = (r(2)?1:-1)*(20+r(40)); st.drift=(r(2)?1:-1)*(6+r(8)); }
+function broSlut(st){
+  const sc=st.rigtige*15 + (st.kast ? Math.round(40*st.ramt/st.kast) : 40), stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`${st.rigtige} af 4 rigtige valg og ${st.ramt} af ${st.kast} kast ramte.`,
+    laer:"Livredningens rækkefølge er <b>række, kaste, ro, gå</b> – og kun svømme ud som allersidste udvej. Du skal selv være i sikkerhed, ellers bliver I to i vandet. Råb på hjælp, og ring 112." });
+}
+function broSVG(st){
+  const px=broX(st), lavt=st.situ==="gaa", langt=st.situ==="ro";
+  const sigt = st.del==="vinkel"||st.del==="kraft" ? `<g id="mssigte" transform="rotate(${-(st.vink||45)} 60 128)"><path d="M60 128 H120" stroke="#fff" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M120 128 l-8 -4 v8Z" fill="#fff"/></g>` : "";
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#bfe0f2"/>${msSkov(120,"#5b8f4a")}
+    <rect y="156" width="320" height="84" fill="${lavt?"#7cc0de":"#3d8fc4"}"/>${lavt?`<rect y="204" width="320" height="36" fill="#c9b27a" opacity=".7"/>`:""}
+    ${[170,190,210].map((y,k)=>`<path d="M${20+k*40} ${y} q10 -5 20 0 t20 0 M${190-k*20} ${y+8} q10 -5 20 0 t20 0" stroke="#bfe4f7" stroke-width="2" fill="none" opacity=".7"/>`).join("")}
+    <rect x="0" y="140" width="76" height="10" fill="#a06a3a"/><g stroke="#6b4626" stroke-width="5"><path d="M10 150 V230 M66 150 V230"/></g>
+    ${figur(cur().look,48,124,40)}
+    <g id="msperson"><g transform="translate(${px} ${langt?150:lavt?150:160}) scale(${langt?.55:1})">
+      <circle cx="0" cy="-10" r="9" fill="#f1c9a5"/><path d="M-14 -22 L-8 -12 M14 -22 L8 -12" stroke="#f1c9a5" stroke-width="4" stroke-linecap="round"/>${lavt?`<rect x="-7" y="0" width="14" height="22" rx="4" fill="#2f6fb0"/>`:`<ellipse cx="0" cy="2" rx="16" ry="4" fill="#bfe4f7" opacity=".8"/>`}</g></g>
+    ${langt?`<text x="300" y="138" font-size="11" font-weight="800" fill="#2a3a44" text-anchor="middle">40 m ude</text>`:""}
+    ${sigt}${st.del==="kraft"?`<rect x="110" y="18" width="100" height="12" rx="6" fill="#fff"/><rect id="mskraft" x="110" y="18" width="${100*(st.kraft||0)}" height="12" rx="6" fill="#c98a16"/><text x="160" y="44" text-anchor="middle" font-size="12" font-weight="800" fill="#2a3a44">Kraft</text>`:""}
+    ${st.v===1&&(st.del==="vinkel"||st.del==="kraft")?`<text x="250" y="40" font-size="13" font-weight="800" fill="#2a3a44" text-anchor="middle">💨 Vind ${st.vind>0?"→":"←"}</text>`:""}
+    <g id="msring" transform="translate(60 128)" style="display:${st.del==="flyv"?"":"none"}"><circle r="8" fill="none" stroke="#e63946" stroke-width="5"/><circle r="8" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="6 6"/></g></svg>`;
+}
+
 /* MINISPIL-SLUT */
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-a]");

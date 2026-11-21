@@ -186,6 +186,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **⛺ Slå teltet op** (teltet og patruljeteltet, `telt`): regnskyen driver ind over himlen (42 sek., kortere på højere niveau). For hver pløk trækker man den med fingeren, så den hælder 45° væk fra teltet (den stiplede linje), og slipper (højst 8° fra er perfekt, strengere med niveauet). Så holder man »Stram barduner« nede og slipper, når snoren er i det grønne felt – det røde felt er for stramt. 4 pløkke. Kommer regnen, før teltet står, giver det højst 1 stjerne. Fra niveau 5 *Patruljeteltet* (6 pløkke), fra niveau 10 *Blæsevejr* (snoren hopper, og der er mindre tid).
 
+- **🛟 Livredning** (badebroen, `bro`): 4 situationer (mindst 2 med kast). Man vælger den rigtige måde at hjælpe på efter livredningens rækkefølge – **række, kaste, ro, gå** (`BRO_METODE`, `BRO_SITU`): lige ved broen → række, et stykke ude → kaste, langt ude → ro, lavt vand → gå. Ved »Kaste« trykker man først for at låse vinklen (sigtepilen svinger) og så for at låse kraften (bjælken fyldes og tømmes). Redningskransen flyver i en bue og skal lande tæt nok ved personen. Score = 15 pr. rigtigt valg + op til 40 for kastene. Fra niveau 5 *Vind og bølger* (vind skubber til kransen, og personen driver), fra niveau 10 *Længere ude* (længere væk og mere præcist).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).
