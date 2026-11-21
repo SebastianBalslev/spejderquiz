@@ -202,6 +202,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **💨 Røgsignaler** (signalbålet, `roeg`): hold »Dæk til« nede, så røgen samler sig under tæppet (bjælken viser hvor meget, og det grønne felt er målet), og slip – så stiger et pust røg op. Holder man for længe (over ca. 3,6 sek.), bliver ilden kvalt, og pustet går tabt. *Tre pust* (3 mellemstore pust = nødsignal), og til sidst spørgsmålet om, hvad tre ens signaler betyder (nød). Score = 70 for pustene + 30 for spørgsmålet. Fra niveau 5 *Korte og lange* (et mønster af 4 korte/lange pust, `ROEG_INT`), fra niveau 10 *Sidevind* (røgen driver, og der skal samles mere røg til hvert pust).
 
+- **📋 Dagens opgaver** (patruljehjørnet, `hjoerne`): fordel 6 af dagens opgaver (`HJ_OPG`: mad, vand, bål, brænde, førstehjælpskasse, vejfinding, besnøringer, opvask) mellem patruljen. De første 4 i spejderens patrulje er med (ellers fylder `patrulje()` op), og ved hver spejder står de mærker, der passer til opgaverne. Spejdere uden mærker får en tilfældig styrke (kun i spillet). Vurderingen (`hjVurder`): er det retfærdigt (højst én opgaves forskel), og fik den, der er bedst til en opgave, den? Score = retfærdighed (40) + match (40) + 20. Fra niveau 5 *Med hensyn* (fx »er bange for vand«), fra niveau 10 *Tidsplan* (opgaverne ligger morgen, middag og aften, og ingen kan lave to ting på samme tid).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

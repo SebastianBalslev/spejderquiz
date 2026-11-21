@@ -590,6 +590,8 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .natkort span{font-size:22px;line-height:1}.natkort b{font-size:12.5px;line-height:1.15;text-align:center}.natkort small{font-size:11px;color:var(--muted);text-align:center;line-height:1.15}
 .natkort.on{border-color:var(--forest);background:#eef4e2;box-shadow:inset 0 0 0 2px var(--forest)}
 .roegm{display:inline-block;color:var(--muted);font-size:18px}.roegm.nu{color:#c98a16;transform:scale(1.3)}.roegm.gjort{color:var(--ok,#2e7d32)}
+.hjms{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}.hjm{background:var(--paper);border-radius:12px;padding:6px 8px;min-width:0}.hjm b{display:block}.hjm small{display:block;font-size:11px;color:var(--muted);line-height:1.2}.hjm span{font-size:12px;font-weight:800;color:var(--forest)}
+.hjopg{background:var(--paper);border-radius:12px;padding:8px;margin-bottom:6px}.hjtit{font-weight:800;margin-bottom:6px}.hjtit small{color:var(--muted);font-weight:600}.hjvalg{display:flex;flex-wrap:wrap;gap:5px}.hjvalg .chip{min-height:36px;padding:4px 10px;font-size:14px}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13897,6 +13899,70 @@ function roegSVG(st){
     <rect x="100" y="20" width="120" height="12" rx="6" fill="#fff" opacity=".85"/><rect id="msmaal" x="100" y="20" width="0" height="12" rx="6" fill="#8a8a82"/>
     ${st.moenster && st.moenster[st.nr] ? (()=>{ const [lo,hi]=ROEG_INT[st.moenster[st.nr]], e=st.v===2?.5:0; return `<rect id="mszone" x="${100+(lo+e)/3.4*120}" y="20" width="${(hi-lo)/3.4*120}" height="12" fill="#4caf50" opacity=".55"/>`; })() : ""}
     <text x="160" y="46" text-anchor="middle" font-size="10" font-weight="800" fill="#2a3a44">Røg under tæppet</text>${st.v===2?`<text x="270" y="60" font-size="13" font-weight="800" fill="#2a3a44">💨 →</text>`:""}</svg>`;
+}
+
+/* ---------- Minispil: Dagens opgaver (patruljehjørnet) – fordel opgaverne mellem patruljens medlemmer ----------
+   Godt fordelt = alle får lige mange opgaver (højst én forskel), og den, der er bedst til noget (højeste mærke), får gerne den opgave. */
+const HJ_OPG = [["🍲","Lav aftensmad","koekken"],["💧","Hent vand","vand"],["🔥","Tænd bålet","baal"],["🪓","Hug brænde","vaerktoej"],["🩹","Tjek førstehjælpskassen","forstehjalp"],["🗺️","Find vej til dagens tur","orientering"],["🪢","Bind besnøringer til bordet","knob"],["🧽","Tag opvasken","lejr"]];
+const HJ_TID = ["Morgen","Middag","Aften"];
+function hjMedlemmer(c){
+  const p=minPatrulje(c), ms = p ? medlemmer(p) : [c];
+  let l=ms.slice(0,5).map(m=>({ id:m.id, navn:m.navn, badges:m.badges||{} }));
+  patrulje(c).forEach(x=>{ if(l.length<4 && !l.some(y=>y.navn===x.navn)) l.push({ id:x.navn, navn:x.navn, badges:{} }); });
+  return l.slice(0, 4);
+}
+msNyt("hjoerne", { navn:"Dagens opgaver", ikon:"📋", byg:["patruljehjoerne"], knap:"📋 Minispil: Fordel dagens opgaver", point:12, svaer:false,
+  varianter:[
+    { navn:"Dagens opgaver", besk:"Fordel dagens 6 opgaver mellem patruljen. Det er godt fordelt, når alle får lige mange (højst én forskel) – og når den, der er bedst til noget, får den opgave. Mærkerne står ved hver spejder." },
+    { navn:"Med hensyn", besk:"Nogle i patruljen har noget, du skal tage hensyn til – fx ondt i armen eller er bange for vand." },
+    { navn:"Tidsplan", besk:"Opgaverne ligger morgen, middag og aften. Ingen kan lave to ting på samme tid." },
+  ],
+  start(st, c){ const r=msTilfaeldig(Date.now()), ms=hjMedlemmer(c), opg=shuffle(HJ_OPG.slice()).slice(0,6).map((o,k)=>({ o, tid:st.v===2?HJ_TID[k%3]:null, hvem:null }));
+    // spejdere uden mærker får et par tilfældige styrker, så der er noget at gå efter
+    ms.forEach(m=>{ if(!Object.values(m.badges).some(x=>x>0)){ const e=HJ_OPG[r(HJ_OPG.length)][2]; m.badges={ [e]:2 }; } });
+    const hensyn = st.v===1 ? ms.slice(0,2).map((m,k)=>{ const h=[["vaerktoej","har ondt i armen – ikke hugge brænde"],["vand","er bange for vand – ikke hente vand"],["baal","har brændt fingeren – ikke tænde bål"]][(r(3)+k)%3]; return { id:m.id, emne:h[0], tekst:h[1] }; }) : [];
+    Object.assign(st, { ms, opg, hensyn, valgt:null, vist:false }); },
+  forside(st, c){ return hjSVG(c, hjMedlemmer(c)); },
+  tegn(st, c){ return hjSVG(c, st.ms, st); },
+  status(st){ return `Fordelt: ${st.opg.filter(o=>o.hvem!=null).length} af ${st.opg.length}`; },
+  kontrol(st){
+    const navn=id=>{ const m=st.ms.find(x=>x.id===id); return m?esc(m.navn):""; }, top=m=>{ const e=Object.entries(m.badges).filter(([k,v])=>v>0 && EMNE[k] && st.opg.some(o=>o.o[2]===k)).sort((a,b)=>b[1]-a[1]).slice(0,2); return e.map(([k,v])=>`${EMNE[k].ikon||"🏅"} ${EMNE[k].navn}`).join(", ")||"–"; };
+    if(st.vist) return `<div class="aktopg msintro">${st.feedback}</div><button class="btn gold" data-a="msk" data-k="slut">🏁 Se resultatet</button>`;
+    return `${st.hensyn.length?`<div class="aktopg msintro">⚠️ ${st.hensyn.map(h=>`<b>${navn(h.id)}</b> ${esc(h.tekst)}`).join(". ")}.</div>`:""}
+      <div class="hjms">${st.ms.map(m=>`<div class="hjm"><b>${esc(m.navn)}</b><small>${top(m)}</small><span>${st.opg.filter(o=>o.hvem===m.id).length} opg.</span></div>`).join("")}</div>
+      ${st.opg.map((o,k)=>`<div class="hjopg"><div class="hjtit">${o.o[0]} ${esc(o.o[1])}${o.tid?` <small>· ${o.tid}</small>`:""}</div><div class="hjvalg">${st.ms.map(m=>`<button class="chip ${o.hvem===m.id?"on":""}" data-a="msk" data-k="giv" data-t="${k}" data-m="${esc(m.id)}">${esc(m.navn)}</button>`).join("")}</div></div>`).join("")}
+      <button class="btn gold" data-a="msk" data-k="faerdig" ${st.opg.every(o=>o.hvem!=null)?"":"disabled"}>✔️ Opgaverne er fordelt</button>`;
+  },
+  tryk(st, k, d){
+    if(k==="giv" && !st.vist){ const o=st.opg[+d.t]; o.hvem = o.hvem===d.m ? null : d.m; render(); }
+    if(k==="faerdig" && !st.vist){ hjVurder(st); st.vist=true; render(); window.scrollTo(0,0); }
+    if(k==="slut") hjSlut(st);
+  },
+});
+function hjVurder(st){
+  const antal=st.ms.map(m=>st.opg.filter(o=>o.hvem===m.id).length), fair=Math.max(...antal)-Math.min(...antal)<=1;
+  let match=0, t=[];
+  st.opg.forEach(o=>{ const bedst=Math.max(...st.ms.map(m=>m.badges[o.o[2]]||0)), m=st.ms.find(x=>x.id===o.hvem); if(bedst===0 || (m.badges[o.o[2]]||0)===bedst) match++; });
+  const brud=st.hensyn.filter(h=>st.opg.some(o=>o.hvem===h.id && o.o[2]===h.emne));
+  const dobbelt = st.v===2 ? HJ_TID.filter(tid=>st.ms.some(m=>st.opg.filter(o=>o.tid===tid && o.hvem===m.id).length>1)) : [];
+  st.fair=fair; st.match=match; st.brud=brud.length; st.dobbelt=dobbelt.length;
+  t.push(fair ? "✅ Alle har fået lige mange opgaver." : `❌ Skævt fordelt: nogle har ${Math.max(...antal)} opgaver og andre ${Math.min(...antal)}.`);
+  t.push(`${match===st.opg.length?"✅":"🙂"} ${match} af ${st.opg.length} opgaver gik til den, der er bedst til dem.`);
+  if(st.hensyn.length) t.push(brud.length ? `❌ Du glemte at tage hensyn til ${brud.length===1?"én":"to"} i patruljen.` : "✅ Du tog hensyn til alle.");
+  if(st.v===2) t.push(dobbelt.length ? `❌ Nogen skal lave to ting på samme tid (${dobbelt.join(", ").toLowerCase()}).` : "✅ Ingen har to ting på samme tid.");
+  st.feedback=t.join("<br>");
+}
+function hjSlut(st){
+  const sc=Math.max(0, (st.fair?40:10) + Math.round(40*st.match/st.opg.length) + 20 - st.brud*15 - st.dobbelt*10), stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:st.feedback.replace(/<br>/g," "),
+    laer:"En god patruljeleder fordeler opgaverne retfærdigt, bruger det, hver enkelt er god til – og giver også nogen chancen for at lære noget nyt. Tal med patruljen om fordelingen, og skift opgaverne rundt fra dag til dag." });
+}
+function hjSVG(c, ms, st){
+  return `<svg viewBox="0 0 320 170" class="aktsvg"><rect width="320" height="170" fill="#cfe6c0"/>${msSkov(110,"#5b8f4a")}<rect y="110" width="320" height="60" fill="#86b25a"/>
+    <path d="M40 140 V30" stroke="#8b5a2b" stroke-width="5"/><path d="M43 30 L90 42 L43 56Z" fill="#c62828"/>
+    <rect x="110" y="30" width="110" height="70" rx="4" fill="#c49a63" stroke="#8b5a2b" stroke-width="3"/><rect x="118" y="38" width="94" height="54" fill="#f3ead2"/>
+    <text x="165" y="54" text-anchor="middle" font-size="10" font-weight="800" fill="#5c3a20">DAGENS OPGAVER</text>${[0,1,2].map(k=>`<rect x="126" y="${62+k*9}" width="${50+k*12}" height="4" rx="2" fill="#a07a50"/>`).join("")}
+    ${ms.slice(0,4).map((m,k)=>`<text x="${252+(k%2)*36}" y="${82+Math.floor(k/2)*34}" font-size="22" text-anchor="middle">${["🧒","👧","🧑","🧒🏽"][k]}</text><text x="${252+(k%2)*36}" y="${96+Math.floor(k/2)*34}" font-size="8" font-weight="800" text-anchor="middle" fill="#2f4a2b">${esc(m.navn).slice(0,8)}</text>`).join("")}</svg>`;
 }
 
 /* MINISPIL-SLUT */
