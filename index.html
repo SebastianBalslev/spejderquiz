@@ -584,6 +584,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .gkort .kfelt{aspect-ratio:1;position:relative}.gcache{position:absolute;inset:0;display:grid;place-items:center;font-size:22px}
 #mslampe.taendt{fill:#fff6b0;filter:drop-shadow(0 0 14px #ffe680)}
 .opvbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px}.opvbtn .btn{margin:0;min-height:64px;font-size:17px}
+.msblomst .pollen{opacity:0;transition:opacity .2s}.msblomst.besoegt .pollen{opacity:1;stroke:#ffe066}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13572,6 +13573,81 @@ function vejrSVG(o){
       <text x="-26" y="14" font-size="8" fill="#5c3a20">Regn</text><text x="6" y="14" font-size="8" fill="#5c3a20">Sol</text><path d="M0 0 L0 -30" stroke="#c62828" stroke-width="3" transform="rotate(${naal})"/><circle r="4" fill="#5c3a20"/>
       <text x="0" y="28" text-anchor="middle" font-size="10" font-weight="800" fill="#2f4a2b">${o.tryk} hPa</text></g>
     <text x="232" y="138" text-anchor="middle" font-size="12" font-weight="800" fill="#2a3a44">${pil} ${vejrTrendTekst(o.trend)}</text></svg>`;
+}
+
+/* ---------- Minispil: Bestøvning (bistadet og insekthotellet) – tegn biens vej mellem blomster af samme slags ----------
+   Ved bistadet slynger man bagefter honning (drej håndsvinget rundt) – hver fyldt krukke giver 1 portion mad (højst lagerpladsen). */
+const BI_BLOMST = { gul:{ navn:"gule blomster", farve:"#f2c94c", midt:"#a8790c" }, lilla:{ navn:"lilla blomster", farve:"#a77bd6", midt:"#5d3a8a" }, roed:{ navn:"røde blomster", farve:"#e05a5a", midt:"#7a1a1a" } };
+function biNyMark(st){
+  const r=st.rnd, typer=Object.keys(BI_BLOMST), maal=typer[st.runde%3], n=st.v===1?16:12, bl=[];
+  for(let f=0; bl.length<n && f<800; f++){ const x=24+r(272), y=40+r(160); if(bl.every(b=>Math.hypot(b.x-x,b.y-y)>38)) bl.push({ x, y, t: bl.length<4 ? maal : typer[r(3)], besoegt:false }); }
+  const spind=[]; if(st.v===2) for(let f=0; spind.length<3 && f<400; f++){ const x=40+r(240), y=50+r(140); if(bl.every(b=>Math.hypot(b.x-x,b.y-y)>34) && spind.every(s=>Math.hypot(s.x-x,s.y-y)>60)) spind.push({ x, y }); }
+  Object.assign(st, { maal, bl, spind, spor:[], tid:0, sidstB:-1 });
+}
+msNyt("bi", { navn:"Bestøvning", ikon:"🐝", byg:["bistade","insekthotel"], knap:b=>b==="bistade"?"🐝 Minispil: Bestøvning og honning":"🐝 Minispil: Bestøvning", point:12,
+  varianter:[
+    { navn:"Bestøvning", rt:true, besk:"Bien flyver kun mellem blomster af samme slags – så bliver de bestøvet. Træk med fingeren fra blomst til blomst, og besøg alle blomster af den slags, der står øverst. Rører du en anden slags, blander bien pollen. 3 runder.", },
+    { navn:"Tæt blomstereng", rt:true, besk:"Flere blomster tæt sammen – pas på, hvor du trækker." },
+    { navn:"Edderkoppespind", rt:true, besk:"Der hænger edderkoppespind mellem blomsterne. Flyv udenom!" },
+  ],
+  start(st){ Object.assign(st, { rnd:msTilfaeldig(Date.now()), runde:0, fejl:0, besoeg:0, tidIalt:0, del:"blomst", omg:0, glas:0 }); biNyMark(st); },
+  forside(st){ const s={ rnd:msTilfaeldig(5), runde:0, v:0 }; biNyMark(s); s.spor=s.bl.filter(b=>b.t===s.maal).map(b=>[b.x,b.y]); return biSVG(s); },
+  tegn(st){ return st.del==="honning" ? honningSVG(st) : biSVG(st); },
+  status(st){ if(st.del==="honning") return `🍯 Krukker: ${st.glas} · ${Math.max(0,Math.ceil(10-st.tid))} sek`;
+    const ialt=st.bl.filter(b=>b.t===st.maal).length, har=st.bl.filter(b=>b.t===st.maal&&b.besoegt).length;
+    return `Runde ${st.runde+1} af 3 · ${har} af ${ialt} ${BI_BLOMST[st.maal].navn}${st.fejl?` · ❌ ${st.fejl}`:""}`; },
+  kontrol(st){ return st.del==="honning" ? `<p class="muted center psmall">🍯 Drej håndsvinget rundt med fingeren – jo hurtigere, jo mere honning slynges ud af tavlerne.</p>`
+    : `<p class="muted center psmall">Besøg alle <b style="color:${BI_BLOMST[st.maal].midt}">${BI_BLOMST[st.maal].navn}</b> – træk fingeren fra blomst til blomst.</p>`; },
+  efter(st, c){
+    const bane=document.getElementById("msbane"), svg=bane.querySelector("svg"); bane.style.touchAction="none";
+    if(st.del==="honning"){ let sidst=null;
+      const flyt=ev=>{ const p=msSvgPunkt(svg, ev), a=Math.atan2(p.y-120, p.x-160); if(sidst!=null){ let d=a-sidst; if(d>Math.PI) d-=2*Math.PI; if(d<-Math.PI) d+=2*Math.PI; st.omg+=Math.abs(d)/(2*Math.PI); } sidst=a; };
+      bane.addEventListener("pointerdown", ev=>{ ev.preventDefault(); try{ bane.setPointerCapture(ev.pointerId); }catch(e){} sidst=null; flyt(ev); st.omg+=.05; });
+      bane.addEventListener("pointermove", ev=>{ if(ev.buttons||ev.pointerType==="touch") flyt(ev); });
+      msLoop(dt=>{ st.tid+=dt; const glas=Math.min(3, Math.floor(st.omg/(5*st.sv))); if(glas>st.glas){ st.glas=glas; vibrer(25); const gt=document.getElementById("msglas"); if(gt) gt.textContent="× "+glas; }
+        const g=document.getElementById("mssving"), f=document.getElementById("msfyld"); if(g) g.setAttribute("transform", `rotate(${(st.omg*360)%360} 160 120)`);
+        if(f){ const fy=(st.omg/(5*st.sv))%1; f.setAttribute("y", 228-34*fy); f.setAttribute("height", 34*fy); }
+        if(Math.floor(st.tid*4)!==Math.floor((st.tid-dt)*4)) msStatus(MS.bi.status(st));
+        if(st.tid>=10){ biSlut(st); return false; } });
+      return; }
+    let traek=false;
+    const flyt=ev=>{ const p=msSvgPunkt(svg, ev); st.spor.push([Math.round(p.x),Math.round(p.y)]); if(st.spor.length>400) st.spor.shift();
+      const sp=document.getElementById("msspor"); if(sp) sp.setAttribute("points", st.spor.map(q=>q.join(",")).join(" "));
+      const bi=document.getElementById("msbi"); if(bi) bi.setAttribute("transform", `translate(${p.x} ${p.y})`);
+      if(st.spind.some(s=>Math.hypot(s.x-p.x,s.y-p.y)<20)){ if(!st.iSpind){ st.iSpind=true; st.fejl++; vibrer([60,30,60]); msStatus("🕸️ Bien fløj ind i et spind!"); } } else st.iSpind=false;
+      const i=st.bl.findIndex(b=>Math.hypot(b.x-p.x,b.y-p.y)<17);
+      if(i<0 || i===st.sidstB) return; st.sidstB=i; const b=st.bl[i];
+      if(b.t!==st.maal){ st.fejl++; vibrer([50,30,50]); msStatus(`❌ Det er ${BI_BLOMST[b.t].navn} – bien blander pollen`); return; }
+      if(!b.besoegt){ b.besoegt=true; st.besoeg++; vibrer(12); const el=document.querySelector(`[data-bl="${i}"]`); if(el) el.classList.add("besoegt"); msStatus(MS.bi.status(st)); }
+      if(st.bl.filter(x=>x.t===st.maal).every(x=>x.besoegt)){ traek=false; st.tidIalt+=st.tid; st.runde++; msStatus("🌼 Alle blomster er bestøvet!");
+        msTid(()=>{ if(st.runde>=3){ if(st.bid==="bistade"){ st.del="honning"; st.tid=0; render(); } else biSlut(st); return; } biNyMark(st); render(); }, 700); } };
+    bane.addEventListener("pointerdown", ev=>{ ev.preventDefault(); traek=true; try{ bane.setPointerCapture(ev.pointerId); }catch(e){} st.sidstB=-1; flyt(ev); });
+    bane.addEventListener("pointermove", ev=>{ if(traek) flyt(ev); });
+    bane.addEventListener("pointerup", ()=>{ traek=false; });
+    msLoop(dt=>{ st.tid+=dt; });
+  },
+});
+function biSlut(st){
+  const tid=st.tidIalt, stj = st.fejl<=1 && tid<30 ? 3 : st.fejl<=4 ? 2 : 1;
+  msSlut(st, { stjerner:stj, score:Math.max(0, 100-st.fejl*8-Math.max(0,Math.round(tid-25))) + st.glas*5, mat: st.glas ? { mad:st.glas } : null,
+    tekst:`Alle blomster bestøvet på ${Math.round(tid)} sek. med ${st.fejl} ${st.fejl===1?"fejl":"fejl"}.${st.bid==="bistade"?` Du slyngede ${st.glas} ${st.glas===1?"krukke":"krukker"} honning.`:""}`,
+    laer: st.bid==="bistade" ? "Honningbier flyver mellem blomster af samme slags på hver tur – det kaldes blomstertroskab, og det gør bestøvningen effektiv. Honningen slynges ud af tavlerne i en honningslynge, der drejer rundt." : "Vilde bier – fx murerbier og jordbier – bor i huller som dem i insekthotellet. De bestøver mange af vores frugttræer og blomster." });
+}
+function biSVG(st){
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#9fcf7a"/>${[30,90,150,210].map((y,k)=>`<path d="M0 ${y} q40 -8 80 0 t80 0 t80 0 t80 0" stroke="#8fc06a" stroke-width="6" fill="none" opacity=".6"/>`).join("")}
+    ${st.spind.map(s=>`<g transform="translate(${s.x} ${s.y})" stroke="#fff" stroke-width="1" opacity=".85" fill="none">${[0,1,2,3].map(k=>`<path d="M${-18*Math.cos(k*Math.PI/4)} ${-18*Math.sin(k*Math.PI/4)} L${18*Math.cos(k*Math.PI/4)} ${18*Math.sin(k*Math.PI/4)}"/>`).join("")}<circle r="6"/><circle r="12"/><circle r="17"/><text y="5" font-size="10" text-anchor="middle" stroke="none" fill="#2a2a1f">🕷️</text></g>`).join("")}
+    ${st.bl.map((b,i)=>{ const B=BI_BLOMST[b.t]; return `<g data-bl="${i}" class="msblomst${b.besoegt?" besoegt":""}" transform="translate(${b.x} ${b.y})"><path d="M0 4 V20" stroke="#4d7a32" stroke-width="3"/>${[0,1,2,3,4].map(k=>`<ellipse cx="0" cy="-8" rx="5" ry="8" fill="${B.farve}" transform="rotate(${k*72})"/>`).join("")}<circle r="5" fill="${B.midt}"/><circle class="pollen" r="9" fill="none" stroke="#fff" stroke-width="2.5"/></g>`; }).join("")}
+    <polyline id="msspor" points="${(st.spor||[]).map(q=>q.join(",")).join(" ")}" fill="none" stroke="#5c3a20" stroke-width="2" stroke-dasharray="4 4" opacity=".7"/>
+    <g id="msbi" transform="translate(${(st.spor&&st.spor.length?st.spor[st.spor.length-1]:[160,224]).join(" ")})"><text y="6" font-size="20" text-anchor="middle">🐝</text></g>
+    <g transform="translate(160 18)"><rect x="-70" y="-13" width="140" height="24" rx="12" fill="rgba(255,255,255,.85)"/>${[0,1,2,3,4].map(k=>`<ellipse cx="-52" cy="-6" rx="3" ry="5" fill="${BI_BLOMST[st.maal].farve}" transform="rotate(${k*72} -52 -1)"/>`).join("")}<text x="10" y="4" font-size="12" font-weight="800" text-anchor="middle" fill="#2f4a2b">Kun ${BI_BLOMST[st.maal].navn}</text></g></svg>`;
+}
+function honningSVG(st){
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#f3e6c8"/><rect y="200" width="320" height="40" fill="#c49a63"/>
+    <ellipse cx="160" cy="196" rx="70" ry="14" fill="#9aa7ae"/><rect x="90" y="70" width="140" height="126" fill="#b8c4ca"/><ellipse cx="160" cy="70" rx="70" ry="14" fill="#d6dee2" stroke="#9aa7ae" stroke-width="2"/>
+    <g id="mssving"><path d="M160 120 L160 40" stroke="#5f6b72" stroke-width="7" stroke-linecap="round"/><circle cx="160" cy="40" r="10" fill="#8b5a2b"/><circle cx="160" cy="120" r="8" fill="#5f6b72"/></g>
+    <circle cx="160" cy="120" r="80" fill="none" stroke="#c98a16" stroke-width="2" stroke-dasharray="6 8" opacity=".6"/>
+    <g transform="translate(262 194)"><rect x="-20" y="0" width="40" height="34" rx="6" fill="#fff" stroke="#c98a16" stroke-width="2" opacity=".9"/></g><rect id="msfyld" x="244" y="228" width="36" height="0" fill="#e0a81e"/>
+    <text x="262" y="186" text-anchor="middle" font-size="22">🍯</text><text id="msglas" x="262" y="174" text-anchor="middle" font-size="12" font-weight="800" fill="#7a5a10" dy="-14">× ${st.glas}</text></svg>`;
 }
 
 /* MINISPIL-SLUT */
