@@ -200,6 +200,8 @@ Minispillene ved bygningerne bruger én fælles motor (`MS`, `msNyt`, `scrSpil`,
 
 - **💧 Rent vand** (vandstationen, `vand`): byg et flaskefilter ved at lægge lagene i nedefra (`VAND_LAG`: klud/vat, trækul, sand, grus, sten). Hold »Hæld« nede, så det brune vand løber klart ud i krukken – men det er ikke rent endnu. Til sidst koges vandet: hold »Fyr op« nede for at give ilden mere varme, og hold vandet på 100 °C med bobler i 6 sekunder (svarer til ét minuts rullende kog). Bliver varmen for høj, koger det over (minus point). Score = filter (40) + kogning (40) + 20. Fra niveau 5 *Vælg vandet* (først det bedste vandsted, `VAND_KILDER`: rindende vand oppe fra strømmen), fra niveau 10 *Svag ild* (ilden dør hurtigere, og vandet skal koge i 9 sekunder).
 
+- **💨 Røgsignaler** (signalbålet, `roeg`): hold »Dæk til« nede, så røgen samler sig under tæppet (bjælken viser hvor meget, og det grønne felt er målet), og slip – så stiger et pust røg op. Holder man for længe (over ca. 3,6 sek.), bliver ilden kvalt, og pustet går tabt. *Tre pust* (3 mellemstore pust = nødsignal), og til sidst spørgsmålet om, hvad tre ens signaler betyder (nød). Score = 70 for pustene + 30 for spørgsmålet. Fra niveau 5 *Korte og lange* (et mønster af 4 korte/lange pust, `ROEG_INT`), fra niveau 10 *Sidevind* (røgen driver, og der skal samles mere røg til hvert pust).
+
 ### Placeringsregler og materielvogn
 Reglerne står i `INSPEKTION` og gælder altid (nabo betyder også på skrå):
 - a) Bålplads, lejrbålsplads og signalbål må ikke være nabo til telte (telt, patruljetelt, spisetelt, jamboree-telt), hytter (spejderhytte, træhytte, shelter) eller træer (grantræ, løvtræ, kæmpeeg).

@@ -589,6 +589,7 @@ body.has-tabs #app:has(.tstartfast){padding-bottom:calc(var(--fanehoejde,76px) +
 .natkort{border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:inherit;min-height:80px;min-width:0}
 .natkort span{font-size:22px;line-height:1}.natkort b{font-size:12.5px;line-height:1.15;text-align:center}.natkort small{font-size:11px;color:var(--muted);text-align:center;line-height:1.15}
 .natkort.on{border-color:var(--forest);background:#eef4e2;box-shadow:inset 0 0 0 2px var(--forest)}
+.roegm{display:inline-block;color:var(--muted);font-size:18px}.roegm.nu{color:#c98a16;transform:scale(1.3)}.roegm.gjort{color:var(--ok,#2e7d32)}
 .spilknap{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.spilknap span{font-size:12px;font-weight:800}
 .flytknap{position:absolute;top:-13px;left:14px;z-index:62;border:2px solid #4f7a2f;background:var(--paper);color:var(--forest);font:inherit;font-size:13px;cursor:pointer;border-radius:14px;padding:2px 9px 2px 6px;display:flex;align-items:center;gap:3px;box-shadow:0 2px 0 #4f7a2f}.flytknap span{font-size:12px;font-weight:800}
 .flytbar{background:#fff7d6;border:2px solid #e2c56b;margin:0 0 6px}.flytbar b{display:block}.flytbar small{display:block;margin-top:3px;font-size:14px}.flytbar .flytbrud{color:#b3261e;font-weight:700}.flytbar .flytok{color:var(--forest);font-weight:700}
@@ -13835,6 +13836,67 @@ function vandSVG(st){
         ${st.del==="kilde"?`<text x="205" y="120" font-size="40" text-anchor="middle">🏞️</text>`:""}
         ${st.del==="haeld"?`<path d="M80 60 q0 20 0 30" stroke="#8a6a3a" stroke-width="6" stroke-linecap="round"/><text x="80" y="52" font-size="26" text-anchor="middle">🫗</text><path d="M80 234 Q130 250 170 200" stroke="#8fd0f0" stroke-width="3" fill="none"/>`:""}
         <text x="80" y="82" text-anchor="middle" font-size="11" font-weight="800" fill="#2f4a2b">Flaskefilter</text>`}</svg>`;
+}
+
+/* ---------- Minispil: Røgsignaler (signalbålet) – dæk bålet til (hold nede) og af (slip), så der stiger et pust røg op ---------- */
+const ROEG_INT = { K:[.7,1.4,"kort"], M:[1.4,2.6,"mellem"], L:[2.2,3.2,"langt"] };
+msNyt("roeg", { navn:"Røgsignaler", ikon:"💨", byg:["signalbaal"], knap:"💨 Minispil: Røgsignaler", point:15,
+  varianter:[
+    { navn:"Tre pust", besk:"Send nødsignalet: <b>3 lige store pust røg</b>. Hold »Dæk til« nede, så røgen samler sig under tæppet (ca. 2 sekunder), og slip – så stiger et pust op. Holder du for længe, kvæles ilden." },
+    { navn:"Korte og lange", besk:"Send et mønster af korte og lange pust – som morse med røg. Kort: ca. 1 sekund under tæppet, langt: ca. 2½ sekund." },
+    { navn:"Sidevind", besk:"Vinden river i røgen, så der skal samles mere røg til hvert pust – og ilden er hurtigere om at blive kvalt." },
+  ],
+  start(st){ const r=msTilfaeldig(Date.now()); const m = st.v===1 ? Array.from({length:4},()=>r(2)?"L":"K") : ["M","M","M"];
+    Object.assign(st, { moenster:m, nr:0, gode:0, fejl:0, kvalt:0, holder:false, tid:0, pust:[], del:"pust" }); },
+  forside(){ return roegSVG({ moenster:["M","M","M"], nr:1, pust:[{ s:1, x:0, liv:1 }], v:0, holder:false }); },
+  tegn(st){ return roegSVG(st); },
+  status(st){ return st.del==="spm" ? "Hvad betyder signalet?" : `Pust ${Math.min(st.moenster.length,st.nr+1)} af ${st.moenster.length} · ✅ ${st.gode}${st.kvalt?` · 🔥 kvalt: ${st.kvalt}`:""}`; },
+  kontrol(st){
+    if(st.del==="spm") return `<div class="aktopg msintro">Hvad betyder <b>tre</b> ens signaler – tre røgpust, tre bål på række eller tre fløjt?</div>${st.valg.map((t,k)=>`<button class="btn secondary" data-a="msk" data-k="svar" data-t="${k}">${esc(t)}</button>`).join("")}`;
+    const n=st.moenster[st.nr]; return `<div class="aktopg msintro">Næste pust: <b>${ROEG_INT[n][2]}</b> ${st.moenster.map((x,k)=>`<span class="roegm ${k<st.nr?"gjort":k===st.nr?"nu":""}">${x==="L"?"▬":x==="K"?"•":"●"}</span>`).join(" ")}</div>
+      <button class="btn earth mshold" id="mstaeppe">🟫 Hold nede: dæk til</button><p class="muted center psmall">Slip for at løfte tæppet – så stiger røgen op.</p>`;
+  },
+  tryk(st, k, d){ if(k==="svar" && st.del==="spm"){ st.svarOk=st.valg[+d.t]===ROEG_SVAR; vibrer(st.svarOk?25:[60,40,60]); roegSlut(st); } },
+  efter(st){
+    if(st.del!=="pust") return;
+    const ekstra = st.v===2 ? .5 : 0;
+    msHold(document.getElementById("mstaeppe"), ()=>{ st.holder=true; st.tid=0; const t=document.getElementById("mstaep"); if(t) t.style.display=""; },
+      ()=>{ if(!st.holder) return; st.holder=false; const t=document.getElementById("mstaep"); if(t) t.style.display="none";
+        const [lo,hi]=ROEG_INT[st.moenster[st.nr]], s=st.tid-ekstra, god=s>=lo && s<=hi;
+        if(st.tid>=3.6+ekstra/2){ return; }   // allerede kvalt (håndteres i løkken)
+        st.pust.push({ s:Math.min(1.4, Math.max(.2, st.tid/2)), x:0, liv:0 });
+        if(god){ st.gode++; vibrer(20); msStatus(`💨 Godt ${ROEG_INT[st.moenster[st.nr]][2]} pust!`); } else { st.fejl++; vibrer([50,30,50]); msStatus(s<lo ? "Pustet blev for lille – hold tæppet lidt længere" : "Pustet blev for stort – slip lidt før"); }
+        st.nr++; roegTegnStatus(st);
+        if(st.nr>=st.moenster.length){ msTid(()=>{ st.del="spm"; st.valg=shuffle([ROEG_SVAR,"Alt er i orden","Kom og spis","Vi er på vej hjem"]); render(); }, 1500); } });
+    msLoop(dt=>{
+      if(st.holder){ st.tid+=dt; const m=document.getElementById("msmaal"); if(m) m.setAttribute("width", Math.min(120, st.tid/3.4*120));
+        if(st.tid>=3.6+ekstra/2){ st.holder=false; st.kvalt++; st.fejl++; st.nr++; vibrer([80,40,80]); const t=document.getElementById("mstaep"); if(t) t.style.display="none"; msStatus("🔥 Ilden blev kvalt under tæppet – det pust gik tabt"); roegTegnStatus(st);
+          if(st.nr>=st.moenster.length) msTid(()=>{ st.del="spm"; st.valg=shuffle([ROEG_SVAR,"Alt er i orden","Kom og spis","Vi er på vej hjem"]); render(); }, 1200); } }
+      st.pust.forEach(p=>{ p.liv+=dt; p.x+=(st.v===2?28:6)*dt; });
+      st.pust=st.pust.filter(p=>p.liv<4);
+      const g=document.getElementById("mspust"); if(g) g.innerHTML=roegPust(st);
+    });
+  },
+});
+const ROEG_SVAR = "Nød – vi har brug for hjælp";
+function roegTegnStatus(st){ msStatus(MS.roeg.status(st)); const z=document.getElementById("mszone"), n=st.moenster[st.nr];
+  if(z && n){ const [lo,hi]=ROEG_INT[n], e=st.v===2?.5:0; z.setAttribute("x", 100+(lo+e)/3.4*120); z.setAttribute("width", (hi-lo)/3.4*120); } const m=document.getElementById("msmaal"); if(m) m.setAttribute("width", 0);
+  const nt=document.querySelector(".aktopg.msintro b"); if(nt && n) nt.textContent=ROEG_INT[n][2]; document.querySelectorAll(".roegm").forEach((el,k)=>{ el.classList.toggle("gjort", k<st.nr); el.classList.toggle("nu", k===st.nr); }); }
+function roegSlut(st){
+  const n=st.moenster.length, sc=Math.round(70*st.gode/n) + (st.svarOk?30:0), stj = sc>=85 ? 3 : sc>=60 ? 2 : sc>=35 ? 1 : 0;
+  msSlut(st, { stjerner:stj, score:sc, tekst:`${st.gode} af ${n} pust ramte${st.kvalt?`, og ilden blev kvalt ${st.kvalt} ${st.kvalt===1?"gang":"gange"}`:""}. Spørgsmålet: ${st.svarOk?"✅ rigtigt":"❌ forkert"}.`,
+    laer:"Tre ens signaler – tre røgpust, tre bål på en række, tre fløjt eller tre blink – er et internationalt nødsignal. Røgsignaler laver man med et fugtigt tæppe over et bål med grønne grene, der giver meget røg. Sluk bålet helt bagefter." });
+}
+function roegPust(st){ return st.pust.map(p=>{ const y=150-p.liv*36, r=12+p.s*16+p.liv*5, o=Math.max(0, .85-p.liv*.2); return `<circle cx="${160+p.x}" cy="${y}" r="${r}" fill="#a3a39b" opacity="${o.toFixed(2)}"/><circle cx="${148+p.x}" cy="${y+8}" r="${r*.7}" fill="#8e8e86" opacity="${o.toFixed(2)}"/>`; }).join(""); }
+function roegSVG(st){
+  return `<svg viewBox="0 0 320 240" class="aktsvg"><rect width="320" height="240" fill="#bfe0f2"/><path d="M0 200 Q80 150 160 160 Q240 150 320 190 V240 H0Z" fill="#7da653"/>${msSkov(196,"#4f7a3f")}
+    <g id="mspust">${roegPust(st)}</g>
+    <path d="M126 196 L194 196" stroke="#5c3a20" stroke-width="10" stroke-linecap="round"/><path d="M134 192 L160 150 L186 192" stroke="#6b4626" stroke-width="7" fill="none"/><path d="M146 194 L160 164 L174 194" stroke="#3f7a35" stroke-width="5" fill="none"/>
+    <path d="M150 190 C154 176 166 176 170 190Z" fill="#f4772e"/>
+    <g id="mstaep" style="display:${st.holder?"":"none"}"><path d="M110 196 Q112 140 160 136 Q208 140 210 196Z" fill="#8a5a35" stroke="#5c3a20" stroke-width="2"/>${figur(cur().look,232,170,46)}</g>
+    <rect x="100" y="20" width="120" height="12" rx="6" fill="#fff" opacity=".85"/><rect id="msmaal" x="100" y="20" width="0" height="12" rx="6" fill="#8a8a82"/>
+    ${st.moenster && st.moenster[st.nr] ? (()=>{ const [lo,hi]=ROEG_INT[st.moenster[st.nr]], e=st.v===2?.5:0; return `<rect id="mszone" x="${100+(lo+e)/3.4*120}" y="20" width="${(hi-lo)/3.4*120}" height="12" fill="#4caf50" opacity=".55"/>`; })() : ""}
+    <text x="160" y="46" text-anchor="middle" font-size="10" font-weight="800" fill="#2a3a44">Røg under tæppet</text>${st.v===2?`<text x="270" y="60" font-size="13" font-weight="800" fill="#2a3a44">💨 →</text>`:""}</svg>`;
 }
 
 /* MINISPIL-SLUT */
