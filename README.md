@@ -6,6 +6,7 @@ Hele appen ligger i én fil, `index.html`. Den virker offline og kan åbnes dire
 
 ## Indhold
 - 22 emner med hvert sit mærke i bronze, sølv og guld, delt i fire grupper på mærkesiden:
+- **Liv til mærkeprøverne** (`liv`, `c.liv = { n, t, traen }`): man har 3 liv. Hvert forkert svar i en mærkeprøve (også når tiden løber ud) koster ét liv (`livMist`), og når livene er brugt, stopper prøven efter det svar – »Afslut prøven« – og den er ikke bestået. Uden liv kan man ikke starte en prøve. Man får 1 liv tilbage i timen (`LIV_TID`, regnes ud, når man kigger, så det virker også, mens appen er lukket) og 1 liv for hver 5 rigtige svar i træning (`LIV_TRAEN`, `livTraen` – alle træningsopgaver på træningssiden tæller, også generalprøven, flashcards, morse og semafor). Livene vises med hjerter på mærkesiden, på hvert emne (`livKort`), øverst i prøven og på resultatet med en knap til træning. Træning, generalprøven og andre quizzer koster ingen liv. Gamle gemte spil starter med 3 liv.
   - **Friluftsliv:** Lejrliv og telte, Tur og udrustning, Bål, Friluftskøkken, Kniv, sav og økse, Overlevelse
   - **Natur:** Natur og miljø, Dyr, Fugle, Spor og sporing, Planter og svampe, Vejr, Stjerner og nattehimmel
   - **Færdigheder:** Knob og reb, Førstehjælp, Orientering og kompas, GPS og geocaching, Vand og sejlads, Koder og signaler (med blinkende morselampe og semafor)

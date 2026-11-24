@@ -793,6 +793,8 @@ small.mangler{color:var(--bad);display:block;margin-bottom:8px}
 @keyframes badgepop{0%{opacity:0;transform:scale(0) rotate(-240deg)}70%{opacity:1;transform:scale(1.15) rotate(12deg)}100%{transform:scale(1) rotate(0)}}
 @keyframes glow{50%{filter:drop-shadow(0 0 22px rgba(255,220,110,.95))}}
 @keyframes fall{to{transform:translateY(112vh) rotate(var(--r,720deg))}}
+.livkort{padding:12px 14px}.livkort .livtop{display:flex;align-items:center;gap:8px}.livkort small{display:block;color:var(--muted);margin-top:4px;line-height:1.35}.livkort .btn{margin-top:8px}.livkort.tom{border:2px solid #e2a3a3;background:#fff4f2}
+.hjerter{font-size:22px;letter-spacing:2px;white-space:nowrap}.hjerte.tom{opacity:.75}.quizliv{font-size:14px;letter-spacing:0;white-space:nowrap}.livmist{color:#b3261e;font-weight:700}
 .screen{animation:fadein .2s}.screen.stille{animation:none}
 @media (max-width:360px){.qtext{font-size:18px}.ans{font-size:16px}.grid{gap:8px}.bcell .badge{width:64px;height:64px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
@@ -6527,6 +6529,7 @@ function scrMaerker(){
   return `<div class="topbar"><button class="iconbtn" data-a="til" data-to="profil" aria-label="Tilbage">←</button><h1>Mærker</h1><span class="spacer"></span></div>
     <div class="summary"><span>🥉 ${cnt[1]}/${EMNER.length}</span><span>🥈 ${cnt[2]}/${EMNER.length}</span><span>🥇 ${cnt[3]}/${EMNER.length}</span></div>
     <p class="muted center" style="font-size:14px;margin-bottom:0">Tryk på et mærke for at tage prøven. Bronze, sølv og guld tæller hver som ét mærke.</p>
+    ${livKort(c)}
     ${antalLaaste || skjul ? `<button class="btn secondary" data-a="skjulmaerker" style="margin-top:10px">${skjul?`🔒 Vis også de mærker, du ikke kan tage endnu (${antalLaaste})`:"🙈 Skjul de mærker, du ikke kan tage endnu"}</button>` : ""}
     ${gruppeHTML}
     <div class="sect" style="margin-top:22px">Særlige mærker</div>
@@ -6537,7 +6540,7 @@ function scrMaerker(){
 function scrEmne(){
   const c=cur(), e=EMNE[nav.params.id], l=c.badges[e.id]||0;
   let h = `<div class="topbar"><button class="iconbtn" data-a="til" data-to="maerker" aria-label="Tilbage">←</button><h1>${e.navn}</h1><span class="spacer"></span></div>
-    <div class="card emnehead">${badgeHTML(e,l,"lg")}<p>${e.besk}</p></div>`;
+    <div class="card emnehead">${badgeHTML(e,l,"lg")}<p>${e.besk}</p></div>${livKort(c, e.id)}`;
   const aab=emneAaben(c,e.id), maks=maksMedalje(c);
   if(!aab) h += `<div class="card lejrlaaskort">${emneLaasTekst(e.id)} (lejrniveau ${EMNE_TRIN[e.id]}). Byg din lejrplads op for at tage prøverne – du kan stadig øve emnet.</div>`;
   for(let n=1;n<=3;n++){
@@ -6580,12 +6583,39 @@ function traenDag(c){ if(!c.traenDag || c.traenDag.dato!==iDag()) c.traenDag={ d
 function traenStreakNu(c){ return [iDag(),iGaar()].includes(c.traenSidst) ? (c.traenStreak||0) : 0; }
 // Kaldes ved hvert rigtigt svar i træning. Giver true, når dagens mål lige er nået
 function traenRigtig(c){
+  if(livTraen(c)) setTimeout(()=>lejrToast(`❤️ +1 liv til prøverne (${liv(c).n} af ${LIV_MAKS})`), 250);
   const d=traenDag(c); d.rigtige++;
   if(d.naaet || d.rigtige<TRAEN_MAAL) return false;
   d.naaet=true; c.traenStreak = c.traenSidst===iGaar() ? (c.traenStreak||0)+1 : c.traenSidst===iDag() ? (c.traenStreak||1) : 1; c.traenSidst=iDag();
   c.point=(c.point||0)+TRAEN_BONUS; save(); setTimeout(()=>{ konfettiLille(); vibrer([30,30,80]); }, 200);
   return true;
 }
+/* ---------- Liv til mærkeprøverne: 3 liv. Hvert forkert svar i en prøve koster ét liv, og uden liv kan man ikke tage prøver.
+   Man får 1 liv tilbage i timen (beregnes, når man kigger) – og 1 liv for hver LIV_TRAEN rigtige svar i træning.
+   c.liv = { n, t, traen }: antal liv, hvornår den nuværende time startede, og rigtige svar i træning mod næste liv. */
+const LIV_MAKS = 3, LIV_TID = 60*60*1000, LIV_TRAEN = 5;
+function liv(c){
+  const L = c.liv || (c.liv = { n:LIV_MAKS, t:Date.now(), traen:0 });
+  if(L.n>=LIV_MAKS){ L.n=LIV_MAKS; return L; }
+  const x=Math.floor((Date.now()-L.t)/LIV_TID);
+  if(x>0){ L.n=Math.min(LIV_MAKS, L.n+x); L.t+=x*LIV_TID; }
+  return L;
+}
+function livNaeste(c){ const L=liv(c); return L.n>=LIV_MAKS ? 0 : Math.max(0, L.t+LIV_TID-Date.now()); }
+function livMist(c){ const L=liv(c); if(L.n>=LIV_MAKS) L.t=Date.now(); L.n=Math.max(0, L.n-1); save(); return L.n; }
+// Et rigtigt svar i træning: hvert LIV_TRAEN. giver et liv tilbage (kun når man mangler liv)
+function livTraen(c){ const L=liv(c); if(L.n>=LIV_MAKS){ L.traen=0; return false; }
+  L.traen=(L.traen||0)+1; if(L.traen<LIV_TRAEN) return false;
+  L.traen=0; L.n++; save(); return true; }
+function livMin(ms){ const m=Math.ceil(ms/60000); return m>=60 ? "1 time" : `${m} min`; }
+function livHjerter(n){ return Array.from({length:LIV_MAKS},(_,k)=>`<span class="hjerte ${k<n?"":"tom"}">${k<n?"❤️":"🤍"}</span>`).join(""); }
+function livKort(c, emne){
+  const L=liv(c), mangler=LIV_TRAEN-(L.traen||0);
+  return `<div class="card livkort ${L.n?"":"tom"}"><div class="livtop"><span class="hjerter">${livHjerter(L.n)}</span><b>${L.n} ${L.n===1?"liv":"liv"} til prøverne</b></div>
+    <small>${L.n>=LIV_MAKS ? "Hvert forkert svar i en prøve koster ét liv. Uden liv kan du ikke tage prøver." : `Næste liv om <b>${livMin(livNaeste(c))}</b> – eller få et liv for hver ${LIV_TRAEN} rigtige svar i træning (${mangler} mere).`}</small>
+    ${L.n===0 ? `<button class="btn earth" data-a="traening" ${emne?`data-id="${emne}"`:""}>🎯 Træn og få liv tilbage</button>` : ""}</div>`;
+}
+
 function traenValg(c){ return c.traenValg || (c.traenValg = { aaben:false, emner:[], niv:"mit", antal:10 }); }
 const TRAEN_MODES = ["train","fejl","general"];
 
@@ -6841,7 +6871,7 @@ function scrQuiz(){
   const label = quiz.mode==="moede" ? `🏠 Spejdermøde · Uge ${quiz.uge.uge}` : quiz.mode==="moedeakt" ? `🏠 Ugens aktivitet · ${moede.akt.navn}` : quiz.mode==="moedetraen" ? `Træning · Mødet i uge ${quiz.uge.uge} (uden point)` : quiz.mode==="uge" ? `Ugens udfordring · Uge ${quiz.uge.uge}` : quiz.mode==="fejl" ? "Øv dine fejl" : quiz.titel ? quiz.titel : (quiz.mode==="test" ? NIVEAUER[quiz.niveau].navn+"-prøve" : quiz.mode==="general" ? "Generalprøve · "+NIVEAUER[quiz.niveau].navn : "Træning") + " · " + (quiz.emne==="alle"?"Alle emner":EMNE[quiz.emne].navn);
   let h = `<div class="quiztop"><button class="iconbtn" data-a="afbryd" aria-label="Stop">✕</button>
       <div class="qinfo"><small>${label}</small><b>Spørgsmål ${quiz.i+1} af ${n}</b></div>
-      <div class="qstats"><span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
+      <div class="qstats">${quiz.mode==="test"?`<span class="quizliv" aria-label="${liv(c).n} liv">${livHjerter(liv(c).n)}</span>`:""}<span>⭐ ${fmt(quiz.point)}</span><span class="streak ${quiz.streak>=3?"hot":""}">🔥 ${quiz.streak}</span></div></div>
     <div class="dots">${quiz.qs.map((_,k)=>`<i class="${quiz.svar[k]===true?"ok":quiz.svar[k]===false?"bad":k===quiz.i?"now":""}"></i>`).join("")}</div>`;
   if(quiz.medTimer && !quiz.answered) h += `<div class="timer" id="timer-row"><div class="bar"><i id="tbar" style="width:${quiz.tLeft/quiz.tMax*100}%"></i></div><span id="tnum">${Math.ceil(quiz.tLeft)}</span></div>`;
   h += `<div class="card qcard"><div class="qtopic">${badgeHTML(e,c.badges[e.id]||0,"xs")} ${e.navn} · ${["","Let","Mellem","Svær"][q.niveau]}</div><p class="qtext">${esc(q.spm)}</p>${mediaHTML(q)}${indst(c).oplaes && kanOplaese() ? `<button class="chip oplaesknap" data-a="laesop">🗣️ Læs op igen</button>` : ""}</div>`;
@@ -6855,8 +6885,8 @@ function scrQuiz(){
     const ok = quiz.svar[quiz.i];
     const rigtig = q.type==="raekke" ? `<ol class="facit">${q.trin.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>` : `<b>${esc(q.opts.find(o=>o.ok).t)}</b>`;
     h += `<div class="fb ${ok?"ok":"bad"}" id="fb"><b class="head">${ok ? quiz.ros + (quiz.sidstePoint ? `<span class="plus">+${quiz.sidstePoint} point</span>` : "") : quiz.valgt<0 ? "⏰ Tiden løb ud!" : q.type==="raekke" ? "Ikke helt den rigtige rækkefølge" : "Desværre – forkert"}</b>
-      ${ok?"":`<p>${q.type==="raekke"?"Sådan skal det bindes:":"Det rigtige svar er:"} ${rigtig}</p>`}<p class="forkl">💡 ${esc(q.forklaring)}</p>${quiz.dagsmaal?`<p class="dagsmaalnaaet">🎯 Dagens træning er klaret! <b>+${TRAEN_BONUS} point</b></p>`:""}</div>
-      <button class="btn" data-a="naeste">${quiz.i+1>=n?"Se resultat 🏁":"Næste spørgsmål →"}</button>`;
+      ${ok?"":`<p>${q.type==="raekke"?"Sådan skal det bindes:":"Det rigtige svar er:"} ${rigtig}</p>`}${quiz.mode==="test"&&!ok?`<p class="livmist">💔 Du mistede et liv – ${quiz.livTilbage ? `${quiz.livTilbage} tilbage` : "<b>ingen liv tilbage</b>, så prøven stopper her"}.</p>`:""}<p class="forkl">💡 ${esc(q.forklaring)}</p>${quiz.dagsmaal?`<p class="dagsmaalnaaet">🎯 Dagens træning er klaret! <b>+${TRAEN_BONUS} point</b></p>`:""}</div>
+      <button class="btn" data-a="naeste">${quiz.livUde?"Afslut prøven 🏁":quiz.i+1>=n?"Se resultat 🏁":"Næste spørgsmål →"}</button>`;
   }
   return h;
 }
@@ -6873,7 +6903,7 @@ function scrResultat(){
     const krav = NIVEAUER[quiz.niveau].krav;
     if(quiz.bestaaet){ msg="Bestået! 🎉"; col="var(--ok)"; }
     else { msg="Ikke bestået – endnu!"; col="var(--bad)"; }
-    var sub = quiz.bestaaet ? `Du klarede ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøven i ${EMNE[quiz.emne].navn}.` : `Du skal have mindst ${krav} rigtige. Prøv igen – du får nye spørgsmål.`;
+    var sub = quiz.bestaaet ? `Du klarede ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøven i ${EMNE[quiz.emne].navn}.` : quiz.livUde ? `Du løb tør for liv, så prøven stoppede. Du får et nyt liv om ${livMin(livNaeste(c))} – eller tjen liv i træning.` : `Du skal have mindst ${krav} rigtige. Prøv igen – du får nye spørgsmål.`;
   } else {
     const andel = r/n;
     msg = andel>=.9 ? "Fantastisk! 🌟" : andel>=.7 ? "Godt gået! 👍" : andel>=.5 ? "Godt trænet! 💪" : "Øvelse gør mester! 🌱";
@@ -6895,7 +6925,7 @@ function scrResultat(){
     const naesteAaben = quiz.niveau<3 && quiz.niveau+1<=maksMedalje(c) && emneAaben(c,quiz.emne);
     if(quiz.bestaaet && quiz.niveau<3 && lvl>=quiz.niveau && !naesteAaben) h += `<p class="muted center psmall lejrlaaskort" style="padding:10px;border-radius:12px">${medaljeLaasTekst(quiz.niveau+1)}. Byg din lejrplads op for at tage ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven.</p>`;
     if(quiz.bestaaet && naesteAaben && lvl>=quiz.niveau) h += `<button class="btn ${quiz.niveau===2?"gold":""}" data-a="naesteniveau">Prøv ${NIVEAUER[quiz.niveau+1].navn.toLowerCase()}-prøven →</button>`;
-    if(!quiz.bestaaet) h += `<button class="btn" data-a="igen">🔁 Prøv igen</button>`;
+    if(!quiz.bestaaet) h += liv(c).n ? `<button class="btn" data-a="igen">🔁 Prøv igen (${liv(c).n} liv)</button>` : livKort(c, quiz.emne);
     h += `<button class="btn secondary" data-a="til" data-to="emne" data-id="${quiz.emne}">Tilbage til ${EMNE[quiz.emne].navn}</button>`;
   } else if(quiz.mode==="general"){
     if(r>=NIVEAUER[quiz.niveau].krav && (c.badges[quiz.emne]||0)<quiz.niveau && quiz.niveau<=maksMedalje(c)) h += `<button class="btn ${quiz.niveau===3?"gold":""}" data-a="proeve" data-id="${quiz.emne}" data-n="${quiz.niveau}">Tag den rigtige ${NIVEAUER[quiz.niveau].navn.toLowerCase()}-prøve →</button>`;
@@ -6968,6 +6998,7 @@ function ugeKort(c){
 
 function startQuiz(mode, emne, niveau){
   const c = cur();
+  if(mode==="test" && liv(c).n<=0){ infoBox(`💔 <b>Du har ingen liv tilbage.</b><br>Du får et nyt liv om ${livMin(livNaeste(c))} – eller tjen liv ved at træne: hvert ${LIV_TRAEN}. rigtige svar i træning giver et liv.`); return; }
   const fast = { uge:1, moede:1, moedeakt:1, moedetraen:1 }[mode];   // faste spørgsmål ud fra ugen
   const pool = (mode==="fejl" ? fejlSpg(c) : fast ? SPORGSMAL
     : SPORGSMAL.filter(q => (emne==="alle" || q.emne===emne) && (!niveau || q.niveau===niveau))).filter(q => mode==="test" || emneAaben(c,q.emne));
@@ -6997,6 +7028,7 @@ function svar(k, okRaekke){
   const c=cur(), q=quiz.qs[quiz.i], ok = q.type==="raekke" ? (k>=0 && !!okRaekke) : (k>=0 && q.opts[k].ok);
   quiz.answered=true; quiz.valgt=k; quiz.svar[quiz.i]=ok;
   noterFejl(c, q.id, ok);
+  if(quiz.mode==="test" && !ok){ quiz.livTilbage=livMist(c); if(quiz.livTilbage<=0) quiz.livUde=true; }
   if(["train","fejl","general","test"].includes(quiz.mode)) noterStat(c, q.emne, ok);
   quiz.dagsmaal = ok && TRAEN_MODES.includes(quiz.mode) && traenRigtig(c);
   if(ok){
@@ -7015,6 +7047,7 @@ function svar(k, okRaekke){
   if(fb) setTimeout(()=>fb.scrollIntoView({behavior:"smooth",block:"center"}), 60);
 }
 function naeste(){
+  if(quiz.livUde){ for(let k=quiz.i+1;k<quiz.qs.length;k++) quiz.svar[k]=false; quiz.i=quiz.qs.length; return afslut(); }   // ingen liv tilbage: prøven er slut
   quiz.i++; quiz.answered=false; quiz.valgt=null;
   if(quiz.i >= quiz.qs.length) return afslut();
   quiz.tLeft = quiz.tMax = opgTid(quiz.qs[quiz.i]);
